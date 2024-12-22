@@ -45,9 +45,9 @@ public class LinkRelations {
 
     public static final String RESET_REL = "reset";
 
-    public static final String WORKER_REL = "worker";
+    public static final String WORKLOAD_REL = "workload";
 
-    public static final String WORKER_LIST_REL = "worker-list";
+    public static final String WORKLOAD_LIST_REL = "workload-list";
 
     public static final String LOCALITY_REL = "locality";
 

@@ -28,24 +28,23 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.view.RedirectView;
 
 import io.cockroachdb.pestcontrol.config.ApplicationProperties;
-import io.cockroachdb.pestcontrol.service.workload.WorkerModel;
-import io.cockroachdb.pestcontrol.service.workload.WorkerType;
-import io.cockroachdb.pestcontrol.service.workload.WorkloadManager;
-import io.cockroachdb.pestcontrol.util.Metrics;
 import io.cockroachdb.pestcontrol.web.api.LinkRelations;
 import io.cockroachdb.pestcontrol.web.api.cluster.ClusterHelper;
-import io.cockroachdb.pestcontrol.web.api.workload.WorkerForm;
+import io.cockroachdb.pestcontrol.web.api.workload.WorkloadForm;
 import io.cockroachdb.pestcontrol.web.api.workload.WorkloadRestController;
 import io.cockroachdb.pestcontrol.web.push.SimpMessagePublisher;
 import io.cockroachdb.pestcontrol.web.push.TopicName;
-
+import io.cockroachdb.pestcontrol.workload.profile.WorkloadType;
+import io.cockroachdb.pestcontrol.workload.model.Workload;
+import io.cockroachdb.pestcontrol.workload.WorkloadManager;
+import io.cockroachdb.pestcontrol.workload.model.Metrics;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @WebController
 @RequestMapping("/workload")
 public class WorkloadController extends AbstractSessionController {
-    private static final RepresentationModelAssembler<WorkerModel, WorkerModel> workloadAssembler
+    private static final RepresentationModelAssembler<Workload, Workload> workloadAssembler
             = entity -> {
         entity.add(linkTo(methodOn(WorkloadRestController.class)
                 .getWorker(entity.getClusterId(), entity.getId()))
@@ -96,9 +95,9 @@ public class WorkloadController extends AbstractSessionController {
         WebUtils.getAuthenticatedClusterProperties().orElseThrow(() ->
                 new AuthenticationCredentialsNotFoundException("Expected authentication token"));
 
-        WorkerForm workerForm = new WorkerForm();
+        WorkloadForm workerForm = new WorkloadForm();
         workerForm.setDuration("00:15");
-        workerForm.setWorkloadType(WorkerType.profile_insert);
+        workerForm.setWorkloadType(WorkloadType.profile_insert);
 
         model.addAttribute("form", workerForm);
         model.addAttribute("workers",
@@ -112,7 +111,7 @@ public class WorkloadController extends AbstractSessionController {
     @PostMapping
     public Callable<String> submitForm(
             @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
-            @ModelAttribute WorkerForm form,
+            @ModelAttribute WorkloadForm form,
             Model model) {
 
         final LocalTime time = LocalTime.parse(form.getDuration(), DateTimeFormatter.ofPattern("HH:mm"));
@@ -121,9 +120,9 @@ public class WorkloadController extends AbstractSessionController {
 
         IntStream.rangeClosed(1, form.getCount())
                 .forEach(value -> {
-                    final WorkerType workerType = form.getWorkloadType();
-                    final Callable<?> workerAction = workerType.createWorker(dataSource);
-                    workloadManager.submitWorker(clusterHelper.getId(), workerAction, workerType, duration);
+                    final Runnable task = form.getWorkloadType().createTask(dataSource);
+                    workloadManager.submitWorkload(clusterHelper.getId(), duration, task,
+                            form.getWorkloadType().getDisplayValue());
                 });
 
         model.addAttribute("form", form);
@@ -149,7 +148,7 @@ public class WorkloadController extends AbstractSessionController {
     public RedirectView cancelWorker(
             @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
             @PathVariable("id") Integer id) {
-        WorkerModel worker = workloadManager.findById(clusterHelper.getId(), id);
+        Workload worker = workloadManager.findById(clusterHelper.getId(), id);
         worker.cancel();
         return new RedirectView("/workload");
     }
@@ -194,7 +193,7 @@ public class WorkloadController extends AbstractSessionController {
     }
 
     @GetMapping("/workers/update")
-    public @ResponseBody List<WorkerModel> getModelUpdateWorkers(
+    public @ResponseBody List<Workload> getModelUpdateWorkers(
             @SessionAttribute(value = "helper") ClusterHelper clusterHelper) {
         return workloadManager.getWorkers(clusterHelper.getId());
     }

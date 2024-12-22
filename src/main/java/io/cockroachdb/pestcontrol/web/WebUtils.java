@@ -12,7 +12,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.LocaleResolver;
 
 import io.cockroachdb.pestcontrol.schema.ClusterProperties;
-import io.cockroachdb.pestcontrol.service.security.ClusterAuthenticationDetails;
+import io.cockroachdb.pestcontrol.security.ClusterAuthenticationDetails;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Component

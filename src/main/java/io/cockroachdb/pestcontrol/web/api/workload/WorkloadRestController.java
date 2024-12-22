@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.stream.IntStream;
 
 import javax.sql.DataSource;
@@ -26,11 +25,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.cockroachdb.pestcontrol.config.ApplicationProperties;
-import io.cockroachdb.pestcontrol.service.workload.WorkerModel;
-import io.cockroachdb.pestcontrol.service.workload.WorkerType;
-import io.cockroachdb.pestcontrol.service.workload.WorkloadManager;
 import io.cockroachdb.pestcontrol.web.api.LinkRelations;
-
+import io.cockroachdb.pestcontrol.workload.profile.WorkloadType;
+import io.cockroachdb.pestcontrol.workload.model.Workload;
+import io.cockroachdb.pestcontrol.workload.WorkloadManager;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -45,12 +43,12 @@ public class WorkloadRestController {
     private ApplicationProperties applicationProperties;
 
     @Autowired
-    private WorkerModelAssembler workerModelAssembler;
+    private WorkloadModelAssembler workerModelAssembler;
 
     @GetMapping("/{clusterId}/workers")
-    public ResponseEntity<CollectionModel<WorkerModel>> getWorkers(
+    public ResponseEntity<CollectionModel<Workload>> getWorkers(
             @PathVariable("clusterId") String clusterId) {
-        CollectionModel<WorkerModel> collectionModel = workerModelAssembler
+        CollectionModel<Workload> collectionModel = workerModelAssembler
                 .toCollectionModel(workloadManager.getWorkers(clusterId));
 
         collectionModel.add(linkTo(methodOn(WorkloadRestController.class)
@@ -67,17 +65,17 @@ public class WorkloadRestController {
     }
 
     @GetMapping(value = "/{clusterId}/workers/{id}")
-    public HttpEntity<WorkerModel> getWorker(
+    public HttpEntity<Workload> getWorker(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {
         return ResponseEntity.ok(workerModelAssembler.toModel(workloadManager.findById(clusterId, id)));
     }
 
     @PutMapping(value = "/{clusterId}/workers/{id}/cancel")
-    public HttpEntity<WorkerModel> cancelWorker(
+    public HttpEntity<Workload> cancelWorker(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {
-        WorkerModel workload = workloadManager.findById(clusterId, id);
+        Workload workload = workloadManager.findById(clusterId, id);
         if (workload.cancel()) {
             return ResponseEntity.ok(workerModelAssembler.toModel(workload));
         } else {
@@ -99,9 +97,9 @@ public class WorkloadRestController {
     }
 
     @GetMapping(value = "/{clusterId}/workers/form")
-    public HttpEntity<WorkerForm> getWorkerForm(@PathVariable("clusterId") String clusterId) {
-        WorkerForm form = new WorkerForm();
-        form.setWorkloadType(WorkerType.random_wait);
+    public HttpEntity<WorkloadForm> getWorkerForm(@PathVariable("clusterId") String clusterId) {
+        WorkloadForm form = new WorkloadForm();
+        form.setWorkloadType(WorkloadType.random_wait);
         form.setDuration("00:15");
 
         return ResponseEntity.ok(form
@@ -114,21 +112,21 @@ public class WorkloadRestController {
     }
 
     @PostMapping("/{clusterId}/workers")
-    public HttpEntity<CollectionModel<WorkerModel>> newWorker(
+    public HttpEntity<CollectionModel<Workload>> newWorker(
             @PathVariable("clusterId") String clusterId,
-            @RequestBody WorkerForm form) {
+            @RequestBody WorkloadForm form) {
 
         final LocalTime time = LocalTime.parse(form.getDuration(), DateTimeFormatter.ofPattern("HH:mm"));
         final Duration duration = Duration.ofHours(time.getHour()).plusMinutes(time.getMinute());
         final DataSource dataSource = applicationProperties.getDataSource(clusterId);
 
-        List<WorkerModel> entities = new ArrayList<>();
+        List<Workload> entities = new ArrayList<>();
 
         IntStream.rangeClosed(1, form.getCount())
                 .forEach(value -> {
-                    final WorkerType workerType = form.getWorkloadType();
-                    final Callable<?> workerAction = workerType.createWorker(dataSource);
-                    workloadManager.submitWorker(clusterId, workerAction, workerType, duration);
+                    final Runnable task = form.getWorkloadType().createTask(dataSource);
+                    workloadManager.submitWorkload(clusterId, duration, task,
+                            form.getWorkloadType().getDisplayValue());
                 });
 
         return ResponseEntity

@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -24,7 +24,6 @@ import org.springframework.web.context.request.async.CallableProcessingIntercept
 import org.springframework.web.context.request.async.TimeoutCallableProcessingInterceptor;
 
 @Configuration
-@EnableAspectJAutoProxy
 @EnableAsync
 @EnableScheduling
 public class AsyncConfiguration implements AsyncConfigurer {
@@ -35,7 +34,18 @@ public class AsyncConfiguration implements AsyncConfigurer {
 
     @Override
     public AsyncTaskExecutor getAsyncExecutor() {
-        return asyncTaskExecutor();
+        // Use a bounded thread pool with a blocking queue. When the queue is at
+        // capacity (32 tasks), the thread pool increases to "maxPoolSize" threads.
+        // Pool threads are also reclaimed when they are idle for 10 seconds.
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(threadPoolMaxSize <= 0
+                ? Runtime.getRuntime().availableProcessors() : threadPoolMaxSize);
+        executor.setQueueCapacity(32);
+        executor.setKeepAliveSeconds(10);
+        executor.setThreadNamePrefix("async-");
+        executor.initialize();
+        return executor;
     }
 
     @Bean
@@ -43,27 +53,18 @@ public class AsyncConfiguration implements AsyncConfigurer {
         return Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
     }
 
-    /**
-     * Executor for @Async processing and app event multicasting.
-     */
-    @Bean(name = "asyncTaskExecutor")
-    public ThreadPoolTaskExecutor asyncTaskExecutor() {
-        int poolSize = threadPoolMaxSize > 0 ? threadPoolMaxSize : Runtime.getRuntime().availableProcessors() * 4;
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(poolSize);
-        executor.setMaxPoolSize(poolSize * 2);
-        executor.setThreadNamePrefix("async-pool-");
-        executor.setStrictEarlyShutdown(true);
-        executor.setWaitForTasksToCompleteOnShutdown(false);
-        executor.setAcceptTasksAfterContextClose(false);
-        executor.setAwaitTerminationSeconds(5);
-        executor.initialize();
+    @Bean(name = "simpleAsyncTaskExecutor")
+    public SimpleAsyncTaskExecutor simpleAsyncTaskExecutor() {
+        SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
+        executor.setThreadNamePrefix("worker-");
+        executor.setVirtualThreads(true);
+        executor.setConcurrencyLimit(-1);
         return executor;
     }
 
     @Bean("applicationEventMulticaster")
     public ApplicationEventMulticaster simpleApplicationEventMulticaster(
-            @Autowired @Qualifier("asyncTaskExecutor") Executor executor) {
+            @Autowired @Qualifier("simpleAsyncTaskExecutor") Executor executor) {
         SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
         eventMulticaster.setTaskExecutor(executor);
         eventMulticaster.setErrorHandler(t -> {

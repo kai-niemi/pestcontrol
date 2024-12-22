@@ -1,9 +1,14 @@
 package io.cockroachdb.pestcontrol;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.function.Consumer;
 
+import org.eclipse.jetty.io.RuntimeIOException;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,21 +41,23 @@ public class Application implements ApplicationRunner {
     @Value("${server.port}")
     private String serverPort;
 
-    private static void printHelpAndExit(String message) {
-        System.out.println("Usage: java --jar pestcontrol.jar <options> [args..]");
-        System.out.println();
-        System.out.println("Options:");
-        System.out.println("--help                    this help");
-        System.out.println("--profiles [profile,..]   spring profiles to activate");
-        System.out.println("  Available profiles:");
-        System.out.println("    verbose      - enable verbose activity logging.");
-        System.out.println("    verbose-sql  - enable verbose SQL trace logging.");
-        System.out.println("    verbose-http - enable verbose HTTP trace logging.");
-        System.out.println();
-        System.out.println("All other options are passed to spring container.");
-        System.out.println();
-        System.out.println(message);
-
+    private static void printHelpAndExit(Consumer<AnsiConsole> message) {
+        try (Terminal terminal = TerminalBuilder.terminal()) {
+            AnsiConsole console = new AnsiConsole(terminal);
+            console.green("Usage: java -jar pestcontrol.jar [options] <profile> [args...]").nl().nl();
+            console.cyan("Unrecognized options and arguments following <profile> "
+                         + "are passed as arguments to the spring boot container.").nl().nl();
+            console.cyan("Options include:").nl();
+            {
+                console.cyan("--help                    this help").nl();
+                console.cyan("--verbose                 enable verbose SQL trace logging").nl();
+                console.cyan("--profiles [profile,..]   override spring profiles to activate").nl();
+            }
+            console.nl();
+            message.accept(console);
+        } catch (IOException e) {
+            throw new RuntimeIOException(e);
+        }
         System.exit(0);
     }
 
@@ -64,15 +71,21 @@ public class Application implements ApplicationRunner {
         while (!argsList.isEmpty()) {
             String arg = argsList.pop();
             if (arg.equals("--help")) {
-                printHelpAndExit("");
+                printHelpAndExit(ansiConsole -> {});
             } else if (arg.equals("--profiles")) {
                 if (argsList.isEmpty()) {
-                    printHelpAndExit("Expected list of profile names");
+                    printHelpAndExit(ansiConsole -> {
+                        ansiConsole.red("Expected list of profile names");
+                    });
                 }
                 profiles.clear();
                 profiles.addAll(StringUtils.commaDelimitedListToSet(argsList.pop()));
             } else {
-                passThroughArgs.add(arg);
+                if (arg.startsWith("--") || arg.startsWith("@")) {
+                    passThroughArgs.add(arg);
+                } else {
+                    profiles.add(arg);
+                }
             }
         }
 

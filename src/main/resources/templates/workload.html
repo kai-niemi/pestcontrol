@@ -128,7 +128,7 @@
                         <label for="workload-type" class="form-label">Type of workload:</label>
                         <select th:field="*{workloadType}" id="workload-type" class="form-select"
                                 aria-label="Default select">
-                            <option th:each="wt : ${T(io.cockroachdb.pestcontrol.service.workload.WorkerType).values()}"
+                            <option th:each="wt : ${T(io.cockroachdb.pestcontrol.workload.WorkerType).values()}"
                                     th:value="${wt}" th:text="${wt.displayValue}"></option>
                         </select>
 

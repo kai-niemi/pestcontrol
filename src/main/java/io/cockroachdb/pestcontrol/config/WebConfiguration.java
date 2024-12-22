@@ -23,9 +23,9 @@ import org.springframework.web.util.pattern.PathPatternParser;
 
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import eu.rekawek.toxiproxy.model.ToxicType;
-import io.cockroachdb.pestcontrol.service.workload.WorkerType;
+import io.cockroachdb.pestcontrol.workload.profile.WorkloadType;
 import io.cockroachdb.pestcontrol.web.api.toxi.ToxicForm;
-import io.cockroachdb.pestcontrol.web.api.workload.WorkerForm;
+import io.cockroachdb.pestcontrol.web.api.workload.WorkloadForm;
 import io.cockroachdb.pestcontrol.web.api.LinkRelations;
 
 @EnableWebMvc
@@ -36,7 +36,7 @@ import io.cockroachdb.pestcontrol.web.api.LinkRelations;
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
     @Autowired
-    @Qualifier("asyncTaskExecutor")
+    @Qualifier("simpleAsyncTaskExecutor")
     private AsyncTaskExecutor taskExecutor;
 
     @Autowired
@@ -94,8 +94,8 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Bean
     public HalFormsConfiguration halFormsConfiguration() {
         return new HalFormsConfiguration()
-                .withOptions(WorkerForm.class, "workloadType", metadata ->
-                        HalFormsOptions.inline(WorkerType.values()))
+                .withOptions(WorkloadForm.class, "workloadType", metadata ->
+                        HalFormsOptions.inline(WorkloadType.values()))
                 .withOptions(ToxicForm.class, "toxicType", metadata ->
                         HalFormsOptions.inline(ToxicType.values()))
                 .withOptions(ToxicForm.class, "toxicDirection", metadata ->

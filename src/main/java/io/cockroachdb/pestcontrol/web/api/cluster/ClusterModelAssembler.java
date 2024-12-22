@@ -39,7 +39,7 @@ public class ClusterModelAssembler implements RepresentationModelAssembler<Clust
 
         resource.add(linkTo(methodOn(WorkloadRestController.class)
                 .getWorkers(resource.getId()))
-                .withRel(LinkRelations.WORKER_LIST_REL)
+                .withRel(LinkRelations.WORKLOAD_LIST_REL)
                 .withTitle("Collection of cluster workers"));
 
         resource.add(Link.of(resource.getClusterProperties().getAdminUrl())
