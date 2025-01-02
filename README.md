@@ -239,7 +239,7 @@ Collection of cluster definitions.
 | Field Name             | Optional | Default         | Description                                                                                                                                    |
 |------------------------|----------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------|
 | cluster-id             | No       | -               | Either a CockroachDB Cloud cluster ID or a unique string for a local cluster                                                                   |
-| cluster-type           | Yes      | cloud_dedicated | `cloud_dedicated`, `local_secure` or `local_insecure`                                                                                          |
+| cluster-type           | Yes      | cloud_dedicated | `cloud_dedicated,local_secure,local_insecure,remote_secure,remote_insecure`                                                                    |
 | api-key                | Yes      | -               | Only required for `cloud_dedicated`, see [Create API Keys](https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys). |
 | admin-url              | No       | -               | Base URL for the Cluster API which is typically the regional/local cluster load balancer endpoint.                                             |
 | data-source-properties | No       | -               | Data source connection parameters.                                                                                                             |

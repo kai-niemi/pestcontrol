@@ -46,8 +46,8 @@
                     <caption>List of workers</caption>
                     <thead class="thead-light">
                     <tr>
-                        <th>Name</th>
                         <th>#</th>
+                        <th>Title</th>
                         <th>Remaining</th>
                         <th>P90</th>
                         <th>P99</th>
@@ -57,16 +57,16 @@
                         <th>Success</th>
                         <th>Transient</th>
                         <th>Non-Transient</th>
+                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="worker, iStat : ${workers}" th:id="${'row-' + worker.id}">
-                        <td scope="row" th:if="${worker.hasLink('self')}">
-                            <a th:href="${worker.getRequiredLink('self').href}" th:text="${worker.title}"></a>
-                        </td>
-                        <td scope="row" th:unless="${worker.hasLink('self')}" th:text="${worker.title}"></td>
+                    <tr th:each="worker: ${workers}" th:id="${'row-' + worker.id}">
                         <td th:text="${worker.id}"></td>
+                        <td>
+                            <a th:href="@{/workload/{id}(id=${worker.id})}" th:text="${worker.title}"></a>
+                        </td>
                         <td th:text="${worker.remainingTime}" class="remaining-time"></td>
                         <td th:text="${worker.metrics.p90}" class="p90"></td>
                         <td th:text="${worker.metrics.p99}" class="p99"></td>
@@ -78,14 +78,17 @@
                         <td th:text="${worker.metrics.success}" class="success"></td>
                         <td th:text="${worker.metrics.transientFail}" class="transientFail"></td>
                         <td th:text="${worker.metrics.nonTransientFail}" class="nonTransientFail"></td>
+                        <td>
+                            <span class="badge rounded-pill" th:classappend="${worker.status.badge}" th:text="${worker.status}"></span>
+                        </td>
 
                         <td class="text-center py-1">
-                            <a th:href="${worker.getRequiredLink('cancel-redirect').href}"
-                               th:if="${worker.hasLink('cancel-redirect')}"
+                            <a th:href="@{/workload/cancel/{id}(id=${worker.id})}"
+                               th:if="${worker.isRunning()}"
                                class="btn btn-xs btn-space btn-outline-primary">Cancel</a>
-                            <a th:href="${worker.getRequiredLink('delete-redirect').href}"
-                               th:if="${worker.hasLink('delete-redirect')}"
-                               class="btn btn-xs btn-space btn-outline-danger">Delete</a>
+                            <a th:href="@{/workload/delete/{id}(id=${worker.id})}"
+                               th:if="${!worker.isRunning()}"
+                               class="btn btn-xs btn-space btn-outline-secondary">Delete</a>
                         </td>
                     </tr>
                     </tbody>
@@ -102,6 +105,7 @@
                         <th th:text="${aggregatedMetrics.success}" class="success">0</th>
                         <th th:text="${aggregatedMetrics.transientFail}" class="transientFail">0</th>
                         <th th:text="${aggregatedMetrics.nonTransientFail}" class="nonTransientFail">0</th>
+                        <th></th>
                         <th></th>
                     </tr>
                     </tfoot>
@@ -128,7 +132,7 @@
                         <label for="workload-type" class="form-label">Type of workload:</label>
                         <select th:field="*{workloadType}" id="workload-type" class="form-select"
                                 aria-label="Default select">
-                            <option th:each="wt : ${T(io.cockroachdb.pestcontrol.workload.WorkerType).values()}"
+                            <option th:each="wt : ${T(io.cockroachdb.pc.workload.profile.WorkloadType).values()}"
                                     th:value="${wt}" th:text="${wt.displayValue}"></option>
                         </select>
 

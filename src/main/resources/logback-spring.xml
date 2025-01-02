@@ -7,11 +7,11 @@
     <logger name="org.springframework" level="INFO"/>
 
     <springProfile name="verbose">
-        <logger name="io.cockroachdb.pestcontrol" level="TRACE"/>
-        <logger name="io.cockroachdb.pestcontrol.SQL_TRACE" level="TRACE"/>
+        <logger name="io.cockroachdb.pc" level="TRACE"/>
+        <logger name="io.cockroachdb.pc.SQL_TRACE" level="TRACE"/>
     </springProfile>
     <springProfile name="!verbose">
-        <logger name="io.cockroachdb.pestcontrol" level="DEBUG"/>
+        <logger name="io.cockroachdb.pc" level="DEBUG"/>
     </springProfile>
 
     <springProfile name="verbose-http">
