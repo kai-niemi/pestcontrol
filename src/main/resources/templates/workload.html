@@ -26,7 +26,7 @@
 
                 <div class="hstack gap-2">
                     <button class="btn btn-sm btn-outline-primary me-md-0" type="button"
-                            data-bs-toggle="modal" data-bs-target="#addModal">Add Worker
+                            data-bs-toggle="modal" data-bs-target="#addModal">Add Workload
                     </button>
                     <div class="vr"></div>
                     <button class="btn btn-sm btn-outline-warning me-md-0" type="button"
@@ -39,11 +39,11 @@
                     <a th:href="@{/workload/data-points/clear}" class="btn btn-sm btn-outline-info">Clear Stats</a>
                 </div>
 
-                <p th:if="${#lists.size(workers.getContent()) == 0}" class="badge text-bg-info mt-3">No workers found, use the button above to add one.</p>
+                <p th:if="${#lists.size(workers.getContent()) == 0}" class="badge text-bg-info mt-3">No workloads found, use the button above to add one.</p>
 
                 <table class="table table-striped table-bordered table-hover table-sm caption-top"
                        th:if="${#lists.size(workers.getContent()) > 0}">
-                    <caption>List of workers</caption>
+                    <caption>List of workloads</caption>
                     <thead class="thead-light">
                     <tr>
                         <th>#</th>
@@ -136,7 +136,7 @@
                                     th:value="${wt}" th:text="${wt.displayValue}"></option>
                         </select>
 
-                        <label for="workload-range" class="form-label">Number of workers (1-10):</label>
+                        <label for="workload-range" class="form-label">Number of workloads (1-10):</label>
                         <input th:field="*{count}"
                                type="range" class="form-range" min="1" max="10" id="workload-range">
                     </div>
@@ -171,7 +171,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to cancel all workers?</p>
+                    <p>Are you sure you want to cancel all workloads?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -191,7 +191,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete all workers?</p>
+                    <p>Are you sure you want to delete all workloads?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

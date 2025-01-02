@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumSet;
@@ -32,7 +33,7 @@ public class LocalDisruptionManager implements DisruptionManager {
     };
 
     @Value("${application.scriptPath}")
-    private Path scriptPath;
+    private String scriptPath;
 
     private static void copy(InputStream in, OutputStream out) throws IOException {
         try (InputStream is = new BufferedInputStream(in)) {
@@ -85,7 +86,7 @@ public class LocalDisruptionManager implements DisruptionManager {
         try {
             Process process = new ProcessBuilder()
                     .command(commands)
-                    .directory(scriptPath.toFile())
+                    .directory(Paths.get(scriptPath).toFile())
                     .start();
 
             logger.debug("Started process: %s".formatted(process.info()));

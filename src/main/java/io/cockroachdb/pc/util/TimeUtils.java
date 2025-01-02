@@ -3,6 +3,7 @@ package io.cockroachdb.pc.util;
 import java.time.Duration;
 import java.util.Locale;
 
+//@Deprecated(forRemoval = true) // Replaced by DurationFormatterUtils
 public abstract class TimeUtils {
     private TimeUtils() {
     }

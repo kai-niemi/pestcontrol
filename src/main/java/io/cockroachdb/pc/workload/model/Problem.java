@@ -1,14 +1,14 @@
 package io.cockroachdb.pc.workload.model;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.time.Instant;
+
+import io.cockroachdb.pc.util.ExceptionUtils;
 
 public class Problem {
     public static Problem of(Throwable t) {
-        StringWriter sw = new StringWriter();
-        t.printStackTrace(new PrintWriter(sw, true));
-        return new Problem(t.getClass().getSimpleName(), t.getMessage(), sw.toString());
+        return new Problem(t.getClass().getSimpleName(),
+                t.getMessage(),
+                ExceptionUtils.toString(t));
     }
 
     private final String className;
@@ -19,10 +19,21 @@ public class Problem {
 
     private final Instant createdAt = Instant.now();
 
+    private boolean isTransient;
+
     public Problem(String className, String message, String stackTrace) {
         this.className = className;
         this.message = message;
         this.stackTrace = stackTrace;
+    }
+
+    public boolean isTransient() {
+        return isTransient;
+    }
+
+    public Problem setTransient(boolean aTransient) {
+        isTransient = aTransient;
+        return this;
     }
 
     public Instant getCreatedAt() {

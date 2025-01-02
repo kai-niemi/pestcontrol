@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -16,14 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.cockroachdb.pc.schema.ClusterModel;
 import io.cockroachdb.pc.schema.ClusterProperties;
 import io.cockroachdb.pc.service.ClusterManager;
 import io.cockroachdb.pc.service.CommandException;
+import io.cockroachdb.pc.util.ExceptionUtils;
 import io.cockroachdb.pc.web.api.cluster.ClusterHelper;
 import io.cockroachdb.pc.web.api.cluster.ClusterRestController;
 import io.cockroachdb.pc.web.push.MessageModel;
@@ -45,7 +45,7 @@ public class ClusterController extends AbstractSessionController {
 
     @Scheduled(fixedRate = 5, initialDelay = 5, timeUnit = TimeUnit.SECONDS)
     public void scheduledStatusUpdate() {
-        messagePublisher.convertAndSend(TopicName.DASHBOARD_MODEL_UPDATE);
+        messagePublisher.convertAndSendNow(TopicName.DASHBOARD_MODEL_UPDATE);
     }
 
     private Optional<ClusterModel> newClusterModel() {
@@ -56,7 +56,6 @@ public class ClusterController extends AbstractSessionController {
             ClusterModel clusterModel = clusterRestController
                     .getCluster(clusterProperties.getClusterId())
                     .getBody();
-
             return Optional.of(clusterModel);
         } catch (Exception e) {
             logger.warn("Error creating cluster model", e);
@@ -83,36 +82,29 @@ public class ClusterController extends AbstractSessionController {
         return () -> "cluster";
     }
 
-    @PostMapping("/node-action")
-    public Callable<String> nodeAction(@ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
-                                       @ModelAttribute("node-id") Integer nodeId,
-                                       @ModelAttribute("node-action") String action,
-                                       SessionStatus status,
-                                       RedirectAttributes redirectAttributes) {
+    @PostMapping(params = "action=disrupt-node")
+    public Callable<String> disruptNode(
+            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
+            @ModelAttribute("node-id") Integer nodeId,
+            RedirectAttributes redirectAttributes) {
         final String clusterId = clusterHelper.getId();
 
-        logger.debug(">> Performing node action: clusterId=%s, nodeId=%s, action=%s"
-                .formatted(clusterId, nodeId, action));
+        logger.debug(">> Performing 'disrupt-node' action: clusterId=%s, nodeId=%s"
+                .formatted(clusterId, nodeId));
 
         try {
-            if ("Disrupt".equalsIgnoreCase(action)) {
-                messagePublisher.convertAndSend(TopicName.DASHBOARD_TOAST_MESSAGE,
-                        MessageModel.from("Disrupt Node " + nodeId)
-                                .setMessageType(MessageType.warning));
-                clusterManager.disruptNode(clusterId, nodeId);
-            } else if ("Recover".equalsIgnoreCase(action)) {
-                messagePublisher.convertAndSend(TopicName.DASHBOARD_TOAST_MESSAGE,
-                        MessageModel.from("Recover Node " + nodeId)
-                                .setMessageType(MessageType.information));
-                clusterManager.recoverNode(clusterId, nodeId);
-            }
-        } catch (CommandException e) {
             messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
-                    MessageModel.from(e.getMessage())
-                            .setMessageType(MessageType.error));
+                    MessageModel.from("Disrupt Node " + nodeId)
+                            .setMessageType(MessageType.warning), Ordered.HIGHEST_PRECEDENCE);
+            clusterManager.disruptNode(clusterId, nodeId);
+        } catch (CommandException e) {
+            logger.error("", e);
+            messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
+                    MessageModel.from("Command error - check log")
+                            .setMessageType(MessageType.error), Ordered.HIGHEST_PRECEDENCE);
         } finally {
-            logger.debug("<< Done performing node action: id=%s, action=%s".formatted(nodeId, action));
-            status.setComplete();
+            logger.debug(">> Completed 'disrupt-node' action: clusterId=%s, nodeId=%s"
+                    .formatted(clusterId, nodeId));
         }
 
         redirectAttributes.addFlashAttribute("helper");
@@ -120,34 +112,84 @@ public class ClusterController extends AbstractSessionController {
         return () -> "redirect:/cluster";
     }
 
-    @PostMapping("/locality-action")
-    public Callable<String> localityAction(
+    @PostMapping(params = "action=recover-node")
+    public Callable<String> recoverNode(
             @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
-            @ModelAttribute("locality") String locality,
-            @ModelAttribute("action") String action) {
+            @ModelAttribute("node-id") Integer nodeId,
+            RedirectAttributes redirectAttributes) {
         final String clusterId = clusterHelper.getId();
 
-        logger.debug("Performing locality action: clusterId=%s, locality=%s, action=%s"
-                .formatted(clusterId, locality, action));
+        logger.debug(">> Performing 'recover-node' action: clusterId=%s, nodeId=%s"
+                .formatted(clusterId, nodeId));
 
         try {
-            if ("Disrupt".equalsIgnoreCase(action)) {
-                messagePublisher.convertAndSend(TopicName.DASHBOARD_TOAST_MESSAGE,
-                        MessageModel.from("Disrupt region " + locality)
-                                .setMessageType(MessageType.warning));
-                clusterManager.disruptLocality(clusterId, locality);
-            } else if ("Recover".equalsIgnoreCase(action)) {
-                messagePublisher.convertAndSend(TopicName.DASHBOARD_TOAST_MESSAGE,
-                        MessageModel.from("Recover region " + locality)
-                                .setMessageType(MessageType.information));
-                clusterManager.recoverLocality(clusterId, locality);
-            }
-        } catch (Exception e) {
-            logger.warn("Locality action error", e);
-
             messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
-                    MessageModel.from(e.getMessage())
-                            .setMessageType(MessageType.error));
+                    MessageModel.from("Recover Node " + nodeId)
+                            .setMessageType(MessageType.information), Ordered.HIGHEST_PRECEDENCE);
+            clusterManager.recoverNode(clusterId, nodeId);
+        } catch (CommandException e) {
+            messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
+                    MessageModel.from("Command error - check log")
+                            .setMessageType(MessageType.error), Ordered.HIGHEST_PRECEDENCE);
+        } finally {
+            logger.debug(">> Completed 'recover-node' action: clusterId=%s, nodeId=%s"
+                    .formatted(clusterId, nodeId));
+        }
+
+        redirectAttributes.addFlashAttribute("helper");
+
+        return () -> "redirect:/cluster";
+    }
+
+    @PostMapping(params = "action=disrupt-locality")
+    public Callable<String> disruptLocality(
+            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
+            @ModelAttribute("locality") String locality) {
+        final String clusterId = clusterHelper.getId();
+
+        logger.debug(">> Performing 'disrupt-locality' action: clusterId=%s, locality=%s"
+                .formatted(clusterId, locality));
+
+        try {
+            messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
+                    MessageModel.from("Disrupt locality " + locality)
+                            .setMessageType(MessageType.warning), Ordered.HIGHEST_PRECEDENCE);
+            clusterManager.disruptLocality(clusterId, locality);
+        } catch (Exception e) {
+            logger.error("", e);
+            messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
+                    MessageModel.from("Command error - check log")
+                            .setMessageType(MessageType.error), Ordered.HIGHEST_PRECEDENCE);
+        } finally {
+            logger.debug(">> Completed 'disrupt-locality' action: clusterId=%s, locality=%s"
+                    .formatted(clusterId, locality));
+        }
+
+        return () -> "redirect:/cluster";
+    }
+
+    @PostMapping(params = "action=recover-locality")
+    public Callable<String> recoverLocality(
+            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
+            @ModelAttribute("locality") String locality) {
+        final String clusterId = clusterHelper.getId();
+
+        logger.debug(">> Performing 'recover-locality' action: clusterId=%s, locality=%s"
+                .formatted(clusterId, locality));
+
+        try {
+            messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
+                    MessageModel.from("Recover locality " + locality)
+                            .setMessageType(MessageType.information), Ordered.HIGHEST_PRECEDENCE);
+            clusterManager.recoverLocality(clusterId, locality);
+        } catch (Exception e) {
+            logger.error("", e);
+            messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
+                    MessageModel.from("Command error - check log")
+                            .setMessageType(MessageType.error), Ordered.HIGHEST_PRECEDENCE);
+        } finally {
+            logger.debug(">> Completed 'recover-locality' action: clusterId=%s, locality=%s"
+                    .formatted(clusterId, locality));
         }
 
         return () -> "redirect:/cluster";
@@ -169,22 +211,22 @@ public class ClusterController extends AbstractSessionController {
                 logger.warn("Node count differs - forcing refresh");
 
                 messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
-                        MessageModel.from("Cluster status changed").setMessageType(MessageType.information), 500);
-                messagePublisher.convertAndSendLater(TopicName.DASHBOARD_REFRESH_PAGE, "", 1500);
+                        MessageModel.from("Cluster topology updated").setMessageType(MessageType.information));
+                messagePublisher.convertAndSendNow(TopicName.DASHBOARD_REFRESH_PAGE);
             } else {
-                x.getNodes().forEach(nodeModel -> {
-                    messagePublisher.convertAndSendLater(TopicName.DASHBOARD_NODE_STATUS, nodeModel, 500);
-                });
+                x.getNodes().forEach(nodeModel ->
+                        messagePublisher.convertAndSendNow(TopicName.DASHBOARD_NODE_STATUS, nodeModel));
             }
 
             clusterHelper.setAvailable(true);
             clusterHelper.setClusterModel(x);
         }, () -> {
-            logger.debug("Cluster update failed (clusterId: %s)".formatted(clusterHelper.getId()));
+            logger.warn("Cluster update failed (clusterId: %s)".formatted(clusterHelper.getId()));
 
             messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
-                    MessageModel.from("Cluster update failed").setMessageType(MessageType.error), 500);
-            messagePublisher.convertAndSendLater(TopicName.DASHBOARD_REFRESH_PAGE, "", 1500);
+                    MessageModel.from("Cluster update failed - check log")
+                            .setMessageType(MessageType.error));
+            messagePublisher.convertAndSendNow(TopicName.DASHBOARD_REFRESH_PAGE);
 
             clusterHelper.setAvailable(false);
         });

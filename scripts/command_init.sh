@@ -14,6 +14,10 @@ case "$security_mode" in
 
     ${installdir}/cockroach sql --certs-dir=${certsdir} --host=${host}:${sqlportbase} < ${configdir}/init.sql
 
+    if [ -f ${configdir}/init-dev.sql ]; then
+      ${installdir}/cockroach sql --certs-dir=${certsdir} --host=${host}:${sqlportbase} < ${configdir}/init-dev.sql
+    fi
+
     ;;
   insecure)
     ${installdir}/cockroach init --insecure --host=${host}:${rpcportbase}
@@ -25,6 +29,10 @@ case "$security_mode" in
     -e "ALTER ROLE ${db_username} WITH PASSWORD NULL"
 
     ${installdir}/cockroach sql --insecure --host=${host}:${sqlportbase} < ${configdir}/init.sql
+
+    if [ -f ${configdir}/init-dev.sql ]; then
+      ${installdir}/cockroach sql --insecure --host=${host}:${sqlportbase} < ${configdir}/init-dev.sql
+    fi
 
     ;;
   *)

@@ -17,13 +17,15 @@
 
 <main>
     <svg th:replace="~{fragments/symbols :: symbols}"></svg>
+    <div th:replace="~{fragments/toast :: toast}"></div>
 
     <div class="py-5 bg-body-tertiary">
         <div class="container">
+
             <div class="alert alert-info align-items-center alert-dismissible fade show" role="alert">
                 <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Info:" width="1em" height="1em"><use xlink:href="#info-fill"/></svg>
                 Cluster id <a class="alert-link" th:href="${helper.clusterModel.getRequiredLink('admin').href}"
-                               th:text="${helper.id}">DB Console</a> with type <span class="badge text-bg-info" th:text="${helper.clusterModel.getClusterProperties().getClusterType()}"> </span>
+                               th:text="${helper.id}">DB Console</a> of type <span class="badge text-bg-info" th:text="${helper.clusterModel.getClusterProperties().getClusterType()}"> </span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
@@ -44,14 +46,14 @@
                 <h4 th:text="${locality.toTiers()}"></h4>
 
                 <div role="group" th:if="${locality.hasLink('disrupt') or locality.hasLink('recover')}">
-                    <form th:action="@{/cluster/locality-action}" method="post">
+                    <form th:action="@{/cluster}" method="post">
                         <input type="hidden" name="locality" th:value="${locality.toTiers()}"/>
-                        <input class="btn btn-sm btn-outline-danger" type="submit"
-                               name="action" value="Disrupt"
-                               th:if="${locality.hasLink('disrupt')}">
-                        <input class="btn btn-sm btn-outline-info" type="submit"
-                               name="action" value="Recover"
-                               th:if="${locality.hasLink('recover')}">
+                        <button class="btn btn-sm btn-outline-danger" type="submit"
+                               name="action" value="disrupt-locality"
+                                th:if="${locality.hasLink('disrupt')}">Disrupt</button>
+                        <button class="btn btn-sm btn-outline-info" type="submit"
+                               name="action" value="recover-locality"
+                                th:if="${locality.hasLink('recover')}">Recover</button>
                     </form>
                 </div>
 
@@ -59,7 +61,7 @@
 
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                     <div th:each="node: ${helper.clusterModel.getNodes(locality.tiers)}">
-                        <form th:action="@{/cluster/node-action}" method="post">
+                        <form th:action="@{/cluster}" method="post">
                             <input type="hidden" name="node-id" th:value="${node.getId()}"/>
 
                             <div class="col">
@@ -92,10 +94,10 @@
                                                 <a role="button" class="btn btn-sm btn-outline-success"
                                                    th:if="${node.hasLink('toxic')}"
                                                    th:href="${node.getRequiredLink('toxic').href}">Toxics</a>
-                                                <input class="btn btn-sm btn-outline-danger" type="submit"
-                                                       name="node-action" value="Disrupt">
-                                                <input class="btn btn-sm btn-outline-info" type="submit"
-                                                       name="node-action" value="Recover">
+                                                <button class="btn btn-sm btn-outline-danger" type="submit"
+                                                        name="action" value="disrupt-node">Disrupt</button>
+                                                <button class="btn btn-sm btn-outline-info" type="submit"
+                                                        name="action" value="recover-node">Recover</button>
                                             </div>
                                             <div class="pc-spinner" style="display: none">
                                                 <span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>

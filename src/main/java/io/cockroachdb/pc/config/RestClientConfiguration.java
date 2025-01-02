@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.web.client.RestClientSsl;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
@@ -43,12 +44,14 @@ public class RestClientConfiguration {
             return defaultRestClient();
         }
 
-        ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
-                .get(ClientHttpRequestFactorySettings.DEFAULTS
-                        .withReadTimeout(Duration.ofSeconds(10))
-                        .withConnectTimeout(Duration.ofSeconds(10))
-                        .withSslBundle(sslBundle)
-                );
+        ClientHttpRequestFactory requestFactory = ClientHttpRequestFactoryBuilder.httpComponents().build();
+
+//        ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
+//                .get(ClientHttpRequestFactorySettings.DEFAULTS
+//                        .withReadTimeout(Duration.ofSeconds(10))
+//                        .withConnectTimeout(Duration.ofSeconds(10))
+//                        .withSslBundle(sslBundle)
+//                );
 
         return RestClient
                 .builder()
@@ -71,11 +74,8 @@ public class RestClientConfiguration {
 
     @Bean
     public RestClient defaultRestClient() {
-        ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
-                .get(ClientHttpRequestFactorySettings.DEFAULTS
-                        .withReadTimeout(Duration.ofSeconds(10))
-                        .withConnectTimeout(Duration.ofSeconds(10))
-                );
+        ClientHttpRequestFactory requestFactory
+                = ClientHttpRequestFactoryBuilder.httpComponents().build();
 
         return RestClient
                 .builder()

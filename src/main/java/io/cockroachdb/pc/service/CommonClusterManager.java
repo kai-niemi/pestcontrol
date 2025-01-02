@@ -1,8 +1,8 @@
 package io.cockroachdb.pc.service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -254,27 +254,43 @@ public class CommonClusterManager implements ClusterManager {
                 .orElseThrow(() -> new ResourceNotFoundException("No such node with ID: " + id));
     }
 
+    // Cache of models to use if cluster becomes unavailable
+    private final Map<String, List<NodeModel>> fallbackModels = new HashMap<>();
+
     @Override
     public List<NodeModel> queryAllNodes(String clusterId) {
-        ClusterProperties clusterProperties = findClusterProperties(clusterId);
+        try {
+            List<NodeModel> nodeModelList = new ArrayList<>();
+            ClusterProperties clusterProperties = findClusterProperties(clusterId);
+            List<NodeStatus> nodeStatusList = queryNodeStatus(clusterProperties);
+            List<NodeDetail> nodeDetailList = queryNodeDetails(clusterProperties);
 
-        List<NodeStatus> nodeStatusList = queryNodeStatus(clusterProperties);
-        List<NodeDetail> nodeDetailList = queryNodeDetails(clusterProperties);
+            nodeDetailList.forEach(nodeDetail -> nodeStatusList.stream()
+                    .filter(nodeStatus -> nodeStatus.getId().equals(nodeDetail.getNodeId()))
+                    .findFirst()
+                    .ifPresentOrElse(nodeStatus -> {
+                        nodeModelList.add(new NodeModel(clusterId, nodeDetail, nodeStatus));
+                    }, () -> {
+                        nodeModelList.add(new NodeModel(clusterId, nodeDetail, new NodeStatus()));
+                        logger.warn("Unable to pair node detail (id: %s) with node status"
+                                .formatted(nodeDetail.getNodeId()));
+                    }));
 
-        List<NodeModel> nodeModels = new ArrayList<>();
+            fallbackModels.put(clusterId, nodeModelList);
+            return nodeModelList;
+        } catch (Exception e) {
+            if (fallbackModels.containsKey(clusterId)) {
+                List<NodeModel> cachedList = fallbackModels.get(clusterId);
+                cachedList.forEach(nodeModel -> {
+                    nodeModel.getNodeStatus().setIsLive("false");
+//                    nodeModel.getNodeStatus().setIsAvailable("false");
+                });
+                return cachedList;
+            } else {
+                throw e;
+            }
+        }
 
-        nodeDetailList.forEach(nodeDetail -> nodeStatusList.stream()
-                .filter(nodeStatus -> nodeStatus.getId().equals(nodeDetail.getNodeId()))
-                .findFirst()
-                .ifPresentOrElse(nodeStatus -> {
-                    nodeModels.add(new NodeModel(clusterId, nodeDetail, nodeStatus));
-                }, () -> {
-                    nodeModels.add(new NodeModel(clusterId, nodeDetail, new NodeStatus()));
-                    logger.warn("Unable to pair node detail (id: %s) with node status"
-                            .formatted(nodeDetail.getNodeId()));
-                }));
-
-        return nodeModels;
     }
 
     @Override

@@ -92,29 +92,30 @@ public class WorkloadExecutor {
                     Duration callDuration = Duration.between(callTime, Instant.now());
 
                     Throwable cause = NestedExceptionUtils.getMostSpecificCause(ex);
-                    boolean transientError = false;
+                    boolean isTransient = false;
 
                     if (cause instanceof SQLException) {
                         String sqlState = ((SQLException) cause).getSQLState();
 
                         if (isTransient((SQLException) cause)) {
-                            logger.warn("Transient SQL exception [%s]: [%s]".formatted(sqlState, cause));
-                            transientError = true;
+                            logger.debug("Transient SQL exception [%s]: [%s]".formatted(sqlState, cause));
+                            isTransient = true;
                         } else {
-                            logger.error("Non-transient SQL exception [%s]: [%s]".formatted(sqlState, cause));
+                            logger.debug("Non-transient SQL exception [%s]: [%s]".formatted(sqlState, cause));
                         }
                     } else if (ex instanceof TransientDataAccessException) {
-                        logger.warn("Transient data access exception: [%s]".formatted(ex));
+                        logger.debug("Transient data access exception: [%s]".formatted(ex));
 
-                        transientError = true;
-                    } else if (ex instanceof NonTransientDataAccessException || ex instanceof TransactionException) {
-                        logger.error("Non-transient exception: [%s]".formatted(ex));
+                        isTransient = true;
+                    } else if (ex instanceof NonTransientDataAccessException
+                               || ex instanceof TransactionException) {
+                        logger.debug("Non-transient exception: [%s]".formatted(ex));
                     } else {
                         throw new UndeclaredThrowableException(ex);
                     }
 
-                    metrics.markFail(callDuration, transientError);
-                    workload.addProblem(Problem.of(ex));
+                    metrics.markFail(callDuration, isTransient);
+                    workload.addProblem(Problem.of(ex).setTransient(isTransient));
 
                     backoffDelayWithJitter(retries.incrementAndGet());
                 }

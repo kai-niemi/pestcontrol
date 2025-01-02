@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({"links", "embedded", "templates"})
 public class MessageModel extends RepresentationModel<MessageModel> {
+    public static MessageModel from(String message) {
+        return new MessageModel(message);
+    }
+
     private String message;
 
     private MessageType messageType = MessageType.information;
@@ -15,10 +19,6 @@ public class MessageModel extends RepresentationModel<MessageModel> {
 
     public MessageModel(String message) {
         this.message = message;
-    }
-
-    public static MessageModel from(String message) {
-        return new MessageModel(message);
     }
 
     public String getMessage() {

@@ -82,12 +82,6 @@ public class JdbcProfileRepository implements ProfileRepository {
     }
 
     @Override
-    public boolean isSchemaReady() {
-        return !jdbcTemplate.queryForList(
-                "select table_name from [show tables] where table_name='pc_user_profile'").isEmpty();
-    }
-
-    @Override
     public ProfileEntity insertProfileSingleton() {
         ProfileEntity profile = new ProfileEntity();
         profile.setExpireAt(LocalDateTime.now());
@@ -177,20 +171,9 @@ public class JdbcProfileRepository implements ProfileRepository {
     }
 
     @Override
-    public void updateRandomProfile() {
-        findByRandomId().ifPresent(this::updateProfile);
-    }
-
-    @Override
     public void deleteProfileById(UUID id) {
         jdbcTemplate.update("DELETE from pc_user_profile WHERE id=? and version=0",
                 ps -> ps.setObject(1, id));
-    }
-
-    @Override
-    public void deleteRandomProfile() {
-        findByRandomId().ifPresent(profileEntity ->
-                deleteProfileById(profileEntity.getId()));
     }
 
     @Override
@@ -226,17 +209,6 @@ public class JdbcProfileRepository implements ProfileRepository {
         return jdbcTemplate
                 .query("SELECT * FROM pc_user_profile ORDER BY random() limit 1",
                         profileRowMapper())
-                .stream()
-                .findFirst();
-    }
-
-    @Override
-    public Optional<ProfileEntity> findById(UUID id) {
-        return jdbcTemplate
-                .query("SELECT * FROM pc_user_profile "
-                       + "WHERE (id,version) IN (?,?)",
-                        profileRowMapper(),
-                        id, 0)
                 .stream()
                 .findFirst();
     }

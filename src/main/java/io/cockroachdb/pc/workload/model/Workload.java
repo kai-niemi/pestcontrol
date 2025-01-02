@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.format.annotation.DurationFormat;
 import org.springframework.format.datetime.standard.DurationFormatterUtils;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.cockroachdb.pc.util.TimeUtils;
 import io.cockroachdb.pc.web.api.LinkRelations;
 
 @Relation(itemRelation = LinkRelations.WORKLOAD_REL,
@@ -88,9 +90,9 @@ public class Workload extends RepresentationModel<Workload> {
 
     public Workload addProblem(Problem problem) {
         if (problems.size() >= 50) {
-            problems.removeFirst();
+            problems.removeLast();
         }
-        problems.addLast(problem);
+        problems.addFirst(problem);
         return this;
     }
 
@@ -107,7 +109,8 @@ public class Workload extends RepresentationModel<Workload> {
     }
 
     public String getRemainingTime() {
-        return DurationFormatterUtils.print(getRemainingDuration(), DurationFormat.Style.SIMPLE);
+//        return DurationFormatterUtils.print(getRemainingDuration(), DurationFormat.Style.COMPOSITE);
+        return TimeUtils.durationToDisplayString(getRemainingDuration());
     }
 
     public Duration getRemainingDuration() {

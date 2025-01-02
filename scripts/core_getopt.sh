@@ -102,7 +102,6 @@ case "${getopt}" in
     echo -e "${default}Pest Control Local Cluster Admin${default}"
     echo -e ""
     echo -e "${default}Security mode: ${green}${security_mode}${default}"
-    echo -e "(changed in config/settings.cfg)"
     echo -e ""
     echo -e "${lightgreen}[Application Commands]${default}"
     {
@@ -155,13 +154,11 @@ case "${getopt}" in
     echo -e ""
     echo -e "${lightred}[Toxiproxy Commands]${default}"
     if [ ! "${toxiproxy}" != "off" ]; then
-    echo -e "${yellow}(toxiproxy=off - changed in config/settings.cfg)${default}"
-    fi
-
+    echo -e "${red}(Disabled in config/settings.cfg)${default}"
+    else
     {
         echo -e "${red}start-toxi\t${default}         | Start toxiproxy server and add node proxies"
         echo -e "${red}stop-toxi\t${default}         | Stop toxiproxy server"
     } | column -s $'\t' -t
-
-
+    fi
 esac

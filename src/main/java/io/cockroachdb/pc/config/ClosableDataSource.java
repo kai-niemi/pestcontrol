@@ -31,7 +31,7 @@ public class ClosableDataSource extends DelegatingDataSource implements Closeabl
     public void destroy() {
         try {
             HikariDataSource dataSource = unwrap(HikariDataSource.class);
-            logger.info("Closing (on destroy) datasource: {}", dataSource);
+            logger.trace("Closing (on destroy) datasource: {}", dataSource);
             dataSource.close();
         } catch (SQLException ex) {
             throw new IllegalStateException(ex);
@@ -42,7 +42,7 @@ public class ClosableDataSource extends DelegatingDataSource implements Closeabl
     public void close() {
         try {
             HikariDataSource dataSource = unwrap(HikariDataSource.class);
-            logger.info("Closing (on close) datasource: {}", dataSource);
+            logger.trace("Closing (on close) datasource: {}", dataSource);
             dataSource.close();
         } catch (SQLException ex) {
             throw new IllegalStateException(ex);

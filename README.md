@@ -99,9 +99,9 @@ See [MIT](LICENSE.txt) for terms and conditions.
 
 Things you need to run Pest Control locally.
 
-- Java 17+ JDK
-  - https://openjdk.org/projects/jdk/17/
-  - https://www.oracle.com/java/technologies/downloads/#java17
+- Java 21+ JDK
+  - https://openjdk.org/projects/jdk/21/
+  - https://www.oracle.com/java/technologies/downloads/#java21
 - Toxiproxy (optional)
   - https://github.com/Shopify/toxiproxy
   
@@ -111,11 +111,11 @@ MacOS (using sdkman):
 
     curl -s "https://get.sdkman.io" | bash
     sdk list java
-    sdk install java 17.0 (pick version)  
+    sdk install java 21.0 (pick version)  
 
 Ubuntu:
 
-    sudo apt-get install openjdk-17-jdk
+    sudo apt-get install openjdk-21-jdk
 
 ## Install Toxiproxy (optional)
 

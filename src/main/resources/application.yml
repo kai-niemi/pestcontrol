@@ -51,7 +51,6 @@ spring:
       # Controls the keepalive interval for a connection in the pool.
       keepalive-time: 0
 
-  ##################################
   jackson:
     serialization:
       indent_output: true
@@ -62,14 +61,19 @@ spring:
     default-property-inclusion: non_null
     locale: en_US
 
-  #############################
   mvc:
     problemdetails:
       enabled: false
+  http:
+    client:
+      connect-timeout: 10s
+      read-timeout: 10s
+      redirects: dont-follow
 #############################
 management:
   endpoints:
-    enabled-by-default: true
+    access:
+      default: unrestricted
     web:
       exposure:
         include: env,info,health,metrics,prometheus
@@ -90,9 +94,6 @@ logging:
     console: "%clr(%d{${LOG_DATEFORMAT_PATTERN:HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) [%t] %clr([%logger{39}]){cyan} %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"
 #############################
 server:
-  #  ssl:
-  #    bundle: pestcontrol
-  #    client-auth: NEED
   port: 9090
   error:
     whitelabel:
@@ -111,8 +112,8 @@ application:
   samplePeriodSeconds: 300
   # -1 denotes VM host vCPUs * 4
   threadPoolMaxSize: -1
-  # Base directory for cluster-admin script
-  scriptPath: .
+  # Base directory for shell scripts relative to working directory
+  scriptPath: "."
   toxiproxy:
     host: localhost
     port: 8474

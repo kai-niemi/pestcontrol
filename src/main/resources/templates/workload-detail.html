@@ -59,12 +59,16 @@
 
             <div class="table-responsive-xl">
                 <table class="table table-striped table-bordered table-hover table-sm caption-top">
-                    <caption>Most recent exceptions at top</caption>
+                    <caption>Ordered by most recent exceptions top-down
+                        (<span th:text="${#lists.size(form.getProblems())}"></span> total)
+                    </caption>
+
                     <thead class="thead-light">
                     <tr>
                         <th>#</th>
                         <th>Time</th>
                         <th>Type</th>
+                        <th>Transient</th>
                         <th>Message</th>
                         <th>Action</th>
                     </tr>
@@ -74,6 +78,7 @@
                         <td th:text="${iRow.index}"></td>
                         <td th:text="${{p.getCreatedAt()}}"></td>
                         <td th:text="${p.getClassName()}"></td>
+                        <td th:text="${p.isTransient()}"></td>
                         <td th:text="${p.getMessage()}"></td>
                         <td>
                             <a class="btn btn-sm btn-outline-primary"
@@ -96,7 +101,7 @@
                                                       th:text="${p.stackTrace}" disabled></textarea>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
                                         </div>
                                     </div>
                                 </div>

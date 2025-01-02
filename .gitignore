@@ -16,3 +16,5 @@ pestcontrol.jar
 Thumbs.db
 /bash.lnk
 /settings.cfg
+/config/init-dev.sql
+/config/application-dev.yml

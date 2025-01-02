@@ -80,12 +80,12 @@ public class WorkloadController extends AbstractSessionController {
 
     @Scheduled(fixedRate = 5, initialDelay = 5, timeUnit = TimeUnit.SECONDS)
     public void modelUpdate() {
-        messagePublisher.convertAndSend(TopicName.WORKLOAD_MODEL_UPDATE);
+        messagePublisher.convertAndSendNow(TopicName.WORKLOAD_MODEL_UPDATE);
     }
 
     @Scheduled(fixedRate = 5, initialDelay = 5, timeUnit = TimeUnit.SECONDS)
     public void chartUpdate() {
-        messagePublisher.convertAndSend(TopicName.WORKLOAD_CHARTS_UPDATE);
+        messagePublisher.convertAndSendNow(TopicName.WORKLOAD_CHARTS_UPDATE);
     }
 
     @GetMapping
