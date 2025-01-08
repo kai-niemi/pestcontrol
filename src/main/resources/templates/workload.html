@@ -21,6 +21,8 @@
             <div class="table-responsive-xl">
                 <canvas id="chart-container-p99" style="max-height: 300px"></canvas>
                 <hr/>
+                <canvas id="chart-container-p999" style="max-height: 300px"></canvas>
+                <hr/>
                 <canvas id="chart-container-tps" style="max-height: 300px"></canvas>
                 <hr/>
 
@@ -79,7 +81,7 @@
                         <td th:text="${worker.metrics.transientFail}" class="transientFail"></td>
                         <td th:text="${worker.metrics.nonTransientFail}" class="nonTransientFail"></td>
                         <td>
-                            <span class="badge rounded-pill" th:classappend="${worker.status.badge}" th:text="${worker.status}"></span>
+                            <span class="badge rounded-pill status" th:classappend="${worker.status.badge}" th:text="${worker.status}"></span>
                         </td>
 
                         <td class="text-center py-1">

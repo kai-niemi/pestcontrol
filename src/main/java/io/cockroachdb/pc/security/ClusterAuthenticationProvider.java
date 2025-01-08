@@ -18,8 +18,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import io.cockroachdb.pc.config.ApplicationProperties;
-import io.cockroachdb.pc.schema.ClusterProperties;
+import io.cockroachdb.pc.model.ApplicationProperties;
+import io.cockroachdb.pc.model.ClusterProperties;
 import io.cockroachdb.pc.service.ClusterManager;
 
 @Component

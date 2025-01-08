@@ -68,7 +68,7 @@ public class Metrics {
 
     private double p999;
 
-    private Metrics() {
+    public Metrics() {
         this.updateTime = Instant.now();
     }
 

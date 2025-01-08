@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.test.context.ActiveProfiles;
 
-import io.cockroachdb.pc.config.ApplicationProperties;
+import io.cockroachdb.pc.model.ApplicationProperties;
 
 @SpringBootTest(classes = {Application.class}, useMainMethod = SpringBootTest.UseMainMethod.NEVER)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

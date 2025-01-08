@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.cockroachdb.pc.config.ApplicationProperties;
+import io.cockroachdb.pc.model.ApplicationProperties;
 import io.cockroachdb.pc.schema.ClusterModel;
-import io.cockroachdb.pc.schema.ClusterProperties;
+import io.cockroachdb.pc.model.ClusterProperties;
 import io.cockroachdb.pc.schema.NodeModel;
 import io.cockroachdb.pc.schema.nodes.Locality;
 import io.cockroachdb.pc.service.ClusterManager;

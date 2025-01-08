@@ -1,6 +1,6 @@
-package io.cockroachdb.pc.config;
+package io.cockroachdb.pc.model;
 
-public class Toxiproxy {
+public class ToxiproxyProperties {
     private String host;
 
     private int port;

@@ -22,12 +22,12 @@ AppDashboard.prototype = {
             });
 
             stompClient.subscribe(_this.settings.topics.refresh, function (payload) {
-                console.log("Reload page");
+                // console.log("Reload page");
                 location.reload();
             });
 
             stompClient.subscribe(_this.settings.topics.update, function (payload) {
-                console.log("Cluster model update");
+                // console.log("Cluster model update");
                 $.getJSON("cluster/update", function(json) {});
             });
         });
@@ -117,9 +117,9 @@ AppDashboard.prototype = {
         const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastElt);
         toastBootstrap.show();
 
-        console.log("Received toast event: type ["
-                + event.messageType + "] message ["
-                + event.message + "]");
+        // console.log("Received toast event: type ["
+        //         + event.messageType + "] message ["
+        //         + event.message + "]");
     }
 };
 

@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.cockroachdb.pc.AbstractIntegrationTest;
-import io.cockroachdb.pc.config.ApplicationProperties;
-import io.cockroachdb.pc.schema.ClusterProperties;
+import io.cockroachdb.pc.model.ApplicationProperties;
+import io.cockroachdb.pc.model.ClusterProperties;
 import io.cockroachdb.pc.schema.NodeModel;
 import io.cockroachdb.pc.schema.nodes.NodeDetail;
 import io.cockroachdb.pc.schema.status.NodeStatus;

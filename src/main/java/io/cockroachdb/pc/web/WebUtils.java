@@ -11,7 +11,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.LocaleResolver;
 
-import io.cockroachdb.pc.schema.ClusterProperties;
+import io.cockroachdb.pc.model.ClusterProperties;
 import io.cockroachdb.pc.security.ClusterAuthenticationDetails;
 import jakarta.servlet.http.HttpServletRequest;
 

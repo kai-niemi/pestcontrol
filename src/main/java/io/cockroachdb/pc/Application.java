@@ -9,11 +9,6 @@ import java.util.function.Consumer;
 import org.eclipse.jetty.io.RuntimeIOException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,6 +21,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.util.StringUtils;
 
+import io.cockroachdb.pc.shell.support.AnsiConsole;
+
 @EnableConfigurationProperties
 @ConfigurationPropertiesScan
 @EnableAspectJAutoProxy(proxyTargetClass = true)
@@ -35,12 +32,7 @@ import org.springframework.util.StringUtils;
         SecurityAutoConfiguration.class,
         ManagementWebSecurityAutoConfiguration.class
 })
-public class Application implements ApplicationRunner {
-    private static final Logger logger = LoggerFactory.getLogger(Application.class);
-
-    @Value("${server.port}")
-    private String serverPort;
-
+public class Application {
     private static void printHelpAndExit(Consumer<AnsiConsole> message) {
         try (Terminal terminal = TerminalBuilder.terminal()) {
             AnsiConsole console = new AnsiConsole(terminal);
@@ -50,7 +42,6 @@ public class Application implements ApplicationRunner {
             console.cyan("Options include:").nl();
             {
                 console.cyan("--help                    this help").nl();
-                console.cyan("--verbose                 enable verbose SQL trace logging").nl();
                 console.cyan("--profiles [profile,..]   override spring profiles to activate").nl();
             }
             console.nl();
@@ -71,7 +62,8 @@ public class Application implements ApplicationRunner {
         while (!argsList.isEmpty()) {
             String arg = argsList.pop();
             if (arg.equals("--help")) {
-                printHelpAndExit(ansiConsole -> {});
+                printHelpAndExit(ansiConsole -> {
+                });
             } else if (arg.equals("--profiles")) {
                 if (argsList.isEmpty()) {
                     printHelpAndExit(ansiConsole -> {
@@ -97,12 +89,6 @@ public class Application implements ApplicationRunner {
                 .web(WebApplicationType.SERVLET)
                 .logStartupInfo(true)
                 .profiles(profiles.toArray(new String[0]))
-                .run(passThroughArgs.toArray(new String[] {}));
-    }
-
-    @Override
-    public void run(ApplicationArguments args) {
-        logger.info(
-                "Welcome to Pest Control, see http://localhost:%s".formatted(serverPort));
+                .run(passThroughArgs.toArray(new String[]{}));
     }
 }

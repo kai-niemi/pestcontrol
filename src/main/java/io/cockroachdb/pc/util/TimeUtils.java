@@ -9,6 +9,7 @@ public abstract class TimeUtils {
     }
 
     public static String durationToDisplayString(Duration duration) {
+        //        return DurationFormatterUtils.print(getRemainingDuration(), DurationFormat.Style.COMPOSITE);
         return millisecondsToDisplayString(duration.toMillis());
     }
 

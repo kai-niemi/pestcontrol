@@ -25,6 +25,8 @@ import net.ttddyy.dsproxy.listener.logging.SLF4JLogLevel;
 import net.ttddyy.dsproxy.listener.logging.SLF4JQueryLoggingListener;
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 
+import io.cockroachdb.pc.model.ClosableDataSource;
+
 @Configuration
 public class DataSourceConfiguration {
     public static final String SQL_TRACE_LOGGER = "io.cockroachdb.pc.SQL_TRACE";

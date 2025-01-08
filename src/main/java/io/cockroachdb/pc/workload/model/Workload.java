@@ -109,8 +109,7 @@ public class Workload extends RepresentationModel<Workload> {
     }
 
     public String getRemainingTime() {
-//        return DurationFormatterUtils.print(getRemainingDuration(), DurationFormat.Style.COMPOSITE);
-        return TimeUtils.durationToDisplayString(getRemainingDuration());
+        return isRunning() ? TimeUtils.durationToDisplayString(getRemainingDuration()) :  "-";
     }
 
     public Duration getRemainingDuration() {

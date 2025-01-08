@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
@@ -20,7 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
-import io.cockroachdb.pc.schema.ClusterProperties;
+import io.cockroachdb.pc.model.ClusterProperties;
 import io.cockroachdb.pc.schema.ClusterType;
 import io.cockroachdb.pc.schema.NodeModel;
 import io.cockroachdb.pc.schema.nodes.Locality;

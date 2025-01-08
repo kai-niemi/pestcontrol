@@ -3,8 +3,6 @@ package io.cockroachdb.pc.web;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
@@ -12,9 +10,7 @@ import java.util.stream.IntStream;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
-import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.ui.Model;
@@ -23,11 +19,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.view.RedirectView;
 
-import io.cockroachdb.pc.config.ApplicationProperties;
+import io.cockroachdb.pc.model.ApplicationProperties;
 import io.cockroachdb.pc.web.api.LinkRelations;
 import io.cockroachdb.pc.web.api.cluster.ClusterHelper;
 import io.cockroachdb.pc.web.api.workload.WorkloadForm;
@@ -35,7 +30,6 @@ import io.cockroachdb.pc.web.api.workload.WorkloadRestController;
 import io.cockroachdb.pc.web.push.SimpMessagePublisher;
 import io.cockroachdb.pc.web.push.TopicName;
 import io.cockroachdb.pc.workload.WorkloadManager;
-import io.cockroachdb.pc.workload.model.Metrics;
 import io.cockroachdb.pc.workload.model.Workload;
 import io.cockroachdb.pc.workload.profile.WorkloadType;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -70,13 +64,6 @@ public class WorkloadController extends AbstractSessionController {
     @Autowired
     private SimpMessagePublisher messagePublisher;
 
-    @Value("${application.samplePeriodSeconds}")
-    private int samplePeriodSeconds;
-
-    @Scheduled(fixedRate = 5, initialDelay = 5, timeUnit = TimeUnit.SECONDS)
-    public void dataPointsUpdate() {
-        workloadManager.updateDataPoints(Duration.ofSeconds(samplePeriodSeconds));
-    }
 
     @Scheduled(fixedRate = 5, initialDelay = 5, timeUnit = TimeUnit.SECONDS)
     public void modelUpdate() {
@@ -103,7 +90,7 @@ public class WorkloadController extends AbstractSessionController {
         model.addAttribute("workers",
                 workloadAssembler.toCollectionModel(workloadManager.getWorkloads(clusterHelper.getId())));
         model.addAttribute("aggregatedMetrics",
-                workloadManager.getAggregatedMetrics(clusterHelper.getId()));
+                workloadManager.getMetricsAggregate(clusterHelper.getId()));
 
         return () -> "workload";
     }
@@ -179,35 +166,5 @@ public class WorkloadController extends AbstractSessionController {
             @SessionAttribute(value = "helper") ClusterHelper clusterHelper) {
         workloadManager.clearDataPoints(clusterHelper.getId());
         return new RedirectView("/workload");
-    }
-
-    //
-    // JSON endpoints below called from javascript triggered by STOMP messages.
-    //
-
-    @GetMapping(value = "/data-points/p99",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody List<Map<String, Object>> getDataPointsP99(
-            @SessionAttribute("helper") ClusterHelper clusterHelper) {
-        return workloadManager.getDataPoints(clusterHelper.getId(), Metrics::getP99);
-    }
-
-    @GetMapping(value = "/data-points/tps",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody List<Map<String, Object>> getDataPointsTPS(
-            @SessionAttribute("helper") ClusterHelper clusterHelper) {
-        return workloadManager.getDataPoints(clusterHelper.getId(), Metrics::getOpsPerSec);
-    }
-
-    @GetMapping("/metrics/update")
-    public @ResponseBody Metrics getModelUpdateAggregatedMetrics(
-            @SessionAttribute(value = "helper") ClusterHelper clusterHelper) {
-        return workloadManager.getAggregatedMetrics(clusterHelper.getId());
-    }
-
-    @GetMapping("/workers/update")
-    public @ResponseBody List<Workload> getModelUpdateWorkers(
-            @SessionAttribute(value = "helper") ClusterHelper clusterHelper) {
-        return workloadManager.getWorkloads(clusterHelper.getId());
     }
 }

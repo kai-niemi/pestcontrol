@@ -8,11 +8,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import io.cockroachdb.pc.schema.ClusterModel;
-import io.cockroachdb.pc.schema.ClusterProperties;
+import io.cockroachdb.pc.model.ClusterProperties;
 import io.cockroachdb.pc.web.api.cluster.ClusterHelper;
 import io.cockroachdb.pc.web.api.cluster.ClusterModelAssembler;
 
-@WebController
 @SessionAttributes("helper")
 public abstract class AbstractSessionController {
     protected final Logger logger = LoggerFactory.getLogger(getClass());

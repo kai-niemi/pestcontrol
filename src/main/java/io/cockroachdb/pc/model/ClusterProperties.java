@@ -1,11 +1,13 @@
-package io.cockroachdb.pc.schema;
+package io.cockroachdb.pc.model;
 
 import java.nio.file.Path;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 
+import io.cockroachdb.pc.schema.ClusterType;
+
 /**
- * Settings for connecting to a CockroachDB Cloud or Local cluster.
+ * Connection properties for connecting to a CockroachDB cluster.
  */
 public class ClusterProperties {
     private String clusterId;

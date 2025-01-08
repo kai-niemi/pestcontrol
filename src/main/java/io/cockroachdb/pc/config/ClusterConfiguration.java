@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.util.Pair;
 
+import io.cockroachdb.pc.model.ApplicationProperties;
 import io.cockroachdb.pc.service.ClusterManager;
 import io.cockroachdb.pc.service.CredentialsHandler;
 import jakarta.annotation.PostConstruct;

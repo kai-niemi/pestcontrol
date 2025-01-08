@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import io.cockroachdb.pc.service.ResourceNotFoundException;
+import io.cockroachdb.pc.workload.model.MetricsDataPoint;
 import io.cockroachdb.pc.workload.model.Workload;
 import io.cockroachdb.pc.workload.model.DataPoint;
 import io.cockroachdb.pc.workload.model.Metrics;
@@ -20,7 +22,7 @@ public class ClusterWorkload {
 
     private final List<Workload> workloads = Collections.synchronizedList(new ArrayList<>());
 
-    private final List<DataPoint<Integer>> dataPoints = Collections.synchronizedList(new ArrayList<>());
+    private final List<MetricsDataPoint> dataPoints = Collections.synchronizedList(new ArrayList<>());
 
     ClusterWorkload(String clusterId) {
         this.clusterId = clusterId;
@@ -46,8 +48,8 @@ public class ClusterWorkload {
         workloads.remove(workload);
     }
 
-    public List<Workload> findAll() {
-        return Collections.unmodifiableList(workloads);
+    public List<Workload> findAll(Predicate<Workload> predicate) {
+        return workloads.stream().filter(predicate).toList();
     }
 
     public Workload findById(Integer id) {
@@ -75,7 +77,8 @@ public class ClusterWorkload {
 
     public List<Metrics> getTimeSeriesValues(Integer id) {
         List<Metrics> metrics = new ArrayList<>();
-        dataPoints.forEach(dataPoint -> metrics.add(dataPoint.get(id)));
+        dataPoints.forEach(dataPoint -> metrics.add(
+                dataPoint.getValue(id, Metrics.empty())));
         return metrics;
     }
 
@@ -106,12 +109,12 @@ public class ClusterWorkload {
                 .isBefore(Instant.now().minusSeconds(samplePeriod.toSeconds())));
 
         // Add new datapoint by sampling all workload metrics
-        DataPoint<Integer> dataPoint = new DataPoint<>(Instant.now());
+        MetricsDataPoint dataPoint = new MetricsDataPoint(Instant.now());
 
         // Add datapoint if still running
         workloads.stream()
                 .filter(Workload::isRunning)
-                .forEach(worker -> dataPoint.mark(worker.getId(), worker.getMetrics()));
+                .forEach(workload -> dataPoint.putValue(workload.getId(), workload.getMetrics()));
 
         dataPoints.add(dataPoint);
     }

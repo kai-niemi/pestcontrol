@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.cockroachdb.pc.model.ClusterProperties;
 import io.cockroachdb.pc.schema.nodes.Tier;
 import io.cockroachdb.pc.web.api.LinkRelations;
 

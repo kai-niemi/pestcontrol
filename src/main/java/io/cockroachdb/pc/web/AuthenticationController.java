@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.cockroachdb.pc.config.ApplicationProperties;
+import io.cockroachdb.pc.model.ApplicationProperties;
 import jakarta.servlet.http.HttpServletRequest;
 
 @WebController

@@ -12,7 +12,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 
-import io.cockroachdb.pc.schema.ClusterProperties;
+import io.cockroachdb.pc.model.ClusterProperties;
 import io.cockroachdb.pc.schema.ClusterType;
 import io.cockroachdb.pc.schema.NodeModel;
 import io.cockroachdb.pc.schema.disrupt.DisruptorSpecifications;

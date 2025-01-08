@@ -2,7 +2,7 @@ package io.cockroachdb.pc.security;
 
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
-import io.cockroachdb.pc.schema.ClusterProperties;
+import io.cockroachdb.pc.model.ClusterProperties;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class ClusterAuthenticationDetails extends WebAuthenticationDetails {

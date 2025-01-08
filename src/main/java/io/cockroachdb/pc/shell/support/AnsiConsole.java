@@ -1,4 +1,4 @@
-package io.cockroachdb.pc;
+package io.cockroachdb.pc.shell.support;
 
 import org.jline.terminal.Terminal;
 import org.springframework.beans.factory.annotation.Autowired;

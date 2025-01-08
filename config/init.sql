@@ -1,5 +1,5 @@
 --
--- Baseline cluster settings for local cluster (optional)
+-- Baseline cluster settings applied to local cluster types (optional).
 --
 
 SET CLUSTER SETTING diagnostics.reporting.enabled = false;

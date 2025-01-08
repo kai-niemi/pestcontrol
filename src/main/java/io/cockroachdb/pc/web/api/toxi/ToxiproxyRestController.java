@@ -3,7 +3,6 @@ package io.cockroachdb.pc.web.api.toxi;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Links;
 import org.springframework.http.HttpEntity;
@@ -25,7 +24,7 @@ import eu.rekawek.toxiproxy.model.ToxicDirection;
 import eu.rekawek.toxiproxy.model.ToxicType;
 import io.cockroachdb.pc.service.ResourceNotFoundException;
 import io.cockroachdb.pc.web.api.LinkRelations;
-import io.cockroachdb.pc.web.api.cluster.ClientModel;
+
 import jakarta.validation.Valid;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;

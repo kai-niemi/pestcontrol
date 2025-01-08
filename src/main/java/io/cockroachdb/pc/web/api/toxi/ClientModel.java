@@ -1,4 +1,4 @@
-package io.cockroachdb.pc.web.api.cluster;
+package io.cockroachdb.pc.web.api.toxi;
 
 import org.springframework.hateoas.RepresentationModel;
 

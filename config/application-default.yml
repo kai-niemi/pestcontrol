@@ -1,30 +1,37 @@
-############################################################################################
+###############################################################################################################
 # Pest Control Application Configuration
 #
-# This file overrides the application configuration properties, mainly in providing a list of
-# available CockroachDB clusters for users to pick from at login time.
+# This file overrides the application configuration properties mainly by providing a list of available
+# CockroachDB clusters for users to pick from at login time. The credentials are used to retrieve Cluster API
+# session tokens and provide bearer tokens in case of CockroachDB cloud (Cloud API). The cluster type is used
+# to adapt security settings and certain UI features.
 #
-# The credentials are used to retrieve Cluster API session tokens and provide bearer tokens in
-# case of CockroachDB cloud (Cloud API).
-#
-# The cluster type is used to adapt security settings and certain UI features.
-#
-# For the application properties this file overrides, see: src/resources/application.yml.
-# For all other spring boot container properties, see:
-# https://docs.spring.io/spring-boot/appendix/application-properties/index.html
-############################################################################################
+# See 'src/resources/application.yml' for all other properties or
+# https://docs.spring.io/spring-boot/appendix/application-properties/index.html for all spring boot properties.
+###############################################################################################################
 
-## List of all available CockroachDB clusters
-#
-#  cluster-id: Either a CockroachDB cloud cluster ID any name for other cluster types
-#  cluster-type: one of: (cloud_dedicated, local_secure, local_insecure, remote_secure, remote_insecure)
-#  api-key: Required only for cloud_dedicated cluster type, see https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys
-#  admin-url: Base URL for the Cluster API, typically the regional/local cluster load balancer endpoint.
-#  data-source-properties:
-#    url: The JDBC connection url
-#    username: The SQL user name with ADMIN role (optional)
-#    password: The SQL user password (optional)
 application:
+  # -1 denotes use of unbounded virtual threads
+  threadPoolMaxSize: -1
+  # Sample period for time-series data points in graphs
+  samplePeriodSeconds: 300
+  # Base directory for 'cluster-admin' shell script
+  scriptPath: "."
+  # Host settings for toxiproxy
+  toxiproxy:
+    host: localhost
+    port: 8474
+
+  ## List of available CockroachDB clusters
+  #
+  #  cluster-id: Either a CockroachDB cloud cluster ID any name for other cluster types
+  #  cluster-type: one of: (cloud_dedicated, local_secure, local_insecure, remote_secure, remote_insecure)
+  #  api-key: Required only for cloud_dedicated cluster type, see https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys
+  #  admin-url: Base URL for the Cluster API, typically the regional/local cluster load balancer endpoint.
+  #  data-source-properties:
+  #    url: The JDBC connection url
+  #    username: The SQL user name with ADMIN role (optional)
+  #    password: The SQL user password (optional)
   # Examples below
   clusters:
     - cluster-id: "97a73235-fa45-4b4d-a229-f5efd52168ba"
@@ -67,6 +74,21 @@ application:
         url: "jdbc:postgresql://192.168.1.99:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
+
+  ## (optional) List of pest control agents in a network of machines/VMs for remote cluster types with one node per server.
+  #
+  #  url: Base URL of admin REST API
+  #  name: name of host for visibility (optional)
+#  agents:
+#    - url: http://192.168.1.99:9090
+#    - url: http://192.168.1.99:9091
+#    - url: http://192.168.1.99:9092
+#    - url: http://192.168.1.99:9093
+#    - url: http://192.168.1.99:9094
+#    - url: http://192.168.1.99:9095
+#    - url: http://192.168.1.99:9096
+#    - url: http://192.168.1.99:9097
+#    - url: http://192.168.1.99:9099
 
 ## HTTP server parameters
 server:

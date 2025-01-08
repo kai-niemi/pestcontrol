@@ -11,6 +11,22 @@ spring:
       enabled: always
   profiles:
     active: default
+  shell:
+    command:
+      stacktrace:
+        enabled: true
+      version:
+        enabled: true
+        showBuildName: true
+        showGitBranch: true
+    script:
+      enabled: true
+    interactive:
+      enabled: true
+    noninteractive:
+      enabled: false
+    history:
+      name: .log/pc.history
 
   ## Truststore for SSL/TLS access to secure clusters
 #  ssl:
@@ -108,12 +124,3 @@ server:
 # Application specifics
 #############################
 application:
-  # Sample period for timeseries data points in graphs
-  samplePeriodSeconds: 300
-  # -1 denotes VM host vCPUs * 4
-  threadPoolMaxSize: -1
-  # Base directory for shell scripts relative to working directory
-  scriptPath: "."
-  toxiproxy:
-    host: localhost
-    port: 8474

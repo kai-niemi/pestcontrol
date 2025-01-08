@@ -2,18 +2,19 @@ package io.cockroachdb.pc.web.api;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
 
+import io.cockroachdb.pc.web.api.chart.RestChartController;
+import io.cockroachdb.pc.web.api.chart.RestChartWorkloadController;
 import io.cockroachdb.pc.web.api.cluster.ClusterRestController;
 import io.cockroachdb.pc.web.api.toxi.ToxiproxyRestController;
 import io.cockroachdb.pc.web.push.MessageModel;
@@ -23,6 +24,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/api")
 public class IndexRestController {
+    @Autowired
+    private Environment environment;
+
     @GetMapping
     public ResponseEntity<MessageModel> index() {
         MessageModel index = MessageModel.from("Pest Control Hypermedia API");
@@ -31,6 +35,11 @@ public class IndexRestController {
                 .index())
                 .withSelfRel()
                 .withTitle("Hypermedia API index"));
+
+        index.add(linkTo(methodOn(getClass())
+                .info())
+                .withRel(LinkRelations.INFO_REL)
+                .withTitle("Application version info"));
 
         index.add(linkTo(methodOn(ClusterRestController.class)
                 .getClusters())
@@ -42,6 +51,16 @@ public class IndexRestController {
                 .withRel(LinkRelations.TOXIPROXY_INDEX_REL)
                 .withTitle("Toxiproxy index"));
 
+        index.add(linkTo(methodOn(RestChartController.class)
+                .index())
+                .withRel(LinkRelations.CHARTS_REL)
+                .withTitle("Chart metrics time series"));
+
+        index.add(linkTo(methodOn(RestChartWorkloadController.class)
+                .index(null))
+                .withRel(LinkRelations.CHARTS_REL)
+                .withTitle("Chart workload metrics time series (session bound)"));
+
         index.add(Link.of(ServletUriComponentsBuilder.fromCurrentContextPath()
                         .pathSegment("actuator")
                         .buildAndExpand()
@@ -49,6 +68,15 @@ public class IndexRestController {
                 .withRel(LinkRelations.ACTUATORS_REL)
                 .withTitle("Spring boot actuators"));
 
+        return ResponseEntity.ok(index);
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<MessageModel> info() {
+//        http://localhost:9090/actuator/info
+        String title = environment.getProperty("spring.application.title");
+        String version = environment.getProperty("spring.application.version");
+        MessageModel index = MessageModel.from(title + " v " + version);
         return ResponseEntity.ok(index);
     }
 
@@ -84,23 +112,8 @@ public class IndexRestController {
     }
 */
 
-    @GetMapping("/fakeerror")
+    @GetMapping("/fake-error")
     public @ResponseBody ResponseEntity<MessageModel> errorOnGet() {
-        throw new FakeException("Fake exception!", new IOException("I/O disturbance!"));
-    }
-
-    @PutMapping("/fakeerror")
-    public ResponseEntity<MessageModel> errorOnPut() {
-        throw new FakeException("Fake exception!", new IOException("I/O disturbance!"));
-    }
-
-    @PostMapping("/fakeerror")
-    public ResponseEntity<MessageModel> errorOnPost() {
-        throw new FakeException("Fake exception!", new IOException("I/O disturbance!"));
-    }
-
-    @DeleteMapping("/fakeerror")
-    public ResponseEntity<MessageModel> errorOnDelete() {
         throw new FakeException("Fake exception!", new IOException("I/O disturbance!"));
     }
 }

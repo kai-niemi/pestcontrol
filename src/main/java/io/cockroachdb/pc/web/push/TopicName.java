@@ -7,7 +7,11 @@ public enum TopicName {
     DASHBOARD_MODEL_UPDATE("/topic/dashboard/update"),
 
     WORKLOAD_MODEL_UPDATE("/topic/workload/update"),
-    WORKLOAD_CHARTS_UPDATE("/topic/workload/charts");
+    WORKLOAD_CHARTS_UPDATE("/topic/workload/charts"),
+    WORKLOAD_REFRESH_PAGE("/topic/workload/refresh"),
+
+    METRIC_CHARTS_UPDATE("/topic/metric/charts"),
+    METRIC_REFRESH_PAGE("/topic/metric/refresh");
 
     final String value;
 

@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 
+import io.cockroachdb.pc.model.ApplicationProperties;
+
 @Configuration
 public class ToxiproxyConfiguration {
     @Autowired

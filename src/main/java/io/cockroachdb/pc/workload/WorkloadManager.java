@@ -8,7 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,8 +35,16 @@ public class WorkloadManager {
                 .add(workloadExecutor.submitTask(clusterId, duration, task, description));
     }
 
+    public Set<String> clusterIds() {
+        return clusterWorkloads.stream().map(ClusterWorkload::getClusterId).collect(Collectors.toSet());
+    }
+
     public List<Workload> getWorkloads(String clusterId) {
-        return get(clusterId).findAll();
+        return getWorkloads(clusterId, workload -> true);
+    }
+
+    public List<Workload> getWorkloads(String clusterId, Predicate<Workload> predicate) {
+        return get(clusterId).findAll(predicate);
     }
 
     public Workload findById(String clusterId, Integer id) {
@@ -54,7 +65,7 @@ public class WorkloadManager {
         get(clusterId).clearAll();
     }
 
-    public void updateDataPoints(Duration samplePeriod) {
+    public void takeSnapshot(Duration samplePeriod) {
         clusterWorkloads.parallelStream()
                 .forEach(clusterWorkers -> clusterWorkers.updateDataPoints(samplePeriod));
     }
@@ -85,7 +96,7 @@ public class WorkloadManager {
      * @param clusterId static cluster id
      * @return aggregated time series metrics
      */
-    public Metrics getAggregatedMetrics(String clusterId) {
+    public Metrics getMetricsAggregate(String clusterId) {
         return get(clusterId).getTimeSeriesAggregate();
     }
 
@@ -119,22 +130,23 @@ public class WorkloadManager {
             columnData.add(headerElement);
         }
 
-        getWorkloads(clusterId).forEach(workload -> {
-            Map<String, Object> dataElement = new HashMap<>();
+        getWorkloads(clusterId, workload -> true)
+                .forEach(workload -> {
+                    Map<String, Object> dataElement = new HashMap<>();
 
-            List<Double> data =
-                    getTimeSeriesValues(clusterId, workload.getId())
-                            .stream()
+                    List<Double> data =
+                            getTimeSeriesValues(clusterId, workload.getId())
+                                    .stream()
 //                            .filter(metric -> !metric.isExpired(workload.getStopTime()))
-                            .map(mapper)
-                            .toList();
+                                    .map(mapper)
+                                    .toList();
 
-            dataElement.put("id", workload.getId());
-            dataElement.put("name", "%s (%d)".formatted(workload.getTitle(), workload.getId()));
-            dataElement.put("data", data.toArray());
+                    dataElement.put("id", workload.getId());
+                    dataElement.put("name", "%s (%d)".formatted(workload.getTitle(), workload.getId()));
+                    dataElement.put("data", data.toArray());
 
-            columnData.add(dataElement);
-        });
+                    columnData.add(dataElement);
+                });
 
         return columnData;
     }

@@ -20,10 +20,9 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.cockroachdb.pc.schema.ClusterModel;
-import io.cockroachdb.pc.schema.ClusterProperties;
+import io.cockroachdb.pc.model.ClusterProperties;
 import io.cockroachdb.pc.service.ClusterManager;
 import io.cockroachdb.pc.service.CommandException;
-import io.cockroachdb.pc.util.ExceptionUtils;
 import io.cockroachdb.pc.web.api.cluster.ClusterHelper;
 import io.cockroachdb.pc.web.api.cluster.ClusterRestController;
 import io.cockroachdb.pc.web.push.MessageModel;

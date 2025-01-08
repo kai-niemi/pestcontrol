@@ -1,4 +1,4 @@
-package io.cockroachdb.pc.config;
+package io.cockroachdb.pc.model;
 
 import java.io.Closeable;
 import java.sql.SQLException;

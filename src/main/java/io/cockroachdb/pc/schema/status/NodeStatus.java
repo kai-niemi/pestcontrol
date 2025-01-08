@@ -122,7 +122,7 @@ public class NodeStatus {
                 OffsetDateTime updated = LocalDateTime.parse(getUpdatedAt(), dateTimeFormatter)
                         .atOffset(ZoneOffset.UTC);
                 OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
-                return ChronoUnit.SECONDS.between(updated, now) + " seconds";
+                return Math.abs(ChronoUnit.SECONDS.between(updated, now)) + " seconds";
             } catch (Exception e) {
                 // ok, whatever
             }

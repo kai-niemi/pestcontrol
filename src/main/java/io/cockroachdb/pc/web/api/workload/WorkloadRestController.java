@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.cockroachdb.pc.config.ApplicationProperties;
+import io.cockroachdb.pc.model.ApplicationProperties;
 import io.cockroachdb.pc.web.api.LinkRelations;
 import io.cockroachdb.pc.workload.profile.WorkloadType;
 import io.cockroachdb.pc.workload.model.Workload;

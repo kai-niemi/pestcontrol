@@ -1,6 +1,8 @@
 package io.cockroachdb.pc.web.api;
 
 public class LinkRelations {
+    public static final String DATA_POINTS_REL = "data-points";
+
     public static final String ACTUATORS_REL = "actuators";
 
     public static final String CANCEL_REL = "cancel";
@@ -17,6 +19,8 @@ public class LinkRelations {
 
     public static final String CLUSTER_LIST_REL = "cluster-list";
 
+    public static final String INFO_REL = "info";
+
     public static final String DISRUPT_REL = "disrupt";
 
     public static final String RECOVER_REL = "recover";
@@ -32,6 +36,8 @@ public class LinkRelations {
     public static final String ADMIN_REL = "admin";
 
     public static final String TOXIPROXY_INDEX_REL = "toxiproxy";
+
+    public static final String CHARTS_REL = "charts";
 
     public static final String PROXY_REL = "proxy";
 
