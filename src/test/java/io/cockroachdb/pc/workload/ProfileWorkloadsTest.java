@@ -39,7 +39,7 @@ public class ProfileWorkloadsTest extends AbstractIntegrationTest {
     public void whenStartingInsertWorkload_thenExpectRows() {
         List<ProfileEntity> before = profileRepository.findAll(65536);
 
-        Runnable action = WorkloadType.profile_insert
+        Runnable action = WorkloadType.singleton_insert
                 .createTask(dataSource);
         IntStream.rangeClosed(1, 10).forEach(value -> {
             try {
@@ -58,7 +58,7 @@ public class ProfileWorkloadsTest extends AbstractIntegrationTest {
     public void whenStartingBatchInsertWorkload_thenExpectRows() {
         List<ProfileEntity> before = profileRepository.findAll(65536);
 
-        Runnable action = WorkloadType.profile_batch_insert
+        Runnable action = WorkloadType.batch_insert
                 .createTask(dataSource);
         IntStream.rangeClosed(1, 10).forEach(value -> {
             try {
@@ -75,7 +75,7 @@ public class ProfileWorkloadsTest extends AbstractIntegrationTest {
     @Order(2)
     @Test
     public void whenStartingUpdateWorkload_thenExpectRowsAffected() {
-        Runnable action = WorkloadType.profile_update
+        Runnable action = WorkloadType.point_read_update
                 .createTask(dataSource);
         IntStream.rangeClosed(1, 10).forEach(value -> {
             try {
@@ -89,7 +89,7 @@ public class ProfileWorkloadsTest extends AbstractIntegrationTest {
     @Order(4)
     @Test
     public void whenStartingDeleteWorkload_thenExpectRowsAffected() {
-        Runnable action = WorkloadType.profile_delete
+        Runnable action = WorkloadType.point_read_delete
                 .createTask(dataSource);
         IntStream.rangeClosed(1, 10).forEach(value -> {
             try {
@@ -103,7 +103,7 @@ public class ProfileWorkloadsTest extends AbstractIntegrationTest {
     @Order(5)
     @Test
     public void whenStartingReadWorkload_thenExpectRows() {
-        Runnable action = WorkloadType.profile_read
+        Runnable action = WorkloadType.point_read
                 .createTask(dataSource);
         IntStream.rangeClosed(1, 10).forEach(value -> {
             try {
@@ -113,7 +113,7 @@ public class ProfileWorkloadsTest extends AbstractIntegrationTest {
             }
         });
 
-        Runnable action2 = WorkloadType.profile_follower_read
+        Runnable action2 = WorkloadType.point_read_historical
                 .createTask(dataSource);
         IntStream.rangeClosed(1, 10).forEach(value -> {
             try {
@@ -127,7 +127,7 @@ public class ProfileWorkloadsTest extends AbstractIntegrationTest {
     @Order(5)
     @Test
     public void whenStartingScanWorkload_thenExpectRows() {
-        Runnable action = WorkloadType.profile_scan
+        Runnable action = WorkloadType.full_scan
                 .createTask(dataSource);
         IntStream.rangeClosed(1, 10).forEach(value -> {
             try {

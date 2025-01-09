@@ -2,8 +2,20 @@
 
 fn_assert_binaries
 
-if [ ! -f ${configdir}/haproxy.cfg ]; then
-  fn_print_info "No 'haproxy.cfg' found - generating it"
+case "$security_mode" in
+  secure)
+    configfile=${configdir}/haproxy-secure.cfg
+    ;;
+  insecure)
+    configfile=${configdir}/haproxy.cfg
+    ;;
+  *)
+    echo "Bad security mode: $security_mode"
+    exit 1
+esac
+
+if [ ! -f ${configfile} ]; then
+  fn_print_info "No '${configfile}' found - generating it"
 
   case "$security_mode" in
     secure)
@@ -17,7 +29,7 @@ if [ ! -f ${configdir}/haproxy.cfg ]; then
       exit 1
   esac
 
-  fn_fail_check mv ${rootdir}/haproxy.cfg ${configdir}
+  fn_fail_check mv ${rootdir}/haproxy.cfg ${configfile}
 fi
 
 if [ -f .haproxy.pid ]; then
@@ -25,6 +37,6 @@ if [ -f .haproxy.pid ]; then
    exit 1
 fi
 
-fn_fail_check haproxy -D -f ${configdir}/haproxy.cfg -p .haproxy.pid
+fn_fail_check haproxy -D -f ${configfile} -p .haproxy.pid
 
 fn_print_ok "Started haproxy (pid: $(<.haproxy.pid))"

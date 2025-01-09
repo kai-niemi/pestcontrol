@@ -6,71 +6,71 @@ import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 
 public enum WorkloadType {
-    profile_insert("Profile singleton insert",
-            "A single insert statement.") {
+    singleton_insert("Singleton insert",
+            "Single insert statement") {
         @Override
         public Runnable createTask(DataSource dataSource) {
             return new InsertOne(dataSource);
         }
     },
-    profile_batch_insert("Profile batch insert",
-            "A single batch of 32 insert statements.") {
+    batch_insert("Batch insert",
+            "Batch insert statement of 32 items") {
         @Override
         public Runnable createTask(DataSource dataSource) {
             return new InsertBatch(dataSource);
         }
     },
-    profile_update("Profile point read and update",
-            "A single point lookup read followed by an update.") {
+    point_read_update("Point read and update",
+            "Point lookup read followed by an update") {
         @Override
         public Runnable createTask(DataSource dataSource) {
             return new UpdateOne(dataSource);
         }
     },
-    profile_delete("Profile point read and delete",
-            "A single point lookup read followed by a delete.") {
+    point_read_delete("Point read and delete",
+            "Point lookup read followed by a delete") {
         @Override
         public Runnable createTask(DataSource dataSource) {
             return new DeleteOne(dataSource);
         }
     },
-    profile_read("Profile point read",
-            "A single authoritative point lookup read.") {
+    point_read("Point read authoritative",
+            "Single authoritative point lookup read") {
         @Override
         public Runnable createTask(DataSource dataSource) {
-            return new ReadOne(dataSource, false);
+            return new PointRead(dataSource, false);
         }
     },
-    profile_follower_read("Profile follower read",
-            "A single historical point lookup read.") {
+    point_read_historical("Point read historical",
+            "Single point lookup exact staleness read") {
         @Override
         public Runnable createTask(DataSource dataSource) {
-            return new ReadOne(dataSource, true);
+            return new PointRead(dataSource, true);
         }
     },
-    profile_scan("Profile full scan",
-            "A single full table scan.") {
+    full_scan("Full table scan",
+            "A full table scan (limited)") {
         @Override
         public Runnable createTask(DataSource dataSource) {
             return new FullScan(dataSource);
         }
     },
     select_one("Select one",
-            "A basic 'select 1' statement.") {
+            "A basic 'select 1' statement") {
         @Override
         public Runnable createTask(DataSource dataSource) {
             return new SelectOne(dataSource);
         }
     },
     random_wait("Random wait",
-            "A random wait not touching the DB.") {
+            "A random delay between 0-5ms with .5 to 2s outliers") {
         @Override
         public Runnable createTask(DataSource dataSource) {
             return () -> {
                 ThreadLocalRandom random = ThreadLocalRandom.current();
                 try {
                     if (random.nextDouble(1.0) > 0.95) {
-                        TimeUnit.MILLISECONDS.sleep(random.nextLong(500, 2500));
+                        TimeUnit.MILLISECONDS.sleep(random.nextLong(500, 2000));
                     } else {
                         TimeUnit.MILLISECONDS.sleep(random.nextLong(0, 5));
                     }
@@ -81,7 +81,7 @@ public enum WorkloadType {
         }
     },
     fixed_wait("Fixed wait",
-            "A fixed wait not touching the DB.") {
+            "A fixed wait of 500ms") {
         @Override
         public Runnable createTask(DataSource dataSource) {
             return () -> {

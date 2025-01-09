@@ -2,10 +2,10 @@ package io.cockroachdb.pc.workload.profile;
 
 import javax.sql.DataSource;
 
-public class ReadOne extends CyclicWorker {
+public class PointRead extends CyclicWorker {
     private final boolean followerRead;
 
-    public ReadOne(DataSource dataSource, boolean followerRead) {
+    public PointRead(DataSource dataSource, boolean followerRead) {
         super(dataSource);
         this.followerRead = followerRead;
     }

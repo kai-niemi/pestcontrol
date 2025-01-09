@@ -84,7 +84,7 @@ public class WorkloadController extends AbstractSessionController {
 
         WorkloadForm workerForm = new WorkloadForm();
         workerForm.setDuration("00:15");
-        workerForm.setWorkloadType(WorkloadType.profile_insert);
+        workerForm.setWorkloadType(WorkloadType.singleton_insert);
 
         model.addAttribute("form", workerForm);
         model.addAttribute("workers",

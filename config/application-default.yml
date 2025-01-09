@@ -11,17 +11,6 @@
 ###############################################################################################################
 
 application:
-  # -1 denotes use of unbounded virtual threads
-  threadPoolMaxSize: -1
-  # Sample period for time-series data points in graphs
-  samplePeriodSeconds: 300
-  # Base directory for 'cluster-admin' shell script
-  scriptPath: "."
-  # Host settings for toxiproxy
-  toxiproxy:
-    host: localhost
-    port: 8474
-
   ## List of available CockroachDB clusters
   #
   #  cluster-id: Either a CockroachDB cloud cluster ID any name for other cluster types
@@ -32,16 +21,15 @@ application:
   #    url: The JDBC connection url
   #    username: The SQL user name with ADMIN role (optional)
   #    password: The SQL user password (optional)
-  # Examples below
+
   clusters:
-    - cluster-id: "97a73235-fa45-4b4d-a229-f5efd52168ba"
-      cluster-type: cloud_dedicated
-      api-key: "<private-key>"
-      admin-url: "https://admin-odin-qzx.cockroachlabs.cloud:8080"
+    - cluster-id: "Local Insecure Cluster"
+      cluster-type: local_insecure
+      admin-url: "http://localhost:8080"
       data-source-properties:
-        url: "jdbc:postgresql://odin-qzx.aws-eu-north-1.cockroachlabs.cloud:26257/defaultdb?sslmode=require"
+        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"
-        password: "cockroach"
+        password: ""
 
     - cluster-id: "Local Secure Cluster"
       cluster-type: local_secure
@@ -51,44 +39,61 @@ application:
         username: "craig"
         password: "cockroach"
 
-    - cluster-id: "Local Insecure Cluster"
-      cluster-type: local_insecure
-      admin-url: "http://localhost:8080"
-      data-source-properties:
-        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
-        username: "craig"
-        password: ""
+# Additional Examples:
 
-    - cluster-id: "Remote Secure Cluster"
-      cluster-type: remote_secure
-      admin-url: "https://192.168.1.99:443"
-      data-source-properties:
-        url: "jdbc:postgresql://192.168.1.99:26257/defaultdb?sslmode=require"
-        username: "craig"
-        password: "cockroach"
-
-    - cluster-id: "Remote Insecure Cluster"
-      cluster-type: remote_insecure
-      admin-url: "http://192.168.1.99:8080"
-      data-source-properties:
-        url: "jdbc:postgresql://192.168.1.99:26257/defaultdb?sslmode=disable"
-        username: "craig"
-        password: ""
+#    - cluster-id: "97a73235-fa45-4b4d-a229-f5efd52168ba"
+#      cluster-type: cloud_dedicated
+#      api-key: "<private-key>"
+#      admin-url: "https://admin-odin-qzx.cockroachlabs.cloud:8080"
+#      data-source-properties:
+#        url: "jdbc:postgresql://odin-qzx.aws-eu-north-1.cockroachlabs.cloud:26257/defaultdb?sslmode=require"
+#        username: "craig"
+#        password: "cockroach"
+#
+#    - cluster-id: "Remote Secure Cluster"
+#      cluster-type: remote_secure
+#      admin-url: "https://16.171.3.44:443"
+#      data-source-properties:
+#        url: "jdbc:postgresql://16.171.3.44:26257/defaultdb?sslmode=require"
+#        username: "craig"
+#        password: "cockroach"
+#
+#    - cluster-id: "Remote Insecure Cluster"
+#      cluster-type: remote_insecure
+#      admin-url: "http://16.171.3.44:8080"
+#      data-source-properties:
+#        url: "jdbc:postgresql://16.171.3.44:26257/defaultdb?sslmode=disable"
+#        username: "craig"
+#        password: ""
 
   ## (optional) List of pest control agents in a network of machines/VMs for remote cluster types with one node per server.
   #
   #  url: Base URL of admin REST API
   #  name: name of host for visibility (optional)
+
 #  agents:
-#    - url: http://192.168.1.99:9090
-#    - url: http://192.168.1.99:9091
-#    - url: http://192.168.1.99:9092
-#    - url: http://192.168.1.99:9093
-#    - url: http://192.168.1.99:9094
-#    - url: http://192.168.1.99:9095
-#    - url: http://192.168.1.99:9096
-#    - url: http://192.168.1.99:9097
-#    - url: http://192.168.1.99:9099
+#    - url: http://16.171.3.44:9090
+#    - url: http://16.171.3.44:9091
+#    - url: http://16.171.3.44:9092
+#    - url: http://16.171.3.44:9093
+#    - url: http://16.171.3.44:9094
+#    - url: http://16.171.3.44:9095
+#    - url: http://16.171.3.44:9096
+#    - url: http://16.171.3.44:9097
+#    - url: http://16.171.3.44:9099
+
+## Other service parameters
+
+  # -1 denotes use of unbounded virtual threads
+  threadPoolMaxSize: -1
+  # Sample period for time-series data points in graphs
+  samplePeriodSeconds: 300
+  # Base directory for 'cluster-admin' shell script
+  scriptPath: "."
+  # Host settings for toxiproxy
+  toxiproxy:
+    host: localhost
+    port: 8474
 
 ## HTTP server parameters
 server:

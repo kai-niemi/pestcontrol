@@ -18,5 +18,5 @@ if [ ! -x ${pid} ]; then
    exit 1
 fi
 
-echo java -jar ${APP_JARFILE}
-java -jar ${APP_JARFILE} $*
+echo java -jar ${APP_JARFILE} ${app_params}
+java -jar ${APP_JARFILE} ${app_params} $*

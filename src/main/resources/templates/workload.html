@@ -135,7 +135,7 @@
                         <select th:field="*{workloadType}" id="workload-type" class="form-select"
                                 aria-label="Default select">
                             <option th:each="wt : ${T(io.cockroachdb.pc.workload.profile.WorkloadType).values()}"
-                                    th:value="${wt}" th:text="${wt.displayValue}"></option>
+                                    th:value="${wt}" th:text="${wt.displayValue + ' (' + wt.description + ')'}"></option>
                         </select>
 
                         <label for="workload-range" class="form-label">Number of workloads (1-10):</label>

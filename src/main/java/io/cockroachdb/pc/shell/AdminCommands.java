@@ -11,6 +11,7 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.format.annotation.DurationFormat;
@@ -23,6 +24,7 @@ import org.springframework.shell.standard.commands.Quit;
 import ch.qos.logback.classic.Level;
 
 import io.cockroachdb.pc.config.DataSourceConfiguration;
+import io.cockroachdb.pc.util.Networking;
 
 @ShellComponent
 @ShellCommandGroup(Constants.ADMIN_COMMANDS)
@@ -31,6 +33,32 @@ public class AdminCommands implements Quit.Command {
 
     @Autowired
     private ConfigurableApplicationContext applicationContext;
+
+    @Value("${server.port:8080}")
+    private int serverPort;
+
+    @ShellMethod(value = "Exit the shell", key = {"quit", "exit", "q"})
+    public void quit() {
+        logger.info("Quitting");
+
+        SpringApplication.exit(applicationContext, () -> 0);
+        System.exit(0);
+    }
+
+    @ShellMethod(value = "Print IP addresses and base URLs")
+    public void ip() {
+        logger.info("Local IP: %s".formatted(Networking.getLocalIP()));
+        logger.info("Public IP: %s".formatted(Networking.getPublicIP()));
+        logger.info("Local address: http://%s:%d".formatted(Networking.getLocalIP(), serverPort));
+        logger.info("Public address: http://%s:%d".formatted(Networking.getPublicIP(), serverPort));
+    }
+
+    @ShellMethod(value = "Print application uptime")
+    public void uptime() {
+        long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
+        logger.info("%s".formatted(DurationFormatterUtils.print(
+                Duration.ofMillis(uptime), DurationFormat.Style.SIMPLE)));
+    }
 
     @ShellMethod(value = "Toggle SQL trace logging (verbose)", key = {"sql-trace", "t"})
     public void toggleSqlTraceLogging() {
@@ -49,20 +77,6 @@ public class AdminCommands implements Quit.Command {
             logger.setLevel(Level.DEBUG);
             return false;
         }
-    }
-
-    @ShellMethod(value = "Exit the shell", key = {"quit", "exit", "q"})
-    public void quit() {
-        logger.info("Quitting");
-        SpringApplication.exit(applicationContext, () -> 0);
-        System.exit(0);
-    }
-
-    @ShellMethod(value = "Print application uptime")
-    public void uptime() {
-        long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
-        logger.info("%s".formatted(DurationFormatterUtils.print(
-                Duration.ofMillis(uptime), DurationFormat.Style.SIMPLE)));
     }
 
     @ShellMethod(value = "Print system information", key = {"system-info", "si"})

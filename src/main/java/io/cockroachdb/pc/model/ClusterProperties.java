@@ -3,8 +3,10 @@ package io.cockroachdb.pc.model;
 import java.nio.file.Path;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.util.PropertyPlaceholderHelper;
 
 import io.cockroachdb.pc.schema.ClusterType;
+import io.cockroachdb.pc.util.Networking;
 
 /**
  * Connection properties for connecting to a CockroachDB cluster.
@@ -55,7 +57,13 @@ public class ClusterProperties {
     }
 
     public String getAdminUrl() {
-        return adminUrl;
+        return new PropertyPlaceholderHelper("${", "}")
+                .replacePlaceholders(adminUrl,
+                        placeholderName -> switch (placeholderName) {
+                            case "local-ip" -> Networking.getLocalIP();
+                            case "public-ip" -> Networking.getPublicIP();
+                            default -> placeholderName;
+                        });
     }
 
     public void setAdminUrl(String adminUrl) {

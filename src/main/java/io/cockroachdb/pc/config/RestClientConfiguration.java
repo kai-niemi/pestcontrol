@@ -1,7 +1,6 @@
 package io.cockroachdb.pc.config;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.EnumSet;
 
 import org.slf4j.Logger;
@@ -11,8 +10,6 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.web.client.ClientHttpRequestFactories;
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatusCode;
@@ -44,19 +41,9 @@ public class RestClientConfiguration {
             return defaultRestClient();
         }
 
-        ClientHttpRequestFactory requestFactory = ClientHttpRequestFactoryBuilder.httpComponents().build();
-
-//        ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
-//                .get(ClientHttpRequestFactorySettings.DEFAULTS
-//                        .withReadTimeout(Duration.ofSeconds(10))
-//                        .withConnectTimeout(Duration.ofSeconds(10))
-//                        .withSslBundle(sslBundle)
-//                );
-
         return RestClient
                 .builder()
                 .apply(ssl.fromBundle(sslBundle))
-                .requestFactory(requestFactory)
                 .defaultStatusHandler(HttpStatusCode::is4xxClientError, (request, response) -> {
                     String body = new String(response.getBody().readAllBytes(), StandardCharsets.UTF_8);
                     throw new ClientErrorException(

@@ -119,15 +119,21 @@ Ubuntu:
 
 ## Install Toxiproxy (optional)
 
-Toxiproxy provides the fundamentals for chaos testing but is not mandatory
-to use with Pestcontrol.
+Toxiproxy provides the fundamentals for chaos testing by intercepting node gRPC traffic, but is 
+not mandatory to use. 
 
-See [Installing Toxiproxy](https://github.com/Shopify/toxiproxy?tab=readme-ov-file#1-installing-toxiproxy).
+See [Installing Toxiproxy](https://github.com/Shopify/toxiproxy?tab=readme-ov-file#1-installing-toxiproxy)
+and the [chaos guide](CHAOS.md) on how to manually use it with Pest Control. The main 
+approach is to use the web UI but both will work.
+
+> Toxiproxy is disabled by default. See configuration section on how
+> to [enable](#enable-toxiproxy-optional) it to intercept the gRPC traffic 
+> between nodes.
 
 # Building
 
 Instructions for building the project locally, as an alternative to using the
-packaged TAR.GZ assembly artifact.
+packaged `TAR.GZ` assembly artifact.
 
 ## Clone the project
 
@@ -364,7 +370,8 @@ Pest Control can be configured through the files available in the `config` direc
 1. [settings-insecure.sh](config/settings-insecure.cfg) - Settings for using a local CockroachDB self-hosted cluster in insecure mode.
 1. [settings-secure.sh](config/settings-secure.cfg) - Settings for using a local CockroachDB self-hosted cluster in secure mode.
 1. [init.sql](config/init.sql) - Init SQL statements (optional).
-1. [haproxy.cfg](config/haproxy.cfg) - HAProxy configuration for local CockroachDB cluster.
+1. [haproxy.cfg](config/haproxy.cfg) - HAProxy configuration for local insecure CockroachDB cluster.
+1. [haproxy-secure.cfg](config/haproxy-secure.cfg) - HAProxy configuration for local secure CockroachDB cluster.
 1. [application-default.yml](config/application-default.yml) - Cluster connection settings.
 
 ---
