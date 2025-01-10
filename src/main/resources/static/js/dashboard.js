@@ -93,7 +93,6 @@ AppDashboard.prototype = {
         divElt.find(".pc-ranges").text(node.status.rangeDetails);
     },
 
-
     handleToastUpdate: function (event) {
         var _this = this;
 

@@ -192,87 +192,59 @@ AppDashboard.prototype = {
         rowElt.find(".status").text(workload.status);
     },
 
+    updateChart: function (chart,json) {
+        const xValues = json[0]["data"];
+
+        const yValues = json.filter((item, idx) => idx > 0)
+                .map(function(item) {
+                    var id = item["id"];
+                    var bgColor = backgroundColors[id % backgroundColors.length];
+                    var ogColor = borderColors[id % borderColors.length];
+                    return {
+                        label: item["name"],
+                        data: item["data"],
+                        backgroundColor: bgColor,
+                        borderColor: ogColor,
+                        fill: false,
+                        tension: 1.2,
+                        cubicInterpolationMode: 'monotone',
+                        borderWidth: 1,
+                        hoverOffset: 4,
+                    };
+                });
+
+        const visibleStates=[];
+        chart.data.datasets.forEach((dataset, datasetIndex) => {
+            visibleStates.push(chart.isDatasetVisible(datasetIndex));
+        });
+
+        chart.config.data.labels = xValues;
+        chart.config.data.datasets = yValues;
+
+        if (visibleStates.length > 0) {
+            chart.data.datasets.forEach((dataset, datasetIndex) => {
+                chart.setDatasetVisibility(datasetIndex, visibleStates[datasetIndex]);
+            });
+        }
+
+        chart.update('none');
+    },
+
     handleChartsUpdate: function() {
         var _this = this;
 
         // console.log("Handle charts update");
 
         $.getJSON("/api/chart/workload/data-points/p99", function(json) {
-            const xValues = json[0]["data"];
-
-            const yValues = json.filter((item, idx) => idx > 0)
-                    .map(function(item) {
-                        var id = item["id"];
-                        var bgColor = backgroundColors[id % backgroundColors.length];
-                        var ogColor = borderColors[id % borderColors.length];
-                        return {
-                            label: item["name"],
-                            data: item["data"],
-                            backgroundColor: bgColor,
-                            borderColor: ogColor,
-                            fill: false,
-                            tension: 1.2,
-                            cubicInterpolationMode: 'monotone',
-                            borderWidth: 1,
-                            hoverOffset: 4,
-                        };
-                    });
-
-            chartP99.config.data.labels = xValues;
-            chartP99.config.data.datasets = yValues;
-            chartP99.update('none');
+            _this.updateChart(chartP99,json);
         });
 
         $.getJSON("/api/chart/workload/data-points/p999", function(json) {
-            const xValues = json[0]["data"];
-
-            const yValues = json.filter((item, idx) => idx > 0)
-                    .map(function(item) {
-                        var id = item["id"];
-                        var bgColor = backgroundColors[id % backgroundColors.length];
-                        var ogColor = borderColors[id % borderColors.length];
-                        return {
-                            label: item["name"],
-                            data: item["data"],
-                            backgroundColor: bgColor,
-                            borderColor: ogColor,
-                            fill: false,
-                            tension: 1.2,
-                            cubicInterpolationMode: 'monotone',
-                            borderWidth: 1,
-                            hoverOffset: 4,
-                        };
-                    });
-
-            chartP999.config.data.labels = xValues;
-            chartP999.config.data.datasets = yValues;
-            chartP999.update('none');
+            _this.updateChart(chartP999,json);
         });
 
         $.getJSON("/api/chart/workload/data-points/tps", function(json) {
-            const xValues = json[0]["data"];
-
-            const yValues = json.filter((item, idx) => idx > 0)
-                    .map(function(item) {
-                        var id = item["id"];
-                        var bgColor = backgroundColors[id % backgroundColors.length];
-                        var ogColor = borderColors[id % borderColors.length];
-                        return {
-                            label: item["name"],
-                            data: item["data"],
-                            backgroundColor: bgColor,
-                            borderColor: ogColor,
-                            fill: false,
-                            tension: 1.2,
-                            cubicInterpolationMode: 'monotone',
-                            borderWidth: 1,
-                            hoverOffset: 4,
-                        };
-                    });
-
-            chartTPS.config.data.labels = xValues;
-            chartTPS.config.data.datasets = yValues;
-            chartTPS.update('none');
+            _this.updateChart(chartTPS,json);
         });
     },
 };
