@@ -1,12 +1,13 @@
 package io.cockroachdb.pc.web.api.cluster;
 
+import java.util.EnumSet;
+
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 
 import io.cockroachdb.pc.schema.ClusterType;
 import io.cockroachdb.pc.schema.LocalityModel;
 import io.cockroachdb.pc.schema.nodes.Locality;
 import io.cockroachdb.pc.web.api.LinkRelations;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -28,7 +29,8 @@ public class LocalityModelAssembler implements RepresentationModelAssembler<Loca
                 .getLocality(clusterId, locality.toTiers()))
                 .withSelfRel());
 
-        if (ClusterType.cloud_dedicated.equals(clusterType)) {
+        if (EnumSet.of(ClusterType.cloud_dedicated, ClusterType.cloud_serverless, ClusterType.cloud_standard)
+                .contains(clusterType)) {
             locality.findRegionTierValue().ifPresent(name -> {
                 model.add(linkTo(methodOn(LocalityRestController.class)
                         .disruptLocalityTier(clusterId, locality.toTiers()))

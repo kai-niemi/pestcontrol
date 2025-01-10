@@ -41,7 +41,7 @@
                     <a th:href="@{/workload/data-points/clear}" class="btn btn-sm btn-outline-info">Clear Stats</a>
                 </div>
 
-                <p th:if="${#lists.size(workers.getContent()) == 0}" class="badge text-bg-info mt-3">No workloads found, use the button above to add one.</p>
+                <p th:if="${#lists.size(workers.getContent()) == 0}" class="badge text-bg-info mt-3">No workloads found, use the button above to add.</p>
 
                 <table class="table table-striped table-bordered table-hover table-sm caption-top"
                        th:if="${#lists.size(workers.getContent()) > 0}">
@@ -130,7 +130,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
+                    <div class="mb-3 spac">
                         <label for="workload-type" class="form-label">Type of workload:</label>
                         <select th:field="*{workloadType}" id="workload-type" class="form-select"
                                 aria-label="Default select">

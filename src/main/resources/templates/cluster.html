@@ -29,7 +29,7 @@
                     <li>There are not enough available nodes in the cluster, check the
                         <a target="_blank" th:href="${helper.clusterModel.getRequiredLink('admin')}">DB Console</a>.</li>
                     <li>You are using a local cluster and have not started any nodes. Run <code>./cluster-admin start-all</code>.</li>
-                    <li>You are using a local cluster and have not started the load balancer. Run <code>./cluster-admin start-lb</code>.</li>
+                    <li>You are using a local cluster and have not started haproxy. Run <code>./cluster-admin start-lb</code>.</li>
                 </ul>
                 <p>This page will automatically refresh.</p>
             </div>
@@ -59,43 +59,38 @@
                             <div class="col">
                                 <div th:id="${'node-' + node.getId()}" class="card shadow-sm alert"
                                      th:classappend="${helper.getCardClass(node.getNodeStatus())}">
-                                    <svg class="bd-placeholder-img card-img-top"
-                                         width=128 height=128 fill="currentColor"
-                                         viewBox="0 0 16 16">
+                                    <svg class="bd-placeholder-img card-img-top" width=64 height=64 fill="currentColor">
                                         <use th:href="${helper.getCardImage(node.getNodeStatus())}"></use>
                                     </svg>
-
                                     <div class="card-body">
-                                        <h5>
-                                        <a role="button" class="link-offset-3 link-underline link-underline-opacity-50"
-                                               th:href="${node.getRequiredLink('self').href}" th:text="${'Node ' + node.getId()}"></a>
-                                        </h5>
+                                        <h5><a role="button" class="link-offset-3 link-underline link-underline-opacity-50"
+                                               th:href="${node.getRequiredLink('self').href}" th:text="${'Node ' + node.getId()}"></a></h5>
                                         <h5 class="card-subtitle mb-3"
                                             th:text="${node.getLocality()}"></h5>
-                                        <h6 class="card-subtitle mb-3"
-                                            th:text="${node.getNodeDetail().getSqlAddress().getAddressField()}"></h6>
-                                        <h6 class="card-subtitle mb-3"
-                                            th:text="${node.getNodeDetail().getBuildTag()}"></h6>
-                                        <h6 class="card-subtitle mb-3 pc-ranges"
-                                            th:text="${node.getNodeStatus().getRangeDetails()}"></h6>
+                                        <p class="card-subtitle mb-3"
+                                            th:text="${node.getNodeDetail().getSqlAddress().getAddressField()}"></p>
+                                        <p class="card-subtitle mb-3"
+                                            th:text="${node.getNodeDetail().getBuildTag()}"></p>
+                                        <p class="card-subtitle mb-3 pc-ranges"
+                                            th:text="${node.getNodeStatus().getRangeDetails()}"></p>
                                     </div>
 
                                     <div class="card-footer">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <div role="group">
-                                                <a role="button" class="btn btn-sm btn-outline-success"
-                                                   th:if="${node.hasLink('toxic')}"
-                                                   th:href="${node.getRequiredLink('toxic').href}">Toxics</a>
-                                                <button class="btn btn-sm btn-outline-danger" type="submit"
+<!--                                            <div role="group">-->
+                                                <button th:if="${node.hasLink('disrupt')}"
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        type="submit"
                                                         name="action" value="disrupt-node">Disrupt</button>
-                                                <button class="btn btn-sm btn-outline-info" type="submit"
+                                                <button th:if="${node.hasLink('recover')}"
+                                                        class="btn btn-sm btn-outline-info" type="submit"
                                                         name="action" value="recover-node">Recover</button>
-                                            </div>
+<!--                                            </div>-->
+                                            <small class="pc-last-active"
+                                                   th:text="${node.getNodeStatus().getLastActive()}"></small>
                                             <div class="pc-spinner" style="display: none">
                                                 <span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
                                             </div>
-                                            <small class="pc-last-active"
-                                                   th:text="${node.getNodeStatus().getLastActive()}"></small>
                                         </div>
                                     </div>
                                 </div>

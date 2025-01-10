@@ -13,6 +13,25 @@ import io.micrometer.core.instrument.MeterRegistry;
 public class InstrumentationConfig {
     @SuppressWarnings("DataFlowIssue")
     @Bean
+    public TimeSeries storageTimeSeries(@Autowired MeterRegistry registry) {
+        return new TimeSeries("storage", registry, () -> List.of(
+                registry.find("disk.free"),
+                registry.find("disk.total")
+        ));
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    @Bean
+    public TimeSeries heapTimeSeries(@Autowired MeterRegistry registry) {
+        return new TimeSeries("heap", registry, () -> List.of(
+                registry.find("jvm.memory.max"),
+//                registry.find("jvm.memory.used"),
+                registry.find("jvm.memory.committed")
+        ));
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    @Bean
     public TimeSeries threadPoolTimeSeries(@Autowired MeterRegistry registry) {
         return new TimeSeries("threads", registry, () -> List.of(
                 registry.find("jvm.threads.live"),

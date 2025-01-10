@@ -22,12 +22,16 @@
             <!--                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
             <!--            </div>-->
 
-            <h3>Application Metrics</h3>
+            <h3>Java VM Metrics</h3>
 
             <div class="table-responsive-xl">
+                <canvas id="chart-container-cpu" style="max-height: 300px"></canvas>
+                <hr/>
                 <canvas id="chart-container-thread-pool" style="max-height: 300px"></canvas>
                 <hr/>
-                <canvas id="chart-container-cpu" style="max-height: 300px"></canvas>
+                <canvas id="chart-container-storage" style="max-height: 300px"></canvas>
+                <hr/>
+                <canvas id="chart-container-heap" style="max-height: 300px"></canvas>
                 <hr/>
             </div>
         </div>

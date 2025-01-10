@@ -82,6 +82,70 @@ const chartCpu = new Chart(document.getElementById("chart-container-cpu"), {
     },
 });
 
+const chartStorage = new Chart(document.getElementById("chart-container-storage"), {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [],
+    },
+    options: {
+        scales: {
+            x: {
+                type: 'time',
+                time: {
+                    unit: 'minute'
+                },
+                parse: false
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: "Bytes (gauge)",
+                },
+            },
+        },
+        plugins: {
+            title: {
+                display: true,
+                text: 'Storage'
+            },
+        },
+        responsive: true,
+    },
+});
+
+const chartHeap = new Chart(document.getElementById("chart-container-heap"), {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [],
+    },
+    options: {
+        scales: {
+            x: {
+                type: 'time',
+                time: {
+                    unit: 'minute'
+                },
+                parse: false
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: "Bytes (gauge)",
+                },
+            },
+        },
+        plugins: {
+            title: {
+                display: true,
+                text: 'Heap Memory'
+            },
+        },
+        responsive: true,
+    },
+});
+
 const MetricChartsDashboard = function (settings) {
     this.settings = settings;
     this.init();
@@ -151,6 +215,14 @@ MetricChartsDashboard.prototype = {
 
         $.getJSON("api/chart/data-points/cpu", function(json) {
             _this.updateChart(chartCpu,json);
+        });
+
+        $.getJSON("api/chart/data-points/storage", function(json) {
+            _this.updateChart(chartStorage,json);
+        });
+
+        $.getJSON("api/chart/data-points/heap", function(json) {
+            _this.updateChart(chartHeap,json);
         });
     },
 };

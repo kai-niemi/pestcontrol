@@ -15,13 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.cockroachdb.pc.model.ApplicationProperties;
-import io.cockroachdb.pc.schema.ClusterModel;
 import io.cockroachdb.pc.model.ClusterProperties;
+import io.cockroachdb.pc.schema.ClusterModel;
 import io.cockroachdb.pc.schema.NodeModel;
 import io.cockroachdb.pc.schema.nodes.Locality;
 import io.cockroachdb.pc.service.ClusterManager;
 import io.cockroachdb.pc.web.push.MessageModel;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -32,13 +31,10 @@ public class ClusterRestController {
     private ClusterManager clusterManager;
 
     @Autowired
-    private ApplicationProperties applicationProperties;
-
-    @Autowired
     private ClusterModelAssembler clusterModelAssembler;
 
     @Autowired
-    private NodeModelAssembler nodeModelAssembler;
+    private ApplicationProperties applicationProperties;
 
     @GetMapping()
     public ResponseEntity<CollectionModel<ClusterModel>> getClusters() {
@@ -64,7 +60,7 @@ public class ClusterRestController {
         final List<NodeModel> nodes = clusterManager.queryAllNodes(id);
 
         ClusterModel model = ClusterModel.from(clusterProperties);
-        model.setNodes(nodeModelAssembler.toCollectionModel(nodes));
+        model.setNodes(new NodeModelAssembler(clusterProperties.getClusterType()).toCollectionModel(nodes));
         model.setLocalities(localityModelAssembler.toCollectionModel(nodeLocalities(nodes)));
 
         return ResponseEntity.ok(clusterModelAssembler.toModel(model));

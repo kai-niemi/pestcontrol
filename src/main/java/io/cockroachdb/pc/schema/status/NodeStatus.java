@@ -109,8 +109,8 @@ public class NodeStatus {
     private String valueBytes;
 
     public String getRangeDetails() {
-        return getRanges() + " (" + getRangesUnavailable() + "/"
-               + getRangesUnderreplicated() + ")";
+        return getRanges() + " ranges (" + getRangesUnavailable() + " unavailable / "
+               + getRangesUnderreplicated() + " under-replicated)";
     }
 
     public String getLastActive() {

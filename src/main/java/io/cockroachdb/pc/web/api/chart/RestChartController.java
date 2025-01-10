@@ -34,10 +34,20 @@ public class RestChartController {
     @Qualifier("cpuTimeSeries")
     private TimeSeries cpuTimeSeries;
 
+    @Autowired
+    @Qualifier("storageTimeSeries")
+    private TimeSeries storageTimeSeries;
+
+    @Autowired
+    @Qualifier("heapTimeSeries")
+    private TimeSeries heapTimeSeries;
+
     @Scheduled(fixedRate = 5, initialDelay = 5, timeUnit = TimeUnit.SECONDS)
     public void takeDataPointSnapshots() {
         threadPoolTimeSeries.takeSnapshot();
         cpuTimeSeries.takeSnapshot();
+        storageTimeSeries.takeSnapshot();
+        heapTimeSeries.takeSnapshot();
     }
 
     @GetMapping
@@ -67,5 +77,17 @@ public class RestChartController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> getCpuDataPoints() {
         return cpuTimeSeries.getDataPoints();
+    }
+
+    @GetMapping(value = "/data-points/storage",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody List<Map<String, Object>> storageDataPoints() {
+        return storageTimeSeries.getDataPoints();
+    }
+
+    @GetMapping(value = "/data-points/heap",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody List<Map<String, Object>> heapDataPoints() {
+        return heapTimeSeries.getDataPoints();
     }
 }

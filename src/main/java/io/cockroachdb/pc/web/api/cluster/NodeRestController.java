@@ -22,15 +22,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/api/cluster")
 public class NodeRestController {
     @Autowired
-    private NodeModelAssembler nodeModelAssembler;
-
-    @Autowired
     private ClusterManager clusterManager;
 
     @GetMapping("/{clusterId}/node")
     public ResponseEntity<CollectionModel<NodeModel>> getNodes(
             @PathVariable("clusterId") String clusterId) {
-        return ResponseEntity.ok(nodeModelAssembler.toCollectionModel(
+        NodeModelAssembler assembler = new NodeModelAssembler(clusterManager.getClusterType(clusterId));
+        return ResponseEntity.ok(assembler.toCollectionModel(
                 clusterManager.queryAllNodes(clusterId)));
     }
 
@@ -38,8 +36,9 @@ public class NodeRestController {
     public ResponseEntity<NodeModel> getNode(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {
+        NodeModelAssembler assembler = new NodeModelAssembler(clusterManager.getClusterType(clusterId));
         NodeModel nodeModel = clusterManager.queryNodeById(clusterId, id);
-        return ResponseEntity.ok(nodeModelAssembler.toModel(nodeModel));
+        return ResponseEntity.ok(assembler.toModel(nodeModel));
     }
 
     @GetMapping("/{clusterId}/node/{id}/detail")
