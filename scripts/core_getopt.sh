@@ -106,8 +106,8 @@ case "${getopt}" in
     echo -e "${lightgreen}[Application Commands]${default}"
     {
         echo -e "${green}start-service\t${default}      | Start the Pest Control service"
-        echo -e "${green}run-service\t${default}      | Run the Pest Control service"
         echo -e "${green}stop-service\t${default}      | Stop the Pest Control service"
+        echo -e "${green}run-service\t${default}      | Run the Pest Control service"
     } | column -s $'\t' -t
 
     echo -e ""
@@ -132,13 +132,15 @@ case "${getopt}" in
         echo -e "${magenta}recover\t${default}          | Recover node disruption"
 
         echo -e "${magenta}start\t${default}          | Start one node"
-        echo -e "${magenta}stop\t${default}          | Stop one node gracefully"
-        echo -e "${magenta}kill\t${default}          | Kill one node"
         echo -e "${magenta}start-all\t${default}          | Start range of nodes"
+        echo -e "${magenta}stop\t${default}          | Stop one node gracefully"
         echo -e "${magenta}stop-all\t${default}          | Stop range of nodes gracefully"
+        echo -e "${magenta}kill\t${default}          | Kill one node"
         echo -e "${magenta}kill-all\t${default}          | Kill range of nodes"
         echo -e "${magenta}start-lb\t${default}          | Start HAProxy load balancer"
         echo -e "${magenta}stop-lb\t${default}          | Stop HAProxy load balancer"
+        echo -e "${magenta}start-toxi\t${default}          | Start toxiproxy server and add node proxies"
+        echo -e "${magenta}stop-toxi\t${default}          | Stop toxiproxy server"
     } | column -s $'\t' -t
 
     echo -e ""
@@ -150,15 +152,4 @@ case "${getopt}" in
         echo -e "${cyan}status\t${default}           | Print node status"
         echo -e "${cyan}nodes\t${default}           | Print node details"
     } | column -s $'\t' -t
-
-    echo -e ""
-    echo -e "${lightred}[Toxiproxy Commands]${default}"
-    if [ ! "${toxiproxy}" != "off" ]; then
-    echo -e "${red}(Disabled in config/settings.cfg)${default}"
-    else
-    {
-        echo -e "${red}start-toxi\t${default}         | Start toxiproxy server and add node proxies"
-        echo -e "${red}stop-toxi\t${default}         | Stop toxiproxy server"
-    } | column -s $'\t' -t
-    fi
 esac

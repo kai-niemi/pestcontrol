@@ -41,17 +41,17 @@ public class NodeModelAssembler implements RepresentationModelAssembler<NodeMode
         if (EnumSet.of(ClusterType.local_insecure, ClusterType.local_secure,
                         ClusterType.cloud_dedicated, ClusterType.cloud_serverless, ClusterType.cloud_standard)
                 .contains(clusterType)) {
-            if ("true".equals(resource.getNodeStatus().getIsAvailable())) {
+//            if ("true".equals(resource.getNodeStatus().getIsAvailable())) {
                 resource.add(linkTo(methodOn(NodeRestController.class)
                         .disruptNode(resource.getClusterId(), resource.getId()))
                         .withRel(LinkRelations.DISRUPT_REL)
                         .withTitle("Apply node disruption"));
-            } else {
+//            } else {
                 resource.add(linkTo(methodOn(NodeRestController.class)
                         .recoverNode(resource.getClusterId(), resource.getId()))
                         .withRel(LinkRelations.RECOVER_REL)
                         .withTitle("Recover from node disruption"));
-            }
+//            }
         }
 
         return resource;

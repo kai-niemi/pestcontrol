@@ -150,8 +150,8 @@ If you prefer to use a packaged artifact (release or snapshot) rather than build
 see [GitHub Packages](https://github.com/orgs/cloudneutral/packages?repo_name=pestcontrol). Scroll to the latest `TAR.GZ` file and copy+paste the download URL
 as described:
 
-    curl -o pestcontrol.tar.gz <paste-url-here>
-    tar xvf pestcontrol.tar.gz && cd pestcontrol
+    curl -o pc.tar.gz <paste-url-here>
+    tar xvf pc.tar.gz && cd pestcontrol
 
 # Configuration
 
@@ -162,7 +162,7 @@ You can either edit that file directly or create a new one with a custom name
 suffix and then pass that name in the `--profiles` argument.
 
     cp config/application.yml config/application-craig.yml
-    java -jar pestcontrol.jar --profiles craig
+    java -jar pc.jar --profiles craig
 
 Example configuration with 3 cloud clusters and 2 local clusters:
 
@@ -287,8 +287,8 @@ Start the app in the foreground:
 
 Equivalent to:
 
-    ln -sf target/pestcontrol-<version>.jar pestcontrol.jar
-    java -jar pestcontrol.jar <args>
+    ln -sf target/pestcontrol-<version>.jar pc.jar
+    java -jar pc.jar <args>
 
 # Local Cluster Management
 

@@ -52,17 +52,17 @@ application:
 #
 #    - cluster-id: "Remote Secure Cluster"
 #      cluster-type: remote_secure
-#      admin-url: "https://16.171.3.44:443"
+#      admin-url: "https://0.0.0.0:443"
 #      data-source-properties:
-#        url: "jdbc:postgresql://16.171.3.44:26257/defaultdb?sslmode=require"
+#        url: "jdbc:postgresql://0.0.0.0:26257/defaultdb?sslmode=require"
 #        username: "craig"
 #        password: "cockroach"
 #
 #    - cluster-id: "Remote Insecure Cluster"
 #      cluster-type: remote_insecure
-#      admin-url: "http://16.171.3.44:8080"
+#      admin-url: "http://0.0.0.0:8080"
 #      data-source-properties:
-#        url: "jdbc:postgresql://16.171.3.44:26257/defaultdb?sslmode=disable"
+#        url: "jdbc:postgresql://0.0.0.0:26257/defaultdb?sslmode=disable"
 #        username: "craig"
 #        password: ""
 
@@ -72,15 +72,15 @@ application:
   #  name: name of host for visibility (optional)
 
 #  agents:
-#    - url: http://16.171.3.44:9090
-#    - url: http://16.171.3.44:9091
-#    - url: http://16.171.3.44:9092
-#    - url: http://16.171.3.44:9093
-#    - url: http://16.171.3.44:9094
-#    - url: http://16.171.3.44:9095
-#    - url: http://16.171.3.44:9096
-#    - url: http://16.171.3.44:9097
-#    - url: http://16.171.3.44:9099
+#    - url: http://0.0.0.0:9090
+#    - url: http://0.0.0.0:9091
+#    - url: http://0.0.0.0:9092
+#    - url: http://0.0.0.0:9093
+#    - url: http://0.0.0.0:9094
+#    - url: http://0.0.0.0:9095
+#    - url: http://0.0.0.0:9096
+#    - url: http://0.0.0.0:9097
+#    - url: http://0.0.0.0:9099
 
 ## Other service parameters
 

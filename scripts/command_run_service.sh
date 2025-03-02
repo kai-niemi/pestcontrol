@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Executable jar
-APP_JARFILE=${rootdir}/pestcontrol.jar
+APP_JARFILE=${rootdir}/pc.jar
 
 if [ ! -f "$APP_JARFILE" ]; then
     fn_fail_check ./mvnw clean install
@@ -11,7 +11,7 @@ if [ ! -f "$APP_JARFILE" ]; then
     ln -sf target/pestcontrol-${pomVersion}.jar ${APP_JARFILE}
 fi
 
-pid=$(ps -ef | grep "java" | grep "pestcontrol.jar" | awk '{print $2}')
+pid=$(ps -ef | grep "java" | grep "pc.jar" | awk '{print $2}')
 
 if [ ! -x ${pid} ]; then
    fn_print_error "Existing process found (${pid}) - is it running?"
