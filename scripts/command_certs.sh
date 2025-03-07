@@ -9,7 +9,7 @@ mkdir -p ${certsdir}
 # Create CA cert and PKS12 keystore on demand
 if [ ! -f ${certsdir}/ca.key ]; then
   fn_print_info "Creating new CA cert"
-  cockroach cert create-ca --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
+  fn_fail_check ${installdir}/cockroach cert create-ca --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
 fi
 
 if [ ! -f ${certsdir}/pestcontrol.p12 ]; then
@@ -18,12 +18,11 @@ if [ ! -f ${certsdir}/pestcontrol.p12 ]; then
 fi
 
 # Shared node cert
-cockroach cert create-node localhost $(hostname) --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
+fn_fail_check ${installdir}/cockroach cert create-node localhost $(hostname) --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
 
 # Create both root and configured user client certs
-cockroach cert create-client root --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
-cockroach cert create-client ${db_username} --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
-
-cockroach cert list --certs-dir=${certsdir}
+fn_fail_check ${installdir}/cockroach cert create-client root --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
+fn_fail_check ${installdir}/cockroach cert create-client ${db_username} --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
+fn_fail_check ${installdir}/cockroach cert list --certs-dir=${certsdir}
 
 fn_print_ok "Done"
