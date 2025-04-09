@@ -76,7 +76,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 
         if (!registry.hasMappingForPattern("/browser/**")) {
             registry.addResourceHandler("/browser/**").addResourceLocations(
-                    "/webjars/hal-explorer/1.2.2/");
+                    "/webjars/hal-explorer/1.2.3/");
         }
     }
 
