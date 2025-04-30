@@ -4,7 +4,6 @@
 ########################
 spring:
   config:
-    # Import user overrides
     import: optional:file:./config/
   output:
     ansi:
@@ -27,16 +26,6 @@ spring:
       enabled: false
     history:
       name: .log/pc.history
-
-  ## Truststore for SSL/TLS access to secure clusters
-#  ssl:
-#    bundle:
-#      jks:
-#        pestcontrol:
-#          truststore:
-#            location: "file:.certs/pestcontrol.p12"
-#            password: "cockroach"
-#            type: "PKCS12"
 
   ## Common hikari connection pool settings for all cluster data sources
   datasource:
@@ -80,11 +69,13 @@ spring:
   mvc:
     problemdetails:
       enabled: false
+
   http:
     client:
       connect-timeout: 10s
       read-timeout: 10s
       redirects: dont-follow
+
 #############################
 management:
   endpoints:
@@ -104,6 +95,7 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
 #############################
 logging:
   pattern:
@@ -120,7 +112,5 @@ server:
     include-stacktrace: always
     include-binding-errors: always
 
-#############################
-# Application specifics
 #############################
 application:

@@ -113,7 +113,7 @@ case "${getopt}" in
     echo -e ""
     echo -e "${lightyellow}[Setup Commands]${default}"
     {
-        echo -e "${yellow}install\t${default}            | Download and install CockroachDB (${version})"
+        echo -e "${yellow}install\t${default}            | Download and install CockroachDB"
         echo -e "${yellow}certs\t${default}            | Generate certificates (secure mode only)"
         echo -e "${yellow}init\t${default}            | Initialize cluster"
         echo -e "${yellow}clean\t${default}            | Clean all data files"
