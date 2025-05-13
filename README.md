@@ -162,7 +162,7 @@ You can either edit that file directly or create a new one with a custom name
 suffix and then pass that name in the `--profiles` argument.
 
     cp config/application.yml config/application-craig.yml
-    java -jar pc.jar --profiles craig
+    java -jar pestcontrol.jar --profiles craig
 
 Example configuration with 3 cloud clusters and 2 local clusters:
 
@@ -287,8 +287,8 @@ Start the app in the foreground:
 
 Equivalent to:
 
-    ln -sf target/pestcontrol-<version>.jar pc.jar
-    java -jar pc.jar <args>
+    ln -sf target/pestcontrol.jar pestcontrol.jar
+    java -jar pestcontrol.jar <args>
 
 # Local Cluster Management
 

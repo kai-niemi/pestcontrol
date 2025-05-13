@@ -99,6 +99,7 @@ fn_local_kill() {
   kill -KILL ${pid}
 
   fn_print_dots "Waiting for server to die (pid: $pid)"
+
   while kill -0 $pid 2>/dev/null; do
       printf '.'
       sleep 1

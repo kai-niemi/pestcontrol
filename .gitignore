@@ -10,7 +10,6 @@ target/
 *.csv
 *.pid
 .disruption.json
-pc.jar
 .DS_Store
 .DS_Store?
 Thumbs.db

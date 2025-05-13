@@ -16,7 +16,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
                 .withSockJS()
                 .setHttpMessageCacheSize(128)
                 .setDisconnectDelay(15000)
-                .setClientLibraryUrl("/webjars/sockjs-client/1.5.1/sockjs.min.js");
+                .setClientLibraryUrl("https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js");
     }
 
     @Override

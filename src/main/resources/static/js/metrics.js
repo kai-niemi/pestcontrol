@@ -18,7 +18,9 @@ var borderColors = [
     'rgb(201, 203, 207)'
 ];
 
-const chartThreadPool = new Chart(document.getElementById("chart-container-thread-pool"), {
+const ctx = document.getElementById("chart-container-thread-pool");
+
+const chartThreadPool = new Chart(ctx, {
     type: 'line',
     data: {
         labels: [],

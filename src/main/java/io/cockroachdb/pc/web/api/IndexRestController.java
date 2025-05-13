@@ -2,8 +2,6 @@ package io.cockroachdb.pc.web.api;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,9 +22,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/api")
 public class IndexRestController {
-    @Autowired
-    private Environment environment;
-
     @GetMapping
     public ResponseEntity<MessageModel> index() {
         MessageModel index = MessageModel.from("Pest Control Hypermedia API");
@@ -35,11 +30,6 @@ public class IndexRestController {
                 .index())
                 .withSelfRel()
                 .withTitle("Hypermedia API index"));
-
-        index.add(linkTo(methodOn(getClass())
-                .info())
-                .withRel(LinkRelations.INFO_REL)
-                .withTitle("Application version info"));
 
         index.add(linkTo(methodOn(ClusterRestController.class)
                 .getClusters())
@@ -68,15 +58,6 @@ public class IndexRestController {
                 .withRel(LinkRelations.ACTUATORS_REL)
                 .withTitle("Spring boot actuators"));
 
-        return ResponseEntity.ok(index);
-    }
-
-    @GetMapping("/info")
-    public ResponseEntity<MessageModel> info() {
-//        http://localhost:9090/actuator/info
-        String title = environment.getProperty("spring.application.title");
-        String version = environment.getProperty("spring.application.version");
-        MessageModel index = MessageModel.from(title + " v " + version);
         return ResponseEntity.ok(index);
     }
 

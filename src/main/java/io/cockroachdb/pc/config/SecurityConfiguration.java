@@ -27,8 +27,6 @@ import io.cockroachdb.pc.security.ApiAuthenticationService;
 import io.cockroachdb.pc.security.ClusterAuthenticationDetails;
 import io.cockroachdb.pc.security.ClusterAuthenticationProvider;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -75,12 +73,11 @@ public class SecurityConfiguration {
                                                     AuthenticationManager authenticationManager)
             throws Exception {
         return http
-                .cors(withDefaults())
-                .csrf(withDefaults())
+                .cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/cluster").authenticated()
                         .requestMatchers("/workload").authenticated()
-//                        .requestMatchers("/proxy").authenticated()
                         .anyRequest().permitAll())
                 .formLogin(form -> form
                         .loginPage("/login")

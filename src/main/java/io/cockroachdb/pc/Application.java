@@ -36,7 +36,7 @@ public class Application {
     private static void printHelpAndExit(Consumer<AnsiConsole> message) {
         try (Terminal terminal = TerminalBuilder.terminal()) {
             AnsiConsole console = new AnsiConsole(terminal);
-            console.green("Usage: java -jar pc.jar [options] <profile> [args...]").nl().nl();
+            console.green("Usage: java -jar pestcontrol.jar [options] <profile> [args...]").nl().nl();
             console.cyan("Unrecognized options and arguments following <profile> "
                          + "are passed as arguments to the spring boot container.").nl().nl();
             console.cyan("Options include:").nl();
