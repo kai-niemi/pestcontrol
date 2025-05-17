@@ -1,12 +1,39 @@
 package io.cockroachdb.pc.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import jakarta.validation.constraints.NotNull;
+
 /**
- * Connection properties for connecting to a remote Pest Control service.
+ * Connection properties for connecting to a remote Pest Control instance, aka agent.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AgentProperties {
+    private int id;
+
+    @NotNull
     private String url;
 
     private String name;
+
+    @NotNull
+    private String locality;
+
+    private String listenAddr;
+
+    private String advertiseAddr;
+
+    private String sqlAddr;
+
+    private String httpAddr;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -22,5 +49,45 @@ public class AgentProperties {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getAdvertiseAddr() {
+        return advertiseAddr;
+    }
+
+    public void setAdvertiseAddr(String advertiseAddr) {
+        this.advertiseAddr = advertiseAddr;
+    }
+
+    public String getHttpAddr() {
+        return httpAddr;
+    }
+
+    public void setHttpAddr(String httpAddr) {
+        this.httpAddr = httpAddr;
+    }
+
+    public String getListenAddr() {
+        return listenAddr;
+    }
+
+    public void setListenAddr(String listenAddr) {
+        this.listenAddr = listenAddr;
+    }
+
+    public String getLocality() {
+        return locality;
+    }
+
+    public void setLocality(String locality) {
+        this.locality = locality;
+    }
+
+    public String getSqlAddr() {
+        return sqlAddr;
+    }
+
+    public void setSqlAddr(String sqlAddr) {
+        this.sqlAddr = sqlAddr;
     }
 }

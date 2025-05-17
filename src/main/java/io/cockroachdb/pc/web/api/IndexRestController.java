@@ -32,7 +32,7 @@ public class IndexRestController {
                 .withTitle("Hypermedia API index"));
 
         index.add(linkTo(methodOn(ClusterRestController.class)
-                .getClusters())
+                .index())
                 .withRel(LinkRelations.CLUSTER_LIST_REL)
                 .withTitle("Cluster collection index"));
 
@@ -52,7 +52,7 @@ public class IndexRestController {
                 .withTitle("Chart workload metrics time series (session bound)"));
 
         index.add(Link.of(ServletUriComponentsBuilder.fromCurrentContextPath()
-                        .pathSegment("actuator")
+                        .pathSegment("api","actuator")
                         .buildAndExpand()
                         .toUriString())
                 .withRel(LinkRelations.ACTUATORS_REL)

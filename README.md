@@ -123,7 +123,7 @@ Toxiproxy provides the fundamentals for chaos testing by intercepting node gRPC 
 not mandatory to use. 
 
 See [Installing Toxiproxy](https://github.com/Shopify/toxiproxy?tab=readme-ov-file#1-installing-toxiproxy)
-and the [chaos guide](CHAOS.md) on how to manually use it with Pest Control. The main 
+and [guide](TOXI.md) on how to manually use it with Pest Control. The main 
 approach is to use the web UI but both will work.
 
 > Toxiproxy is disabled by default. See configuration section on how

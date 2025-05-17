@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
@@ -55,15 +56,15 @@ public class SecurityConfiguration {
                 .securityMatcher("/api/**")
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
+                .headers(c ->
+                        c.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/cluster/**").authenticated()
-//                        .requestMatchers("/api/workload/**").authenticated()
-//                        .requestMatchers("/api/proxy/**").authenticated()
                         .requestMatchers("/api/**").permitAll()
                         .anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling((auth) -> auth.authenticationEntryPoint(apiAuthenticationEntryPoint))
-                .addFilterBefore(new ApiAuthenticationFilter(apiAuthenticationService), BasicAuthenticationFilter.class)
+                .addFilterBefore(new ApiAuthenticationFilter(apiAuthenticationService),
+                        BasicAuthenticationFilter.class)
                 .build();
     }
 
@@ -75,6 +76,8 @@ public class SecurityConfiguration {
         return http
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
+                .headers(c ->
+                        c.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/cluster").authenticated()
                         .requestMatchers("/workload").authenticated()
@@ -89,7 +92,8 @@ public class SecurityConfiguration {
                         .logoutSuccessUrl("/login?logoutSuccess=true")
                         .deleteCookies("JSESSIONID"))
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login?loginRequired=true")))
+                        .authenticationEntryPoint(
+                                new LoginUrlAuthenticationEntryPoint("/login?loginRequired=true")))
                 .authenticationManager(authenticationManager)
                 .sessionManagement(c -> c.maximumSessions(32)
                         .sessionRegistry(sessionRegistry()))

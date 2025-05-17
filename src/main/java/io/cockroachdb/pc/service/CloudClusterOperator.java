@@ -20,7 +20,7 @@ import io.cockroachdb.pc.schema.disrupt.RegionalDisruptorSpecification;
 import io.cockroachdb.pc.schema.nodes.Locality;
 
 @Component
-public class CloudDisruptionManager implements DisruptionManager {
+public class CloudClusterOperator implements ClusterOperator {
     private static final String CLOUD_API_BASE = "https://cockroachlabs.cloud/api/v1";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());

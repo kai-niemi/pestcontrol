@@ -5,8 +5,12 @@ import io.cockroachdb.pc.schema.ClusterType;
 import io.cockroachdb.pc.schema.NodeModel;
 import io.cockroachdb.pc.schema.nodes.Locality;
 
-public interface DisruptionManager {
+public interface ClusterOperator {
     boolean supports(ClusterType clusterType);
+
+//    void startNode(ClusterProperties clusterProperties, NodeModel nodeModel);
+//
+//    void stopNode(ClusterProperties clusterProperties, NodeModel nodeModel);
 
     void disruptNode(ClusterProperties clusterProperties, NodeModel nodeModel);
 

@@ -25,7 +25,7 @@ import io.cockroachdb.pc.schema.NodeModel;
 import io.cockroachdb.pc.schema.nodes.Locality;
 
 @Component
-public class LocalDisruptionManager implements DisruptionManager {
+public class LocalClusterOperator implements ClusterOperator {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ShellCommands shellCommands = new ShellCommands() {

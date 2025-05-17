@@ -11,7 +11,7 @@
 ###############################################################################################################
 
 application:
-  ## List of available CockroachDB clusters
+  ## List of pre-configured CockroachDB clusters
   #
   #  cluster-id: Either a CockroachDB cloud cluster ID any name for other cluster types
   #  cluster-type: one of: (cloud_dedicated, local_secure, local_insecure, remote_secure, remote_insecure)
@@ -39,48 +39,81 @@ application:
         username: "craig"
         password: "cockroach"
 
-# Additional Examples:
-
-#    - cluster-id: "97a73235-fa45-4b4d-a229-f5efd52168ba"
-#      cluster-type: cloud_dedicated
-#      api-key: "<private-key>"
-#      admin-url: "https://admin-odin-qzx.cockroachlabs.cloud:8080"
-#      data-source-properties:
-#        url: "jdbc:postgresql://odin-qzx.aws-eu-north-1.cockroachlabs.cloud:26257/defaultdb?sslmode=require"
-#        username: "craig"
-#        password: "cockroach"
+    - cluster-id: "97a73235-fa45-4b4d-a229-f5efd52168ba"
+      cluster-type: cloud_dedicated
+      api-key: "<private-key>"
+      admin-url: "https://admin-odin-qzx.cockroachlabs.cloud:8080"
+      data-source-properties:
+        url: "jdbc:postgresql://odin-qzx.aws-eu-north-1.cockroachlabs.cloud:26257/defaultdb?sslmode=require"
+        username: "craig"
+        password: "cockroach"
 #
-#    - cluster-id: "Remote Secure Cluster"
-#      cluster-type: remote_secure
-#      admin-url: "https://0.0.0.0:443"
-#      data-source-properties:
-#        url: "jdbc:postgresql://0.0.0.0:26257/defaultdb?sslmode=require"
-#        username: "craig"
-#        password: "cockroach"
-#
-#    - cluster-id: "Remote Insecure Cluster"
-#      cluster-type: remote_insecure
-#      admin-url: "http://0.0.0.0:8080"
-#      data-source-properties:
-#        url: "jdbc:postgresql://0.0.0.0:26257/defaultdb?sslmode=disable"
-#        username: "craig"
-#        password: ""
+    - cluster-id: "Remote Secure Cluster"
+      cluster-type: remote_secure
+      admin-url: "https://0.0.0.0:443"
+      data-source-properties:
+        url: "jdbc:postgresql://0.0.0.0:26257/defaultdb?sslmode=require"
+        username: "craig"
+        password: "cockroach"
 
-  ## (optional) List of pest control agents in a network of machines/VMs for remote cluster types with one node per server.
+    - cluster-id: "Remote Insecure Cluster"
+      cluster-type: remote_insecure
+      admin-url: "http://0.0.0.0:8080"
+      data-source-properties:
+        url: "jdbc:postgresql://0.0.0.0:26257/defaultdb?sslmode=disable"
+        username: "craig"
+        password: ""
+
+  ## (optional) List of pest control instances (agents) in a network of machines/VMs for remote cluster types.
   #
-  #  url: Base URL of admin REST API
+  #  url: Base URL for pestcontrol REST API
   #  name: name of host for visibility (optional)
+  #  For other params, see:
+  #  https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
 
-#  agents:
-#    - url: http://0.0.0.0:9090
-#    - url: http://0.0.0.0:9091
-#    - url: http://0.0.0.0:9092
-#    - url: http://0.0.0.0:9093
-#    - url: http://0.0.0.0:9094
-#    - url: http://0.0.0.0:9095
-#    - url: http://0.0.0.0:9096
-#    - url: http://0.0.0.0:9097
-#    - url: http://0.0.0.0:9099
+  agents:
+    - url: http://127.0.0.1:9090
+      name: n1
+      locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
+      listen-addr: 127.0.0.1:27015
+      advertise-addr:
+      sql-addr:
+      http-addr:
+    - url: http://127.0.0.1:9091
+      name: n2
+      locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
+      listen-addr: 127.0.0.1:27016
+      advertise-addr:
+      sql-addr:
+      http-addr:
+    - url: http://127.0.0.1:9092
+      name: n3
+      locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
+      listen-addr: 127.0.0.1:27017
+      advertise-addr:
+      sql-addr:
+      http-addr:
+    - url: http://127.0.0.1:9093
+      name: n4
+      locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
+      listen-addr: 127.0.0.1:27018
+      advertise-addr:
+      sql-addr:
+      http-addr:
+    - url: http://127.0.0.1:9094
+      name: n5
+      locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
+      listen-addr: 127.0.0.1:27019
+      advertise-addr:
+      sql-addr:
+      http-addr:
+    - url: http://127.0.0.1:9095
+      name: n6
+      locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
+      listen-addr: 127.0.0.1:27020
+      advertise-addr:
+      sql-addr:
+      http-addr:
 
 ## Other service parameters
 

@@ -2,24 +2,41 @@ package io.cockroachdb.pc.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.validation.Valid;
 
 @Component
 @ConfigurationProperties(prefix = "application")
+@Validated
 public class ApplicationProperties {
     @Autowired
     private Function<DataSourceProperties, ClosableDataSource> dataSourceFactory;
 
+    @Valid
     private List<AgentProperties> agents = new ArrayList<>();
 
+    @Valid
     private List<ClusterProperties> clusters = new ArrayList<>();
 
+    @Valid
     private ToxiproxyProperties toxiproxy;
+
+    @PostConstruct
+    public void init() {
+        AtomicInteger id = new AtomicInteger();
+        agents.forEach(agentProperties -> {
+            agentProperties.setId(id.incrementAndGet());
+        });
+    }
 
     public ClosableDataSource getDataSource(String clusterId) {
         return dataSourceFactory.apply(getClusterPropertiesById(clusterId).getDataSourceProperties());

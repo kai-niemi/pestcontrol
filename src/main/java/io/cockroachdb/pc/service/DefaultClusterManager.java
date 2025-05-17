@@ -21,7 +21,6 @@ import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.shell.standard.commands.Version;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -45,11 +44,10 @@ import io.cockroachdb.pc.schema.nodes.NodeDetails;
 import io.cockroachdb.pc.schema.status.NodeStatus;
 
 @Component
-public class CommonClusterManager implements ClusterManager {
+public class DefaultClusterManager implements ClusterManager {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Map<String, String> sessionTokens
-            = new ConcurrentHashMap<>();
+    private final Map<String, String> sessionTokens = new ConcurrentHashMap<>();
 
     @Autowired
     private ApplicationProperties applicationProperties;
@@ -61,7 +59,7 @@ public class CommonClusterManager implements ClusterManager {
     private Function<DataSourceProperties, ClosableDataSource> dataSourceFactory;
 
     @Autowired
-    private ObjectProvider<DisruptionManager> disruptionManagers;
+    private ObjectProvider<ClusterOperator> disruptionManagers;
 
     @Autowired
     private RestClientProvider restClientProvider;
@@ -308,13 +306,13 @@ public class CommonClusterManager implements ClusterManager {
         final ClusterProperties clusterProperties = findClusterProperties(clusterId);
         final NodeModel nodeModel = queryNodeById(clusterId, id);
 
-        DisruptionManager disruptionManager = disruptionManagers.stream()
+        ClusterOperator clusterOperator = disruptionManagers.stream()
                 .filter(x -> x.supports(clusterProperties.getClusterType()))
                 .min(new AnnotationAwareOrderComparator())
                 .orElseThrow(() -> new IllegalStateException("No disruption manager for cluster type "
                                                              + clusterProperties.getClusterType()));
 
-        disruptionManager.disruptNode(clusterProperties, nodeModel);
+        clusterOperator.disruptNode(clusterProperties, nodeModel);
     }
 
     @Override
@@ -322,38 +320,38 @@ public class CommonClusterManager implements ClusterManager {
         final ClusterProperties clusterProperties = findClusterProperties(clusterId);
         final NodeModel nodeModel = queryNodeById(clusterId, id);
 
-        DisruptionManager disruptionManager = disruptionManagers.stream()
+        ClusterOperator clusterOperator = disruptionManagers.stream()
                 .filter(x -> x.supports(clusterProperties.getClusterType()))
                 .min(new AnnotationAwareOrderComparator())
                 .orElseThrow(() -> new IllegalStateException("No disruption manager for cluster type "
                                                              + clusterProperties.getClusterType()));
 
-        disruptionManager.recoverNode(clusterProperties, nodeModel);
+        clusterOperator.recoverNode(clusterProperties, nodeModel);
     }
 
     @Override
     public void disruptLocality(String clusterId, String tiers) {
         final ClusterProperties clusterProperties = findClusterProperties(clusterId);
 
-        DisruptionManager disruptionManager = disruptionManagers.stream()
+        ClusterOperator clusterOperator = disruptionManagers.stream()
                 .filter(x -> x.supports(clusterProperties.getClusterType()))
                 .min(new AnnotationAwareOrderComparator())
                 .orElseThrow(() -> new IllegalStateException("No disruption manager for cluster type "
                                                              + clusterProperties.getClusterType()));
 
-        disruptionManager.disruptLocality(clusterProperties, Locality.fromTiers(tiers));
+        clusterOperator.disruptLocality(clusterProperties, Locality.fromTiers(tiers));
     }
 
     @Override
     public void recoverLocality(String clusterId, String tiers) {
         final ClusterProperties clusterProperties = findClusterProperties(clusterId);
 
-        DisruptionManager disruptionManager = disruptionManagers.stream()
+        ClusterOperator clusterOperator = disruptionManagers.stream()
                 .filter(x -> x.supports(clusterProperties.getClusterType()))
                 .min(new AnnotationAwareOrderComparator())
                 .orElseThrow(() -> new IllegalStateException("No disruption manager for cluster type "
                                                              + clusterProperties.getClusterType()));
 
-        disruptionManager.recoverLocality(clusterProperties, Locality.fromTiers(tiers));
+        clusterOperator.recoverLocality(clusterProperties, Locality.fromTiers(tiers));
     }
 }

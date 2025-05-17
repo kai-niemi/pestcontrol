@@ -37,7 +37,7 @@ public class ClusterRestController {
     private ApplicationProperties applicationProperties;
 
     @GetMapping()
-    public ResponseEntity<CollectionModel<ClusterModel>> getClusters() {
+    public ResponseEntity<CollectionModel<ClusterModel>> index() {
         List<ClusterModel> clusterModels = new ArrayList<>();
 
         applicationProperties.getClusterIds().forEach(clusterId -> {
@@ -46,7 +46,7 @@ public class ClusterRestController {
 
         return ResponseEntity.ok(clusterModelAssembler.toCollectionModel(clusterModels)
                 .add(linkTo(methodOn(ClusterRestController.class)
-                        .getClusters())
+                        .index())
                         .withSelfRel()));
     }
 

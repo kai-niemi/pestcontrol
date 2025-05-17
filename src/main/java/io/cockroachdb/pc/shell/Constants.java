@@ -3,7 +3,7 @@ package io.cockroachdb.pc.shell;
 public abstract class Constants {
     public static final String ADMIN_COMMANDS = "1) Admin Commands";
 
-    public static final String CLUSTER_COMMANDS = "2) Cluster Commands";
+    public static final String AGENT_COMMANDS = "2) Agent Commands";
 
     private Constants() {
     }

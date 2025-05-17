@@ -10,7 +10,7 @@ import io.cockroachdb.pc.schema.NodeModel;
 import io.cockroachdb.pc.schema.nodes.Locality;
 
 @Component
-public class RemoteDisruptionManager implements DisruptionManager {
+public class RemoteClusterOperator implements ClusterOperator {
     @Override
     public boolean supports(ClusterType clusterType) {
         return EnumSet.of(ClusterType.remote_insecure, ClusterType.remote_secure).contains(clusterType);

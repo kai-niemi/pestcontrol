@@ -2,18 +2,23 @@ package io.cockroachdb.pc.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.UriTemplate;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.mediatype.hal.CurieProvider;
 import org.springframework.hateoas.mediatype.hal.DefaultCurieProvider;
 import org.springframework.hateoas.mediatype.hal.forms.HalFormsConfiguration;
 import org.springframework.hateoas.mediatype.hal.forms.HalFormsOptions;
+import org.springframework.http.MediaType;
 import org.springframework.web.context.request.async.CallableProcessingInterceptor;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
@@ -41,6 +46,16 @@ public class WebConfiguration implements WebMvcConfigurer {
 
     @Autowired
     private CallableProcessingInterceptor callableProcessingInterceptor;
+
+    @Bean
+    public EndpointMediaTypes endpointMediaTypes() {
+        return new EndpointMediaTypes(
+                ApiVersion.V3.getProducedMimeType().toString(),
+                ApiVersion.V2.getProducedMimeType().toString(),
+                "application/hal+json", // Added
+                "application/json"
+        );
+    }
 
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
@@ -89,6 +104,16 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Bean
     public ForwardedHeaderFilter forwardedHeaderFilter() {
         return new ForwardedHeaderFilter();
+    }
+
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+        configurer.defaultContentType(
+                MediaTypes.HAL_JSON,
+                MediaTypes.HAL_FORMS_JSON,
+                MediaTypes.VND_ERROR_JSON,
+                MediaType.APPLICATION_JSON,
+                MediaType.ALL);
     }
 
     @Bean

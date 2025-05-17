@@ -4,7 +4,6 @@ import java.util.List;
 
 import io.cockroachdb.pc.schema.ClusterType;
 import io.cockroachdb.pc.schema.NodeModel;
-import io.cockroachdb.pc.schema.nodes.Locality;
 import io.cockroachdb.pc.schema.nodes.NodeDetail;
 import io.cockroachdb.pc.schema.status.NodeStatus;
 

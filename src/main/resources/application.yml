@@ -83,7 +83,8 @@ management:
       default: unrestricted
     web:
       exposure:
-        include: env,info,health,metrics,prometheus
+        include: health,info,shutdown,env,threaddump,metrics
+      base-path: /api/actuator
   endpoint:
     health:
       show-details: always
