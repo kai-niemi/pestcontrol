@@ -8,13 +8,13 @@
     <logger name="com.zaxxer.hikari" level="WARN"/>
 
     <springProfile name="verbose">
-        <logger name="io.cockroachdb.pc" level="TRACE"/>
-        <logger name="io.cockroachdb.pc.SQL_TRACE" level="TRACE"/>
+        <logger name="io.cockroachdb.pestcontrol" level="TRACE"/>
+        <logger name="io.cockroachdb.pestcontrol.SQL_TRACE" level="TRACE"/>
     </springProfile>
 
     <springProfile name="!verbose">
-        <logger name="io.cockroachdb.pc" level="INFO"/>
-        <logger name="io.cockroachdb.pc.SQL_TRACE" level="INFO"/>
+        <logger name="io.cockroachdb.pestcontrol" level="INFO"/>
+        <logger name="io.cockroachdb.pestcontrol.SQL_TRACE" level="INFO"/>
     </springProfile>
 
     <springProfile name="verbose-http">
