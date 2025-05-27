@@ -16,16 +16,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
-import io.cockroachdb.pestcontrol.schema.nodes.Tier;
-import io.cockroachdb.pestcontrol.web.api.LinkRelations;
+import io.cockroachdb.pestcontrol.model.Tier;
 
 /**
  * Representation model for a CockroachDB cluster composed by the locality
  * tiers region, zone and node.
  */
 @Relation(value = LinkRelations.CLUSTER_REL,
-        collectionRelation = LinkRelations.CLUSTER_LIST_REL)
+        collectionRelation = LinkRelations.CLUSTERS_REL)
 @JsonPropertyOrder({"links", "embedded", "templates"})
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY, content = JsonInclude.Include.NON_NULL)
 public class ClusterModel extends RepresentationModel<ClusterModel> {
@@ -93,7 +93,8 @@ public class ClusterModel extends RepresentationModel<ClusterModel> {
             subLocalities.stream()
                     .filter(x -> x.toTiers().equals(subLocality.toTiers()))
                     .findFirst()
-                    .ifPresentOrElse(localityModel1 -> {}, () -> subLocalities.add(subLocality));
+                    .ifPresentOrElse(localityModel1 -> {
+                    }, () -> subLocalities.add(subLocality));
         });
 
         return new ArrayList<>(subLocalities);

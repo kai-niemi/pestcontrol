@@ -2,40 +2,53 @@ package io.cockroachdb.pestcontrol.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 
+import io.cockroachdb.pestcontrol.config.ClosableDataSource;
+import io.cockroachdb.pestcontrol.operator.ClusterOperator;
+
 @Component
 @ConfigurationProperties(prefix = "application")
 @Validated
 public class ApplicationProperties {
+    @Valid
+    private List<ClusterProperties> clusters = new ArrayList<>();
+
     @Autowired
     private Function<DataSourceProperties, ClosableDataSource> dataSourceFactory;
 
-    @Valid
-    private List<AgentProperties> agents = new ArrayList<>();
-
-    @Valid
-    private List<ClusterProperties> clusters = new ArrayList<>();
+    @Autowired
+    private ObjectProvider<ClusterOperator> clusterOperators;
 
     @Valid
     private ToxiproxyProperties toxiproxy;
 
     @PostConstruct
     public void init() {
-        AtomicInteger id = new AtomicInteger();
-        agents.forEach(agentProperties -> {
-            agentProperties.setId(id.incrementAndGet());
-        });
+        clusters.forEach(ClusterProperties::init);
+    }
+
+    public ClusterOperator clusterOperator(String clusterId)
+            throws UnsupportedOperationException {
+        ClusterType clusterType = getClusterPropertiesById(clusterId).getClusterType();
+
+        return clusterOperators
+                .stream()
+                .filter(x -> x.supports(clusterType))
+                .min(new AnnotationAwareOrderComparator())
+                .orElseThrow(() -> new UnsupportedOperationException(
+                        "No operator found for cluster type " + clusterType));
     }
 
     public ClosableDataSource getDataSource(String clusterId) {
@@ -64,14 +77,6 @@ public class ApplicationProperties {
 
     public void setClusters(List<ClusterProperties> clusters) {
         this.clusters = clusters;
-    }
-
-    public List<AgentProperties> getAgents() {
-        return agents;
-    }
-
-    public void setAgents(List<AgentProperties> agents) {
-        this.agents = agents;
     }
 
     public ToxiproxyProperties getToxiproxy() {

@@ -28,10 +28,11 @@ import org.springframework.web.util.pattern.PathPatternParser;
 
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import eu.rekawek.toxiproxy.model.ToxicType;
+
+import io.cockroachdb.pestcontrol.api.LinkRelations;
+import io.cockroachdb.pestcontrol.api.toxiproxy.ToxicForm;
+import io.cockroachdb.pestcontrol.api.workload.WorkloadForm;
 import io.cockroachdb.pestcontrol.workload.profile.WorkloadType;
-import io.cockroachdb.pestcontrol.web.api.toxi.ToxicForm;
-import io.cockroachdb.pestcontrol.web.api.workload.WorkloadForm;
-import io.cockroachdb.pestcontrol.web.api.LinkRelations;
 
 @EnableWebMvc
 @EnableHypermediaSupport(type = {

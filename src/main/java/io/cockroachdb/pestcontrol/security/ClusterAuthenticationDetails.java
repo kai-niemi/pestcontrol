@@ -2,8 +2,9 @@ package io.cockroachdb.pestcontrol.security;
 
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
-import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import jakarta.servlet.http.HttpServletRequest;
+
+import io.cockroachdb.pestcontrol.model.ClusterProperties;
 
 public class ClusterAuthenticationDetails extends WebAuthenticationDetails {
     private final String clusterId;

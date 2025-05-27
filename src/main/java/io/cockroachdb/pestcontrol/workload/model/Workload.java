@@ -7,10 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
-import org.springframework.format.annotation.DurationFormat;
-import org.springframework.format.datetime.standard.DurationFormatterUtils;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -18,11 +15,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.util.TimeUtils;
-import io.cockroachdb.pestcontrol.web.api.LinkRelations;
 
 @Relation(itemRelation = LinkRelations.WORKLOAD_REL,
-        collectionRelation = LinkRelations.WORKLOAD_LIST_REL)
+        collectionRelation = LinkRelations.WORKLOADS_REL)
 @JsonPropertyOrder({"links", "embedded", "templates"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Workload extends RepresentationModel<Workload> {
@@ -46,10 +43,10 @@ public class Workload extends RepresentationModel<Workload> {
     private CompletableFuture<?> future;
 
     public Workload(String clusterId,
-             Integer id,
-             String description,
-             Metrics metrics,
-             Duration duration) {
+                    Integer id,
+                    String description,
+                    Metrics metrics,
+                    Duration duration) {
         this.clusterId = clusterId;
         this.id = id;
         this.description = description;
@@ -109,7 +106,7 @@ public class Workload extends RepresentationModel<Workload> {
     }
 
     public String getRemainingTime() {
-        return isRunning() ? TimeUtils.durationToDisplayString(getRemainingDuration()) :  "-";
+        return isRunning() ? TimeUtils.durationToDisplayString(getRemainingDuration()) : "-";
     }
 
     public Duration getRemainingDuration() {

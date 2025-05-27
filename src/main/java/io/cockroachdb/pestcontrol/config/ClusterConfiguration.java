@@ -4,10 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.util.Pair;
 
-import io.cockroachdb.pestcontrol.model.ApplicationProperties;
-import io.cockroachdb.pestcontrol.service.ClusterManager;
-import io.cockroachdb.pestcontrol.service.CredentialsHandler;
 import jakarta.annotation.PostConstruct;
+
+import io.cockroachdb.pestcontrol.manager.ClusterManager;
+import io.cockroachdb.pestcontrol.manager.CredentialsHandler;
+import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 
 @Configuration
 public class ClusterConfiguration {

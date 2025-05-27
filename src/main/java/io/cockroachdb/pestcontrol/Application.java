@@ -89,6 +89,6 @@ public class Application {
                 .web(WebApplicationType.SERVLET)
                 .logStartupInfo(true)
                 .profiles(profiles.toArray(new String[0]))
-                .run(passThroughArgs.toArray(new String[]{}));
+                .run(passThroughArgs.toArray(new String[] {}));
     }
 }

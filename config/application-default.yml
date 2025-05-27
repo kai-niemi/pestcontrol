@@ -50,70 +50,48 @@ application:
 #
     - cluster-id: "Remote Secure Cluster"
       cluster-type: remote_secure
-      admin-url: "https://0.0.0.0:443"
+      admin-url: "https://127.0.0.1:443"
       data-source-properties:
-        url: "jdbc:postgresql://0.0.0.0:26257/defaultdb?sslmode=require"
+        url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"
+      nodes:
+        # See below
 
     - cluster-id: "Remote Insecure Cluster"
       cluster-type: remote_insecure
-      admin-url: "http://0.0.0.0:8080"
+      admin-url: "http://127.0.0.1:8080"
       data-source-properties:
-        url: "jdbc:postgresql://0.0.0.0:26257/defaultdb?sslmode=disable"
+        url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
+      ## (optional) List of nodes in a network of machines/VMs for managed remote cluster types only.
+      # Used to manage a cluster through pest control, potentially spanning multiple hosts as
+      # opposed to many instances on a local host (or cloud) on different ports.
+      # See: https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
+      mnodes:
+        - url: http://127.0.0.1:9090
+          name: n1
+          locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
+          listen-addr: 127.0.0.1:27015
+          advertise-addr:
+          sql-addr: 127.0.0.1:26257
+          http-addr: 127.0.0.1:8080
+        - url: http://127.0.0.2:9090
+          name: n2
+          locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
+          listen-addr: 127.0.0.2:27015
+          advertise-addr:
+          sql-addr: 127.0.0.2:26257
+          http-addr: 127.0.0.2:8080
+        - url: http://127.0.0.3:9092
+          name: n3
+          locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
+          listen-addr: 127.0.0.3:27017
+          advertise-addr:
+          sql-addr: 127.0.0.3:26257
+          http-addr: 127.0.0.3:8080
 
-  ## (optional) List of pest control instances (agents) in a network of machines/VMs for remote cluster types.
-  #
-  #  url: Base URL for pestcontrol REST API
-  #  name: name of host for visibility (optional)
-  #  For other params, see:
-  #  https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
-
-  agents:
-    - url: http://127.0.0.1:9090
-      name: n1
-      locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-      listen-addr: 127.0.0.1:27015
-      advertise-addr:
-      sql-addr:
-      http-addr:
-    - url: http://127.0.0.1:9091
-      name: n2
-      locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-      listen-addr: 127.0.0.1:27016
-      advertise-addr:
-      sql-addr:
-      http-addr:
-    - url: http://127.0.0.1:9092
-      name: n3
-      locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-      listen-addr: 127.0.0.1:27017
-      advertise-addr:
-      sql-addr:
-      http-addr:
-    - url: http://127.0.0.1:9093
-      name: n4
-      locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-      listen-addr: 127.0.0.1:27018
-      advertise-addr:
-      sql-addr:
-      http-addr:
-    - url: http://127.0.0.1:9094
-      name: n5
-      locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-      listen-addr: 127.0.0.1:27019
-      advertise-addr:
-      sql-addr:
-      http-addr:
-    - url: http://127.0.0.1:9095
-      name: n6
-      locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-      listen-addr: 127.0.0.1:27020
-      advertise-addr:
-      sql-addr:
-      http-addr:
 
 ## Other service parameters
 

@@ -21,9 +21,9 @@ import org.springframework.dao.TransientDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionException;
 
-import io.cockroachdb.pestcontrol.workload.model.Workload;
 import io.cockroachdb.pestcontrol.workload.model.Metrics;
 import io.cockroachdb.pestcontrol.workload.model.Problem;
+import io.cockroachdb.pestcontrol.workload.model.Workload;
 
 @Component
 public class WorkloadExecutor {
@@ -58,9 +58,9 @@ public class WorkloadExecutor {
     private AsyncTaskExecutor asyncTaskExecutor;
 
     Workload submitTask(String clusterId,
-                               Duration duration,
-                               Runnable task,
-                               String description) {
+                        Duration duration,
+                        Runnable task,
+                        String description) {
         final Metrics metrics = Metrics.empty();
 
         final Workload workload = new Workload(clusterId,

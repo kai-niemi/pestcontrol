@@ -29,9 +29,9 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
-import io.cockroachdb.pestcontrol.schema.ClusterType;
-import io.cockroachdb.pestcontrol.service.ClientErrorException;
-import io.cockroachdb.pestcontrol.service.ServerErrorException;
+import io.cockroachdb.pestcontrol.manager.ClientErrorException;
+import io.cockroachdb.pestcontrol.manager.ServerErrorException;
+import io.cockroachdb.pestcontrol.model.ClusterType;
 import io.cockroachdb.pestcontrol.shell.support.HypermediaClient;
 
 @Configuration

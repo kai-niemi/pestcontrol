@@ -9,12 +9,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.cockroachdb.pestcontrol.schema.nodes.Locality;
-import io.cockroachdb.pestcontrol.schema.nodes.Tier;
-import io.cockroachdb.pestcontrol.web.api.LinkRelations;
+import io.cockroachdb.pestcontrol.api.LinkRelations;
+import io.cockroachdb.pestcontrol.model.Locality;
+import io.cockroachdb.pestcontrol.model.Tier;
 
 @Relation(value = LinkRelations.LOCALITY_REL,
-        collectionRelation = LinkRelations.LOCALITY_LIST_REL)
+        collectionRelation = LinkRelations.LOCALITIES_REL)
 @JsonPropertyOrder({"links", "embedded", "templates"})
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY, content = JsonInclude.Include.NON_NULL)
 public class LocalityModel extends RepresentationModel<LocalityModel> {

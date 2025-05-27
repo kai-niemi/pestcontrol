@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import io.cockroachdb.pestcontrol.service.ResourceNotFoundException;
-import io.cockroachdb.pestcontrol.workload.model.MetricsDataPoint;
-import io.cockroachdb.pestcontrol.workload.model.Workload;
+import io.cockroachdb.pestcontrol.manager.ResourceNotFoundException;
 import io.cockroachdb.pestcontrol.workload.model.DataPoint;
 import io.cockroachdb.pestcontrol.workload.model.Metrics;
+import io.cockroachdb.pestcontrol.workload.model.MetricsDataPoint;
+import io.cockroachdb.pestcontrol.workload.model.Workload;
 
 /**
  * Background workers and metric data points for a single cluster.
