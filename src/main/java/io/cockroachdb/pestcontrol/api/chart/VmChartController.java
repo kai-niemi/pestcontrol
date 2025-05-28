@@ -25,7 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @RestController
 @RequestMapping(value = "/api/chart")
-public class ChartController {
+public class VmChartController {
     @Autowired
     @Qualifier("threadPoolTimeSeries")
     private TimeSeries threadPoolTimeSeries;

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
+import io.cockroachdb.pestcontrol.api.MessageModel;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.workload.WorkloadManager;
 import io.cockroachdb.pestcontrol.workload.model.Workload;
@@ -44,6 +45,23 @@ public class WorkloadController {
 
     @Autowired
     private ApplicationProperties applicationProperties;
+
+    @GetMapping
+    public ResponseEntity<MessageModel> index() {
+        MessageModel resource = new MessageModel();
+        resource.add(linkTo(methodOn(getClass())
+                .index())
+                .withSelfRel());
+
+        applicationProperties.getClusterIds().forEach(clusterId -> {
+            resource.add(linkTo(methodOn(WorkloadController.class)
+                    .getWorkers(clusterId))
+                    .withRel(LinkRelations.WORKLOADS_REL)
+                    .withTitle("Collection of cluster workers"));
+        });
+
+        return ResponseEntity.ok(resource);
+    }
 
     @GetMapping("/{clusterId}/workers")
     public ResponseEntity<CollectionModel<Workload>> getWorkers(

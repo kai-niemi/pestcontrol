@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.schema;
+package io.cockroachdb.pestcontrol.api.cluster.status;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -11,48 +11,38 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 import org.springframework.util.Assert;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
-import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.Tier;
 
 /**
  * Representation model for a CockroachDB cluster composed by the locality
  * tiers region, zone and node.
  */
-@Relation(value = LinkRelations.CLUSTER_REL,
-        collectionRelation = LinkRelations.CLUSTERS_REL)
+@Relation(value = LinkRelations.CLUSTER_STATUS_REL,
+        collectionRelation = LinkRelations.CLUSTER_STATUSES_REL)
 @JsonPropertyOrder({"links", "embedded", "templates"})
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY, content = JsonInclude.Include.NON_NULL)
-public class ClusterModel extends RepresentationModel<ClusterModel> {
-    public static ClusterModel from(ClusterProperties clusterProperties) {
-        return new ClusterModel(clusterProperties);
+public class StatusModel extends RepresentationModel<StatusModel> {
+    public static StatusModel fromId(String clusterId) {
+        return new StatusModel(clusterId);
     }
 
-    @JsonProperty("properties")
-    private final ClusterProperties clusterProperties;
+    private final String clusterId;
 
-    @JsonIgnore
     private CollectionModel<NodeModel> nodes = CollectionModel.empty();
 
-    @JsonIgnore
     private CollectionModel<LocalityModel> localities = CollectionModel.empty();
 
-    private ClusterModel(ClusterProperties clusterProperties) {
-        Assert.notNull(clusterProperties, "clusterProperties is null");
-        this.clusterProperties = clusterProperties;
-    }
-
-    public ClusterProperties getClusterProperties() {
-        return clusterProperties;
+    private StatusModel(String clusterId) {
+        Assert.notNull(clusterId, "clusterId is null");
+        this.clusterId = clusterId;
     }
 
     public String getId() {
-        return clusterProperties.getClusterId();
+        return clusterId;
     }
 
     public CollectionModel<NodeModel> getNodes() {

@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.schema.disrupt;
+package io.cockroachdb.pestcontrol.schema;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.api.machine;
+package io.cockroachdb.pestcontrol.api.cluster.machine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +17,8 @@ import jakarta.validation.constraints.Size;
 import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.model.MachineProperties;
 
-@Relation(value = LinkRelations.MACHINE_REL,
-        collectionRelation = LinkRelations.MACHINES_REL)
+@Relation(value = LinkRelations.CLUSTER_MACHINE_REL,
+        collectionRelation = LinkRelations.CLUSTER_MACHINES_REL)
 @JsonPropertyOrder({"links", "embedded", "templates"})
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY, content = JsonInclude.Include.NON_NULL)
 public class MachinesForm extends RepresentationModel<MachinesForm> {

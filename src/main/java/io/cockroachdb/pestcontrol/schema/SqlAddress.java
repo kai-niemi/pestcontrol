@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.schema.nodes;
+package io.cockroachdb.pestcontrol.schema;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

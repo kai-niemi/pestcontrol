@@ -31,7 +31,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @RestController
 @RequestMapping(value = "/api/chart/workload")
-public class ChartWorkloadController extends AbstractSessionController {
+public class WorkloadChartController extends AbstractSessionController {
     @Autowired
     private WorkloadManager workloadManager;
 

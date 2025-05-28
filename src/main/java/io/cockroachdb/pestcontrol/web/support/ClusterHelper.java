@@ -1,33 +1,33 @@
 package io.cockroachdb.pestcontrol.web.support;
 
-import io.cockroachdb.pestcontrol.schema.ClusterModel;
-import io.cockroachdb.pestcontrol.schema.nodes.NodeStatus;
+import io.cockroachdb.pestcontrol.api.cluster.status.StatusModel;
+import io.cockroachdb.pestcontrol.schema.NodeStatus;
 
 public class ClusterHelper {
     private boolean available;
 
-    private ClusterModel clusterModel;
+    private StatusModel statusModel;
 
     public ClusterHelper(boolean available) {
         this.available = available;
     }
 
     public String getId() {
-        return clusterModel.getId();
+        return statusModel.getId();
     }
 
-    public ClusterModel getClusterModel() {
-        return clusterModel;
+    public StatusModel getClusterModel() {
+        return statusModel;
     }
 
-    public boolean isDifferent(ClusterModel clusterModel) {
-        int currentNodeSize = this.clusterModel.getNodes().getContent().size();
-        int nodeSize = clusterModel.getNodes().getContent().size();
+    public boolean isDifferent(StatusModel statusModel) {
+        int currentNodeSize = this.statusModel.getNodes().getContent().size();
+        int nodeSize = statusModel.getNodes().getContent().size();
         return currentNodeSize != nodeSize;
     }
 
-    public ClusterHelper setClusterModel(ClusterModel clusterModel) {
-        this.clusterModel = clusterModel;
+    public ClusterHelper setClusterModel(StatusModel statusModel) {
+        this.statusModel = statusModel;
         return this;
     }
 

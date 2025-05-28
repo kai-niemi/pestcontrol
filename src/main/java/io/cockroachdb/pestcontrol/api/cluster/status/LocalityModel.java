@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.schema;
+package io.cockroachdb.pestcontrol.api.cluster.status;
 
 import java.util.List;
 

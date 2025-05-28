@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
 
-import io.cockroachdb.pestcontrol.api.chart.ChartController;
-import io.cockroachdb.pestcontrol.api.chart.ChartWorkloadController;
+import io.cockroachdb.pestcontrol.api.chart.VmChartController;
+import io.cockroachdb.pestcontrol.api.chart.WorkloadChartController;
 import io.cockroachdb.pestcontrol.api.cluster.ClusterController;
-import io.cockroachdb.pestcontrol.api.machine.MachinesController;
 import io.cockroachdb.pestcontrol.api.toxiproxy.ToxiproxyController;
+import io.cockroachdb.pestcontrol.api.workload.WorkloadController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -32,24 +32,24 @@ public class IndexController {
                 .withTitle("API index"));
         resource.add(linkTo(methodOn(ClusterController.class)
                 .index())
-                .withRel(LinkRelations.CLUSTERS_REL)
-                .withTitle("Cluster liveness, status and admin"));
-        resource.add(linkTo(methodOn(MachinesController.class)
+                .withRel(LinkRelations.CLUSTER_STATUS_REL)
+                .withTitle("Cluster liveness, status and admin controls"));
+        resource.add(linkTo(methodOn(WorkloadController.class)
                 .index())
-                .withRel(LinkRelations.MACHINES_REL)
-                .withTitle("Remote cluster machines"));
+                .withRel(LinkRelations.WORKLOADS_REL)
+                .withTitle("Cluster workloads"));
         resource.add(linkTo(methodOn(ToxiproxyController.class)
                 .index())
                 .withRel(LinkRelations.TOXIPROXY_REL)
                 .withTitle("Toxiproxy status and controls"));
-        resource.add(linkTo(methodOn(ChartController.class)
+        resource.add(linkTo(methodOn(VmChartController.class)
                 .index())
                 .withRel(LinkRelations.CHARTS_REL)
-                .withTitle("Chart metrics"));
-        resource.add(linkTo(methodOn(ChartWorkloadController.class)
+                .withTitle("VM chart metrics"));
+        resource.add(linkTo(methodOn(WorkloadChartController.class)
                 .index(null))
                 .withRel(LinkRelations.CHARTS_REL)
-                .withTitle("Chart metrics"));
+                .withTitle("Workload chart metrics"));
         resource.add(Link.of(ServletUriComponentsBuilder.fromCurrentContextPath()
                         .pathSegment("api", "actuator")
                         .buildAndExpand()

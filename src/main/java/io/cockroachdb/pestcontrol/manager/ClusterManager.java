@@ -4,9 +4,9 @@ import java.util.List;
 
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.operator.ClusterOperator;
-import io.cockroachdb.pestcontrol.schema.NodeModel;
-import io.cockroachdb.pestcontrol.schema.nodes.NodeDetail;
-import io.cockroachdb.pestcontrol.schema.nodes.NodeStatus;
+import io.cockroachdb.pestcontrol.api.cluster.status.NodeModel;
+import io.cockroachdb.pestcontrol.schema.NodeDetail;
+import io.cockroachdb.pestcontrol.schema.NodeStatus;
 
 public interface ClusterManager {
     List<String> getClusterIds();

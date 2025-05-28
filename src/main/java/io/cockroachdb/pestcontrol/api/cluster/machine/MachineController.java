@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.api.machine;
+package io.cockroachdb.pestcontrol.api.cluster.machine;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -29,8 +29,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/api/machine")
-public class MachinesController {
+@RequestMapping("/api/cluster/machine")
+public class MachineController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -62,17 +62,19 @@ public class MachinesController {
     }
 
     @GetMapping(value = "/{clusterId}")
-    public HttpEntity<MachinesForm> getForm(
+    public HttpEntity<MachinesForm> getMachines(
             @PathVariable("clusterId") String clusterId) {
-        ClusterProperties clusterProperties = applicationProperties.getClusterPropertiesById(clusterId);
+        MachinesForm form = new MachinesForm();
+        form.setClusterId(clusterId);
+
+        ClusterProperties clusterProperties = applicationProperties
+                .getClusterPropertiesById(clusterId);
         if (EnumSet.of(ClusterType.remote_insecure, ClusterType.remote_secure)
                 .contains(clusterProperties.getClusterType())) {
-            MachinesForm form = new MachinesForm();
-            form.setClusterId(clusterId);
             form.setMachines(clusterProperties.getMachines());
-            return ResponseEntity.ok(new MachineFormAssembler().toModel(form));
         }
-        return ResponseEntity.unprocessableEntity().build();
+
+        return ResponseEntity.ok(new MachineFormAssembler().toModel(form));
     }
 
     @PostMapping("/start")

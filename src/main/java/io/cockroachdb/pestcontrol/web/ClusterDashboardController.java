@@ -21,11 +21,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.cockroachdb.pestcontrol.api.MessageModel;
 import io.cockroachdb.pestcontrol.api.MessageType;
-import io.cockroachdb.pestcontrol.api.cluster.ClusterController;
+import io.cockroachdb.pestcontrol.api.cluster.status.StatusController;
 import io.cockroachdb.pestcontrol.manager.ClusterManager;
 import io.cockroachdb.pestcontrol.manager.CommandException;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
-import io.cockroachdb.pestcontrol.schema.ClusterModel;
+import io.cockroachdb.pestcontrol.api.cluster.status.StatusModel;
 import io.cockroachdb.pestcontrol.web.support.ClusterHelper;
 import io.cockroachdb.pestcontrol.web.support.SimpMessagePublisher;
 import io.cockroachdb.pestcontrol.web.support.TopicName;
@@ -41,22 +41,22 @@ public class ClusterDashboardController extends AbstractSessionController {
     private ClusterManager clusterManager;
 
     @Autowired
-    private ClusterController clusterController;
+    private StatusController statusController;
 
     @Scheduled(fixedRate = 5, initialDelay = 5, timeUnit = TimeUnit.SECONDS)
     public void scheduledStatusUpdate() {
         messagePublisher.convertAndSendNow(TopicName.DASHBOARD_MODEL_UPDATE);
     }
 
-    private Optional<ClusterModel> newClusterModel() {
+    private Optional<StatusModel> newClusterModel() {
         ClusterProperties clusterProperties = WebUtils.getAuthenticatedClusterProperties().orElseThrow(() ->
                 new AuthenticationCredentialsNotFoundException("Expected authentication token"));
 
         try {
-            ClusterModel clusterModel = clusterController
+            StatusModel statusModel = statusController
                     .getCluster(clusterProperties.getClusterId())
                     .getBody();
-            return Optional.ofNullable(clusterModel);
+            return Optional.ofNullable(statusModel);
         } catch (Exception e) {
             logger.warn("Error creating cluster model", e);
             return Optional.empty();

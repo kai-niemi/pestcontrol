@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.schema;
+package io.cockroachdb.pestcontrol.api.cluster.status;
 
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.model.Locality;
-import io.cockroachdb.pestcontrol.schema.nodes.NodeDetail;
-import io.cockroachdb.pestcontrol.schema.nodes.NodeStatus;
+import io.cockroachdb.pestcontrol.schema.NodeDetail;
+import io.cockroachdb.pestcontrol.schema.NodeStatus;
 
 /**
  * Combination of node detail and status.

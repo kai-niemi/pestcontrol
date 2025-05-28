@@ -22,7 +22,8 @@ import io.cockroachdb.pestcontrol.workload.model.Workload;
 
 @Component
 public class WorkloadManager {
-    private final List<ClusterWorkload> clusterWorkloads = Collections.synchronizedList(new ArrayList<>());
+    private final List<ClusterWorkload> clusterWorkloads
+            = Collections.synchronizedList(new ArrayList<>());
 
     @Autowired
     private WorkloadExecutor workloadExecutor;
@@ -67,7 +68,8 @@ public class WorkloadManager {
 
     public void takeSnapshot(Duration samplePeriod) {
         clusterWorkloads.parallelStream()
-                .forEach(clusterWorkers -> clusterWorkers.updateDataPoints(samplePeriod));
+                .forEach(clusterWorkers ->
+                        clusterWorkers.updateDataPoints(samplePeriod));
     }
 
     public void clearDataPoints(String clusterId) {

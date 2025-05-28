@@ -19,6 +19,14 @@ public class LinkRelations {
 
     public static final String CLUSTERS_REL = "clusters";
 
+    public static final String CLUSTER_STATUS_REL = "cluster-status";
+
+    public static final String CLUSTER_STATUSES_REL = "cluster-statuses";
+
+    public static final String CLUSTER_MACHINE_REL = "cluster-machine";
+
+    public static final String CLUSTER_MACHINES_REL = "cluster-machines";
+
     public static final String DISRUPT_REL = "disrupt";
 
     public static final String RECOVER_REL = "recover";
@@ -56,10 +64,6 @@ public class LinkRelations {
     public static final String LOCALITY_REL = "locality";
 
     public static final String LOCALITIES_REL = "localities";
-
-    public static final String MACHINE_REL = "machine";
-
-    public static final String MACHINES_REL = "machines";
 
     // IANA standard link relations:
     // http://www.iana.org/assignments/link-relations/link-relations.xhtml

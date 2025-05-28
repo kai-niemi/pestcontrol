@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.api.machine;
+package io.cockroachdb.pestcontrol.api.cluster.machine;
 
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 
@@ -11,13 +11,13 @@ public class MachineFormAssembler
     @Override
     public MachinesForm toModel(MachinesForm entity) {
         MachinesForm form = new MachinesForm();
-        form.add(linkTo(methodOn(MachinesController.class)
-                .getForm(entity.getClusterId()))
-                .withRel(LinkRelations.MACHINE_REL));
-        form.add(linkTo(methodOn(MachinesController.class)
+        form.add(linkTo(methodOn(MachineController.class)
+                .getMachines(entity.getClusterId()))
+                .withRel(LinkRelations.CLUSTER_MACHINE_REL));
+        form.add(linkTo(methodOn(MachineController.class)
                 .startMachine(null))
                 .withRel("start"));
-        form.add(linkTo(methodOn(MachinesController.class)
+        form.add(linkTo(methodOn(MachineController.class)
                 .stopMachine(null))
                 .withRel("stop"));
         return form;

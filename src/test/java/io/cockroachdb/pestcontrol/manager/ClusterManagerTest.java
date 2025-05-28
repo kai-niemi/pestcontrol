@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import io.cockroachdb.pestcontrol.AbstractIntegrationTest;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
-import io.cockroachdb.pestcontrol.schema.NodeModel;
-import io.cockroachdb.pestcontrol.schema.nodes.NodeDetail;
-import io.cockroachdb.pestcontrol.schema.nodes.NodeStatus;
+import io.cockroachdb.pestcontrol.api.cluster.status.NodeModel;
+import io.cockroachdb.pestcontrol.schema.NodeDetail;
+import io.cockroachdb.pestcontrol.schema.NodeStatus;
 import io.cockroachdb.pestcontrol.util.CalendarVersion;
 
 public class ClusterManagerTest extends AbstractIntegrationTest {

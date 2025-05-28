@@ -18,8 +18,8 @@ import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
 import io.cockroachdb.pestcontrol.model.Locality;
 import io.cockroachdb.pestcontrol.model.MachineProperties;
-import io.cockroachdb.pestcontrol.schema.disrupt.DisruptorSpecifications;
-import io.cockroachdb.pestcontrol.schema.disrupt.RegionalDisruptorSpecification;
+import io.cockroachdb.pestcontrol.schema.DisruptorSpecifications;
+import io.cockroachdb.pestcontrol.schema.RegionalDisruptorSpecification;
 
 @Component
 public class CloudClusterOperator implements ClusterOperator {
