@@ -65,11 +65,11 @@ application:
         url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
-      ## (optional) List of nodes in a network of machines/VMs for managed remote cluster types only.
+      ## (optional) List of machines/VMs for managed remote cluster types only.
       # Used to manage a cluster through pest control, potentially spanning multiple hosts as
       # opposed to many instances on a local host (or cloud) on different ports.
       # See: https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
-      mnodes:
+      machines:
         - url: http://127.0.0.1:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"

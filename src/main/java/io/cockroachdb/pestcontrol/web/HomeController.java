@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.cockroachdb.pestcontrol.api.FakeException;
+import io.cockroachdb.pestcontrol.api.MessageModel;
 import io.cockroachdb.pestcontrol.manager.ClusterManager;
 import io.cockroachdb.pestcontrol.web.support.WebUtils;
 

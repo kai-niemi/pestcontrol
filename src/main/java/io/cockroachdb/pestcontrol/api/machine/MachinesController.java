@@ -29,7 +29,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/api/machines")
+@RequestMapping("/api/machine")
 public class MachinesController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

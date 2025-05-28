@@ -17,7 +17,7 @@ import io.cockroachdb.pestcontrol.schema.LocalityModel;
 import io.cockroachdb.pestcontrol.schema.NodeModel;
 import io.cockroachdb.pestcontrol.schema.nodes.NodeDetail;
 import io.cockroachdb.pestcontrol.schema.nodes.NodeStatus;
-import io.cockroachdb.pestcontrol.web.MessageModel;
+import io.cockroachdb.pestcontrol.api.MessageModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 

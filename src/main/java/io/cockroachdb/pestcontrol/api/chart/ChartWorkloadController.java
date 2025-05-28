@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.web.AbstractSessionController;
-import io.cockroachdb.pestcontrol.web.MessageModel;
+import io.cockroachdb.pestcontrol.api.MessageModel;
 import io.cockroachdb.pestcontrol.web.support.ClusterHelper;
 import io.cockroachdb.pestcontrol.workload.WorkloadManager;
 import io.cockroachdb.pestcontrol.workload.model.Metrics;

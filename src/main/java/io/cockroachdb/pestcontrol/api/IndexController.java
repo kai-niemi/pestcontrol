@@ -16,7 +16,6 @@ import io.cockroachdb.pestcontrol.api.chart.ChartWorkloadController;
 import io.cockroachdb.pestcontrol.api.cluster.ClusterController;
 import io.cockroachdb.pestcontrol.api.machine.MachinesController;
 import io.cockroachdb.pestcontrol.api.toxiproxy.ToxiproxyController;
-import io.cockroachdb.pestcontrol.web.MessageModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -33,16 +32,16 @@ public class IndexController {
                 .withTitle("API index"));
         resource.add(linkTo(methodOn(ClusterController.class)
                 .index())
-                .withRel(LinkRelations.CLUSTER_REL)
+                .withRel(LinkRelations.CLUSTERS_REL)
                 .withTitle("Cluster liveness, status and admin"));
         resource.add(linkTo(methodOn(MachinesController.class)
                 .index())
-                .withRel(LinkRelations.NODES_REL)
-                .withTitle("Nodes index"));
+                .withRel(LinkRelations.MACHINES_REL)
+                .withTitle("Remote cluster machines"));
         resource.add(linkTo(methodOn(ToxiproxyController.class)
                 .index())
-                .withRel(LinkRelations.TOXIPROXY_INDEX_REL)
-                .withTitle("Toxiproxy index"));
+                .withRel(LinkRelations.TOXIPROXY_REL)
+                .withTitle("Toxiproxy status and controls"));
         resource.add(linkTo(methodOn(ChartController.class)
                 .index())
                 .withRel(LinkRelations.CHARTS_REL)

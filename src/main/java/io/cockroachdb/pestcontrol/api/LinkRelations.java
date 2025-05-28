@@ -33,7 +33,7 @@ public class LinkRelations {
 
     public static final String ADMIN_REL = "admin";
 
-    public static final String TOXIPROXY_INDEX_REL = "toxiproxy";
+    public static final String TOXIPROXY_REL = "toxiproxy";
 
     public static final String CHARTS_REL = "charts";
 

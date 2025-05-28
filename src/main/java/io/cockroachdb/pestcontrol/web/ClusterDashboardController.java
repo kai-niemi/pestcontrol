@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import io.cockroachdb.pestcontrol.api.MessageModel;
+import io.cockroachdb.pestcontrol.api.MessageType;
 import io.cockroachdb.pestcontrol.api.cluster.ClusterController;
 import io.cockroachdb.pestcontrol.manager.ClusterManager;
 import io.cockroachdb.pestcontrol.manager.CommandException;
