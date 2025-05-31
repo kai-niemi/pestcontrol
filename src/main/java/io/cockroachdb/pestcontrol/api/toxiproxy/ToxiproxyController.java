@@ -65,7 +65,7 @@ public class ToxiproxyController {
                     .withTitle("Reset proxies"));
             model.add(linkTo(methodOn(ToxiproxyController.class)
                     .findProxies())
-                    .withRel(LinkRelations.PROXIES_REL)
+                    .withRel(LinkRelations.PROXY_COLL_REL)
                     .withTitle("Collection of proxies"));
             return ResponseEntity.ok(model);
         } catch (IOException e) {

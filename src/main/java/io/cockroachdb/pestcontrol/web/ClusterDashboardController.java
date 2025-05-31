@@ -54,7 +54,7 @@ public class ClusterDashboardController extends AbstractSessionController {
 
         try {
             StatusModel statusModel = statusController
-                    .getCluster(clusterProperties.getClusterId())
+                    .getClusterIndex(clusterProperties.getClusterId())
                     .getBody();
             return Optional.ofNullable(statusModel);
         } catch (Exception e) {

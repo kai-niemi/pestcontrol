@@ -19,7 +19,7 @@ import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.util.TimeUtils;
 
 @Relation(itemRelation = LinkRelations.WORKLOAD_REL,
-        collectionRelation = LinkRelations.WORKLOADS_REL)
+        collectionRelation = LinkRelations.WORKLOAD_COLL_REL)
 @JsonPropertyOrder({"links", "embedded", "templates"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Workload extends RepresentationModel<Workload> {

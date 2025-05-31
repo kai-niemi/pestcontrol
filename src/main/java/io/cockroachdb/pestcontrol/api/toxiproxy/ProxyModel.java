@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.cockroachdb.pestcontrol.api.LinkRelations;
 
 @Relation(value = LinkRelations.PROXY_REL,
-        collectionRelation = LinkRelations.PROXIES_REL)
+        collectionRelation = LinkRelations.PROXY_COLL_REL)
 @JsonPropertyOrder({"links", "templates"})
 public class ProxyModel extends RepresentationModel<ProxyModel> {
     private String path;

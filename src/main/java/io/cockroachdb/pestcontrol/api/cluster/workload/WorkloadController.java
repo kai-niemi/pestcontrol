@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.api.workload;
+package io.cockroachdb.pestcontrol.api.cluster.workload;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
-import io.cockroachdb.pestcontrol.api.MessageModel;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.workload.WorkloadManager;
 import io.cockroachdb.pestcontrol.workload.model.Workload;
@@ -46,25 +45,8 @@ public class WorkloadController {
     @Autowired
     private ApplicationProperties applicationProperties;
 
-    @GetMapping
-    public ResponseEntity<MessageModel> index() {
-        MessageModel resource = new MessageModel();
-        resource.add(linkTo(methodOn(getClass())
-                .index())
-                .withSelfRel());
-
-        applicationProperties.getClusterIds().forEach(clusterId -> {
-            resource.add(linkTo(methodOn(WorkloadController.class)
-                    .getWorkers(clusterId))
-                    .withRel(LinkRelations.WORKLOADS_REL)
-                    .withTitle("Collection of cluster workers"));
-        });
-
-        return ResponseEntity.ok(resource);
-    }
-
-    @GetMapping("/{clusterId}/workers")
-    public ResponseEntity<CollectionModel<Workload>> getWorkers(
+    @GetMapping("/{clusterId}")
+    public ResponseEntity<CollectionModel<Workload>> getClusterIndex(
             @PathVariable("clusterId") String clusterId) {
         CollectionModel<Workload> collectionModel = workerModelAssembler
                 .toCollectionModel(workloadManager.getWorkloads(clusterId));
@@ -74,7 +56,7 @@ public class WorkloadController {
                 .withRel(LinkRelations.FORM_REL));
 
         Links newLinks = collectionModel.getLinks().merge(Links.MergeMode.REPLACE_BY_REL,
-                linkTo(methodOn(WorkloadController.class).getWorkers(clusterId))
+                linkTo(methodOn(WorkloadController.class).getClusterIndex(clusterId))
                         .withSelfRel()
                         .andAffordance(afford(methodOn(WorkloadController.class)
                                 .newWorker(clusterId, null))));
@@ -82,14 +64,14 @@ public class WorkloadController {
         return ResponseEntity.ok(CollectionModel.of(collectionModel.getContent(), newLinks));
     }
 
-    @GetMapping(value = "/{clusterId}/workers/{id}")
+    @GetMapping(value = "/{clusterId}/worker/{id}")
     public HttpEntity<Workload> getWorker(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {
         return ResponseEntity.ok(workerModelAssembler.toModel(workloadManager.findById(clusterId, id)));
     }
 
-    @PutMapping(value = "/{clusterId}/workers/{id}/cancel")
+    @PutMapping(value = "/{clusterId}/worker/{id}/cancel")
     public HttpEntity<Workload> cancelWorker(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {
@@ -102,7 +84,7 @@ public class WorkloadController {
         }
     }
 
-    @DeleteMapping(value = "/{clusterId}/workers/{id}/delete")
+    @DeleteMapping(value = "/{clusterId}/worker/{id}/delete")
     public HttpEntity<Void> deleteWorker(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {
@@ -114,7 +96,7 @@ public class WorkloadController {
         }
     }
 
-    @GetMapping(value = "/{clusterId}/workers/form")
+    @GetMapping(value = "/{clusterId}/worker/form")
     public HttpEntity<WorkloadForm> getWorkerForm(@PathVariable("clusterId") String clusterId) {
         WorkloadForm form = new WorkloadForm();
         form.setWorkloadType(WorkloadType.random_wait);
@@ -129,7 +111,7 @@ public class WorkloadController {
                 ));
     }
 
-    @PostMapping("/{clusterId}/workers")
+    @PostMapping("/{clusterId}/worker")
     public HttpEntity<CollectionModel<Workload>> newWorker(
             @PathVariable("clusterId") String clusterId,
             @RequestBody WorkloadForm form) {

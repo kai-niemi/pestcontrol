@@ -15,7 +15,7 @@ public class StatusModelAssembler
         }
 
         resource.add(linkTo(methodOn(StatusController.class)
-                .getCluster(resource.getId()))
+                .getClusterIndex(resource.getId()))
                 .withSelfRel());
         resource.add(linkTo(methodOn(StatusController.class)
                 .getVersion(resource.getId()))
@@ -25,9 +25,6 @@ public class StatusModelAssembler
                 .getNodes(resource.getId()))
                 .withRel(LinkRelations.NODES_REL)
                 .withTitle("Collection of cluster nodes"));
-//        resource.add(Link.of(resource.getClusterProperties().getAdminUrl())
-//                .withRel(LinkRelations.ADMIN_REL)
-//                .withTitle("CockroachDB DB Console"));
 
         return resource;
     }

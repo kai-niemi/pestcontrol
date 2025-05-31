@@ -31,7 +31,7 @@ import eu.rekawek.toxiproxy.model.ToxicType;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.api.toxiproxy.ToxicForm;
-import io.cockroachdb.pestcontrol.api.workload.WorkloadForm;
+import io.cockroachdb.pestcontrol.api.cluster.workload.WorkloadForm;
 import io.cockroachdb.pestcontrol.workload.profile.WorkloadType;
 
 @EnableWebMvc

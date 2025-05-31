@@ -10,7 +10,7 @@ import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 
 @Relation(value = LinkRelations.CLUSTER_REL,
-        collectionRelation = LinkRelations.CLUSTERS_REL)
+        collectionRelation = LinkRelations.CLUSTER_COLL_REL)
 @JsonPropertyOrder({"links", "embedded", "templates"})
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY, content = JsonInclude.Include.NON_NULL)
 public class ClusterModel extends RepresentationModel<ClusterModel> {
@@ -27,4 +27,5 @@ public class ClusterModel extends RepresentationModel<ClusterModel> {
     public ClusterProperties getClusterProperties() {
         return clusterProperties;
     }
+
 }

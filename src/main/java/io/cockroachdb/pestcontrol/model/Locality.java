@@ -34,14 +34,10 @@ public class Locality {
         return new Locality(tierList);
     }
 
-    @JsonProperty("tiers")
     private List<Tier> tiers;
 
     @JsonIgnore
     private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
-
-    public Locality() {
-    }
 
     public Locality(List<Tier> tiers) {
         this.tiers = tiers;
@@ -96,10 +92,6 @@ public class Locality {
     @Override
     public int hashCode() {
         return Objects.hashCode(toString());
-    }
-
-    public String toTiers() {
-        return toString();
     }
 
     @Override

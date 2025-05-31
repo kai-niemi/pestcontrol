@@ -1,17 +1,14 @@
 package io.cockroachdb.pestcontrol.api.cluster.machine;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Links;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,8 +22,6 @@ import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
 import io.cockroachdb.pestcontrol.model.MachineProperties;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/cluster/machine")
@@ -36,53 +31,30 @@ public class MachineController {
     @Autowired
     private ApplicationProperties applicationProperties;
 
-    @GetMapping
-    public ResponseEntity<CollectionModel<MachinesForm>> index() {
-        List<MachinesForm> forms = new ArrayList<>();
-
-        applicationProperties.getClusterIds().forEach(clusterId -> {
-            ClusterProperties clusterProperties = applicationProperties.getClusterPropertiesById(clusterId);
-            if (EnumSet.of(ClusterType.remote_insecure, ClusterType.remote_secure)
-                    .contains(clusterProperties.getClusterType())) {
-                MachinesForm form = new MachinesForm();
-                form.setClusterId(clusterId);
-                form.setMachines(clusterProperties.getMachines());
-                forms.add(new MachineFormAssembler().toModel(form));
-            }
-        });
-
-        CollectionModel<MachinesForm> collectionModel = CollectionModel.of(forms);
-
-        Links links = collectionModel.getLinks().merge(Links.MergeMode.REPLACE_BY_REL,
-                linkTo(methodOn(getClass())
-                        .index())
-                        .withSelfRel());
-
-        return ResponseEntity.ok(CollectionModel.of(collectionModel.getContent(), links));
-    }
-
     @GetMapping(value = "/{clusterId}")
-    public HttpEntity<MachinesForm> getMachines(
+    public HttpEntity<MachineModel> getClusterIndex(
             @PathVariable("clusterId") String clusterId) {
-        MachinesForm form = new MachinesForm();
-        form.setClusterId(clusterId);
+        MachineModel model = MachineModel.fromId(clusterId);
 
         ClusterProperties clusterProperties = applicationProperties
                 .getClusterPropertiesById(clusterId);
         if (EnumSet.of(ClusterType.remote_insecure, ClusterType.remote_secure)
                 .contains(clusterProperties.getClusterType())) {
-            form.setMachines(clusterProperties.getMachines());
+            model.setMachines(clusterProperties.getMachines());
         }
 
-        return ResponseEntity.ok(new MachineFormAssembler().toModel(form));
+        return ResponseEntity.ok(new MachineModelAssembler().toModel(model));
     }
 
-    @PostMapping("/start")
+    @PostMapping("/start/{nodeId}")
     public HttpEntity<Void> startMachine(
-            @RequestBody @Valid MachinesForm form) {
+            @PathVariable("nodeId") Integer nodeId,
+            @RequestBody @Valid MachineModel form) {
+        Assert.isTrue(nodeId > 0, "nodeId must be > 0");
+
         MachineProperties agent = form.getMachines()
                 .stream()
-                .skip(form.getNodeId() - 1)
+                .skip(nodeId - 1)
                 .findFirst()
                 .orElseThrow();
 
@@ -93,12 +65,15 @@ public class MachineController {
                 .build();
     }
 
-    @PostMapping("/stop")
+    @PostMapping("/stop/{nodeId}")
     public HttpEntity<Void> stopMachine(
-            @RequestBody @Valid MachinesForm form) {
+            @PathVariable("nodeId") Integer nodeId,
+            @RequestBody @Valid MachineModel form) {
+        Assert.isTrue(nodeId > 0, "nodeId must be > 0");
+
         MachineProperties agent = form.getMachines()
                 .stream()
-                .skip(form.getNodeId() - 1)
+                .skip(nodeId - 1)
                 .findFirst()
                 .orElseThrow();
 

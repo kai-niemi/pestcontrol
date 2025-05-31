@@ -1,10 +1,7 @@
 package io.cockroachdb.pestcontrol.api.cluster.status;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.RepresentationModel;
@@ -22,7 +19,7 @@ import io.cockroachdb.pestcontrol.model.Tier;
  * tiers region, zone and node.
  */
 @Relation(value = LinkRelations.CLUSTER_STATUS_REL,
-        collectionRelation = LinkRelations.CLUSTER_STATUSES_REL)
+        collectionRelation = LinkRelations.CLUSTER_STATUS_COLL_REL)
 @JsonPropertyOrder({"links", "embedded", "templates"})
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY, content = JsonInclude.Include.NON_NULL)
 public class StatusModel extends RepresentationModel<StatusModel> {
@@ -33,8 +30,6 @@ public class StatusModel extends RepresentationModel<StatusModel> {
     private final String clusterId;
 
     private CollectionModel<NodeModel> nodes = CollectionModel.empty();
-
-    private CollectionModel<LocalityModel> localities = CollectionModel.empty();
 
     private StatusModel(String clusterId) {
         Assert.notNull(clusterId, "clusterId is null");
@@ -51,43 +46,6 @@ public class StatusModel extends RepresentationModel<StatusModel> {
 
     public void setNodes(CollectionModel<NodeModel> nodes) {
         this.nodes = nodes;
-    }
-
-    public void setLocalities(CollectionModel<LocalityModel> localities) {
-        this.localities = localities;
-    }
-
-    public CollectionModel<LocalityModel> getLocalities() {
-        return localities;
-    }
-
-    /**
-     * Find locality tiers up to a given sublevel.
-     *
-     * @param level the sublevel (1-based)
-     * @return list of tiers
-     */
-    public List<LocalityModel> getLocalities(int level) {
-        // Keep insertion order
-        Set<LocalityModel> subLocalities = new LinkedHashSet<>();
-//                Comparator.comparing(LocalityModel::toTiers));
-
-        localities.forEach(localityModel -> {
-            LocalityModel subLocality = new LocalityModel(new ArrayList<>(localityModel
-                    .getTiers()
-                    .stream()
-                    .limit(level)
-                    .toList()))
-                    .add(localityModel.getLinks());
-
-            subLocalities.stream()
-                    .filter(x -> x.toTiers().equals(subLocality.toTiers()))
-                    .findFirst()
-                    .ifPresentOrElse(localityModel1 -> {
-                    }, () -> subLocalities.add(subLocality));
-        });
-
-        return new ArrayList<>(subLocalities);
     }
 
     /**

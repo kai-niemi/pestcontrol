@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
-import io.cockroachdb.pestcontrol.api.cluster.machine.MachinesForm;
+import io.cockroachdb.pestcontrol.api.cluster.machine.MachineModel;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
 import io.cockroachdb.pestcontrol.model.MachineProperties;
@@ -31,18 +31,17 @@ public class RemoteClusterOperator implements ClusterOperator {
 
     @Override
     public void startNode(ClusterProperties clusterProperties, Integer nodeId) {
-        MachinesForm form = new MachinesForm();
-        form.setNodeId(nodeId);
-        form.setMachines(clusterProperties.getMachines());
+        MachineModel model = MachineModel.fromId(clusterProperties.getClusterId());
+        model.setMachines(clusterProperties.getMachines());
 
         MachineProperties machineProperties = clusterProperties.getNodeById(nodeId);
 
-        ResponseEntity<MachinesForm> response = hypermediaClient.post(
+        ResponseEntity<String> response = hypermediaClient.post(
                 hypermediaClient.from(machineProperties.getBaseUrl())
                         .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.NODES_REL).value())
                         .asLink(),
-                form,
-                MachinesForm.class);
+                model,
+                String.class);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("HTTP status: {}", response);
         } else {
