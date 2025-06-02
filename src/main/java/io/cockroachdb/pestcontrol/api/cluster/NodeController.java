@@ -20,7 +20,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/api/cluster")
+@RequestMapping("/api/cluster/node")
 public class NodeController {
     @Autowired
     private ClusterManager clusterManager;
@@ -28,7 +28,7 @@ public class NodeController {
     @Autowired
     private ApplicationProperties applicationProperties;
 
-    @GetMapping("/{clusterId}/node")
+    @GetMapping("/{clusterId}")
     public ResponseEntity<CollectionModel<NodeModel>> getNodes(
             @PathVariable("clusterId") String clusterId) {
         final List<NodeModel> nodes
@@ -43,7 +43,7 @@ public class NodeController {
                         .withSelfRel()));
     }
 
-    @GetMapping("/{clusterId}/node/{id}")
+    @GetMapping("/{clusterId}/{id}")
     public ResponseEntity<NodeModel> getNode(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {
@@ -53,7 +53,7 @@ public class NodeController {
         return ResponseEntity.ok(assembler.toModel(nodeModel));
     }
 
-    @GetMapping("/{clusterId}/node/{id}/detail")
+    @GetMapping("/{clusterId}/{id}/detail")
     public ResponseEntity<EntityModel<NodeDetail>> getNodeDetail(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {
@@ -64,7 +64,7 @@ public class NodeController {
                         .withSelfRel()));
     }
 
-    @GetMapping("/{clusterId}/node/{id}/status")
+    @GetMapping("/{clusterId}/{id}/status")
     public ResponseEntity<EntityModel<NodeStatus>> getNodeStatus(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {

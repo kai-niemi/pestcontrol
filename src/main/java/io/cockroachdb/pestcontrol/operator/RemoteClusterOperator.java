@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
-import io.cockroachdb.pestcontrol.api.cluster.machine.MachineModel;
+import io.cockroachdb.pestcontrol.api.cluster.network.NetworkModel;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
 import io.cockroachdb.pestcontrol.model.NodeProperties;
@@ -32,7 +32,7 @@ public class RemoteClusterOperator implements ClusterOperator {
 
     @Override
     public void startNode(ClusterProperties clusterProperties, Integer nodeId) {
-        MachineModel model = new MachineModel();
+        NetworkModel model = new NetworkModel();
         model.setNodes(clusterProperties.getNodes());
 
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
@@ -40,8 +40,8 @@ public class RemoteClusterOperator implements ClusterOperator {
         ResponseEntity<String> response = hypermediaClient.post(
                 hypermediaClient.from(nodeProperties.getBaseUrl())
                         .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.CLUSTER_COLL_REL).value())
-                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.CLUSTER_MACHINE_REL).value())
-                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.START_REL).value())
+                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.NETWORK_REL).value())
+                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.NODE_START_REL).value())
                         .withTemplateParameters(Map.of("clusterId", clusterProperties.getClusterId()))
                         .withTemplateParameters(Map.of("nodeId", nodeId))
                         .asLink(),
@@ -56,7 +56,7 @@ public class RemoteClusterOperator implements ClusterOperator {
 
     @Override
     public void stopNode(ClusterProperties clusterProperties, Integer nodeId) {
-        MachineModel model = new MachineModel();
+        NetworkModel model = new NetworkModel();
         model.setNodes(clusterProperties.getNodes());
 
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
@@ -64,8 +64,8 @@ public class RemoteClusterOperator implements ClusterOperator {
         ResponseEntity<String> response = hypermediaClient.post(
                 hypermediaClient.from(nodeProperties.getBaseUrl())
                         .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.CLUSTER_COLL_REL).value())
-                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.CLUSTER_MACHINE_REL).value())
-                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.STOP_REL).value())
+                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.NETWORK_REL).value())
+                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.NODE_STOP_REL).value())
                         .withTemplateParameters(Map.of("clusterId", clusterProperties.getClusterId()))
                         .withTemplateParameters(Map.of("nodeId", nodeId))
                         .asLink(),

@@ -31,7 +31,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/api/toxi")
+@RequestMapping("/api/toxiproxy")
 public class ToxiproxyController {
     @Autowired
     private ToxiproxyClient toxiproxyClient;

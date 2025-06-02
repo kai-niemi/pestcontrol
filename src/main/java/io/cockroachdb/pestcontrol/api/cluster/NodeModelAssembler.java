@@ -41,21 +41,21 @@ public class NodeModelAssembler
                 .contains(clusterType)) {
             resource.add(linkTo(methodOn(AdminController.class)
                     .disruptLocality(resource.getClusterId(), null))
-                    .withRel(LinkRelations.DISRUPT_REL)
+                    .withRel(LinkRelations.NODE_DISRUPT_REL)
                     .withTitle("Apply locality disruption"));
             resource.add(linkTo(methodOn(AdminController.class)
                     .recoverLocality(resource.getClusterId(), null))
-                    .withRel(LinkRelations.RECOVER_REL)
+                    .withRel(LinkRelations.NODE_RECOVER_REL)
                     .withTitle("Recover locality disruption"));
         }
 
         resource.add(linkTo(methodOn(AdminController.class)
                 .disruptNode(resource.getClusterId(), resource.getId()))
-                .withRel(LinkRelations.DISRUPT_REL)
+                .withRel(LinkRelations.NODE_DISRUPT_REL)
                 .withTitle("Apply node disruption"));
         resource.add(linkTo(methodOn(AdminController.class)
                 .recoverNode(resource.getClusterId(), resource.getId()))
-                .withRel(LinkRelations.RECOVER_REL)
+                .withRel(LinkRelations.NODE_RECOVER_REL)
                 .withTitle("Recover node disruption"));
 
         return resource;

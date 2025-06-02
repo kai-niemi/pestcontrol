@@ -21,43 +21,37 @@ public class LinkRelations {
 
     public static final String CLUSTER_ADMIN_REL = "admin";
 
-//    public static final String CLUSTER_ADMIN_COLL_REL = "admin-coll";
-
     public static final String CLUSTER_NODE_COLL_REL = "nodes";
 
-//    public static final String CLUSTER_STATUS_COLL_REL = "status-coll";
-
-    public static final String CLUSTER_MACHINE_REL = "machine";
-
-    public static final String CLUSTER_MACHINE_COLL_REL = "machines";
+    public static final String NETWORK_REL = "network";
 
     public static final String WORKLOAD_REL = "workload";
 
     public static final String WORKLOAD_COLL_REL = "workloads";
 
-    public static final String START_REL = "start";
-
-    public static final String STOP_REL = "stop";
-
-    public static final String DISRUPT_REL = "disrupt";
-
-    public static final String DISRUPT_LOC_REL = "disrupt-locality";
-
-    public static final String RECOVER_REL = "recover";
-
-    public static final String RECOVER_LOC_REL = "recover-locality";
-
     public static final String NODE_REL = "node";
 
     public static final String NODE_COLL_REL = "nodes";
+
+    public static final String NODE_START_REL = "node-start";
+
+    public static final String NODE_STOP_REL = "node-stop";
+
+    public static final String NODE_DISRUPT_REL = "node-disrupt";
+
+    public static final String NODE_RECOVER_REL = "node-recover";
 
     public static final String NODE_STATUS_REL = "node-status";
 
     public static final String NODE_DETAIL_REL = "node-detail";
 
-    public static final String TOXIPROXY_REL = "toxiproxy";
+    public static final String DISRUPT_LOC_REL = "locality-disrupt";
+
+    public static final String RECOVER_LOC_REL = "locality-recover";
 
     public static final String CHART_COLL_REL = "charts";
+
+    public static final String TOXIPROXY_REL = "toxiproxy";
 
     public static final String PROXY_REL = "proxy";
 

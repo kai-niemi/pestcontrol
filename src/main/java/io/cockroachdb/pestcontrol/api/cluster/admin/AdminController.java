@@ -20,7 +20,7 @@ public class AdminController {
     private ClusterManager clusterManager;
 
     @GetMapping("/{clusterId}")
-    public ResponseEntity<AdminModel> getClusterIndex(@PathVariable("clusterId") String clusterId) {
+    public ResponseEntity<AdminModel> getAdmin(@PathVariable("clusterId") String clusterId) {
         AdminModel model = AdminModel.fromId(clusterId);
         ClusterType clusterType = clusterManager.getClusterProperties(clusterId).getClusterType();
         return ResponseEntity.ok(new AdminModelAssembler(clusterId, clusterType)
@@ -43,7 +43,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{clusterId}/node/{nodeId}/disrupt")
+    @PostMapping("/{clusterId}/{nodeId}/disrupt")
     public ResponseEntity<Void> disruptNode(@PathVariable("clusterId") String clusterId,
                                             @PathVariable("nodeId") Integer id) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
@@ -52,7 +52,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{clusterId}/node/{nodeId}/recover")
+    @PostMapping("/{clusterId}/{nodeId}/recover")
     public ResponseEntity<Void> recoverNode(@PathVariable("clusterId") String clusterId,
                                             @PathVariable("nodeId") Integer id) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);

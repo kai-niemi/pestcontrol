@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * Node properties describing a local or remote remote Pest Control instance.
+ * Node properties describing a local or remote network node.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Validated

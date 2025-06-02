@@ -28,7 +28,7 @@ public class AdminModelAssembler
         }
 
         resource.add(WebMvcLinkBuilder.linkTo(methodOn(AdminController.class)
-                        .getClusterIndex(clusterId))
+                        .getAdmin(clusterId))
                 .withSelfRel());
 
         if (EnumSet.of(ClusterType.cloud_dedicated,
@@ -47,11 +47,11 @@ public class AdminModelAssembler
 
         resource.add(linkTo(methodOn(AdminController.class)
                 .disruptNode(resource.getClusterId(), null))
-                .withRel(LinkRelations.DISRUPT_REL)
+                .withRel(LinkRelations.NODE_DISRUPT_REL)
                 .withTitle("Apply node disruption"));
         resource.add(linkTo(methodOn(AdminController.class)
                 .recoverNode(resource.getClusterId(), null))
-                .withRel(LinkRelations.RECOVER_REL)
+                .withRel(LinkRelations.NODE_RECOVER_REL)
                 .withTitle("Recover node disruption"));
 
         return resource;

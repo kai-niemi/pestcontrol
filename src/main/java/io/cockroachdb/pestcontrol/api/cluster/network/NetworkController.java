@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.api.cluster.machine;
+package io.cockroachdb.pestcontrol.api.cluster.network;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,32 +24,31 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/api/cluster/machine")
-public class MachineController {
+@RequestMapping("/api/cluster/network")
+public class NetworkController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private ApplicationProperties applicationProperties;
 
     @GetMapping(value = "/{clusterId}")
-    public HttpEntity<MachineModel> getClusterIndex(
+    public HttpEntity<NetworkModel> getNetwork(
             @PathVariable("clusterId") String clusterId) {
 
         ClusterProperties clusterProperties = applicationProperties
                 .getClusterPropertiesById(clusterId);
 
-        MachineModel resource = new MachineModel();
+        NetworkModel resource = new NetworkModel();
         resource.setNodes(clusterProperties.getNodes());
-
-        resource.add(linkTo(methodOn(MachineController.class)
-                .getClusterIndex(clusterId))
+        resource.add(linkTo(methodOn(NetworkController.class)
+                .getNetwork(clusterId))
                 .withSelfRel());
-        resource.add(linkTo(methodOn(MachineController.class)
+        resource.add(linkTo(methodOn(NetworkController.class)
                 .startMachine(clusterId, null, null))
-                .withRel(LinkRelations.START_REL));
-        resource.add(linkTo(methodOn(MachineController.class)
+                .withRel(LinkRelations.NODE_START_REL));
+        resource.add(linkTo(methodOn(NetworkController.class)
                 .stopMachine(clusterId, null, null))
-                .withRel(LinkRelations.STOP_REL));
+                .withRel(LinkRelations.NODE_STOP_REL));
 
         return ResponseEntity.ok(resource);
     }
@@ -58,7 +57,7 @@ public class MachineController {
     public HttpEntity<Void> startMachine(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid MachineModel model) {
+            @RequestBody @Valid NetworkModel model) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         NodeProperties node = model.findNodeProperties(nodeId);
@@ -74,7 +73,7 @@ public class MachineController {
     public HttpEntity<Void> stopMachine(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid MachineModel model) {
+            @RequestBody @Valid NetworkModel model) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         NodeProperties node = model.findNodeProperties(nodeId);
