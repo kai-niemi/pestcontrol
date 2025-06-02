@@ -18,6 +18,7 @@ public class ClusterModelAssembler
     @Override
     public ClusterModel toModel(ClusterModel resource) {
         String id = resource.getClusterProperties().getClusterId();
+
         resource.add(linkTo(methodOn(ClusterController.class)
                 .getCluster(id))
                 .withSelfRel());

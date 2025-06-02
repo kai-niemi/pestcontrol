@@ -59,7 +59,7 @@ public class CloudClusterOperator implements ClusterOperator {
 
     @Override
     public void disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodeProperties(nodeId);
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         final Locality locality = Locality.fromTiers(nodeProperties.getLocality());
 

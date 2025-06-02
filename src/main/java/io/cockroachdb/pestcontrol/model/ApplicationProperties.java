@@ -14,16 +14,18 @@ import org.springframework.validation.annotation.Validated;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import io.cockroachdb.pestcontrol.config.ClosableDataSource;
 import io.cockroachdb.pestcontrol.operator.ClusterOperator;
 
 @Component
-@ConfigurationProperties(prefix = "application")
 @Validated
+@ConfigurationProperties(prefix = "application", ignoreUnknownFields = false)
 public class ApplicationProperties {
-    @Valid
-    private List<ClusterProperties> clusters = new ArrayList<>();
+    @NotEmpty
+    private List<@Valid ClusterProperties> clusters = new ArrayList<>();
 
     @Autowired
     private Function<DataSourceProperties, ClosableDataSource> dataSourceFactory;
@@ -33,6 +35,16 @@ public class ApplicationProperties {
 
     @Valid
     private ToxiproxyProperties toxiproxy;
+
+    @Valid
+    @NotNull
+    private HttpClientProperties http;
+
+    private Integer threadPoolMaxSize;
+
+    private Integer samplePeriodSeconds;
+
+    private String scriptPath;
 
     @PostConstruct
     public void init() {
@@ -87,4 +99,35 @@ public class ApplicationProperties {
         this.toxiproxy = toxiproxy;
     }
 
+    public Integer getSamplePeriodSeconds() {
+        return samplePeriodSeconds;
+    }
+
+    public void setSamplePeriodSeconds(Integer samplePeriodSeconds) {
+        this.samplePeriodSeconds = samplePeriodSeconds;
+    }
+
+    public String getScriptPath() {
+        return scriptPath;
+    }
+
+    public void setScriptPath(String scriptPath) {
+        this.scriptPath = scriptPath;
+    }
+
+    public Integer getThreadPoolMaxSize() {
+        return threadPoolMaxSize;
+    }
+
+    public void setThreadPoolMaxSize(Integer threadPoolMaxSize) {
+        this.threadPoolMaxSize = threadPoolMaxSize;
+    }
+
+    public HttpClientProperties getHttp() {
+        return http;
+    }
+
+    public void setHttp(HttpClientProperties http) {
+        this.http = http;
+    }
 }

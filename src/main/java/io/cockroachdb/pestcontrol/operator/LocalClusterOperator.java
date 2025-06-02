@@ -15,11 +15,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
 import io.cockroachdb.pestcontrol.manager.CommandException;
+import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
 import io.cockroachdb.pestcontrol.model.NodeProperties;
@@ -31,8 +33,8 @@ public class LocalClusterOperator implements ClusterOperator {
     private final ShellCommands shellCommands = new ShellCommands() {
     };
 
-    @Value("${application.scriptPath}")
-    private String scriptPath;
+    @Autowired
+    private ApplicationProperties applicationProperties;
 
     private static void copy(InputStream in, OutputStream out) throws IOException {
         try (InputStream is = new BufferedInputStream(in)) {
@@ -77,7 +79,7 @@ public class LocalClusterOperator implements ClusterOperator {
 
     @Override
     public void disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodeProperties(nodeId);
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         ByteArrayOutputStream barr = new ByteArrayOutputStream();
         int code = executeProcess(shellCommands.disrupt(nodeProperties), barr);
@@ -88,7 +90,7 @@ public class LocalClusterOperator implements ClusterOperator {
 
     @Override
     public void recoverNode(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodeProperties(nodeId);
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         ByteArrayOutputStream barr = new ByteArrayOutputStream();
         int code = executeProcess(shellCommands.recover(nodeProperties), barr);
@@ -114,7 +116,7 @@ public class LocalClusterOperator implements ClusterOperator {
         try {
             Process process = new ProcessBuilder()
                     .command(commands)
-                    .directory(Paths.get(scriptPath).toFile())
+                    .directory(Paths.get(applicationProperties.getScriptPath()).toFile())
                     .start();
 
             logger.debug("Started process: %s".formatted(process.info()));

@@ -25,5 +25,4 @@ public class ClusterModel extends RepresentationModel<ClusterModel> {
     public ClusterProperties getClusterProperties() {
         return clusterProperties;
     }
-
 }

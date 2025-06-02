@@ -35,7 +35,7 @@ public class RemoteClusterOperator implements ClusterOperator {
         MachineModel model = new MachineModel();
         model.setNodes(clusterProperties.getNodes());
 
-        NodeProperties nodeProperties = clusterProperties.findNodeProperties(nodeId);
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         ResponseEntity<String> response = hypermediaClient.post(
                 hypermediaClient.from(nodeProperties.getBaseUrl())
@@ -59,7 +59,7 @@ public class RemoteClusterOperator implements ClusterOperator {
         MachineModel model = new MachineModel();
         model.setNodes(clusterProperties.getNodes());
 
-        NodeProperties nodeProperties = clusterProperties.findNodeProperties(nodeId);
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         ResponseEntity<String> response = hypermediaClient.post(
                 hypermediaClient.from(nodeProperties.getBaseUrl())

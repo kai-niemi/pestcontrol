@@ -23,14 +23,16 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.context.request.async.CallableProcessingInterceptor;
 import org.springframework.web.context.request.async.TimeoutCallableProcessingInterceptor;
 
+import io.cockroachdb.pestcontrol.model.ApplicationProperties;
+
 @Configuration
 @EnableAsync
 @EnableScheduling
 public class AsyncConfiguration implements AsyncConfigurer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Value("${application.threadPoolMaxSize}")
-    private int threadPoolMaxSize;
+    @Autowired
+    private ApplicationProperties applicationProperties;
 
     @Override
     public AsyncTaskExecutor getAsyncExecutor() {
@@ -39,8 +41,8 @@ public class AsyncConfiguration implements AsyncConfigurer {
         // Pool threads are also reclaimed when they are idle for 10 seconds.
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(threadPoolMaxSize <= 0
-                ? Runtime.getRuntime().availableProcessors() : threadPoolMaxSize);
+        executor.setMaxPoolSize(applicationProperties.getThreadPoolMaxSize() <= 0
+                ? Runtime.getRuntime().availableProcessors() : applicationProperties.getThreadPoolMaxSize());
         executor.setQueueCapacity(32);
         executor.setKeepAliveSeconds(10);
         executor.setThreadNamePrefix("async-");

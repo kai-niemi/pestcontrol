@@ -3,15 +3,15 @@ package io.cockroachdb.pestcontrol.model;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import io.cockroachdb.pestcontrol.util.Networking;
@@ -21,9 +21,13 @@ import io.cockroachdb.pestcontrol.util.Networking;
  */
 @Validated
 public class ClusterProperties {
-    @Valid
     @NotNull
+    @NotBlank
     private String clusterId;
+
+    @NotNull
+    @NotBlank
+    private String clusterName;
 
     @Valid
     @NotNull
@@ -35,21 +39,21 @@ public class ClusterProperties {
 
     private Path certificatePath;
 
+    @Valid
     private DataSourceProperties dataSourceProperties;
 
-    @Valid
-    private List<NodeProperties> nodes = new ArrayList<>();
-
-    public NodeProperties findNodeProperties(Integer nodeId) {
-        return nodes.stream()
-                .filter(agent -> nodeId.equals(agent.getId()))
-                .findFirst()
-                .orElseThrow();
-    }
+    private List<@Valid NodeProperties> nodes = new ArrayList<>();
 
     public void init() {
         AtomicInteger id = new AtomicInteger();
         nodes.forEach(properties -> properties.setId(id.incrementAndGet()));
+    }
+
+    public NodeProperties findNodePropertiesById(int nodeId) {
+        return nodes.stream()
+                .filter(agent -> Objects.equals(nodeId, agent.getId()))
+                .findFirst()
+                .orElseThrow();
     }
 
     public List<NodeProperties> getNodes() {
@@ -58,6 +62,22 @@ public class ClusterProperties {
 
     public void setNodes(List<NodeProperties> nodes) {
         this.nodes = nodes;
+    }
+
+    public String getClusterId() {
+        return clusterId;
+    }
+
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
+    }
+
+    public String getClusterName() {
+        return clusterName;
+    }
+
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
     }
 
     public ClusterType getClusterType() {
@@ -104,13 +124,5 @@ public class ClusterProperties {
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
-    }
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
     }
 }

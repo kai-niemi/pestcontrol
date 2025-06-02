@@ -98,14 +98,16 @@ application:
           http-addr: 127.0.0.3:8080
 
 
-## Other service parameters
-
   # -1 denotes use of unbounded virtual threads
   threadPoolMaxSize: -1
   # Sample period for time-series data points in graphs
   samplePeriodSeconds: 300
   # Base directory for 'cluster-admin' shell script
   scriptPath: "."
+  ## Other service parameters
+  http:
+    maxConnPerRoute: 0
+    maxTotal: 0
   # Host settings for toxiproxy
   toxiproxy:
     host: localhost

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import io.cockroachdb.pestcontrol.api.FakeException;
 import io.cockroachdb.pestcontrol.api.MessageModel;
 import io.cockroachdb.pestcontrol.manager.ClusterManager;
 import io.cockroachdb.pestcontrol.web.support.WebUtils;
@@ -41,25 +40,5 @@ public class HomeController {
     @GetMapping("/notice")
     public String noticePage(Model model) {
         return "notice";
-    }
-
-    @GetMapping("/fakeerror")
-    public ResponseEntity<MessageModel> errorOnGet() {
-        throw new FakeException("Fake exception!", new IOException("I/O disturbance!"));
-    }
-
-    @PutMapping("/fakeerror")
-    public ResponseEntity<MessageModel> errorOnPut() {
-        throw new FakeException("Fake exception!", new IOException("I/O disturbance!"));
-    }
-
-    @PostMapping("/fakeerror")
-    public ResponseEntity<MessageModel> errorOnPost() {
-        throw new FakeException("Fake exception!", new IOException("I/O disturbance!"));
-    }
-
-    @DeleteMapping("/fakeerror")
-    public ResponseEntity<MessageModel> errorOnDelete() {
-        throw new FakeException("Fake exception!", new IOException("I/O disturbance!"));
     }
 }

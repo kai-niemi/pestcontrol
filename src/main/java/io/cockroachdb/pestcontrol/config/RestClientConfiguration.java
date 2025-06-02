@@ -13,7 +13,7 @@ import org.apache.hc.core5.pool.PoolReusePolicy;
 import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.client.RestClientSsl;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.ssl.NoSuchSslBundleException;
@@ -31,6 +31,7 @@ import org.springframework.web.client.RestTemplate;
 
 import io.cockroachdb.pestcontrol.manager.ClientErrorException;
 import io.cockroachdb.pestcontrol.manager.ServerErrorException;
+import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
 import io.cockroachdb.pestcontrol.shell.support.HypermediaClient;
 
@@ -38,14 +39,14 @@ import io.cockroachdb.pestcontrol.shell.support.HypermediaClient;
 public class RestClientConfiguration implements RestTemplateCustomizer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Value("${pestcontrol.http.maxTotal:0}")
-    private int maxTotal;
-
-    @Value("${pestcontrol.http.maxConnPerRoute:0}")
-    private int maxConnPerRoute;
+    @Autowired
+    private ApplicationProperties applicationProperties;
 
     @Override
     public void customize(RestTemplate restTemplate) {
+        int maxTotal = applicationProperties.getHttp().getMaxTotal();
+        int maxConnPerRoute = applicationProperties.getHttp().getMaxConnPerRoute();
+
         if (maxConnPerRoute <= 0 || maxTotal <= 0) {
             maxConnPerRoute = Runtime.getRuntime().availableProcessors() * 8;
             maxTotal = maxConnPerRoute * 2;
