@@ -22,7 +22,7 @@ import org.springframework.util.StreamUtils;
 import io.cockroachdb.pestcontrol.manager.CommandException;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
-import io.cockroachdb.pestcontrol.model.MachineProperties;
+import io.cockroachdb.pestcontrol.model.NodeProperties;
 
 @Component
 public class LocalClusterOperator implements ClusterOperator {
@@ -77,10 +77,10 @@ public class LocalClusterOperator implements ClusterOperator {
 
     @Override
     public void disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
-        MachineProperties machineProperties = clusterProperties.getNodeById(nodeId);
+        NodeProperties nodeProperties = clusterProperties.findNodeProperties(nodeId);
 
         ByteArrayOutputStream barr = new ByteArrayOutputStream();
-        int code = executeProcess(shellCommands.disrupt(machineProperties), barr);
+        int code = executeProcess(shellCommands.disrupt(nodeProperties), barr);
         if (code != 0) {
             throw new CommandException(StreamUtils.copyToString(barr, Charset.defaultCharset()), code);
         }
@@ -88,10 +88,10 @@ public class LocalClusterOperator implements ClusterOperator {
 
     @Override
     public void recoverNode(ClusterProperties clusterProperties, Integer nodeId) {
-        MachineProperties machineProperties = clusterProperties.getNodeById(nodeId);
+        NodeProperties nodeProperties = clusterProperties.findNodeProperties(nodeId);
 
         ByteArrayOutputStream barr = new ByteArrayOutputStream();
-        int code = executeProcess(shellCommands.recover(machineProperties), barr);
+        int code = executeProcess(shellCommands.recover(nodeProperties), barr);
         if (code != 0) {
             throw new CommandException(StreamUtils.copyToString(barr, Charset.defaultCharset()), code);
         }

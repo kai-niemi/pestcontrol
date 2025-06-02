@@ -3,14 +3,12 @@ package io.cockroachdb.pestcontrol.api.cluster.workload;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 import io.cockroachdb.pestcontrol.workload.profile.WorkloadType;
 
-@JsonPropertyOrder({"links", "embedded", "templates"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class WorkloadForm extends RepresentationModel<WorkloadForm> {
     @NotNull

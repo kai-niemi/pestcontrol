@@ -6,8 +6,6 @@ import java.util.Map;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import eu.rekawek.toxiproxy.model.ToxicType;
 
@@ -15,7 +13,6 @@ import io.cockroachdb.pestcontrol.api.LinkRelations;
 
 @Relation(value = LinkRelations.TOXIC_REL,
         collectionRelation = LinkRelations.TOXIC_COLL_REL)
-@JsonPropertyOrder({"links", "templates"})
 public class ToxicModel extends RepresentationModel<ToxicModel> {
     private String name;
 

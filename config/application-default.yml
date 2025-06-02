@@ -23,7 +23,8 @@ application:
   #    password: The SQL user password (optional)
 
   clusters:
-    - cluster-id: "Local Insecure Cluster"
+    - cluster-id: "local-insecure"
+      cluster-name: "Local Insecure Cluster"
       cluster-type: local_insecure
       admin-url: "http://localhost:8080"
       data-source-properties:
@@ -31,7 +32,8 @@ application:
         username: "craig"
         password: ""
 
-    - cluster-id: "Local Secure Cluster"
+    - cluster-id: "local-secure"
+      cluster-name: "Local Secure Cluster"
       cluster-type: local_secure
       admin-url: "https://localhost:443"
       data-source-properties:
@@ -40,6 +42,7 @@ application:
         password: "cockroach"
 
     - cluster-id: "97a73235-fa45-4b4d-a229-f5efd52168ba"
+      cluster-name: "Odin (cc)"
       cluster-type: cloud_dedicated
       api-key: "<private-key>"
       admin-url: "https://admin-odin-qzx.cockroachlabs.cloud:8080"
@@ -48,7 +51,8 @@ application:
         username: "craig"
         password: "cockroach"
 #
-    - cluster-id: "Remote Secure Cluster"
+    - cluster-id: "remote-secure"
+      cluster-name: "Remote Secure Cluster"
       cluster-type: remote_secure
       admin-url: "https://127.0.0.1:443"
       data-source-properties:
@@ -58,18 +62,19 @@ application:
       nodes:
         # See below
 
-    - cluster-id: "Remote Insecure Cluster"
+    - cluster-id: "remote-insecure"
+      cluster-name: "Remote Insecure Cluster"
       cluster-type: remote_insecure
       admin-url: "http://127.0.0.1:8080"
       data-source-properties:
         url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
-      ## (optional) List of machines/VMs for managed remote cluster types only.
+      ## (optional) List of machines/VM nodes for managed remote cluster types (only).
       # Used to manage a cluster through pest control, potentially spanning multiple hosts as
       # opposed to many instances on a local host (or cloud) on different ports.
       # See: https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
-      machines:
+      nodes:
         - url: http://127.0.0.1:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"

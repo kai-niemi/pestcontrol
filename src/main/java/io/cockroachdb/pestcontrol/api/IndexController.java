@@ -39,11 +39,11 @@ public class IndexController {
                 .withTitle("Toxiproxy status and controls"));
         resource.add(linkTo(methodOn(VmChartController.class)
                 .index())
-                .withRel(LinkRelations.CHARTS_REL)
+                .withRel(LinkRelations.CHART_COLL_REL)
                 .withTitle("VM chart metrics"));
         resource.add(linkTo(methodOn(WorkloadChartController.class)
                 .index(null))
-                .withRel(LinkRelations.CHARTS_REL)
+                .withRel(LinkRelations.CHART_COLL_REL)
                 .withTitle("Workload chart metrics"));
         resource.add(Link.of(ServletUriComponentsBuilder.fromCurrentContextPath()
                         .pathSegment("api", "actuator")

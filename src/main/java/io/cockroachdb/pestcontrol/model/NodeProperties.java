@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotNull;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Validated
-public class MachineProperties {
+public class NodeProperties {
     private int id;
 
     @NotNull

@@ -3,9 +3,7 @@ package io.cockroachdb.pestcontrol.api.toxiproxy;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({"links", "embedded", "templates"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientModel extends RepresentationModel<ClientModel> {
     private String version;

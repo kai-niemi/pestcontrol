@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.validation.annotation.Validated;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
@@ -36,10 +38,10 @@ public class ClusterProperties {
     private DataSourceProperties dataSourceProperties;
 
     @Valid
-    private List<MachineProperties> machines = new ArrayList<>();
+    private List<NodeProperties> nodes = new ArrayList<>();
 
-    public MachineProperties getNodeById(Integer nodeId) {
-        return machines.stream()
+    public NodeProperties findNodeProperties(Integer nodeId) {
+        return nodes.stream()
                 .filter(agent -> nodeId.equals(agent.getId()))
                 .findFirst()
                 .orElseThrow();
@@ -47,24 +49,15 @@ public class ClusterProperties {
 
     public void init() {
         AtomicInteger id = new AtomicInteger();
-        machines.forEach(agentProperties ->
-                agentProperties.setId(id.incrementAndGet()));
+        nodes.forEach(properties -> properties.setId(id.incrementAndGet()));
     }
 
-    public List<MachineProperties> getMachines() {
-        return machines;
+    public List<NodeProperties> getNodes() {
+        return nodes;
     }
 
-    public void setMachines(List<MachineProperties> machines) {
-        this.machines = machines;
-    }
-
-    public String getUsername() {
-        return dataSourceProperties.getUsername();
-    }
-
-    public String getPassword() {
-        return dataSourceProperties.getPassword();
+    public void setNodes(List<NodeProperties> nodes) {
+        this.nodes = nodes;
     }
 
     public ClusterType getClusterType() {

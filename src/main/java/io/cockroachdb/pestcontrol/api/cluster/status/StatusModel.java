@@ -9,7 +9,6 @@ import org.springframework.hateoas.server.core.Relation;
 import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.model.Tier;
@@ -18,10 +17,9 @@ import io.cockroachdb.pestcontrol.model.Tier;
  * Representation model for a CockroachDB cluster composed by the locality
  * tiers region, zone and node.
  */
-@Relation(value = LinkRelations.CLUSTER_STATUS_REL,
-        collectionRelation = LinkRelations.CLUSTER_STATUS_COLL_REL)
-@JsonPropertyOrder({"links", "embedded", "templates"})
-@JsonInclude(value = JsonInclude.Include.NON_EMPTY, content = JsonInclude.Include.NON_NULL)
+@Relation(value = LinkRelations.CLUSTER_STATUS_REL)
+@JsonInclude(value = JsonInclude.Include.NON_EMPTY,
+        content = JsonInclude.Include.NON_NULL)
 public class StatusModel extends RepresentationModel<StatusModel> {
     public static StatusModel fromId(String clusterId) {
         return new StatusModel(clusterId);

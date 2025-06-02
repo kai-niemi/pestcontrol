@@ -31,8 +31,8 @@ public class ClusterManagerTest extends AbstractIntegrationTest {
 
         String token = this.sessionToken.orElseGet(() -> clusterManager
                 .login(clusterProperties.getClusterId(),
-                        clusterProperties.getUsername(),
-                        clusterProperties.getPassword()
+                        clusterProperties.getDataSourceProperties().getUsername(),
+                        clusterProperties.getDataSourceProperties().getPassword()
                 )
         );
 

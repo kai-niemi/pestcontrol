@@ -53,7 +53,7 @@ public class NodesCommands {
 
         List<List<?>> tuples = new ArrayList<>();
 
-        clusterProperties.getMachines()
+        clusterProperties.getNodes()
                 .forEach(nodeProperties -> {
                     try {
                         Map<String, Object> build = hypermediaClient.from(nodeProperties.getBaseUrl())

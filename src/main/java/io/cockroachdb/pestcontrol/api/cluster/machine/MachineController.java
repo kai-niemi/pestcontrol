@@ -1,7 +1,5 @@
 package io.cockroachdb.pestcontrol.api.cluster.machine;
 
-import java.util.EnumSet;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
+import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
-import io.cockroachdb.pestcontrol.model.ClusterType;
-import io.cockroachdb.pestcontrol.model.MachineProperties;
+import io.cockroachdb.pestcontrol.model.NodeProperties;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/cluster/machine")
@@ -34,50 +34,52 @@ public class MachineController {
     @GetMapping(value = "/{clusterId}")
     public HttpEntity<MachineModel> getClusterIndex(
             @PathVariable("clusterId") String clusterId) {
-        MachineModel model = MachineModel.fromId(clusterId);
 
         ClusterProperties clusterProperties = applicationProperties
                 .getClusterPropertiesById(clusterId);
-        if (EnumSet.of(ClusterType.remote_insecure, ClusterType.remote_secure)
-                .contains(clusterProperties.getClusterType())) {
-            model.setMachines(clusterProperties.getMachines());
-        }
 
-        return ResponseEntity.ok(new MachineModelAssembler().toModel(model));
+        MachineModel resource = new MachineModel();
+        resource.setNodes(clusterProperties.getNodes());
+
+        resource.add(linkTo(methodOn(MachineController.class)
+                .getClusterIndex(clusterId))
+                .withSelfRel());
+        resource.add(linkTo(methodOn(MachineController.class)
+                .startMachine(clusterId, null, null))
+                .withRel(LinkRelations.START_REL));
+        resource.add(linkTo(methodOn(MachineController.class)
+                .stopMachine(clusterId, null, null))
+                .withRel(LinkRelations.STOP_REL));
+
+        return ResponseEntity.ok(resource);
     }
 
-    @PostMapping("/start/{nodeId}")
+    @PostMapping("/{clusterId}/start/{nodeId}")
     public HttpEntity<Void> startMachine(
+            @PathVariable("clusterId") String clusterId,
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid MachineModel form) {
+            @RequestBody @Valid MachineModel model) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        MachineProperties agent = form.getMachines()
-                .stream()
-                .skip(nodeId - 1)
-                .findFirst()
-                .orElseThrow();
+        NodeProperties node = model.findNodeProperties(nodeId);
 
-        logger.info("Start: %s".formatted(agent));
+        logger.info("Start: %s".formatted(node));
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .build();
     }
 
-    @PostMapping("/stop/{nodeId}")
+    @PostMapping("/{clusterId}/stop/{nodeId}")
     public HttpEntity<Void> stopMachine(
+            @PathVariable("clusterId") String clusterId,
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid MachineModel form) {
+            @RequestBody @Valid MachineModel model) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        MachineProperties agent = form.getMachines()
-                .stream()
-                .skip(nodeId - 1)
-                .findFirst()
-                .orElseThrow();
+        NodeProperties node = model.findNodeProperties(nodeId);
 
-        logger.info("Stop: %s".formatted(agent));
+        logger.info("Stop: %s".formatted(node));
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)

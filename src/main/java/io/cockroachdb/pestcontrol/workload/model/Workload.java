@@ -13,14 +13,12 @@ import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.util.TimeUtils;
 
 @Relation(itemRelation = LinkRelations.WORKLOAD_REL,
         collectionRelation = LinkRelations.WORKLOAD_COLL_REL)
-@JsonPropertyOrder({"links", "embedded", "templates"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Workload extends RepresentationModel<Workload> {
     private final String clusterId;

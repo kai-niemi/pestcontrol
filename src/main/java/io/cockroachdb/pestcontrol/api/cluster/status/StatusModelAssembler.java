@@ -23,7 +23,7 @@ public class StatusModelAssembler
                 .withTitle("CockroachDB version"));
         resource.add(linkTo(methodOn(StatusController.class)
                 .getNodes(resource.getId()))
-                .withRel(LinkRelations.NODES_REL)
+                .withRel(LinkRelations.NODE_COLL_REL)
                 .withTitle("Collection of cluster nodes"));
 
         return resource;

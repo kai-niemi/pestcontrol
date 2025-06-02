@@ -17,7 +17,7 @@ import io.cockroachdb.pestcontrol.manager.ClientErrorException;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
 import io.cockroachdb.pestcontrol.model.Locality;
-import io.cockroachdb.pestcontrol.model.MachineProperties;
+import io.cockroachdb.pestcontrol.model.NodeProperties;
 import io.cockroachdb.pestcontrol.schema.DisruptorSpecifications;
 import io.cockroachdb.pestcontrol.schema.RegionalDisruptorSpecification;
 
@@ -59,22 +59,22 @@ public class CloudClusterOperator implements ClusterOperator {
 
     @Override
     public void disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
-        MachineProperties machineProperties = clusterProperties.getNodeById(nodeId);
+        NodeProperties nodeProperties = clusterProperties.findNodeProperties(nodeId);
 
-        final Locality locality = Locality.fromTiers(machineProperties.getLocality());
+        final Locality locality = Locality.fromTiers(nodeProperties.getLocality());
 
         final String region = locality.getTiers().stream()
                 .filter(tier -> tier.getKey().equals("region"))
                 .findFirst().orElseThrow(() ->
                         new IllegalArgumentException(
-                                "No locality or region key found: " + machineProperties.getLocality()))
+                                "No locality or region key found: " + nodeProperties.getLocality()))
                 .getValue();
 
         final RegionalDisruptorSpecification regionalDisruptorSpecification = new RegionalDisruptorSpecification();
         {
             regionalDisruptorSpecification.setIsWholeRegion(false);
             regionalDisruptorSpecification.setRegionCode(region);
-            regionalDisruptorSpecification.getPods().add("cockroachdb-" + machineProperties.getId());
+            regionalDisruptorSpecification.getPods().add("cockroachdb-" + nodeProperties.getId());
         }
 
         final DisruptorSpecifications disruptorSpecifications = new DisruptorSpecifications();

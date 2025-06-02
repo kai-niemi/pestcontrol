@@ -1,6 +1,7 @@
 package io.cockroachdb.pestcontrol.operator;
 
 import java.util.EnumSet;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,7 @@ import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.api.cluster.machine.MachineModel;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
-import io.cockroachdb.pestcontrol.model.MachineProperties;
+import io.cockroachdb.pestcontrol.model.NodeProperties;
 import io.cockroachdb.pestcontrol.shell.support.HypermediaClient;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
@@ -31,14 +32,42 @@ public class RemoteClusterOperator implements ClusterOperator {
 
     @Override
     public void startNode(ClusterProperties clusterProperties, Integer nodeId) {
-        MachineModel model = MachineModel.fromId(clusterProperties.getClusterId());
-        model.setMachines(clusterProperties.getMachines());
+        MachineModel model = new MachineModel();
+        model.setNodes(clusterProperties.getNodes());
 
-        MachineProperties machineProperties = clusterProperties.getNodeById(nodeId);
+        NodeProperties nodeProperties = clusterProperties.findNodeProperties(nodeId);
 
         ResponseEntity<String> response = hypermediaClient.post(
-                hypermediaClient.from(machineProperties.getBaseUrl())
-                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.NODES_REL).value())
+                hypermediaClient.from(nodeProperties.getBaseUrl())
+                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.CLUSTER_COLL_REL).value())
+                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.CLUSTER_MACHINE_REL).value())
+                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.START_REL).value())
+                        .withTemplateParameters(Map.of("clusterId", clusterProperties.getClusterId()))
+                        .withTemplateParameters(Map.of("nodeId", nodeId))
+                        .asLink(),
+                model,
+                String.class);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            logger.info("HTTP status: {}", response);
+        } else {
+            logger.warn("Unexpected HTTP status: {}", response);
+        }
+    }
+
+    @Override
+    public void stopNode(ClusterProperties clusterProperties, Integer nodeId) {
+        MachineModel model = new MachineModel();
+        model.setNodes(clusterProperties.getNodes());
+
+        NodeProperties nodeProperties = clusterProperties.findNodeProperties(nodeId);
+
+        ResponseEntity<String> response = hypermediaClient.post(
+                hypermediaClient.from(nodeProperties.getBaseUrl())
+                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.CLUSTER_COLL_REL).value())
+                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.CLUSTER_MACHINE_REL).value())
+                        .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.STOP_REL).value())
+                        .withTemplateParameters(Map.of("clusterId", clusterProperties.getClusterId()))
+                        .withTemplateParameters(Map.of("nodeId", nodeId))
                         .asLink(),
                 model,
                 String.class);
@@ -61,11 +90,6 @@ public class RemoteClusterOperator implements ClusterOperator {
 
     @Override
     public void killNode(ClusterProperties clusterProperties, Integer nodeId) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void stopNode(ClusterProperties clusterProperties, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 

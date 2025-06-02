@@ -6,7 +6,6 @@ import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.model.Locality;
@@ -17,8 +16,7 @@ import io.cockroachdb.pestcontrol.schema.NodeStatus;
  * Combination of node detail and status.
  */
 @Relation(value = LinkRelations.NODE_REL,
-        collectionRelation = LinkRelations.NODES_REL)
-@JsonPropertyOrder({"links", "templates"})
+        collectionRelation = LinkRelations.NODE_COLL_REL)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeModel extends RepresentationModel<NodeModel> {
     private final String clusterId;
