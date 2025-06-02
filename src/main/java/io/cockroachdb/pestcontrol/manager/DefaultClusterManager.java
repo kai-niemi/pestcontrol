@@ -28,6 +28,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 
+import io.cockroachdb.pestcontrol.api.cluster.NodeModel;
 import io.cockroachdb.pestcontrol.config.ClosableDataSource;
 import io.cockroachdb.pestcontrol.config.RestClientProvider;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
@@ -36,7 +37,6 @@ import io.cockroachdb.pestcontrol.model.ClusterType;
 import io.cockroachdb.pestcontrol.operator.ClusterOperator;
 import io.cockroachdb.pestcontrol.repository.ClusterRepository;
 import io.cockroachdb.pestcontrol.repository.JdbcClusterRepository;
-import io.cockroachdb.pestcontrol.api.cluster.status.NodeModel;
 import io.cockroachdb.pestcontrol.schema.NodeDetail;
 import io.cockroachdb.pestcontrol.schema.NodeDetails;
 import io.cockroachdb.pestcontrol.schema.NodeStatus;
@@ -270,6 +270,17 @@ public class DefaultClusterManager implements ClusterManager {
         }
 
     }
+
+//    public List<NodeModel> getNodes(List<Tier> tiers) {
+//        return nodes
+//                .getContent()
+//                .stream()
+//                .filter(node -> node.getLocality().matches(tiers))
+//                .sorted(Comparator.comparing(NodeModel::getId))
+//                .toList();
+//                        .sorted((n1, n2) -> n1.getLocality().toTiers()
+//                .compareToIgnoreCase(n2.getLocality().toTiers()))
+//    }
 
     @Override
     public NodeModel queryNodeById(String clusterId, Integer id) {

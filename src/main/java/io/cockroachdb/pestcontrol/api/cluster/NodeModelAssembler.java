@@ -1,9 +1,8 @@
-package io.cockroachdb.pestcontrol.api.cluster.status;
+package io.cockroachdb.pestcontrol.api.cluster;
 
 import java.util.EnumSet;
 
 import org.springframework.hateoas.server.RepresentationModelAssembler;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.api.cluster.admin.AdminController;
@@ -25,14 +24,14 @@ public class NodeModelAssembler
             return resource;
         }
 
-        resource.add(WebMvcLinkBuilder.linkTo(methodOn(StatusController.class)
-                        .getNode(resource.getClusterId(), resource.getId()))
+        resource.add(linkTo(methodOn(NodeController.class)
+                .getNode(resource.getClusterId(), resource.getId()))
                 .withSelfRel());
-        resource.add(linkTo(methodOn(StatusController.class)
+        resource.add(linkTo(methodOn(NodeController.class)
                 .getNodeDetail(resource.getClusterId(), resource.getId()))
                 .withRel(LinkRelations.NODE_DETAIL_REL)
                 .withTitle("Node details and statistics"));
-        resource.add(linkTo(methodOn(StatusController.class)
+        resource.add(linkTo(methodOn(NodeController.class)
                 .getNodeStatus(resource.getClusterId(), resource.getId()))
                 .withRel(LinkRelations.NODE_STATUS_REL)
                 .withTitle("Node status and liveness metrics"));
@@ -44,7 +43,6 @@ public class NodeModelAssembler
                     .disruptLocality(resource.getClusterId(), null))
                     .withRel(LinkRelations.DISRUPT_REL)
                     .withTitle("Apply locality disruption"));
-
             resource.add(linkTo(methodOn(AdminController.class)
                     .recoverLocality(resource.getClusterId(), null))
                     .withRel(LinkRelations.RECOVER_REL)

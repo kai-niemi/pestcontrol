@@ -1,34 +1,39 @@
 package io.cockroachdb.pestcontrol.web.support;
 
-import io.cockroachdb.pestcontrol.api.cluster.status.StatusModel;
+import org.springframework.hateoas.CollectionModel;
+
+import io.cockroachdb.pestcontrol.api.cluster.NodeModel;
 import io.cockroachdb.pestcontrol.schema.NodeStatus;
 
 public class ClusterHelper {
+    private final String clusterId;
+
     private boolean available;
 
-    private StatusModel statusModel;
+    private CollectionModel<NodeModel> nodeModels = CollectionModel.empty();
 
-    public ClusterHelper(boolean available) {
+    public ClusterHelper(String clusterId, boolean available) {
+        this.clusterId = clusterId;
         this.available = available;
     }
 
     public String getId() {
-        return statusModel.getId();
+        return clusterId;
     }
 
-    public StatusModel getClusterModel() {
-        return statusModel;
+    public CollectionModel<NodeModel> getNodeModels() {
+        return nodeModels;
     }
 
-    public boolean isDifferent(StatusModel statusModel) {
-        int currentNodeSize = this.statusModel.getNodes().getContent().size();
-        int nodeSize = statusModel.getNodes().getContent().size();
+    public void setNodeModels(
+            CollectionModel<NodeModel> nodeModels) {
+        this.nodeModels = nodeModels;
+    }
+
+    public boolean isDifferent(CollectionModel<NodeModel> otherModel) {
+        int currentNodeSize = this.nodeModels.getContent().size();
+        int nodeSize = otherModel.getContent().size();
         return currentNodeSize != nodeSize;
-    }
-
-    public ClusterHelper setClusterModel(StatusModel statusModel) {
-        this.statusModel = statusModel;
-        return this;
     }
 
     public boolean isAvailable() {

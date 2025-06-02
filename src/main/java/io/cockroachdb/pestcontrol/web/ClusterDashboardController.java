@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -21,11 +22,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.cockroachdb.pestcontrol.api.MessageModel;
 import io.cockroachdb.pestcontrol.api.MessageType;
-import io.cockroachdb.pestcontrol.api.cluster.status.StatusController;
+import io.cockroachdb.pestcontrol.api.cluster.NodeController;
+import io.cockroachdb.pestcontrol.api.cluster.NodeModel;
 import io.cockroachdb.pestcontrol.manager.ClusterManager;
 import io.cockroachdb.pestcontrol.manager.CommandException;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
-import io.cockroachdb.pestcontrol.api.cluster.status.StatusModel;
 import io.cockroachdb.pestcontrol.web.support.ClusterHelper;
 import io.cockroachdb.pestcontrol.web.support.SimpMessagePublisher;
 import io.cockroachdb.pestcontrol.web.support.TopicName;
@@ -41,20 +42,20 @@ public class ClusterDashboardController extends AbstractSessionController {
     private ClusterManager clusterManager;
 
     @Autowired
-    private StatusController statusController;
+    private NodeController nodeController;
 
     @Scheduled(fixedRate = 5, initialDelay = 5, timeUnit = TimeUnit.SECONDS)
     public void scheduledStatusUpdate() {
         messagePublisher.convertAndSendNow(TopicName.DASHBOARD_MODEL_UPDATE);
     }
 
-    private Optional<StatusModel> newClusterModel() {
+    private Optional<CollectionModel<NodeModel>> newClusterNodes() {
         ClusterProperties clusterProperties = WebUtils.getAuthenticatedClusterProperties().orElseThrow(() ->
                 new AuthenticationCredentialsNotFoundException("Expected authentication token"));
 
         try {
-            StatusModel statusModel = statusController
-                    .getClusterIndex(clusterProperties.getClusterId())
+            CollectionModel<NodeModel> statusModel = nodeController
+                    .getNodes(clusterProperties.getClusterId())
                     .getBody();
             return Optional.ofNullable(statusModel);
         } catch (Exception e) {
@@ -72,8 +73,8 @@ public class ClusterDashboardController extends AbstractSessionController {
         model.addAttribute("helper", clusterHelper);
         model.addAttribute("level", level);
 
-        newClusterModel().ifPresentOrElse(x -> {
-            clusterHelper.setClusterModel(x);
+        newClusterNodes().ifPresentOrElse(x -> {
+            clusterHelper.setNodeModels(x);
             clusterHelper.setAvailable(true);
         }, () -> {
             clusterHelper.setAvailable(false);
@@ -212,7 +213,7 @@ public class ClusterDashboardController extends AbstractSessionController {
             @SessionAttribute(value = "helper") ClusterHelper clusterHelper) {
         logger.debug("Performing cluster update (clusterId: %s)".formatted(clusterHelper.getId()));
 
-        newClusterModel().ifPresentOrElse(x -> {
+        newClusterNodes().ifPresentOrElse(x -> {
             logger.debug("Cluster update successful (clusterId: %s)".formatted(clusterHelper.getId()));
 
             if (clusterHelper.isDifferent(x) || !clusterHelper.isAvailable()) {
@@ -222,12 +223,12 @@ public class ClusterDashboardController extends AbstractSessionController {
                         MessageModel.from("Cluster topology updated").setMessageType(MessageType.information));
                 messagePublisher.convertAndSendNow(TopicName.DASHBOARD_REFRESH_PAGE);
             } else {
-                x.getNodes().forEach(nodeModel ->
+                x.forEach(nodeModel ->
                         messagePublisher.convertAndSendNow(TopicName.DASHBOARD_NODE_STATUS, nodeModel));
             }
 
             clusterHelper.setAvailable(true);
-            clusterHelper.setClusterModel(x);
+            clusterHelper.setNodeModels(x);
         }, () -> {
             logger.warn("Cluster update failed (clusterId: %s)".formatted(clusterHelper.getId()));
 

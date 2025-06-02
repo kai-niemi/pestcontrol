@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.api.cluster.status;
+package io.cockroachdb.pestcontrol.api.cluster;
 
 import java.util.List;
 
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.cockroachdb.pestcontrol.api.MessageModel;
 import io.cockroachdb.pestcontrol.manager.ClusterManager;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
@@ -21,42 +20,27 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/api/cluster/status")
-public class StatusController {
+@RequestMapping("/api/cluster")
+public class NodeController {
     @Autowired
     private ClusterManager clusterManager;
 
     @Autowired
     private ApplicationProperties applicationProperties;
 
-    @GetMapping("/{clusterId}")
-    public ResponseEntity<StatusModel> getClusterIndex(@PathVariable("clusterId") String clusterId) {
-        final List<NodeModel> nodes
-                = clusterManager.queryAllNodes(clusterId);
-
-        StatusModel model = StatusModel.fromId(clusterId);
-        model.setNodes(new NodeModelAssembler(applicationProperties
-                .getClusterPropertiesById(clusterId).getClusterType())
-                .toCollectionModel(nodes));
-
-        return ResponseEntity.ok(new StatusModelAssembler().toModel(model));
-    }
-
-    @GetMapping("/{clusterId}/version")
-    public ResponseEntity<MessageModel> getVersion(@PathVariable("clusterId") String id) {
-        return ResponseEntity.ok(MessageModel.from(clusterManager.getClusterVersion(id))
-                .add(linkTo(methodOn(getClass())
-                        .getVersion(id))
-                        .withSelfRel()));
-    }
-
     @GetMapping("/{clusterId}/node")
     public ResponseEntity<CollectionModel<NodeModel>> getNodes(
             @PathVariable("clusterId") String clusterId) {
-        ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
-        NodeModelAssembler assembler = new NodeModelAssembler(clusterProperties.getClusterType());
-        return ResponseEntity.ok(assembler.toCollectionModel(
-                clusterManager.queryAllNodes(clusterId)));
+        final List<NodeModel> nodes
+                = clusterManager.queryAllNodes(clusterId);
+
+        return ResponseEntity.ok(CollectionModel.of(
+                        new NodeModelAssembler(applicationProperties
+                                .getClusterPropertiesById(clusterId).getClusterType())
+                                .toCollectionModel(nodes))
+                .add(linkTo(methodOn(NodeController.class)
+                        .getNodes(clusterId))
+                        .withSelfRel()));
     }
 
     @GetMapping("/{clusterId}/node/{id}")

@@ -1,3 +1,4 @@
 /**
- * @author Kai Niemi
- */package io.cockroachdb.pestcontrol.api.cluster;
+ * Cluster index controllers.
+ */
+package io.cockroachdb.pestcontrol.api.cluster;

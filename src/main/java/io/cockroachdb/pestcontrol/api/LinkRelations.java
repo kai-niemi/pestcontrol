@@ -23,7 +23,7 @@ public class LinkRelations {
 
 //    public static final String CLUSTER_ADMIN_COLL_REL = "admin-coll";
 
-    public static final String CLUSTER_STATUS_REL = "status";
+    public static final String CLUSTER_NODE_COLL_REL = "nodes";
 
 //    public static final String CLUSTER_STATUS_COLL_REL = "status-coll";
 

@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.api.cluster.status;
+package io.cockroachdb.pestcontrol.api.cluster;
 
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
