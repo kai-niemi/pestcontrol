@@ -46,18 +46,15 @@ public class WorkloadChartController extends AbstractSessionController {
     @GetMapping
     public ResponseEntity<MessageModel> index(@SessionAttribute("helper") ClusterHelper clusterHelper) {
         MessageModel index = new MessageModel();
-
         index.add(linkTo(methodOn(getClass())
                 .index(clusterHelper))
                 .withSelfRel());
-
         index.add(linkTo(methodOn(getClass())
                 .getWorkloadItems(clusterHelper))
                 .withRel(LinkRelations.DATA_POINTS_REL));
         index.add(linkTo(methodOn(getClass())
                 .getWorkloadMetrics(clusterHelper))
                 .withRel(LinkRelations.DATA_POINTS_REL));
-
         return ResponseEntity.ok(index);
     }
 

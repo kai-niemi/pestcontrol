@@ -101,4 +101,18 @@ public class NodeProperties {
     public void setSqlAddr(String sqlAddr) {
         this.sqlAddr = sqlAddr;
     }
+
+    @Override
+    public String toString() {
+        return "NodeProperties{" +
+               "advertiseAddr='" + advertiseAddr + '\'' +
+               ", id=" + id +
+               ", url='" + url + '\'' +
+               ", name='" + name + '\'' +
+               ", locality='" + locality + '\'' +
+               ", listenAddr='" + listenAddr + '\'' +
+               ", sqlAddr='" + sqlAddr + '\'' +
+               ", httpAddr='" + httpAddr + '\'' +
+               '}';
+    }
 }

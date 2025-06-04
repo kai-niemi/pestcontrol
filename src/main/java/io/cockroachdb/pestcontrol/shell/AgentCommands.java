@@ -20,15 +20,15 @@ import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.operator.ClusterOperator;
 import io.cockroachdb.pestcontrol.shell.support.AnsiConsole;
+import io.cockroachdb.pestcontrol.shell.support.ClusterProvider;
 import io.cockroachdb.pestcontrol.shell.support.HypermediaClient;
 import io.cockroachdb.pestcontrol.shell.support.ListTableModel;
-import io.cockroachdb.pestcontrol.shell.support.NodeProvider;
 import io.cockroachdb.pestcontrol.shell.support.TableUtils;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @ShellComponent
 @ShellCommandGroup(Constants.AGENT_COMMANDS)
-public class NodesCommands {
+public class AgentCommands {
     @Autowired
     private ClusterManager clusterManager;
 
@@ -44,10 +44,11 @@ public class NodesCommands {
     @Autowired
     private AnsiConsole ansiConsole;
 
-    @ShellMethod(value = "List agent information", key = {"node-list", "nl"})
+    @ShellMethod(value = "List agent information", key = {"agent-list", "al"})
     public void listNodes(
             @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
-                    defaultValue = "Remote Insecure Cluster") String clusterId) {
+                    valueProvider = ClusterProvider.class,
+            defaultValue = "remote-insecure") String clusterId) {
 
         ClusterProperties clusterProperties = applicationProperties.getClusterPropertiesById(clusterId);
 
@@ -91,23 +92,20 @@ public class NodesCommands {
                 .nl();
     }
 
-    @ShellMethod(value = "Run 'start' command on a specified node", key = {"node-start", "ns"})
+    @ShellMethod(value = "Run 'start' command on a specified node", key = {"agent-start", "as"})
     public void startNode(
             @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
-                    defaultValue = "Remote Insecure Cluster") String clusterId,
-            @ShellOption(help = "Node ID", valueProvider = NodeProvider.class, defaultValue = "1") int nodeId) {
-
+                    valueProvider = ClusterProvider.class) String clusterId,
+            @ShellOption(help = "Node ID (1-based)") int nodeId) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
         clusterOperator.startNode(clusterProperties, nodeId);
     }
 
-    @ShellMethod(value = "Run 'stop' command on a specified node", key = {"node-stop", "np"})
+    @ShellMethod(value = "Run 'stop' command on a specified node", key = {"agent-stop", "ap"})
     public void stopNode(
-            @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
-                    defaultValue = "Remote Insecure Cluster") String clusterId,
-            @ShellOption(help = "Node ID", valueProvider = NodeProvider.class, defaultValue = "1") int nodeId) {
-
+            @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)") String clusterId,
+            @ShellOption(help = "Node ID (1-based)") int nodeId) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
         clusterOperator.stopNode(clusterProperties, nodeId);

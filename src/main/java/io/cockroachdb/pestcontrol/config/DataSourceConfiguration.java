@@ -61,12 +61,19 @@ public class DataSourceConfiguration {
         };
     }
 
+    private static class PrettyQueryEntryCreator extends DefaultQueryLogEntryCreator {
+        @Override
+        protected String formatQuery(String query) {
+            return query;
+        }
+    }
+
     private DataSource loggingProxy(DataSource dataSource) {
         if (!logger.isTraceEnabled()) {
             return dataSource;
         }
 
-        DefaultQueryLogEntryCreator creator = new DefaultQueryLogEntryCreator();
+        PrettyQueryEntryCreator creator = new PrettyQueryEntryCreator();
         creator.setMultiline(true);
 
         SLF4JQueryLoggingListener listener = new SLF4JQueryLoggingListener();

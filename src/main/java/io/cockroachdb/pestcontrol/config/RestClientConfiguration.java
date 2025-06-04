@@ -1,6 +1,7 @@
 package io.cockroachdb.pestcontrol.config;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.EnumSet;
 
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -54,7 +55,7 @@ public class RestClientConfiguration implements RestTemplateCustomizer {
 
         PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
                 .setDefaultSocketConfig(SocketConfig.custom()
-                        .setSoTimeout(Timeout.ofMinutes(1))
+                        .setSoTimeout(Timeout.ofSeconds(10))
                         .build())
                 .setPoolConcurrencyPolicy(PoolConcurrencyPolicy.STRICT)
                 .setConnPoolPolicy(PoolReusePolicy.LIFO)
@@ -66,7 +67,17 @@ public class RestClientConfiguration implements RestTemplateCustomizer {
                 .setConnectionManager(connectionManager)
                 .build();
 
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
+        HttpComponentsClientHttpRequestFactory factory
+                = new HttpComponentsClientHttpRequestFactory(client);
+        factory.setConnectTimeout(Duration.ofSeconds(5));
+        factory.setReadTimeout(Duration.ofSeconds(5));
+
+        restTemplate.setRequestFactory(factory);
+    }
+
+    @Bean
+    public HypermediaClient hypermediaClient(RestTemplateBuilder builder) {
+        return new HypermediaClient(builder.build());
     }
 
     @Bean
@@ -125,10 +136,5 @@ public class RestClientConfiguration implements RestTemplateCustomizer {
                             + ": " + body);
                 })
                 .build();
-    }
-
-    @Bean
-    public HypermediaClient hypermediaClient(RestTemplateBuilder builder) {
-        return new HypermediaClient(builder.build());
     }
 }

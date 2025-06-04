@@ -23,7 +23,11 @@ public class LinkRelations {
 
     public static final String CLUSTER_NODE_COLL_REL = "nodes";
 
-    public static final String NETWORK_REL = "network";
+    public static final String AGENT_MODEL = "agent";
+
+    public static final String AGENT_START_REL = "agent-start";
+
+    public static final String AGENT_STOP_REL = "agent-stop";
 
     public static final String WORKLOAD_REL = "workload";
 
@@ -32,10 +36,6 @@ public class LinkRelations {
     public static final String NODE_REL = "node";
 
     public static final String NODE_COLL_REL = "nodes";
-
-    public static final String NODE_START_REL = "node-start";
-
-    public static final String NODE_STOP_REL = "node-stop";
 
     public static final String NODE_DISRUPT_REL = "node-disrupt";
 

@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.api.cluster.network;
+package io.cockroachdb.pestcontrol.api.cluster.agent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +15,11 @@ import jakarta.validation.constraints.NotEmpty;
 import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.model.NodeProperties;
 
-@Relation(value = LinkRelations.NETWORK_REL)
+@Relation(value = LinkRelations.AGENT_MODEL)
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY,
         content = JsonInclude.Include.NON_NULL)
 @Validated
-public class NetworkModel extends RepresentationModel<NetworkModel> {
+public class AgentModel extends RepresentationModel<AgentModel> {
     @NotEmpty
     private List<@Valid NodeProperties> nodes = new ArrayList<>();
 

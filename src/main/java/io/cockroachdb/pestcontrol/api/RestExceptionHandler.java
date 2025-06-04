@@ -23,8 +23,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ResponseEntity<Object> wrap(Problem problem) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                problem.getStatus(), problem.getDetail());
+        ProblemDetail problemDetail = ProblemDetail
+                .forStatusAndDetail(problem.getStatus(), problem.getDetail());
         problemDetail.setTitle(problem.getTitle());
         problemDetail.setInstance(problem.getInstance());
 

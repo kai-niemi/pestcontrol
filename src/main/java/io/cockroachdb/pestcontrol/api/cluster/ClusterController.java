@@ -31,7 +31,8 @@ public class ClusterController {
     public ResponseEntity<CollectionModel<ClusterModel>> index() {
         final List<ClusterModel> clusterModels = applicationProperties.getClusterIds()
                 .stream()
-                .map(clusterId -> ClusterModel.from(applicationProperties.getClusterPropertiesById(clusterId)))
+                .map(clusterId -> ClusterModel.from(
+                        applicationProperties.getClusterPropertiesById(clusterId)))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new ClusterModelAssembler()
@@ -47,10 +48,8 @@ public class ClusterController {
         final ClusterProperties clusterProperties
                 = applicationProperties.getClusterPropertiesById(id);
 
-        ClusterModel resource = ClusterModel.from(clusterProperties);
-
         return ResponseEntity.ok(new ClusterModelAssembler()
-                .toModel(resource));
+                .toModel(ClusterModel.from(clusterProperties)));
     }
 
     @GetMapping("/{clusterId}/version")

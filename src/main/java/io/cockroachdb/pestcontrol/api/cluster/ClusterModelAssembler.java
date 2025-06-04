@@ -6,7 +6,7 @@ import org.springframework.hateoas.server.RepresentationModelAssembler;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.api.cluster.admin.AdminController;
-import io.cockroachdb.pestcontrol.api.cluster.network.NetworkController;
+import io.cockroachdb.pestcontrol.api.cluster.agent.AgentController;
 import io.cockroachdb.pestcontrol.api.cluster.workload.WorkloadController;
 import io.cockroachdb.pestcontrol.model.ClusterType;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -36,9 +36,9 @@ public class ClusterModelAssembler
 
         if (EnumSet.of(ClusterType.remote_insecure, ClusterType.remote_secure)
                 .contains(resource.getClusterProperties().getClusterType())) {
-            resource.add(linkTo(methodOn(NetworkController.class)
-                    .getNetwork(id))
-                    .withRel(LinkRelations.NETWORK_REL));
+            resource.add(linkTo(methodOn(AgentController.class)
+                    .getAgent(id))
+                    .withRel(LinkRelations.AGENT_MODEL));
         }
 
         return resource;

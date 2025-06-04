@@ -53,7 +53,6 @@ public class TimeSeriesChartController {
     @GetMapping
     public ResponseEntity<MessageModel> index() {
         MessageModel index = new MessageModel();
-
         index.add(linkTo(methodOn(getClass())
                 .index())
                 .withSelfRel());
@@ -63,7 +62,6 @@ public class TimeSeriesChartController {
         index.add(linkTo(methodOn(getClass())
                 .getCpuDataPoints())
                 .withRel(LinkRelations.DATA_POINTS_REL));
-
         return ResponseEntity.ok(index);
     }
 
