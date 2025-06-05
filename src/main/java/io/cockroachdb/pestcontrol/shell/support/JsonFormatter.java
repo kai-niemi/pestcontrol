@@ -9,7 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import static io.cockroachdb.pestcontrol.config.JacksonConfiguration.ISO_DATETIME_SERIALIZER;
 
-public abstract class JsonHelper {
+public abstract class JsonFormatter {
     private static final ObjectMapper objectMapper;
 
     static {
@@ -35,6 +35,6 @@ public abstract class JsonHelper {
         }
     }
 
-    private JsonHelper() {
+    private JsonFormatter() {
     }
 }

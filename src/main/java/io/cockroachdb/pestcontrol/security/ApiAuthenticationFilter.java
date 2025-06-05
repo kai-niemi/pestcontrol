@@ -29,23 +29,20 @@ public class ApiAuthenticationFilter extends OncePerRequestFilter {
         if (token == null) {
             this.logger.trace("Did not process authentication request since failed to find "
                               + AUTH_TOKEN_HEADER_NAME + " authorization header");
-            filterChain.doFilter(request, response);
-            return;
+        } else {
+            try {
+                Authentication authentication = authenticationService.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (Exception exp) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+                PrintWriter writer = response.getWriter();
+                writer.print(exp.getMessage());
+                writer.flush();
+                writer.close();
+            }
         }
-
-        try {
-            Authentication authentication = authenticationService.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (Exception exp) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-            PrintWriter writer = response.getWriter();
-            writer.print(exp.getMessage());
-            writer.flush();
-            writer.close();
-        }
-
         filterChain.doFilter(request, response);
     }
 }

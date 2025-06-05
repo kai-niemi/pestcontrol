@@ -34,7 +34,7 @@ import io.cockroachdb.pestcontrol.manager.ClientErrorException;
 import io.cockroachdb.pestcontrol.manager.ServerErrorException;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
-import io.cockroachdb.pestcontrol.shell.support.HypermediaClient;
+import io.cockroachdb.pestcontrol.shell.client.HypermediaClient;
 
 @Configuration
 public class RestClientConfiguration implements RestTemplateCustomizer {

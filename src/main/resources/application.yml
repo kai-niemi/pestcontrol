@@ -112,6 +112,3 @@ server:
     include-message: always
     include-stacktrace: always
     include-binding-errors: always
-
-#############################
-application:

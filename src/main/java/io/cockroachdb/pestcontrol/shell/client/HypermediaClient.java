@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.shell.support;
+package io.cockroachdb.pestcontrol.shell.client;
 
 import java.net.URI;
 import java.util.List;
@@ -25,7 +25,12 @@ public class HypermediaClient {
 
     public Traverson from(Link link) {
         Objects.requireNonNull(link);
-        return from(URI.create(link.getHref()), ACCEPT_TYPES);
+        return from(link.getHref());
+    }
+
+    public Traverson from(String href) {
+        Objects.requireNonNull(href);
+        return from(URI.create(href), ACCEPT_TYPES);
     }
 
     public Traverson from(Link link, List<MediaType> mediaTypes) {

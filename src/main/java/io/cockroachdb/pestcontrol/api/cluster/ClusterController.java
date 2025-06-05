@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.api.MessageModel;
 import io.cockroachdb.pestcontrol.manager.ClusterManager;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
@@ -39,7 +40,11 @@ public class ClusterController {
                 .toCollectionModel(clusterModels)
                 .add(linkTo(methodOn(getClass())
                         .index())
-                        .withSelfRel()));
+                        .withSelfRel())
+                .add(linkTo(methodOn(ClusterController.class)
+                        .getCluster(null))
+                        .withRel(LinkRelations.CLUSTER_REL))
+        );
     }
 
     @GetMapping("/{clusterId}")

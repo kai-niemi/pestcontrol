@@ -16,7 +16,10 @@ public class ClusterModel extends RepresentationModel<ClusterModel> {
         return new ClusterModel(clusterProperties);
     }
 
-    private final ClusterProperties clusterProperties;
+    private ClusterProperties clusterProperties;
+
+    public ClusterModel() {
+    }
 
     public ClusterModel(ClusterProperties clusterProperties) {
         this.clusterProperties = clusterProperties;
@@ -24,5 +27,9 @@ public class ClusterModel extends RepresentationModel<ClusterModel> {
 
     public ClusterProperties getClusterProperties() {
         return clusterProperties;
+    }
+
+    public void setClusterProperties(ClusterProperties clusterProperties) {
+        this.clusterProperties = clusterProperties;
     }
 }

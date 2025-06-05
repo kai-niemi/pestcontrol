@@ -1,5 +1,7 @@
 package io.cockroachdb.pestcontrol.model;
 
+import java.util.Objects;
+
 import org.springframework.hateoas.Link;
 import org.springframework.validation.annotation.Validated;
 
@@ -100,6 +102,23 @@ public class NodeProperties {
 
     public void setSqlAddr(String sqlAddr) {
         this.sqlAddr = sqlAddr;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        NodeProperties that = (NodeProperties) o;
+        return id == that.id && Objects.equals(url, that.url) && Objects.equals(name, that.name)
+               && Objects.equals(locality, that.locality) && Objects.equals(listenAddr, that.listenAddr)
+               && Objects.equals(advertiseAddr, that.advertiseAddr) && Objects.equals(sqlAddr,
+                that.sqlAddr) && Objects.equals(httpAddr, that.httpAddr);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, url, name, locality, listenAddr, advertiseAddr, sqlAddr, httpAddr);
     }
 
     @Override

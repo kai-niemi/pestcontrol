@@ -1,6 +1,7 @@
 package io.cockroachdb.pestcontrol.model;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Function;
 
@@ -53,7 +54,8 @@ public class ApplicationProperties {
 
     public ClusterOperator clusterOperator(String clusterId)
             throws UnsupportedOperationException {
-        ClusterType clusterType = getClusterPropertiesById(clusterId).getClusterType();
+        ClusterType clusterType = getClusterPropertiesById(clusterId,
+                EnumSet.allOf(ClusterType.class)).getClusterType();
 
         return clusterOperators
                 .stream()
@@ -68,12 +70,21 @@ public class ApplicationProperties {
     }
 
     public ClusterProperties getClusterPropertiesById(String clusterId) {
-        return getClusters()
+        return getClusterPropertiesById(clusterId, EnumSet.allOf(ClusterType.class));
+    }
+
+    public ClusterProperties getClusterPropertiesById(String clusterId, EnumSet<ClusterType> requiredTypes) {
+        ClusterProperties clusterProperties= getClusters()
                 .stream()
                 .filter(x -> x.getClusterId().equals(clusterId))
                 .findFirst()
                 .orElseThrow(() ->
                         new IllegalArgumentException("No cluster configuration with id: " + clusterId));
+        if (!requiredTypes.contains(clusterProperties.getClusterType())) {
+            throw new IllegalArgumentException("Cluster configuration is not of expected types '%s' but '%s'"
+                    .formatted(requiredTypes, clusterProperties.getClusterType()));
+        }
+        return clusterProperties;
     }
 
     public List<String> getClusterIds() {
