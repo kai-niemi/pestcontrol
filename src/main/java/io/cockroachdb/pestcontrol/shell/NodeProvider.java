@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.shell.support;
+package io.cockroachdb.pestcontrol.shell;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +13,9 @@ public class NodeProvider implements ValueProvider {
     public List<CompletionProposal> complete(CompletionContext completionContext) {
         List<CompletionProposal> result = new ArrayList<>();
 
-        IntStream.rangeClosed(1, 16).forEach(value -> {
-            result.add(new CompletionProposal(value + ""));
-        });
+        IntStream.rangeClosed(1, 32).forEach(value ->
+                result.add(new CompletionProposal(value + "")
+                        .description("Node #" + value)));
 
         return result;
     }

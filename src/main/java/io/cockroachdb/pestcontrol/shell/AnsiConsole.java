@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.shell.support;
+package io.cockroachdb.pestcontrol.shell;
 
 import org.jline.terminal.Terminal;
 import org.springframework.beans.factory.annotation.Autowired;

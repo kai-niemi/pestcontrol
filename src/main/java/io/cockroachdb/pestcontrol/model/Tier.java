@@ -12,14 +12,37 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Tier {
+    public static Tier of(String k, String v) {
+        return new Tier(k,v);
+    }
+
     @JsonProperty("key")
     private String key;
 
     @JsonProperty("value")
     private String value;
 
+    @JsonProperty("level")
+    private Integer level;
+
     @JsonIgnore
     private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+
+    public Tier() {
+    }
+
+    public Tier(String key, String value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
 
     @JsonProperty("key")
     public String getKey() {

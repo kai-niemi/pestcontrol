@@ -21,7 +21,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.util.StringUtils;
 
-import io.cockroachdb.pestcontrol.shell.support.AnsiConsole;
+import io.cockroachdb.pestcontrol.shell.AnsiConsole;
 
 @EnableConfigurationProperties
 @ConfigurationPropertiesScan

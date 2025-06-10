@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.shell.support;
+package io.cockroachdb.pestcontrol.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;

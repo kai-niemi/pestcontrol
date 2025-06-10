@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.shell.support;
+package io.cockroachdb.pestcontrol.util;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
+import io.cockroachdb.pestcontrol.shell.support.EnumPatternValidator;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.FIELD;

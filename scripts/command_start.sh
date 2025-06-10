@@ -48,3 +48,17 @@ if [ "${status}" != "0" ]; then
 else
   fn_local_start
 fi
+
+#      fn_fail_check ${installdir}/cockroach start \
+#      --locality=${zone} \
+#      --listen-addr=${host}:${rpcport} \
+#      --advertise-addr=${host}:${advertise_rpcport} \
+#      --sql-addr=${host}:${sqlport} \
+#      --http-addr=${host}:${httpport} \
+#      --join=${join} \
+#      --store=${datadir}/n${node} \
+#      --cache=${mempool} \
+#      --max-sql-memory=${mempool} \
+#      --background \
+#      --accept-sql-without-tls \
+#      --certs-dir=${certsdir}

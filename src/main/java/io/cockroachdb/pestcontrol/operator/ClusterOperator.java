@@ -10,7 +10,7 @@ public interface ClusterOperator {
 
     void init(ClusterProperties cluster, Integer nodeId);
 
-    void startNode(ClusterProperties cluster, Integer nodeId);
+    String startNode(ClusterProperties cluster, Integer nodeId);
 
     void stopNode(ClusterProperties cluster, Integer nodeId);
 

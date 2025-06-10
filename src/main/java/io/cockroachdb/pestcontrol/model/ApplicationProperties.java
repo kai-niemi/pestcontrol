@@ -74,7 +74,7 @@ public class ApplicationProperties {
     }
 
     public ClusterProperties getClusterPropertiesById(String clusterId, EnumSet<ClusterType> requiredTypes) {
-        ClusterProperties clusterProperties= getClusters()
+        ClusterProperties clusterProperties = getClusters()
                 .stream()
                 .filter(x -> x.getClusterId().equals(clusterId))
                 .findFirst()

@@ -22,10 +22,10 @@ import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
 import io.cockroachdb.pestcontrol.operator.ClusterOperator;
 import io.cockroachdb.pestcontrol.shell.client.HypermediaClient;
-import io.cockroachdb.pestcontrol.shell.support.AnsiConsole;
-import io.cockroachdb.pestcontrol.shell.support.ClusterProvider;
 import io.cockroachdb.pestcontrol.shell.support.ListTableModel;
 import io.cockroachdb.pestcontrol.shell.support.TableUtils;
+import static io.cockroachdb.pestcontrol.api.LinkRelations.ACTUATORS_REL;
+import static io.cockroachdb.pestcontrol.api.LinkRelations.CURIE_NAMESPACE;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @ShellComponent
@@ -56,17 +56,22 @@ public class AgentCommands {
 
         ClusterProperties clusterProperties = applicationProperties
                 .getClusterPropertiesById(clusterId,
-                        EnumSet.of(ClusterType.remote_insecure, ClusterType.remote_secure));
+                        EnumSet.of(ClusterType.local_insecure, ClusterType.local_secure,
+                                ClusterType.remote_insecure, ClusterType.remote_secure));
+
+        if (clusterProperties.getNodes().isEmpty()) {
+            ansiConsole.yellow("No configured nodes for cluster id: %s", clusterId).nl();
+        }
 
         List<List<?>> tuples = new ArrayList<>();
 
         clusterProperties.getNodes()
                 .forEach(nodeProperties -> {
                     try {
-                        ansiConsole.yellow("Querying: %s", nodeProperties.getBaseUrl().toString()).nl();
+                        ansiConsole.yellow("Querying: %s ..", nodeProperties.getBaseUrl().toString()).nl();
 
                         Map<String, Object> build = hypermediaClient.from(nodeProperties.getBaseUrl())
-                                .follow(curied(LinkRelations.CURIE_NAMESPACE, LinkRelations.ACTUATORS_REL).value())
+                                .follow(curied(CURIE_NAMESPACE, ACTUATORS_REL).value())
                                 .follow(HalLinkRelation.uncuried("info").value())
                                 .toObject("$.build");
 
@@ -74,16 +79,13 @@ public class AgentCommands {
                         Object version = build.getOrDefault("version", "n/a");
 
                         tuples.add(List.of(nodeProperties.getUrl(), name, version,
-                                version.equals(
-                                        buildProperties.getVersion()) ? "Version convergence" : "Version divergence"));
+                                version.equals(buildProperties.getVersion()) ? "" : "Version divergence!"));
                     } catch (ResourceAccessException e) {
-                        tuples.add(List.of(nodeProperties.getUrl(), "??", "??",
-                                e.getMessage()));
+                        tuples.add(List.of(nodeProperties.getUrl(), "??", "??", e.getMessage()));
                     }
                 });
 
         AtomicInteger idx = new AtomicInteger();
-
 
         ansiConsole.yellow(TableUtils.prettyPrint(
                         new ListTableModel<>(tuples,

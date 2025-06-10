@@ -82,21 +82,41 @@ application:
           advertise-addr:
           sql-addr: 127.0.0.1:26257
           http-addr: 127.0.0.1:8080
-        - url: http://127.0.0.2:9090
+        - url: http://127.0.0.1:9090
           name: n2
-          locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          listen-addr: 127.0.0.2:27015
+          locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
+          listen-addr: 127.0.0.1:27016
           advertise-addr:
-          sql-addr: 127.0.0.2:26257
-          http-addr: 127.0.0.2:8080
-        - url: http://127.0.0.3:9092
+          sql-addr: 127.0.0.1:26258
+          http-addr: 127.0.0.1:8081
+        - url: http://127.0.0.1:9090
           name: n3
-          locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          listen-addr: 127.0.0.3:27017
+          locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
+          listen-addr: 127.0.0.1:27017
           advertise-addr:
-          sql-addr: 127.0.0.3:26257
-          http-addr: 127.0.0.3:8080
-
+          sql-addr: 127.0.0.1:26259
+          http-addr: 127.0.0.1:8082
+        - url: http://127.0.0.1:9090
+          name: n4
+          locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
+          listen-addr: 127.0.0.1:27018
+          advertise-addr:
+          sql-addr: 127.0.0.1:26260
+          http-addr: 127.0.0.1:8083
+        - url: http://127.0.0.1:9090
+          name: n5
+          locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
+          listen-addr: 127.0.0.1:27019
+          advertise-addr:
+          sql-addr: 127.0.0.1:26261
+          http-addr: 127.0.0.1:8084
+        - url: http://127.0.0.1:9090
+          name: n6
+          locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
+          listen-addr: 127.0.0.1:27020
+          advertise-addr:
+          sql-addr: 127.0.0.1:26262
+          http-addr: 127.0.0.1:8085
 
   # -1 denotes use of unbounded virtual threads
   threadPoolMaxSize: -1

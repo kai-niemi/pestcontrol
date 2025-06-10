@@ -23,11 +23,11 @@ public class LinkRelations {
 
     public static final String CLUSTER_NODE_COLL_REL = "nodes";
 
-    public static final String AGENT_MODEL = "agent";
-
     public static final String AGENT_START_REL = "agent-start";
 
     public static final String AGENT_STOP_REL = "agent-stop";
+
+    public static final String AGENT_FORM_REL = "agent";
 
     public static final String WORKLOAD_REL = "workload";
 

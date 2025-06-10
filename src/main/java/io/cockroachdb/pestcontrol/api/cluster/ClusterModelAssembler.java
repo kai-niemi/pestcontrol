@@ -16,29 +16,32 @@ public class ClusterModelAssembler
         implements RepresentationModelAssembler<ClusterModel, ClusterModel> {
     @Override
     public ClusterModel toModel(ClusterModel resource) {
-        String id = resource.getClusterProperties().getClusterId();
+        String clusterId = resource.getClusterProperties().getClusterId();
 
         resource.add(linkTo(methodOn(ClusterController.class)
-                .getCluster(id))
+                .getCluster(clusterId))
                 .withSelfRel());
         resource.add(linkTo(methodOn(ClusterController.class)
-                .getVersion(id))
+                .getVersion(clusterId))
                 .withRel(LinkRelations.VERSION_REL));
         resource.add(linkTo(methodOn(NodeController.class)
-                .getNodes(id))
+                .getNodes(clusterId))
                 .withRel(LinkRelations.CLUSTER_NODE_COLL_REL));
         resource.add(linkTo(methodOn(AdminController.class)
-                .getAdmin(id))
+                .getAdmin(clusterId))
                 .withRel(LinkRelations.CLUSTER_ADMIN_REL));
         resource.add(linkTo(methodOn(WorkloadController.class)
-                .getClusterIndex(id))
+                .getClusterIndex(clusterId))
                 .withRel(LinkRelations.WORKLOAD_COLL_REL));
 
         if (EnumSet.of(ClusterType.remote_insecure, ClusterType.remote_secure)
                 .contains(resource.getClusterProperties().getClusterType())) {
-            resource.add(linkTo(methodOn(AgentController.class)
-                    .getAgent(id))
-                    .withRel(LinkRelations.AGENT_MODEL));
+            resource.getClusterProperties().getNodes()
+                    .forEach(nodeProperties -> {
+                resource.add(linkTo(methodOn(AgentController.class)
+                        .agentForm(clusterId, nodeProperties.getId()))
+                        .withRel(LinkRelations.AGENT_FORM_REL));
+            });
         }
 
         return resource;

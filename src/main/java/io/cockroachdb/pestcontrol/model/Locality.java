@@ -1,11 +1,14 @@
 package io.cockroachdb.pestcontrol.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -14,9 +17,35 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.cockroachdb.pestcontrol.util.PatternUtils;
+import io.cockroachdb.pestcontrol.util.TreeNode;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Locality {
+public class Locality implements Comparable<Locality> {
+    /**
+     * Round-robin pick host name/IPs mapped to localities.
+     *
+     * @param localities a map of localities to list of host names
+     * @return collection of uniformly distributed host names from all localities
+     */
+    public static Collection<String> resolveJoinHosts(Map<Locality, List<String>> localities) {
+        List<String> joinHosts = new ArrayList<>();
+
+        TreeNode<Tier> root = TreeNode.of(Tier.of("cluster", ""));
+
+        for (Locality locality : localities.keySet()) {
+            TreeNode<Tier> next = root;
+            for (Tier tier : locality.getTiers()) {
+                next = next.addChild(tier);
+                if (tier.getLevel() == 0) {
+                    joinHosts.addAll(localities.get(locality)
+                            .stream().limit(3).toList());
+                }
+            }
+        }
+
+        return joinHosts;
+    }
+
     public static String toString(List<Tier> tiers) {
         List<String> tuples = new ArrayList<>();
         tiers.forEach(tier -> tuples.add(tier.getKey() + "=" + tier.getValue()));
@@ -25,12 +54,17 @@ public class Locality {
 
     public static Locality fromTiers(String tiers) {
         List<Tier> tierList = new ArrayList<>();
-        PatternUtils.parseLocality(tiers).forEach((k, v) -> {
-            Tier tier = new Tier();
-            tier.setKey(k);
-            tier.setValue(v);
-            tierList.add(tier);
-        });
+        AtomicInteger i = new AtomicInteger();
+        PatternUtils.parseLocality(tiers)
+                .forEach((k, v) -> {
+                    Tier tier = new Tier();
+                    tier.setLevel(i.getAndIncrement());
+                    tier.setKey(k);
+                    tier.setValue(v);
+
+                    tierList.add(tier);
+                });
+
         return new Locality(tierList);
     }
 
@@ -50,7 +84,7 @@ public class Locality {
                        .count() == required.size();
     }
 
-    public Optional<String> findRegionTierValue() {
+    public Optional<String> findRegionTier() {
         return getTiers().stream()
                 .filter(tier -> tier.getKey().equals("region"))
                 .findFirst()
@@ -67,14 +101,19 @@ public class Locality {
         this.tiers = tiers;
     }
 
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        this.additionalProperties.put(name, value);
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
+    @Override
+    public int compareTo(Locality o) {
+        return Locality.toString(tiers).compareToIgnoreCase(Locality.toString(o.getTiers()));
     }
 
     @Override

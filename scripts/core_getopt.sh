@@ -4,6 +4,9 @@ getopt=$1
 shift
 
 case "${getopt}" in
+    agent-start)
+        command_agent_start.sh $*
+        ;;
     login)
         command_login.sh $*
         ;;

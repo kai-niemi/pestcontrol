@@ -14,8 +14,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 
-import io.cockroachdb.pestcontrol.util.PatternUtils;
-
 @Tags(value = {
         @Tag("unit-test")
 })

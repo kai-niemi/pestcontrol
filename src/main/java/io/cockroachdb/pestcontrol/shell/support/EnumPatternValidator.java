@@ -7,6 +7,8 @@ import java.util.regex.PatternSyntaxException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import io.cockroachdb.pestcontrol.util.EnumPattern;
+
 public class EnumPatternValidator implements ConstraintValidator<EnumPattern, Enum<?>> {
     private Pattern pattern;
 

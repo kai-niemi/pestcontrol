@@ -48,7 +48,7 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public void startNode(ClusterProperties clusterProperties, Integer nodeId) {
+    public String startNode(ClusterProperties clusterProperties, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
@@ -125,7 +125,7 @@ public class CloudClusterOperator implements ClusterOperator {
         {
             regionalDisruptorSpecification.setIsWholeRegion(true);
             regionalDisruptorSpecification.setRegionCode(locality
-                    .findRegionTierValue().orElseThrow(
+                    .findRegionTier().orElseThrow(
                             () -> new UnsupportedOperationException("No region tier found in locality: " + locality)));
         }
 

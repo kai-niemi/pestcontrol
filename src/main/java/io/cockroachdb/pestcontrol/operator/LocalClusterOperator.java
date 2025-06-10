@@ -1,22 +1,23 @@
 package io.cockroachdb.pestcontrol.operator;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
@@ -24,28 +25,16 @@ import io.cockroachdb.pestcontrol.manager.CommandException;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
+import io.cockroachdb.pestcontrol.model.Locality;
 import io.cockroachdb.pestcontrol.model.NodeProperties;
+import io.cockroachdb.pestcontrol.util.IoUtils;
 
 @Component
 public class LocalClusterOperator implements ClusterOperator {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final ShellCommands shellCommands = new ShellCommands() {
-    };
-
     @Autowired
     private ApplicationProperties applicationProperties;
-
-    private static void copy(InputStream in, OutputStream out) throws IOException {
-        try (InputStream is = new BufferedInputStream(in)) {
-            byte[] buffer = new byte[1024 * 8];
-            int len;
-            while ((len = is.read(buffer)) != -1) {
-                out.write(buffer, 0, len);
-            }
-            out.flush();
-        }
-    }
 
     @Override
     public boolean supports(ClusterType clusterType) {
@@ -53,8 +42,36 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public void startNode(ClusterProperties clusterProperties, Integer nodeId) {
-        throw new UnsupportedOperationException();
+    public String startNode(ClusterProperties clusterProperties, Integer nodeId) {
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+
+        Map<Locality, List<String>> hosts = new TreeMap<>();
+
+        clusterProperties.getNodes()
+                .forEach(np -> {
+                    Locality locality = Locality.fromTiers(np.getLocality());
+                    hosts.computeIfAbsent(locality, x -> new ArrayList<>())
+                            .add(np.getListenAddr());
+                });
+
+        Collection<String> joinHosts = Locality.resolveJoinHosts(hosts);
+
+        List<String> args = List.of("./cluster-admin", "agent-start",
+                "--locality=" + nodeProperties.getLocality(),
+                "--listen-addr="+ nodeProperties.getListenAddr(),
+                "--advertise-addr=" + nodeProperties.getAdvertiseAddr(),
+                "--sql-addr=" + nodeProperties.getSqlAddr(),
+                "--http-addr=" + nodeProperties.getHttpAddr(),
+                "--join=" + String.join(",", joinHosts)
+        );
+
+        ByteArrayOutputStream barr = new ByteArrayOutputStream();
+        int code = executeProcess(args, barr);
+        if (code != 0) {
+            throw new CommandException(StreamUtils.copyToString(barr, Charset.defaultCharset()), code);
+        }
+
+        return barr.toString();
     }
 
     @Override
@@ -82,7 +99,7 @@ public class LocalClusterOperator implements ClusterOperator {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         ByteArrayOutputStream barr = new ByteArrayOutputStream();
-        int code = executeProcess(shellCommands.disrupt(nodeProperties), barr);
+        int code = executeProcess(List.of("./cluster-admin", "disrupt", nodeProperties.getSqlAddr()), barr);
         if (code != 0) {
             throw new CommandException(StreamUtils.copyToString(barr, Charset.defaultCharset()), code);
         }
@@ -93,7 +110,7 @@ public class LocalClusterOperator implements ClusterOperator {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         ByteArrayOutputStream barr = new ByteArrayOutputStream();
-        int code = executeProcess(shellCommands.recover(nodeProperties), barr);
+        int code = executeProcess(List.of("./cluster-admin", "recover", nodeProperties.getSqlAddr()), barr);
         if (code != 0) {
             throw new CommandException(StreamUtils.copyToString(barr, Charset.defaultCharset()), code);
         }
@@ -110,7 +127,6 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     private int executeProcess(List<String> commands, ByteArrayOutputStream barr) {
-        int code = -1;
         Instant start = Instant.now();
 
         try {
@@ -122,13 +138,14 @@ public class LocalClusterOperator implements ClusterOperator {
             logger.debug("Started process: %s".formatted(process.info()));
 
             process.waitFor(30, TimeUnit.SECONDS);
+
             try (InputStream inputStream = process.getInputStream();
                  InputStream errorStream = process.getErrorStream()) {
-                copy(inputStream, barr);
-                copy(errorStream, barr);
+                IoUtils.copy(inputStream, barr);
+                IoUtils.copy(errorStream, barr);
             }
 
-            code = process.exitValue();
+            int code = process.exitValue();
 
             logger.debug("Process finished in %s with exit code %d: %s"
                     .formatted(Duration.between(start, Instant.now()), code, process.info()));
