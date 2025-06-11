@@ -1,9 +1,8 @@
-package io.cockroachdb.pestcontrol.manager;
+package io.cockroachdb.pestcontrol.cluster;
 
 import java.util.List;
 
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
-import io.cockroachdb.pestcontrol.operator.ClusterOperator;
 import io.cockroachdb.pestcontrol.api.cluster.NodeModel;
 import io.cockroachdb.pestcontrol.schema.NodeDetail;
 import io.cockroachdb.pestcontrol.schema.NodeStatus;

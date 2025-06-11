@@ -30,8 +30,8 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
-import io.cockroachdb.pestcontrol.manager.ClientErrorException;
-import io.cockroachdb.pestcontrol.manager.ServerErrorException;
+import io.cockroachdb.pestcontrol.cluster.ClientErrorException;
+import io.cockroachdb.pestcontrol.cluster.ServerErrorException;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
 import io.cockroachdb.pestcontrol.shell.client.HypermediaClient;
@@ -55,7 +55,7 @@ public class RestClientConfiguration implements RestTemplateCustomizer {
 
         PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
                 .setDefaultSocketConfig(SocketConfig.custom()
-                        .setSoTimeout(Timeout.ofSeconds(10))
+//                        .setSoTimeout(Timeout.ofSeconds(10))
                         .build())
                 .setPoolConcurrencyPolicy(PoolConcurrencyPolicy.STRICT)
                 .setConnPoolPolicy(PoolReusePolicy.LIFO)
@@ -69,8 +69,8 @@ public class RestClientConfiguration implements RestTemplateCustomizer {
 
         HttpComponentsClientHttpRequestFactory factory
                 = new HttpComponentsClientHttpRequestFactory(client);
-        factory.setConnectTimeout(Duration.ofSeconds(5));
-        factory.setReadTimeout(Duration.ofSeconds(5));
+//        factory.setConnectTimeout(Duration.ofSeconds(5));
+//        factory.setReadTimeout(Duration.ofSeconds(5));
 
         restTemplate.setRequestFactory(factory);
     }

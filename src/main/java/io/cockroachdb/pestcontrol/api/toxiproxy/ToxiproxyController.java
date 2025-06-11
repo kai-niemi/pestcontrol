@@ -25,7 +25,7 @@ import eu.rekawek.toxiproxy.model.ToxicType;
 import jakarta.validation.Valid;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
-import io.cockroachdb.pestcontrol.manager.ResourceNotFoundException;
+import io.cockroachdb.pestcontrol.cluster.ResourceNotFoundException;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

@@ -36,12 +36,9 @@ public class ClusterModelAssembler
 
         if (EnumSet.of(ClusterType.remote_insecure, ClusterType.remote_secure)
                 .contains(resource.getClusterProperties().getClusterType())) {
-            resource.getClusterProperties().getNodes()
-                    .forEach(nodeProperties -> {
-                resource.add(linkTo(methodOn(AgentController.class)
-                        .agentForm(clusterId, nodeProperties.getId()))
-                        .withRel(LinkRelations.AGENT_FORM_REL));
-            });
+            resource.add(linkTo(methodOn(AgentController.class)
+                    .agentForm(clusterId))
+                    .withRel(LinkRelations.AGENT_FORM_REL));
         }
 
         return resource;

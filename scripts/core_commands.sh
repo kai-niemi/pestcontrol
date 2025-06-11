@@ -10,6 +10,16 @@ command_agent_stop.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
+command_agent_install.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
+command_agent_init.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
 command_agent_kill.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"

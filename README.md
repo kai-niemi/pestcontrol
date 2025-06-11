@@ -150,8 +150,8 @@ If you prefer to use a packaged artifact (release or snapshot) rather than build
 see [GitHub Packages](https://github.com/orgs/cloudneutral/packages?repo_name=pestcontrol). Scroll to the latest `TAR.GZ` file and copy+paste the download URL
 as described:
 
-    curl -o pc.tar.gz <paste-url-here>
-    tar xvf pc.tar.gz && cd pestcontrol
+    curl -o pestcontrol.tar.gz <paste-url-here>
+    tar xvf pestcontrol.tar.gz && cd pestcontrol
 
 # Configuration
 

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.api.MessageModel;
-import io.cockroachdb.pestcontrol.manager.ClusterManager;
+import io.cockroachdb.pestcontrol.cluster.ClusterManager;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -48,11 +48,9 @@ public class ClusterController {
     }
 
     @GetMapping("/{clusterId}")
-    public ResponseEntity<ClusterModel> getCluster(
-            @PathVariable("clusterId") String id) {
+    public ResponseEntity<ClusterModel> getCluster(@PathVariable("clusterId") String id) {
         final ClusterProperties clusterProperties
                 = applicationProperties.getClusterPropertiesById(id);
-
         return ResponseEntity.ok(new ClusterModelAssembler()
                 .toModel(ClusterModel.from(clusterProperties)));
     }

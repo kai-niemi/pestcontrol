@@ -1,5 +1,13 @@
 #!/bin/bash
 
+commandaction="Start node (agent)"
+
+# ./cluster-admin agent-start --name=n1 --locality=region=eu-north-1,zone=eu-north-1a --listen-addr=localhost:25258 --advertise-addr=localhost:25258 --sql-addr=localhost:26258 --http-addr=localhost:8081 --join=localhost:25258,localhost:25259,localhost:25260
+# ./cluster-admin agent-start --name=n2 --locality=region=eu-north-1,zone=eu-north-1b --listen-addr=localhost:25259 --advertise-addr=localhost:25259 --sql-addr=localhost:26259 --http-addr=localhost:8082 --join=localhost:25258,localhost:25259,localhost:25260
+# ./cluster-admin agent-start --name=n3 --locality=region=eu-north-1,zone=eu-north-1c --listen-addr=localhost:25260 --advertise-addr=localhost:25260 --sql-addr=localhost:26260 --http-addr=localhost:8083 --join=localhost:25258,localhost:25259,localhost:25260
+
+# https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
+
 for i in "$@"; do
   case $i in
     --name=*)
@@ -50,6 +58,11 @@ fn_print_info "sql_addr       = ${sql_addr}"
 fn_print_info "http_addr      = ${http_addr}"
 fn_print_info "join           = ${join}"
 
+if [ -z "${name}" ]; then
+  fn_print_error "Missing name parameter!"
+  exit 1
+fi
+
 if [ -z "${locality}" ]; then
   fn_print_error "Missing locality parameter!"
   exit 1
@@ -59,6 +72,10 @@ if [ -z "${join}" ]; then
   fn_print_error "Missing join parameter!"
   exit 1
 fi
+
+#
+# Begin script
+#
 
 mempool="10%"
 

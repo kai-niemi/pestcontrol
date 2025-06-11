@@ -6,8 +6,8 @@ import org.springframework.data.util.Pair;
 
 import jakarta.annotation.PostConstruct;
 
-import io.cockroachdb.pestcontrol.manager.ClusterManager;
-import io.cockroachdb.pestcontrol.manager.CredentialsHandler;
+import io.cockroachdb.pestcontrol.cluster.ClusterManager;
+import io.cockroachdb.pestcontrol.cluster.CredentialsHandler;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 
 @Configuration

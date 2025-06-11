@@ -19,7 +19,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import io.cockroachdb.pestcontrol.config.ClosableDataSource;
-import io.cockroachdb.pestcontrol.operator.ClusterOperator;
+import io.cockroachdb.pestcontrol.cluster.ClusterOperator;
 
 @Component
 @Validated

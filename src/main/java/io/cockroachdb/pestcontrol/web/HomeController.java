@@ -1,19 +1,13 @@
 package io.cockroachdb.pestcontrol.web;
 
-import java.io.IOException;
 import java.util.concurrent.Callable;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import io.cockroachdb.pestcontrol.api.MessageModel;
-import io.cockroachdb.pestcontrol.manager.ClusterManager;
+import io.cockroachdb.pestcontrol.cluster.ClusterManager;
 import io.cockroachdb.pestcontrol.web.support.WebUtils;
 
 @WebController

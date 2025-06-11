@@ -21,7 +21,7 @@ import jakarta.validation.Valid;
 import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
-import io.cockroachdb.pestcontrol.operator.ClusterOperator;
+import io.cockroachdb.pestcontrol.cluster.ClusterOperator;
 import io.cockroachdb.pestcontrol.util.JsonFormatter;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -38,25 +38,31 @@ public class AgentController {
     @Autowired
     private ApplicationProperties applicationProperties;
 
-    @GetMapping("/{clusterId}/node/{nodeId}")
+    @GetMapping("/{clusterId}")
     public HttpEntity<EntityModel<ClusterProperties>> agentForm(
-            @PathVariable("clusterId") String clusterId,
-            @PathVariable("nodeId") Integer nodeId) {
-        Assert.isTrue(nodeId > 0, "nodeId must be > 0");
-
+            @PathVariable("clusterId") String clusterId) {
         ClusterProperties clusterProperties = applicationProperties
                 .getClusterPropertiesById(clusterId);
 
         return ResponseEntity.ok(EntityModel.of(clusterProperties)
                 .add(linkTo(methodOn(getClass())
-                        .agentForm(clusterId, nodeId))
+                        .agentForm(clusterId))
                         .withSelfRel())
                 .add(linkTo(methodOn(getClass())
-                        .startNode(clusterId, nodeId, null))
+                        .startNode(clusterId, null, null))
                         .withRel(LinkRelations.AGENT_START_REL))
                 .add(linkTo(methodOn(getClass())
-                        .stopNode(clusterId, nodeId, null))
+                        .stopNode(clusterId, null, null))
                         .withRel(LinkRelations.AGENT_STOP_REL))
+                .add(linkTo(methodOn(getClass())
+                        .killNode(clusterId, null, null))
+                        .withRel(LinkRelations.AGENT_KILL_REL))
+                .add(linkTo(methodOn(getClass())
+                        .init(clusterId, null, null))
+                        .withRel(LinkRelations.AGENT_INIT_REL))
+                .add(linkTo(methodOn(getClass())
+                        .install(clusterId, null, null))
+                        .withRel(LinkRelations.AGENT_INSTALL_REL))
         );
     }
 
@@ -67,8 +73,7 @@ public class AgentController {
             @RequestBody @Valid ClusterProperties clusterProperties) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Start cluster '%s' node %d\n%s"
-                .formatted(clusterId, nodeId, JsonFormatter.toFormattedJSON(clusterProperties)));
+        logger.info("Start cluster '%s' node %d".formatted(clusterId, nodeId));
 
         String responseString = localClusterOperator.startNode(clusterProperties, nodeId);
 
@@ -78,19 +83,66 @@ public class AgentController {
     }
 
     @PostMapping("/{clusterId}/stop/{nodeId}")
-    public HttpEntity<Void> stopNode(
+    public HttpEntity<String> stopNode(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("nodeId") Integer nodeId,
             @RequestBody @Valid ClusterProperties clusterProperties) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Stop cluster '%s' node %d\n%s"
-                .formatted(clusterId, nodeId, JsonFormatter.toFormattedJSON(clusterProperties)));
+        logger.info("Stop cluster '%s' node %d".formatted(clusterId, nodeId));
 
-        localClusterOperator.stopNode(clusterProperties, nodeId);
+        String responseString = localClusterOperator.stopNode(clusterProperties, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
-                .build();
+                .body(responseString);
+    }
+    @PostMapping("/{clusterId}/kill/{nodeId}")
+    public HttpEntity<String> killNode(
+            @PathVariable("clusterId") String clusterId,
+            @PathVariable("nodeId") Integer nodeId,
+            @RequestBody @Valid ClusterProperties clusterProperties) {
+        Assert.isTrue(nodeId > 0, "nodeId must be > 0");
+
+        logger.info("Kill cluster '%s' node %d".formatted(clusterId, nodeId));
+
+        String responseString = localClusterOperator.killNode(clusterProperties, nodeId);
+
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .body(responseString);
+    }
+
+    @PostMapping("/{clusterId}/init/{nodeId}")
+    public HttpEntity<String> init(
+            @PathVariable("clusterId") String clusterId,
+            @PathVariable("nodeId") Integer nodeId,
+            @RequestBody @Valid ClusterProperties clusterProperties) {
+        Assert.isTrue(nodeId > 0, "nodeId must be > 0");
+
+        logger.info("Init cluster '%s' via node %d".formatted(clusterId, nodeId));
+
+        String responseString = localClusterOperator.init(clusterProperties, nodeId);
+
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .body(responseString);
+    }
+
+    @PostMapping("/{clusterId}/install/{nodeId}")
+    public HttpEntity<String> install(
+            @PathVariable("clusterId") String clusterId,
+            @PathVariable("nodeId") Integer nodeId,
+            @RequestBody @Valid ClusterProperties clusterProperties) {
+        Assert.isTrue(nodeId > 0, "nodeId must be > 0");
+
+        logger.info("Install cluster '%s' node %d version %s"
+                .formatted(clusterId, nodeId, clusterProperties.getVersion()));
+
+        String responseString = localClusterOperator.install(clusterProperties, nodeId);
+
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .body(responseString);
     }
 }

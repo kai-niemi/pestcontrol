@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.cockroachdb.pestcontrol.manager.ClusterManager;
+import io.cockroachdb.pestcontrol.cluster.ClusterManager;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
-import io.cockroachdb.pestcontrol.operator.ClusterOperator;
+import io.cockroachdb.pestcontrol.cluster.ClusterOperator;
 
 @RestController
 @RequestMapping("/api/cluster/admin")

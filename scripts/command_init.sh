@@ -40,5 +40,6 @@ case "$security_mode" in
     exit 1
 esac
 
-fn_print_ok "Cluster initialized"
 fn_print_info "If you later switch between secure<->insecure then repeat this command"
+
+fn_print_ok "Cluster initialized"

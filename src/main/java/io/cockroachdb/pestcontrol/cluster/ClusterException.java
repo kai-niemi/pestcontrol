@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.manager;
+package io.cockroachdb.pestcontrol.cluster;
 
 public abstract class ClusterException extends RuntimeException {
     public ClusterException(String message) {

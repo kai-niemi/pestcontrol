@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.manager;
+package io.cockroachdb.pestcontrol.cluster;
 
 import java.util.List;
 import java.util.Optional;

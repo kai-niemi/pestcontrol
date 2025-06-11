@@ -1,5 +1,7 @@
 #!/bin/bash
 
+commandaction="Start toxiproxy"
+
 if [ ! "$(command -v toxiproxy-server 2> /dev/null)" ]; then
 	echo -e "[ FAIL ] toxiproxy is not installed"
 	exit 1

@@ -7,6 +7,18 @@ case "${getopt}" in
     agent-start)
         command_agent_start.sh $*
         ;;
+    agent-stop)
+        command_agent_stop.sh $*
+        ;;
+    agent-kill)
+        command_agent_kill.sh $*
+        ;;
+    agent-install)
+        command_agent_install.sh $*
+        ;;
+    agent-init)
+        command_agent_init.sh $*
+        ;;
     login)
         command_login.sh $*
         ;;

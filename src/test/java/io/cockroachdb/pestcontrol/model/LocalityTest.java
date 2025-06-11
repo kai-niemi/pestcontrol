@@ -28,7 +28,7 @@ public class LocalityTest {
                         "192.158.1.5:26261", "192.158.1.6:26262",
                         "192.158.1.22:26263", "192.158.1.23:26264"));
 
-        Collection<String> joinHosts = Locality.resolveJoinHosts(localities);
+        Collection<String> joinHosts = Locality.distributeJoinHosts(localities);
         joinHosts.forEach(System.out::println);
 
         Assertions.assertEquals(3, joinHosts.size());
@@ -49,7 +49,7 @@ public class LocalityTest {
                         "192.158.1.9:26259", "192.158.1.10:26257",
                         "192.158.1.11:26258", "192.158.1.12:26259"));
 
-        Collection<String> joinHosts = Locality.resolveJoinHosts(localities);
+        Collection<String> joinHosts = Locality.distributeJoinHosts(localities);
         joinHosts.forEach(System.out::println);
 
         Assertions.assertEquals(2 * 3, joinHosts.size());
@@ -76,7 +76,7 @@ public class LocalityTest {
                         "192.158.1.15:26259", "192.158.1.4:26257",
                         "192.158.1.16:26258", "192.158.1.17:26259"));
 
-        Collection<String> joinHosts = Locality.resolveJoinHosts(localities);
+        Collection<String> joinHosts = Locality.distributeJoinHosts(localities);
         joinHosts.forEach(System.out::println);
 
         Assertions.assertEquals(3 * 3, joinHosts.size());
@@ -109,7 +109,7 @@ public class LocalityTest {
                         "192.158.1.20:26259", "192.158.1.21:26257",
                         "192.158.1.22:26258", "192.158.1.23:26259"));
 
-        Collection<String> joinHosts = Locality.resolveJoinHosts(localities);
+        Collection<String> joinHosts = Locality.distributeJoinHosts(localities);
         joinHosts.forEach(System.out::println);
         Assertions.assertEquals(4 * 3, joinHosts.size());
 
@@ -142,7 +142,7 @@ public class LocalityTest {
                         "192.158.1.20:26259", "192.158.1.21:26257",
                         "192.158.1.22:26258", "192.158.1.23:26259"));
 
-        Collection<String> joinHosts = Locality.resolveJoinHosts(localities);
+        Collection<String> joinHosts = Locality.distributeJoinHosts(localities);
         joinHosts.forEach(System.out::println);
 
         Assertions.assertEquals(4 * 3, joinHosts.size());
@@ -169,7 +169,7 @@ public class LocalityTest {
         localities.put(Locality.fromTiers("region=eu-north-4,zone=eu-north-4d"),
                 List.of("192.158.1.18:26257"));
 
-        Collection<String> joinHosts = Locality.resolveJoinHosts(localities);
+        Collection<String> joinHosts = Locality.distributeJoinHosts(localities);
         joinHosts.forEach(System.out::println);
 
         Assertions.assertEquals(4, joinHosts.size());

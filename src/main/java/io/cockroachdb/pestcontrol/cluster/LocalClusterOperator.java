@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.operator;
+package io.cockroachdb.pestcontrol.cluster;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
-import io.cockroachdb.pestcontrol.manager.CommandException;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
@@ -42,6 +41,14 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
+    public String install(ClusterProperties clusterProperties, Integer nodeId) {
+        List<String> args = List.of("./cluster-admin", "agent-install",
+                "--version=" + clusterProperties.getVersion()
+        );
+        return executeCommand(args);
+    }
+
+    @Override
     public String startNode(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
@@ -54,79 +61,87 @@ public class LocalClusterOperator implements ClusterOperator {
                             .add(np.getListenAddr());
                 });
 
-        Collection<String> joinHosts = Locality.resolveJoinHosts(hosts);
+        Collection<String> joinHosts = Locality.distributeJoinHosts(hosts);
 
         List<String> args = List.of("./cluster-admin", "agent-start",
+                "--name=n" + nodeId,
                 "--locality=" + nodeProperties.getLocality(),
-                "--listen-addr="+ nodeProperties.getListenAddr(),
+                "--listen-addr=" + nodeProperties.getListenAddr(),
                 "--advertise-addr=" + nodeProperties.getAdvertiseAddr(),
                 "--sql-addr=" + nodeProperties.getSqlAddr(),
                 "--http-addr=" + nodeProperties.getHttpAddr(),
                 "--join=" + String.join(",", joinHosts)
         );
 
-        ByteArrayOutputStream barr = new ByteArrayOutputStream();
-        int code = executeProcess(args, barr);
-        if (code != 0) {
-            throw new CommandException(StreamUtils.copyToString(barr, Charset.defaultCharset()), code);
-        }
-
-        return barr.toString();
+        return executeCommand(args);
     }
 
     @Override
-    public void stopNode(ClusterProperties clusterProperties, Integer nodeId) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void init(ClusterProperties clusterProperties, Integer nodeId) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void install(ClusterProperties clusterProperties, Integer nodeId) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void killNode(ClusterProperties clusterProperties, Integer nodeId) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
+    public String stopNode(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
-        ByteArrayOutputStream barr = new ByteArrayOutputStream();
-        int code = executeProcess(List.of("./cluster-admin", "disrupt", nodeProperties.getSqlAddr()), barr);
-        if (code != 0) {
-            throw new CommandException(StreamUtils.copyToString(barr, Charset.defaultCharset()), code);
-        }
+        List<String> args = List.of("./cluster-admin", "agent-stop",
+                "--sql-addr=" + nodeProperties.getSqlAddr()
+        );
+
+        return executeCommand(args);
     }
 
     @Override
-    public void recoverNode(ClusterProperties clusterProperties, Integer nodeId) {
+    public String init(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
+        List<String> args = List.of("./cluster-admin", "agent-init",
+                "--listen-addr=" + nodeProperties.getListenAddr(),
+                "--sql-addr=" + nodeProperties.getSqlAddr()
+        );
+
+        return executeCommand(args);
+    }
+
+    @Override
+    public String killNode(ClusterProperties clusterProperties, Integer nodeId) {
+        return stopNode(clusterProperties, nodeId);
+    }
+
+    @Override
+    public String disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+
+        List<String> args = List.of("./cluster-admin", "disrupt", nodeProperties.getSqlAddr());
+
+        return executeCommand(args);
+    }
+
+    @Override
+    public String recoverNode(ClusterProperties clusterProperties, Integer nodeId) {
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+
+        List<String> args = List.of("./cluster-admin", "recover", nodeProperties.getSqlAddr());
+
+        return executeCommand(args);
+    }
+
+    @Override
+    public String disruptNodes(ClusterProperties clusterProperties, String locality) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String recoverNodes(ClusterProperties clusterProperties, String locality) {
+        throw new UnsupportedOperationException();
+    }
+
+    private String executeCommand(List<String> args) {
         ByteArrayOutputStream barr = new ByteArrayOutputStream();
-        int code = executeProcess(List.of("./cluster-admin", "recover", nodeProperties.getSqlAddr()), barr);
+        int code = executeCommand(args, barr);
         if (code != 0) {
             throw new CommandException(StreamUtils.copyToString(barr, Charset.defaultCharset()), code);
         }
+        return StreamUtils.copyToString(barr, Charset.defaultCharset());
     }
 
-    @Override
-    public void disruptNodes(ClusterProperties clusterProperties, String locality) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void recoverNodes(ClusterProperties clusterProperties, String locality) {
-        throw new UnsupportedOperationException();
-    }
-
-    private int executeProcess(List<String> commands, ByteArrayOutputStream barr) {
+    private int executeCommand(List<String> commands, ByteArrayOutputStream barr) {
         Instant start = Instant.now();
 
         try {

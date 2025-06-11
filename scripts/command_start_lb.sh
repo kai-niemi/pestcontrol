@@ -1,5 +1,7 @@
 #!/bin/bash
 
+commandaction="Start haproxy"
+
 fn_assert_binaries
 
 case "$security_mode" in

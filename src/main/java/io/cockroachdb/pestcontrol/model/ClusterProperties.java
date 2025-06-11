@@ -44,6 +44,8 @@ public class ClusterProperties {
 
     private List<@Valid NodeProperties> nodes = new ArrayList<>();
 
+    private String version;
+
     public void init() {
         AtomicInteger id = new AtomicInteger();
         nodes.forEach(properties -> properties.setId(id.incrementAndGet()));
@@ -54,6 +56,14 @@ public class ClusterProperties {
                 .filter(agent -> Objects.equals(nodeId, agent.getId()))
                 .findFirst()
                 .orElseThrow();
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public List<NodeProperties> getNodes() {

@@ -13,6 +13,7 @@ target/
 .DS_Store
 .DS_Store?
 Thumbs.db
+pestcontrol.jar
 /bash.lnk
 /settings.cfg
 /config/init-dev.sql

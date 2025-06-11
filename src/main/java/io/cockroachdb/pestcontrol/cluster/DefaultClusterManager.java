@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.manager;
+package io.cockroachdb.pestcontrol.cluster;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -34,7 +34,6 @@ import io.cockroachdb.pestcontrol.config.RestClientProvider;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
-import io.cockroachdb.pestcontrol.operator.ClusterOperator;
 import io.cockroachdb.pestcontrol.repository.ClusterRepository;
 import io.cockroachdb.pestcontrol.repository.JdbcClusterRepository;
 import io.cockroachdb.pestcontrol.schema.NodeDetail;

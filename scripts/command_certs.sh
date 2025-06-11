@@ -1,5 +1,7 @@
 #!/bin/bash
 
+commandaction="Generate certificates"
+
 if ! fn_prompt_yes_no "Generate security certificates to ${certsdir}?" Y; then
   exit 0
 fi

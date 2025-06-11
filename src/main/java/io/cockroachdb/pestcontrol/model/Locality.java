@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -27,7 +26,7 @@ public class Locality implements Comparable<Locality> {
      * @param localities a map of localities to list of host names
      * @return collection of uniformly distributed host names from all localities
      */
-    public static Collection<String> resolveJoinHosts(Map<Locality, List<String>> localities) {
+    public static Collection<String> distributeJoinHosts(Map<Locality, List<String>> localities) {
         List<String> joinHosts = new ArrayList<>();
 
         TreeNode<Tier> root = TreeNode.of(Tier.of("cluster", ""));

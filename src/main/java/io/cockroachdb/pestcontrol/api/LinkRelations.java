@@ -27,6 +27,12 @@ public class LinkRelations {
 
     public static final String AGENT_STOP_REL = "agent-stop";
 
+    public static final String AGENT_INIT_REL = "agent-init";
+
+    public static final String AGENT_KILL_REL = "agent-kill";
+
+    public static final String AGENT_INSTALL_REL = "agent-install";
+
     public static final String AGENT_FORM_REL = "agent";
 
     public static final String WORKLOAD_REL = "workload";
@@ -55,7 +61,7 @@ public class LinkRelations {
 
     public static final String PROXY_REL = "proxy";
 
-    public static final String PROXY_COLL_REL = "proxys";
+    public static final String PROXY_COLL_REL = "proxies";
 
     public static final String FORM_REL = "form";
 

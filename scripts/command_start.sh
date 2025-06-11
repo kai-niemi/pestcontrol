@@ -1,5 +1,7 @@
 #!/bin/bash
 
+commandaction="Start node"
+
 port=$1
 
 if [ $# -eq 0 ]; then
@@ -41,24 +43,10 @@ if [ "${matching}" = "0" ]; then
   exit 1
 fi
 
-fn_local_node_status $rpcport
+fn_local_node_status "$host:$rpcport"
 
 if [ "${status}" != "0" ]; then
   fn_print_warn "Node ${node} on SQL port ${port} is already running!"
 else
   fn_local_start
 fi
-
-#      fn_fail_check ${installdir}/cockroach start \
-#      --locality=${zone} \
-#      --listen-addr=${host}:${rpcport} \
-#      --advertise-addr=${host}:${advertise_rpcport} \
-#      --sql-addr=${host}:${sqlport} \
-#      --http-addr=${host}:${httpport} \
-#      --join=${join} \
-#      --store=${datadir}/n${node} \
-#      --cache=${mempool} \
-#      --max-sql-memory=${mempool} \
-#      --background \
-#      --accept-sql-without-tls \
-#      --certs-dir=${certsdir}

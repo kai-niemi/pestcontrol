@@ -109,19 +109,19 @@ fn_local_kill() {
 }
 
 fn_local_node_status() {
-  port=$1
+  listen_addr=$1
 
   if [ $# -eq 0 ]; then
-      echo -e "Expected port"
+      echo -e "Expected listen addr"
       exit 1
   fi
 
   case "$OSTYPE" in
     darwin*)
-        roachpid=$(lsof -PiTCP -sTCP:LISTEN | grep LISTEN | grep $port | grep cockroach |  awk '{ print $2 }')
+        roachpid=$(lsof -PiTCP -sTCP:LISTEN | grep LISTEN | grep $listen_addr | grep cockroach |  awk '{ print $2 }')
         ;;
     *)
-        roachpid=$(netstat -nap 2>/dev/null | grep LISTEN | grep $port | grep cockroach | awk '{ print $6 }' | awk -F'/' '{ print $1 }')
+        roachpid=$(netstat -nap 2>/dev/null | grep LISTEN | grep $listen_addr | grep cockroach | awk '{ print $6 }' | awk -F'/' '{ print $1 }')
         ;;
   esac
 
@@ -147,11 +147,11 @@ fn_local_select_pid() {
 
     pid=$(echo $pid | awk '{print $1}')
   else
-    local port=$1
-    pid=$(ps -ef | grep "cockroach" | grep "sql-addr=${host}:${port}" | awk '{print $2}')
+    local sql_addr=$1
+    pid=$(ps -ef | grep "cockroach" | grep "sql-addr=${sql_addr}" | awk '{print $2}')
     if [ -z $pid ]; then
         fn_local_pids
-        fn_print_error "No cockroachdb process found with SQL port ${port} (--sql-addr)"
+        fn_print_error "No cockroachdb process found with SQL addr ${sql_addr} (--sql-addr)"
         exit 1
     fi
   fi

@@ -1,6 +1,9 @@
 #!/bin/bash
 
+commandaction="Start nodes"
+
 node=0;
+
 let port1=${rpcportbase}
 let port2=${rpcportbase}+1
 let port3=${rpcportbase}+2
@@ -48,7 +51,7 @@ do
     zone=${locality_zone[node - 1]}
     mempool="10%"
 
-    fn_local_node_status $rpcport
+    fn_local_node_status "$host:$rpcport"
 
     if [ "${status}" != "0" ]; then
       fn_print_warn "Node ${node} is already running! [--sql-addr=port=${host}:${sqlport}, --locality=${zone}]"

@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.operator;
+package io.cockroachdb.pestcontrol.cluster;
 
 import java.util.EnumSet;
 
@@ -13,7 +13,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ServerErrorException;
 
-import io.cockroachdb.pestcontrol.manager.ClientErrorException;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
 import io.cockroachdb.pestcontrol.model.Locality;
@@ -33,17 +32,17 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public void init(ClusterProperties clusterProperties, Integer nodeId) {
+    public String install(ClusterProperties clusterProperties, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void install(ClusterProperties clusterProperties, Integer nodeId) {
+    public String init(ClusterProperties clusterProperties, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void killNode(ClusterProperties clusterProperties, Integer nodeId) {
+    public String killNode(ClusterProperties clusterProperties, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
@@ -53,12 +52,12 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public void stopNode(ClusterProperties clusterProperties, Integer nodeId) {
+    public String stopNode(ClusterProperties clusterProperties, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
+    public String disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         final Locality locality = Locality.fromTiers(nodeProperties.getLocality());
@@ -93,6 +92,7 @@ public class CloudClusterOperator implements ClusterOperator {
                     .retrieve()
                     .toEntity(String.class);
             logger.info("Disrupt command successful: %s".formatted(responseEntity.getBody()));
+            return responseEntity.getBody();
         } catch (HttpClientErrorException e) {
             throw new ClientErrorException("Disrupt API command failed due to client error: "
                                            + e.getMessage(), e);
@@ -103,7 +103,7 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public void recoverNode(ClusterProperties clusterProperties, Integer nodeId) {
+    public String recoverNode(ClusterProperties clusterProperties, Integer nodeId) {
         String bearerToken = clusterProperties.getApiKey();
 
         ResponseEntity<String> responseEntity = RestClient.create()
@@ -115,10 +115,11 @@ public class CloudClusterOperator implements ClusterOperator {
                 .toEntity(String.class);
 
         logger.info("Disrupt recovery command successful: %s".formatted(responseEntity.getBody()));
+        return responseEntity.getBody();
     }
 
     @Override
-    public void disruptNodes(ClusterProperties clusterProperties, String tiers) {
+    public String disruptNodes(ClusterProperties clusterProperties, String tiers) {
         Locality locality = Locality.fromTiers(tiers);
 
         final RegionalDisruptorSpecification regionalDisruptorSpecification = new RegionalDisruptorSpecification();
@@ -145,6 +146,7 @@ public class CloudClusterOperator implements ClusterOperator {
                     .retrieve()
                     .toEntity(String.class);
             logger.info("Disrupt command successful: %s".formatted(responseEntity.getBody()));
+            return responseEntity.getBody();
         } catch (HttpClientErrorException e) {
             throw new ClientErrorException("Disrupt API command failed due to client error: "
                                            + e.getMessage(), e);
@@ -155,9 +157,7 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public void recoverNodes(ClusterProperties clusterProperties, String tiers) {
-        Locality locality = Locality.fromTiers(tiers);
-
+    public String recoverNodes(ClusterProperties clusterProperties, String tiers) {
         String bearerToken = clusterProperties.getApiKey();
 
         ResponseEntity<String> responseEntity = RestClient.create()
@@ -169,5 +169,6 @@ public class CloudClusterOperator implements ClusterOperator {
                 .toEntity(String.class);
 
         logger.info("Disrupt recovery command successful: %s".formatted(responseEntity.getBody()));
+        return responseEntity.getBody();
     }
 }
