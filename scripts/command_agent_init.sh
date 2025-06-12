@@ -1,10 +1,10 @@
 #!/bin/bash
 
-commandaction="Initialize cluster (agent)"
-
 # ./cluster-admin agent-init --listen-addr=localhost:25258 --sql-addr=localhost:26258
 
-# https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
+commandaction="Initialize cluster (agent)"
+
+# https://www.cockroachlabs.com/docs/stable/cockroach-init#flags
 
 for i in "$@"; do
   case $i in

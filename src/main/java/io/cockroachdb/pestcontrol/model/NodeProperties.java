@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.validation.constraints.NotNull;
 
+import io.cockroachdb.pestcontrol.util.Networking;
+
 /**
  * Node properties describing a local or remote network node.
  */
@@ -37,7 +39,7 @@ public class NodeProperties {
     @JsonIgnore
     public Link getBaseUrl() {
         String path = (url.endsWith("/") ? "api" : "/api");
-        return Link.of(url + path);
+        return Link.of(Networking.resolve(url) + path);
     }
 
     public int getId() {
@@ -57,7 +59,7 @@ public class NodeProperties {
     }
 
     public String getUrl() {
-        return url;
+        return Networking.resolve(url);
     }
 
     public void setUrl(String url) {
@@ -65,7 +67,7 @@ public class NodeProperties {
     }
 
     public String getAdvertiseAddr() {
-        return advertiseAddr;
+        return Networking.resolve(advertiseAddr);
     }
 
     public void setAdvertiseAddr(String advertiseAddr) {
@@ -73,7 +75,7 @@ public class NodeProperties {
     }
 
     public String getHttpAddr() {
-        return httpAddr;
+        return Networking.resolve(httpAddr);
     }
 
     public void setHttpAddr(String httpAddr) {
@@ -81,7 +83,7 @@ public class NodeProperties {
     }
 
     public String getListenAddr() {
-        return listenAddr;
+        return Networking.resolve(listenAddr);
     }
 
     public void setListenAddr(String listenAddr) {
@@ -97,7 +99,7 @@ public class NodeProperties {
     }
 
     public String getSqlAddr() {
-        return sqlAddr;
+        return Networking.resolve(sqlAddr);
     }
 
     public void setSqlAddr(String sqlAddr) {

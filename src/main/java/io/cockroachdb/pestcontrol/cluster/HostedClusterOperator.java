@@ -27,7 +27,7 @@ import static io.cockroachdb.pestcontrol.api.LinkRelations.CURIE_NAMESPACE;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @Component
-public class RemoteClusterOperator implements ClusterOperator {
+public class HostedClusterOperator implements ClusterOperator {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -35,7 +35,7 @@ public class RemoteClusterOperator implements ClusterOperator {
 
     @Override
     public boolean supports(ClusterType clusterType) {
-        return EnumSet.of(ClusterType.remote_insecure, ClusterType.remote_secure)
+        return EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure)
                 .contains(clusterType);
     }
 

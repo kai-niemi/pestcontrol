@@ -115,13 +115,7 @@ public class ClusterProperties {
     }
 
     public String getAdminUrl() {
-        return new PropertyPlaceholderHelper("${", "}")
-                .replacePlaceholders(adminUrl,
-                        placeholderName -> switch (placeholderName) {
-                            case "local-ip" -> Networking.getLocalIP();
-                            case "public-ip" -> Networking.getPublicIP();
-                            default -> placeholderName;
-                        });
+        return Networking.resolve(adminUrl);
     }
 
     public void setAdminUrl(String adminUrl) {

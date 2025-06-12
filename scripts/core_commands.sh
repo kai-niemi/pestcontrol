@@ -30,7 +30,7 @@ command_certs.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
-command_clean.sh(){
+command_wipe.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }

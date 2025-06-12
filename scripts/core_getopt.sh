@@ -64,8 +64,8 @@ case "${getopt}" in
     certs)
         command_certs.sh $*
         ;;
-    clean)
-        command_clean.sh $*
+    wipe)
+        command_wipe.sh $*
         ;;
     decomm)
         command_decommission.sh $*

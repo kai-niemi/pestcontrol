@@ -5,7 +5,6 @@ import java.util.EnumSet;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
-import io.cockroachdb.pestcontrol.api.cluster.admin.AdminController;
 import io.cockroachdb.pestcontrol.model.ClusterType;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

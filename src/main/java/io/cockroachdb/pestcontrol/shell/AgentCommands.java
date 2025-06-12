@@ -1,7 +1,6 @@
 package io.cockroachdb.pestcontrol.shell;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,10 +15,9 @@ import org.springframework.shell.standard.ShellOption;
 import org.springframework.web.client.ResourceAccessException;
 
 import io.cockroachdb.pestcontrol.cluster.ClusterManager;
+import io.cockroachdb.pestcontrol.cluster.ClusterOperator;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
-import io.cockroachdb.pestcontrol.model.ClusterType;
-import io.cockroachdb.pestcontrol.cluster.ClusterOperator;
 import io.cockroachdb.pestcontrol.shell.client.HypermediaClient;
 import io.cockroachdb.pestcontrol.shell.support.ListTableModel;
 import io.cockroachdb.pestcontrol.shell.support.TableUtils;
@@ -45,18 +43,14 @@ public class AgentCommands {
     @Autowired
     private AnsiConsole ansiConsole;
 
-    @ShellMethod(value = "List agent information", key = {"agent-list", "al"})
+    @ShellMethod(value = "List agent information", key = {"list"})
     public void listNodes(
             @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
                     valueProvider = ClusterProvider.class) String clusterId) {
 
         ansiConsole.yellow("Local build: %s v%s", buildProperties.getName(), buildProperties.getVersion()).nl();
 
-        ClusterProperties clusterProperties = applicationProperties
-                .getClusterPropertiesById(clusterId,
-                        EnumSet.of(ClusterType.local_insecure, ClusterType.local_secure,
-                                ClusterType.remote_insecure, ClusterType.remote_secure));
-
+        ClusterProperties clusterProperties = applicationProperties.getClusterPropertiesById(clusterId);
         if (clusterProperties.getNodes().isEmpty()) {
             ansiConsole.yellow("No configured nodes for cluster id: %s", clusterId).nl();
         }
@@ -99,53 +93,83 @@ public class AgentCommands {
                 .nl();
     }
 
-    @ShellMethod(value = "Run 'start' command on a specified agent", key = {"agent-start", "at"})
+    @ShellMethod(value = "Run 'start' command on specified agent node(s)", key = {"start"})
     public void agentStart(
             @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
                     valueProvider = ClusterProvider.class) String clusterId,
-            @ShellOption(help = "Node ID (1-based)") int nodeId) {
+            @ShellOption(help = "Node ID (1-based)") int nodeId,
+            @ShellOption(help = "Include all nodes", defaultValue = "false") boolean all) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-        clusterOperator.startNode(clusterProperties, nodeId);
+        if (all) {
+            clusterProperties.getNodes().forEach(nodeProperties ->
+                    clusterOperator.startNode(clusterProperties, nodeProperties.getId()));
+        } else {
+            clusterOperator.startNode(clusterProperties, nodeId);
+        }
     }
 
-    @ShellMethod(value = "Run 'stop' command on a specified agent", key = {"agent-stop", "ap"})
+    @ShellMethod(value = "Run 'stop' command on specified agent node(s)", key = {"stop"})
     public void agentStop(
             @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
                     valueProvider = ClusterProvider.class) String clusterId,
-            @ShellOption(help = "Node ID (1-based)") int nodeId) {
+            @ShellOption(help = "Node ID (1-based)") int nodeId,
+            @ShellOption(help = "Include all nodes", defaultValue = "false") boolean all) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-        clusterOperator.stopNode(clusterProperties, nodeId);
+        if (all) {
+            clusterProperties.getNodes().forEach(nodeProperties ->
+                    clusterOperator.stopNode(clusterProperties, nodeProperties.getId()));
+        } else {
+            clusterOperator.stopNode(clusterProperties, nodeId);
+        }
     }
 
-    @ShellMethod(value = "Run 'kill' command on a specified agent", key = {"agent-kill", "ak"})
+    @ShellMethod(value = "Run 'kill' command on specified agent node(s)", key = {"kill"})
     public void agentKill(
             @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
                     valueProvider = ClusterProvider.class) String clusterId,
-            @ShellOption(help = "Node ID (1-based)") int nodeId) {
+            @ShellOption(help = "Node ID (1-based)") int nodeId,
+            @ShellOption(help = "Include all nodes", defaultValue = "false") boolean all) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-        clusterOperator.killNode(clusterProperties, nodeId);
+        if (all) {
+            clusterProperties.getNodes().forEach(nodeProperties ->
+                    clusterOperator.killNode(clusterProperties, nodeProperties.getId()));
+        } else {
+            clusterOperator.killNode(clusterProperties, nodeId);
+        }
     }
 
-    @ShellMethod(value = "Run 'init' command on a specified agent", key = {"agent-init", "ai"})
+    @ShellMethod(value = "Run 'init' command on specified agent node(s)", key = {"init"})
     public void agentInit(
             @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
                     valueProvider = ClusterProvider.class) String clusterId,
-            @ShellOption(help = "Node ID (1-based)") int nodeId) {
+            @ShellOption(help = "Node ID (1-based)") int nodeId,
+            @ShellOption(help = "Include all nodes", defaultValue = "false") boolean all) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-        clusterOperator.init(clusterProperties, nodeId);
+        if (all) {
+            clusterProperties.getNodes().forEach(nodeProperties ->
+                    clusterOperator.init(clusterProperties, nodeProperties.getId()));
+        } else {
+            clusterOperator.init(clusterProperties, nodeId);
+        }
     }
 
-    @ShellMethod(value = "Run 'install' command on a specified agent", key = {"agent-install", "al"})
+    @ShellMethod(value = "Run 'install' command on specified agent node(s)", key = {"install"})
     public void agentInstall(
             @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
                     valueProvider = ClusterProvider.class) String clusterId,
-            @ShellOption(help = "Node ID (1-based)") int nodeId) {
+            @ShellOption(help = "Node ID (1-based)") int nodeId,
+            @ShellOption(help = "Include all nodes", defaultValue = "false") boolean all) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-        clusterOperator.install(clusterProperties, nodeId);
+        if (all) {
+            clusterProperties.getNodes().forEach(nodeProperties ->
+                    clusterOperator.install(clusterProperties, nodeProperties.getId()));
+        } else {
+            clusterOperator.install(clusterProperties, nodeId);
+        }
     }
 }

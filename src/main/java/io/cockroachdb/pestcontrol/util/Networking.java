@@ -8,8 +8,20 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 
+import org.springframework.util.PropertyPlaceholderHelper;
+
 public abstract class Networking {
     private Networking() {
+    }
+
+    public static String resolve(String input) {
+        return new PropertyPlaceholderHelper("${", "}")
+                .replacePlaceholders(input,
+                        placeholderName -> switch (placeholderName.toLowerCase()) {
+                            case "localip", "local-ip" -> Networking.getLocalIP();
+                            case "publicip", "public-ip" -> Networking.getPublicIP();
+                            default -> placeholderName;
+                        });
     }
 
     public static String getLocalIP() throws UncheckedIOException {

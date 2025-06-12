@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.api.cluster.admin;
+package io.cockroachdb.pestcontrol.api.cluster;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.cockroachdb.pestcontrol.cluster.ClusterManager;
+import io.cockroachdb.pestcontrol.cluster.ClusterOperator;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
-import io.cockroachdb.pestcontrol.cluster.ClusterOperator;
 
 @RestController
 @RequestMapping("/api/cluster/admin")

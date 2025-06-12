@@ -8,4 +8,6 @@ public enum ClusterType {
     local_secure,
     remote_insecure,
     remote_secure,
+    hosted_insecure,
+    hosted_secure,
 }

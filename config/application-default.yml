@@ -13,18 +13,40 @@
 application:
   ## List of pre-configured CockroachDB clusters
   #
-  #  cluster-id: Either a CockroachDB cloud cluster ID any name for other cluster types
-  #  cluster-type: one of: (cloud_dedicated, local_secure, local_insecure, remote_secure, remote_insecure)
-  #  api-key: Required only for cloud_dedicated cluster type, see https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys
-  #  admin-url: Base URL for the Cluster API, typically the regional/local cluster load balancer endpoint.
+  #  cluster-id: Either a CockroachDB cloud cluster ID any unique ID for other cluster types
+  #  cluster-name: Cluster display name
+  #  cluster-type: (one of:)
+  #     cloud_dedicated
+  #     local_secure
+  #     local_insecure
+  #     remote_secure
+  #     remote_insecure
+  #     hosted_secure
+  #     hosted_insecure
   #  data-source-properties:
   #    url: The JDBC connection url
   #    username: The SQL user name with ADMIN role (optional)
   #    password: The SQL user password (optional)
+  # (cloud_dedicated type only:)
+  #  api-key: Required only for cloud_dedicated cluster type, see https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys
+  #  admin-url: Base URL for the Cluster API, typically the regional/local cluster load balancer endpoint.
+  # (hosted_insecure and hosted_secure type only:)
+  #  version: (see below)
+  #  nodes: (see below)
 
   clusters:
+    - cluster-id: "97a73235-fa45-4b4d-a229-f5efd52168ba"
+      cluster-name: "Odin (cc)"
+      cluster-type: cloud_dedicated
+      admin-url: "https://admin-odin-qzx.cockroachlabs.cloud:8080"
+      data-source-properties:
+        url: "jdbc:postgresql://odin-qzx.aws-eu-north-1.cockroachlabs.cloud:26257/defaultdb?sslmode=require"
+        username: "craig"
+        password: "cockroach"
+      api-key: "<private-key>"
+
     - cluster-id: "local-insecure"
-      cluster-name: "Local Insecure Cluster"
+      cluster-name: "Local Cluster (Insecure)"
       cluster-type: local_insecure
       admin-url: "http://localhost:8080"
       data-source-properties:
@@ -33,7 +55,7 @@ application:
         password: ""
 
     - cluster-id: "local-secure"
-      cluster-name: "Local Secure Cluster"
+      cluster-name: "Local Cluster (Secure)"
       cluster-type: local_secure
       admin-url: "https://localhost:443"
       data-source-properties:
@@ -41,29 +63,68 @@ application:
         username: "craig"
         password: "cockroach"
 
-    - cluster-id: "97a73235-fa45-4b4d-a229-f5efd52168ba"
-      cluster-name: "Odin (cc)"
-      cluster-type: cloud_dedicated
-      api-key: "<private-key>"
-      admin-url: "https://admin-odin-qzx.cockroachlabs.cloud:8080"
-      data-source-properties:
-        url: "jdbc:postgresql://odin-qzx.aws-eu-north-1.cockroachlabs.cloud:26257/defaultdb?sslmode=require"
-        username: "craig"
-        password: "cockroach"
-
     - cluster-id: "remote-secure"
-      cluster-name: "Remote Secure Cluster"
+      cluster-name: "Remote Cluster (Secure)"
       cluster-type: remote_secure
       admin-url: "https://127.0.0.1:443"
       data-source-properties:
         url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"
-      nodes:
 
     - cluster-id: "remote-insecure"
-      cluster-name: "Remote Insecure Cluster"
+      cluster-name: "Remote Cluster (Insecure)"
       cluster-type: remote_insecure
+      admin-url: "http://127.0.0.1:8080"
+      data-source-properties:
+        url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=disable"
+        username: "craig"
+        password: ""
+
+    - cluster-id: "hosted-small"
+      cluster-name: "Hosted 3-node Cluster (Insecure)"
+      cluster-type: hosted_insecure
+      admin-url: "http://127.0.0.1:8080"
+      data-source-properties:
+        url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=disable"
+        username: "craig"
+        password: ""
+      # CockroachDB binary version for remote/hosted
+      version: "v25.1.3.darwin-11.0-arm64"
+#      version: "v25.1.3.darwin-11.0-amd64"
+#      version: "v25.1.3.linux-amd64"
+#      version: "v25.1.3.linux-arm64"
+
+      ## (optional) List of machines/VM nodes for managed remote cluster types (only).
+      # Used to manage a cluster through pest control, potentially spanning multiple hosts as
+      # opposed to many instances on a local host (or cloud) on different ports.
+      # See: https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
+      nodes:
+        - url: http://${local-ip}:9090
+          name: n1
+          locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
+          listen-addr: ${local-ip}:26258
+          advertise-addr: ${local-ip}:26258
+          sql-addr: ${local-ip}:26258
+          http-addr: ${local-ip}:8081
+        - url: http://${local-ip}:9090
+          name: n2
+          locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
+          listen-addr: ${local-ip}:26259
+          advertise-addr: ${local-ip}:26259
+          sql-addr: ${local-ip}:26259
+          http-addr: ${local-ip}:8082
+        - url: http://${local-ip}:9090
+          name: n3
+          locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
+          listen-addr: ${local-ip}:26260
+          advertise-addr: ${local-ip}:26259
+          sql-addr: ${local-ip}:26260
+          http-addr: ${local-ip}:8083
+
+    - cluster-id: "hosted-large"
+      cluster-name: "Hosted 6-node Cluster (Insecure)"
+      cluster-type: hosted_insecure
       admin-url: "http://127.0.0.1:8080"
       data-source-properties:
         url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=disable"
@@ -79,48 +140,48 @@ application:
       # opposed to many instances on a local host (or cloud) on different ports.
       # See: https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
       nodes:
-        - url: http://127.0.0.1:9090
+        - url: http://${local-ip}:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-          listen-addr: 127.0.0.1:27015
+          listen-addr: ${local-ip}:27015
           advertise-addr:
-          sql-addr: 127.0.0.1:26257
-          http-addr: 127.0.0.1:8080
-        - url: http://127.0.0.1:9090
+          sql-addr: ${local-ip}:26257
+          http-addr: ${local-ip}:8080
+        - url: http://${local-ip}:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-          listen-addr: 127.0.0.1:27016
+          listen-addr: ${local-ip}:27016
           advertise-addr:
-          sql-addr: 127.0.0.1:26258
-          http-addr: 127.0.0.1:8081
-        - url: http://127.0.0.1:9090
+          sql-addr: ${local-ip}:26258
+          http-addr: ${local-ip}:8081
+        - url: http://${local-ip}:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          listen-addr: 127.0.0.1:27017
+          listen-addr: ${local-ip}:27017
           advertise-addr:
-          sql-addr: 127.0.0.1:26259
-          http-addr: 127.0.0.1:8082
-        - url: http://127.0.0.1:9090
+          sql-addr: ${local-ip}:26259
+          http-addr: ${local-ip}:8082
+        - url: http://${local-ip}:9090
           name: n4
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          listen-addr: 127.0.0.1:27018
+          listen-addr: ${local-ip}:27018
           advertise-addr:
-          sql-addr: 127.0.0.1:26260
-          http-addr: 127.0.0.1:8083
-        - url: http://127.0.0.1:9090
+          sql-addr: ${local-ip}:26260
+          http-addr: ${local-ip}:8083
+        - url: http://${local-ip}:9090
           name: n5
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          listen-addr: 127.0.0.1:27019
+          listen-addr: ${local-ip}:27019
           advertise-addr:
-          sql-addr: 127.0.0.1:26261
-          http-addr: 127.0.0.1:8084
-        - url: http://127.0.0.1:9090
+          sql-addr: ${local-ip}:26261
+          http-addr: ${local-ip}:8084
+        - url: http://${local-ip}:9090
           name: n6
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          listen-addr: 127.0.0.1:27020
+          listen-addr: ${local-ip}:27020
           advertise-addr:
-          sql-addr: 127.0.0.1:26262
-          http-addr: 127.0.0.1:8085
+          sql-addr: ${local-ip}:26262
+          http-addr: ${local-ip}:8085
 
   # -1 denotes use of unbounded virtual threads
   threadPoolMaxSize: -1

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+fn_local_kill_all
+
 if fn_prompt_yes_no "Delete '${certsdir}' - are you sure?" Y; then
   rm -rf ${certsdir}
 fi

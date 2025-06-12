@@ -1,6 +1,7 @@
 package io.cockroachdb.pestcontrol.shell;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.shell.standard.ValueProvider;
 
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
+import io.cockroachdb.pestcontrol.model.ClusterType;
 
 public class ClusterProvider implements ValueProvider {
     @Autowired
@@ -24,11 +26,13 @@ public class ClusterProvider implements ValueProvider {
             if (prefix == null) {
                 prefix = "";
             }
-            if (clusterProperties.getClusterName().startsWith(prefix)
-                || clusterProperties.getClusterId().startsWith(prefix)) {
+            if ((clusterProperties.getClusterName().startsWith(prefix)
+                 || clusterProperties.getClusterId().startsWith(prefix))
+                && EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure)
+                        .contains(clusterProperties.getClusterType())) {
                 result.add(new CompletionProposal(clusterProperties.getClusterId())
                         .displayText(clusterProperties.getClusterId())
-                        .description(clusterProperties.getClusterName() + " of type " + clusterProperties.getClusterType()));
+                        .description(clusterProperties.getClusterName() + " - " + clusterProperties.getClusterType()));
             }
         }
 

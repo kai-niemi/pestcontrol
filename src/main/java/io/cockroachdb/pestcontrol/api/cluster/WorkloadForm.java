@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.api.cluster.workload;
+package io.cockroachdb.pestcontrol.api.cluster;
 
 import org.springframework.hateoas.RepresentationModel;
 

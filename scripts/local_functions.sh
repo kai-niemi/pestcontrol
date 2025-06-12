@@ -108,6 +108,13 @@ fn_local_kill() {
   fn_print_ok "Killed (pid: $pid)"
 }
 
+fn_local_kill_all() {
+  for pid in $(ps -ef | grep "cockroach" | grep "sql-addr=" | awk '{print $2}')
+  do
+    fn_local_kill "$pid"
+  done
+}
+
 fn_local_node_status() {
   listen_addr=$1
 

@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.api.cluster.agent;
+package io.cockroachdb.pestcontrol.api.cluster;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
+import io.cockroachdb.pestcontrol.cluster.ClusterOperator;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
-import io.cockroachdb.pestcontrol.cluster.ClusterOperator;
-import io.cockroachdb.pestcontrol.util.JsonFormatter;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -97,6 +96,7 @@ public class AgentController {
                 .status(HttpStatus.ACCEPTED)
                 .body(responseString);
     }
+
     @PostMapping("/{clusterId}/kill/{nodeId}")
     public HttpEntity<String> killNode(
             @PathVariable("clusterId") String clusterId,

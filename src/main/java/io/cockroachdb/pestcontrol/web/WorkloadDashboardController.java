@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.view.RedirectView;
 
 import io.cockroachdb.pestcontrol.api.LinkRelations;
-import io.cockroachdb.pestcontrol.api.cluster.workload.WorkloadController;
-import io.cockroachdb.pestcontrol.api.cluster.workload.WorkloadForm;
+import io.cockroachdb.pestcontrol.api.cluster.WorkloadController;
+import io.cockroachdb.pestcontrol.api.cluster.WorkloadForm;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.web.support.ClusterHelper;
 import io.cockroachdb.pestcontrol.web.support.SimpMessagePublisher;

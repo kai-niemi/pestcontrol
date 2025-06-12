@@ -30,6 +30,8 @@ import io.cockroachdb.pestcontrol.util.IoUtils;
 
 @Component
 public class LocalClusterOperator implements ClusterOperator {
+    public static final int PROCESS_TIMEOUT_SECONDS = 30;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -145,6 +147,8 @@ public class LocalClusterOperator implements ClusterOperator {
         Instant start = Instant.now();
 
         try {
+            logger.debug("Starting process: %s".formatted(commands));
+
             Process process = new ProcessBuilder()
                     .command(commands)
                     .directory(Paths.get(applicationProperties.getScriptPath()).toFile())
@@ -152,7 +156,7 @@ public class LocalClusterOperator implements ClusterOperator {
 
             logger.debug("Started process: %s".formatted(process.info()));
 
-            process.waitFor(30, TimeUnit.SECONDS);
+            process.waitFor(PROCESS_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             try (InputStream inputStream = process.getInputStream();
                  InputStream errorStream = process.getErrorStream()) {

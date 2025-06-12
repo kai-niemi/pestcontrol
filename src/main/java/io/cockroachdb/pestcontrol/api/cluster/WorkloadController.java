@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.api.cluster.workload;
+package io.cockroachdb.pestcontrol.api.cluster;
 
 import java.time.Duration;
 import java.time.LocalTime;
