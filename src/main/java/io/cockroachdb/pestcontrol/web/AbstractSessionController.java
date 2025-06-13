@@ -7,17 +7,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
-import io.cockroachdb.pestcontrol.web.support.ClusterHelper;
-import io.cockroachdb.pestcontrol.web.support.WebUtils;
 
-@SessionAttributes("helper")
+@SessionAttributes("model")
 public abstract class AbstractSessionController {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @ModelAttribute("helper")
-    public ClusterHelper clusterHelper() {
+    @ModelAttribute("model")
+    public ClusterModel clusterModel() {
         ClusterProperties clusterProperties = WebUtils.getAuthenticatedClusterProperties()
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Expected authentication token"));
-        return new ClusterHelper(clusterProperties.getClusterId(), false);
+        return new ClusterModel(clusterProperties, false);
     }
 }

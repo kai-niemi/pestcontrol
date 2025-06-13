@@ -1,6 +1,7 @@
 package io.cockroachdb.pestcontrol.shell;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,12 +13,15 @@ import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResourceAccessException;
 
 import io.cockroachdb.pestcontrol.cluster.ClusterManager;
 import io.cockroachdb.pestcontrol.cluster.ClusterOperator;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
+import io.cockroachdb.pestcontrol.model.ClusterType;
+import io.cockroachdb.pestcontrol.model.NodeProperties;
 import io.cockroachdb.pestcontrol.shell.client.HypermediaClient;
 import io.cockroachdb.pestcontrol.shell.support.ListTableModel;
 import io.cockroachdb.pestcontrol.shell.support.TableUtils;
@@ -26,8 +30,8 @@ import static io.cockroachdb.pestcontrol.api.LinkRelations.CURIE_NAMESPACE;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @ShellComponent
-@ShellCommandGroup(Constants.AGENT_COMMANDS)
-public class AgentCommands {
+@ShellCommandGroup(Constants.HOSTED_COMMANDS)
+public class HostedCommands {
     @Autowired
     private ClusterManager clusterManager;
 
@@ -43,39 +47,49 @@ public class AgentCommands {
     @Autowired
     private AnsiConsole ansiConsole;
 
-    @ShellMethod(value = "List agent information", key = {"list"})
-    public void listNodes(
-            @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
-                    valueProvider = ClusterProvider.class) String clusterId) {
+    @ShellMethod(value = "List host information", key = {"list"})
+    public void listHosts(
+            @ShellOption(help = "Hosted cluster IDs",
+                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
 
-        ansiConsole.yellow("Local build: %s v%s", buildProperties.getName(), buildProperties.getVersion()).nl();
-
-        ClusterProperties clusterProperties = applicationProperties.getClusterPropertiesById(clusterId);
-        if (clusterProperties.getNodes().isEmpty()) {
-            ansiConsole.yellow("No configured nodes for cluster id: %s", clusterId).nl();
+        List<String> ids = new ArrayList<>();
+        if (StringUtils.hasLength(clusterId)) {
+            ids.add(clusterId);
+        } else {
+            ids.addAll(applicationProperties.getClusterIds(
+                    EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure)));
         }
 
+        ids.forEach(id -> {
+            ClusterProperties clusterProperties = applicationProperties.getClusterPropertiesById(clusterId);
+            if (clusterProperties.getNodes().isEmpty()) {
+                ansiConsole.yellow("No configured nodes for cluster id: %s", clusterId).nl();
+            }
+
+            clusterProperties.getNodes().forEach(this::print);
+        });
+
+    }
+
+    private void print(NodeProperties nodeProperties) {
         List<List<?>> tuples = new ArrayList<>();
 
-        clusterProperties.getNodes()
-                .forEach(nodeProperties -> {
-                    try {
-                        ansiConsole.yellow("Querying: %s ..", nodeProperties.getBaseUrl().toString()).nl();
+        try {
+            ansiConsole.yellow("%s (%s):", nodeProperties.getName(), nodeProperties.getBaseUrl()).nl();
 
-                        Map<String, Object> build = hypermediaClient.from(nodeProperties.getBaseUrl())
-                                .follow(curied(CURIE_NAMESPACE, ACTUATORS_REL).value())
-                                .follow(HalLinkRelation.uncuried("info").value())
-                                .toObject("$.build");
+            Map<String, Object> build = hypermediaClient.from(nodeProperties.getBaseUrl())
+                    .follow(curied(CURIE_NAMESPACE, ACTUATORS_REL).value())
+                    .follow(HalLinkRelation.uncuried("info").value())
+                    .toObject("$.build");
 
-                        Object name = build.getOrDefault("name", "n/a");
-                        Object version = build.getOrDefault("version", "n/a");
+            Object name = build.getOrDefault("name", "n/a");
+            Object version = build.getOrDefault("version", "n/a");
 
-                        tuples.add(List.of(nodeProperties.getUrl(), name, version,
-                                version.equals(buildProperties.getVersion()) ? "" : "Version divergence!"));
-                    } catch (ResourceAccessException e) {
-                        tuples.add(List.of(nodeProperties.getUrl(), "??", "??", e.getMessage()));
-                    }
-                });
+            tuples.add(List.of(nodeProperties.getUrl(), name, version,
+                    version.equals(buildProperties.getVersion()) ? "" : "Version divergence!"));
+        } catch (ResourceAccessException e) {
+            tuples.add(List.of(nodeProperties.getUrl(), "??", "??", e.getMessage()));
+        }
 
         AtomicInteger idx = new AtomicInteger();
 
@@ -93,8 +107,8 @@ public class AgentCommands {
                 .nl();
     }
 
-    @ShellMethod(value = "Run 'start' command on specified agent node(s)", key = {"start"})
-    public void agentStart(
+    @ShellMethod(value = "Run 'start' command on specified host(s)", key = {"start"})
+    public void hostStart(
             @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
                     valueProvider = ClusterProvider.class) String clusterId,
             @ShellOption(help = "Node ID (1-based)") int nodeId,
@@ -109,8 +123,8 @@ public class AgentCommands {
         }
     }
 
-    @ShellMethod(value = "Run 'stop' command on specified agent node(s)", key = {"stop"})
-    public void agentStop(
+    @ShellMethod(value = "Run 'stop' command on specified host(s)", key = {"stop"})
+    public void hostStop(
             @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
                     valueProvider = ClusterProvider.class) String clusterId,
             @ShellOption(help = "Node ID (1-based)") int nodeId,
@@ -125,8 +139,8 @@ public class AgentCommands {
         }
     }
 
-    @ShellMethod(value = "Run 'kill' command on specified agent node(s)", key = {"kill"})
-    public void agentKill(
+    @ShellMethod(value = "Run 'kill' command on specified host(s)", key = {"kill"})
+    public void hostKill(
             @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
                     valueProvider = ClusterProvider.class) String clusterId,
             @ShellOption(help = "Node ID (1-based)") int nodeId,
@@ -141,8 +155,8 @@ public class AgentCommands {
         }
     }
 
-    @ShellMethod(value = "Run 'init' command on specified agent node(s)", key = {"init"})
-    public void agentInit(
+    @ShellMethod(value = "Run 'init' command on specified host(s)", key = {"init"})
+    public void hostInit(
             @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
                     valueProvider = ClusterProvider.class) String clusterId,
             @ShellOption(help = "Node ID (1-based)") int nodeId,
@@ -157,8 +171,8 @@ public class AgentCommands {
         }
     }
 
-    @ShellMethod(value = "Run 'install' command on specified agent node(s)", key = {"install"})
-    public void agentInstall(
+    @ShellMethod(value = "Run 'install' command on specified host(s)", key = {"install"})
+    public void hostInstall(
             @ShellOption(help = "Remote cluster ID to use (must be remote cluster type)",
                     valueProvider = ClusterProvider.class) String clusterId,
             @ShellOption(help = "Node ID (1-based)") int nodeId,

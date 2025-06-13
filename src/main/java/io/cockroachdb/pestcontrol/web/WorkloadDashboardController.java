@@ -26,10 +26,8 @@ import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.api.cluster.WorkloadController;
 import io.cockroachdb.pestcontrol.api.cluster.WorkloadForm;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
-import io.cockroachdb.pestcontrol.web.support.ClusterHelper;
-import io.cockroachdb.pestcontrol.web.support.SimpMessagePublisher;
-import io.cockroachdb.pestcontrol.web.support.TopicName;
-import io.cockroachdb.pestcontrol.web.support.WebUtils;
+import io.cockroachdb.pestcontrol.web.simp.SimpMessagePublisher;
+import io.cockroachdb.pestcontrol.web.simp.TopicName;
 import io.cockroachdb.pestcontrol.workload.WorkloadManager;
 import io.cockroachdb.pestcontrol.workload.model.Workload;
 import io.cockroachdb.pestcontrol.workload.profile.WorkloadType;
@@ -77,7 +75,7 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
     @GetMapping
     public Callable<String> indexPage(
-            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
+            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
             Model model) {
         WebUtils.getAuthenticatedClusterProperties().orElseThrow(() ->
                 new AuthenticationCredentialsNotFoundException("Expected authentication token"));
@@ -88,27 +86,27 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
         model.addAttribute("form", workerForm);
         model.addAttribute("workers",
-                workloadAssembler.toCollectionModel(workloadManager.getWorkloads(clusterHelper.getId())));
+                workloadAssembler.toCollectionModel(workloadManager.getWorkloads(clusterModel.getId())));
         model.addAttribute("aggregatedMetrics",
-                workloadManager.getMetricsAggregate(clusterHelper.getId()));
+                workloadManager.getMetricsAggregate(clusterModel.getId()));
 
         return () -> "workload";
     }
 
     @PostMapping
     public Callable<String> submitForm(
-            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
+            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
             @ModelAttribute WorkloadForm form,
             Model model) {
 
         final LocalTime time = LocalTime.parse(form.getDuration(), DateTimeFormatter.ofPattern("HH:mm"));
         final Duration duration = Duration.ofHours(time.getHour()).plusMinutes(time.getMinute());
-        final DataSource dataSource = applicationProperties.getDataSource(clusterHelper.getId());
+        final DataSource dataSource = applicationProperties.getDataSource(clusterModel.getId());
 
         IntStream.rangeClosed(1, form.getCount())
                 .forEach(value -> {
                     final Runnable task = form.getWorkloadType().createTask(dataSource);
-                    workloadManager.submitWorkload(clusterHelper.getId(), duration, task,
+                    workloadManager.submitWorkload(clusterModel.getId(), duration, task,
                             form.getWorkloadType().getDisplayValue());
                 });
 
@@ -119,10 +117,10 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
     @GetMapping("/{id}")
     public Callable<String> getDetails(
-            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
+            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
             @PathVariable("id") Integer id, Model model) {
         return () -> {
-            Workload workload = workloadManager.findById(clusterHelper.getId(), id);
+            Workload workload = workloadManager.findById(clusterModel.getId(), id);
 
             model.addAttribute("form", workload);
 
@@ -132,39 +130,39 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
     @PostMapping(value = "/cancelAll")
     public RedirectView cancelAllWorkers(
-            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper) {
-        workloadManager.cancelAll(clusterHelper.getId());
+            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel) {
+        workloadManager.cancelAll(clusterModel.getId());
         return new RedirectView("/workload");
     }
 
     @PostMapping(value = "/deleteAll")
     public RedirectView deleteAllWorkers(
-            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper) {
-        workloadManager.deleteAll(clusterHelper.getId());
+            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel) {
+        workloadManager.deleteAll(clusterModel.getId());
         return new RedirectView("/workload");
     }
 
     @GetMapping(value = "/cancel/{id}")
     public RedirectView cancelWorker(
-            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
+            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
             @PathVariable("id") Integer id) {
-        Workload worker = workloadManager.findById(clusterHelper.getId(), id);
+        Workload worker = workloadManager.findById(clusterModel.getId(), id);
         worker.cancel();
         return new RedirectView("/workload");
     }
 
     @GetMapping(value = "/delete/{id}")
     public RedirectView deleteWorker(
-            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
+            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
             @PathVariable("id") Integer id) {
-        workloadManager.deleteById(clusterHelper.getId(), id);
+        workloadManager.deleteById(clusterModel.getId(), id);
         return new RedirectView("/workload");
     }
 
     @GetMapping("/data-points/clear")
     public RedirectView clearDataPoints(
-            @SessionAttribute(value = "helper") ClusterHelper clusterHelper) {
-        workloadManager.clearDataPoints(clusterHelper.getId());
+            @SessionAttribute(value = "helper") ClusterModel clusterModel) {
+        workloadManager.clearDataPoints(clusterModel.getId());
         return new RedirectView("/workload");
     }
 }

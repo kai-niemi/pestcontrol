@@ -40,22 +40,35 @@ public class NodeModelAssembler
                 .contains(clusterType)) {
             resource.add(linkTo(methodOn(AdminController.class)
                     .disruptLocality(resource.getClusterId(), null))
-                    .withRel(LinkRelations.NODE_DISRUPT_REL)
-                    .withTitle("Apply locality disruption"));
+                    .withRel(LinkRelations.LOCALITY_DISRUPT_REL));
             resource.add(linkTo(methodOn(AdminController.class)
                     .recoverLocality(resource.getClusterId(), null))
-                    .withRel(LinkRelations.NODE_RECOVER_REL)
-                    .withTitle("Recover locality disruption"));
+                    .withRel(LinkRelations.LOCALITY_RECOVER_REL));
+        } else if (EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure)
+                .contains(clusterType)) {
+            resource.add(linkTo(methodOn(AdminController.class)
+                    .startNode(resource.getClusterId(), resource.getId()))
+                    .withRel(LinkRelations.NODE_START_REL));
+            resource.add(linkTo(methodOn(AdminController.class)
+                    .stopNode(resource.getClusterId(), resource.getId()))
+                    .withRel(LinkRelations.NODE_STOP_REL));
+            resource.add(linkTo(methodOn(AdminController.class)
+                    .killNode(resource.getClusterId(), resource.getId()))
+                    .withRel(LinkRelations.NODE_KILL_REL));
+            resource.add(linkTo(methodOn(AdminController.class)
+                    .initNode(resource.getClusterId(), resource.getId()))
+                    .withRel(LinkRelations.NODE_INIT_REL));
+            resource.add(linkTo(methodOn(AdminController.class)
+                    .installNode(resource.getClusterId(), resource.getId()))
+                    .withRel(LinkRelations.NODE_INSTALL_REL));
         }
 
         resource.add(linkTo(methodOn(AdminController.class)
                 .disruptNode(resource.getClusterId(), resource.getId()))
-                .withRel(LinkRelations.NODE_DISRUPT_REL)
-                .withTitle("Apply node disruption"));
+                .withRel(LinkRelations.DISRUPT_NODE_REL));
         resource.add(linkTo(methodOn(AdminController.class)
                 .recoverNode(resource.getClusterId(), resource.getId()))
-                .withRel(LinkRelations.NODE_RECOVER_REL)
-                .withTitle("Recover node disruption"));
+                .withRel(LinkRelations.RECOVER_NODE_REL));
 
         return resource;
     }

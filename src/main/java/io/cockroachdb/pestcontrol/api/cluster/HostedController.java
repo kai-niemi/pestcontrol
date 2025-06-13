@@ -26,8 +26,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/api/cluster/agent")
-public class AgentController {
+@RequestMapping("/api/cluster/hosted")
+public class HostedController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -38,30 +38,30 @@ public class AgentController {
     private ApplicationProperties applicationProperties;
 
     @GetMapping("/{clusterId}")
-    public HttpEntity<EntityModel<ClusterProperties>> agentForm(
+    public HttpEntity<EntityModel<ClusterProperties>> hostedForm(
             @PathVariable("clusterId") String clusterId) {
         ClusterProperties clusterProperties = applicationProperties
                 .getClusterPropertiesById(clusterId);
 
         return ResponseEntity.ok(EntityModel.of(clusterProperties)
                 .add(linkTo(methodOn(getClass())
-                        .agentForm(clusterId))
+                        .hostedForm(clusterId))
                         .withSelfRel())
                 .add(linkTo(methodOn(getClass())
                         .startNode(clusterId, null, null))
-                        .withRel(LinkRelations.AGENT_START_REL))
+                        .withRel(LinkRelations.NODE_START_REL))
                 .add(linkTo(methodOn(getClass())
                         .stopNode(clusterId, null, null))
-                        .withRel(LinkRelations.AGENT_STOP_REL))
+                        .withRel(LinkRelations.NODE_STOP_REL))
                 .add(linkTo(methodOn(getClass())
                         .killNode(clusterId, null, null))
-                        .withRel(LinkRelations.AGENT_KILL_REL))
+                        .withRel(LinkRelations.NODE_KILL_REL))
                 .add(linkTo(methodOn(getClass())
                         .init(clusterId, null, null))
-                        .withRel(LinkRelations.AGENT_INIT_REL))
+                        .withRel(LinkRelations.NODE_INIT_REL))
                 .add(linkTo(methodOn(getClass())
                         .install(clusterId, null, null))
-                        .withRel(LinkRelations.AGENT_INSTALL_REL))
+                        .withRel(LinkRelations.NODE_INSTALL_REL))
         );
     }
 

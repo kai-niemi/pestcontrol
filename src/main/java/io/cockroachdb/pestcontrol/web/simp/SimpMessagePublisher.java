@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.web.support;
+package io.cockroachdb.pestcontrol.web.simp;
 
 import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;

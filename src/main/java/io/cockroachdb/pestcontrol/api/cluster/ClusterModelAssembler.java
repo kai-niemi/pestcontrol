@@ -21,21 +21,21 @@ public class ClusterModelAssembler
         resource.add(linkTo(methodOn(ClusterController.class)
                 .getVersion(clusterId))
                 .withRel(LinkRelations.VERSION_REL));
+        resource.add(linkTo(methodOn(AdminController.class)
+                .adminForm(clusterId))
+                .withRel(LinkRelations.CLUSTER_ADMIN_REL));
         resource.add(linkTo(methodOn(NodeController.class)
                 .getNodes(clusterId))
-                .withRel(LinkRelations.CLUSTER_NODE_COLL_REL));
-        resource.add(linkTo(methodOn(AdminController.class)
-                .getAdmin(clusterId))
-                .withRel(LinkRelations.CLUSTER_ADMIN_REL));
+                .withRel(LinkRelations.NODE_COLL_REL));
         resource.add(linkTo(methodOn(WorkloadController.class)
-                .getClusterIndex(clusterId))
+                .getWorkloads(clusterId))
                 .withRel(LinkRelations.WORKLOAD_COLL_REL));
 
         if (EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure)
                 .contains(resource.getClusterProperties().getClusterType())) {
-            resource.add(linkTo(methodOn(AgentController.class)
-                    .agentForm(clusterId))
-                    .withRel(LinkRelations.AGENT_FORM_REL));
+            resource.add(linkTo(methodOn(HostedController.class)
+                    .hostedForm(clusterId))
+                    .withRel(LinkRelations.HOSTED_REL));
         }
 
         return resource;

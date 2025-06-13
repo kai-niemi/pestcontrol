@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
 import io.cockroachdb.pestcontrol.model.ClusterType;
 import io.cockroachdb.pestcontrol.shell.client.HypermediaClient;
-import static io.cockroachdb.pestcontrol.api.LinkRelations.AGENT_FORM_REL;
-import static io.cockroachdb.pestcontrol.api.LinkRelations.AGENT_INIT_REL;
-import static io.cockroachdb.pestcontrol.api.LinkRelations.AGENT_INSTALL_REL;
-import static io.cockroachdb.pestcontrol.api.LinkRelations.AGENT_KILL_REL;
-import static io.cockroachdb.pestcontrol.api.LinkRelations.AGENT_START_REL;
-import static io.cockroachdb.pestcontrol.api.LinkRelations.AGENT_STOP_REL;
+import static io.cockroachdb.pestcontrol.api.LinkRelations.HOSTED_REL;
+import static io.cockroachdb.pestcontrol.api.LinkRelations.NODE_INIT_REL;
+import static io.cockroachdb.pestcontrol.api.LinkRelations.NODE_INSTALL_REL;
+import static io.cockroachdb.pestcontrol.api.LinkRelations.NODE_KILL_REL;
+import static io.cockroachdb.pestcontrol.api.LinkRelations.NODE_START_REL;
+import static io.cockroachdb.pestcontrol.api.LinkRelations.NODE_STOP_REL;
 import static io.cockroachdb.pestcontrol.api.LinkRelations.CLUSTER_COLL_REL;
 import static io.cockroachdb.pestcontrol.api.LinkRelations.CLUSTER_REL;
 import static io.cockroachdb.pestcontrol.api.LinkRelations.CURIE_NAMESPACE;
@@ -46,14 +46,14 @@ public class HostedClusterOperator implements ClusterOperator {
                 .follow(curied(CURIE_NAMESPACE, CLUSTER_COLL_REL).value())
                 .follow(Hop.rel(curied(CURIE_NAMESPACE, CLUSTER_REL).value())
                         .withParameter("clusterId", clusterProperties.getClusterId()))
-                .follow(Hop.rel(curied(CURIE_NAMESPACE, AGENT_FORM_REL).value())
+                .follow(Hop.rel(curied(CURIE_NAMESPACE, HOSTED_REL).value())
                         .withParameter("clusterId", clusterProperties.getClusterId()));
     }
 
     @Override
     public String install(ClusterProperties clusterProperties, Integer nodeId) {
         Link link = traversalBuilder(clusterProperties, nodeId)
-                .follow(curied(CURIE_NAMESPACE, AGENT_INSTALL_REL).value())
+                .follow(curied(CURIE_NAMESPACE, NODE_INSTALL_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", clusterProperties.getClusterId(),
@@ -72,7 +72,7 @@ public class HostedClusterOperator implements ClusterOperator {
     @Override
     public String startNode(ClusterProperties clusterProperties, Integer nodeId) {
         Link link = traversalBuilder(clusterProperties, nodeId)
-                .follow(curied(CURIE_NAMESPACE, AGENT_START_REL).value())
+                .follow(curied(CURIE_NAMESPACE, NODE_START_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", clusterProperties.getClusterId(),
@@ -91,7 +91,7 @@ public class HostedClusterOperator implements ClusterOperator {
     @Override
     public String stopNode(ClusterProperties clusterProperties, Integer nodeId) {
         Link link = traversalBuilder(clusterProperties, nodeId)
-                .follow(curied(CURIE_NAMESPACE, AGENT_STOP_REL).value())
+                .follow(curied(CURIE_NAMESPACE, NODE_STOP_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", clusterProperties.getClusterId(),
@@ -110,7 +110,7 @@ public class HostedClusterOperator implements ClusterOperator {
     @Override
     public String killNode(ClusterProperties clusterProperties, Integer nodeId) {
         Link link = traversalBuilder(clusterProperties, nodeId)
-                .follow(curied(CURIE_NAMESPACE, AGENT_KILL_REL).value())
+                .follow(curied(CURIE_NAMESPACE, NODE_KILL_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", clusterProperties.getClusterId(),
@@ -129,7 +129,7 @@ public class HostedClusterOperator implements ClusterOperator {
     @Override
     public String init(ClusterProperties clusterProperties, Integer nodeId) {
         Link link = traversalBuilder(clusterProperties, nodeId)
-                .follow(curied(CURIE_NAMESPACE, AGENT_INIT_REL).value())
+                .follow(curied(CURIE_NAMESPACE, NODE_INIT_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", clusterProperties.getClusterId(),

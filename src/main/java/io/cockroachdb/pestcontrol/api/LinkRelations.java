@@ -21,39 +21,37 @@ public class LinkRelations {
 
     public static final String CLUSTER_ADMIN_REL = "admin";
 
-    public static final String CLUSTER_NODE_COLL_REL = "nodes";
-
-    public static final String AGENT_START_REL = "agent-start";
-
-    public static final String AGENT_STOP_REL = "agent-stop";
-
-    public static final String AGENT_INIT_REL = "agent-init";
-
-    public static final String AGENT_KILL_REL = "agent-kill";
-
-    public static final String AGENT_INSTALL_REL = "agent-install";
-
-    public static final String AGENT_FORM_REL = "agent";
-
-    public static final String WORKLOAD_REL = "workload";
-
-    public static final String WORKLOAD_COLL_REL = "workloads";
-
     public static final String NODE_REL = "node";
 
     public static final String NODE_COLL_REL = "nodes";
 
-    public static final String NODE_DISRUPT_REL = "node-disrupt";
+    public static final String NODE_START_REL = "node-start";
 
-    public static final String NODE_RECOVER_REL = "node-recover";
+    public static final String NODE_STOP_REL = "node-stop";
+
+    public static final String NODE_INIT_REL = "node-init";
+
+    public static final String NODE_KILL_REL = "node-kill";
+
+    public static final String NODE_INSTALL_REL = "node-install";
+
+    public static final String DISRUPT_NODE_REL = "node-disrupt";
+
+    public static final String RECOVER_NODE_REL = "node-recover";
 
     public static final String NODE_STATUS_REL = "node-status";
 
     public static final String NODE_DETAIL_REL = "node-detail";
 
-    public static final String DISRUPT_LOC_REL = "locality-disrupt";
+    public static final String LOCALITY_DISRUPT_REL = "locality-disrupt";
 
-    public static final String RECOVER_LOC_REL = "locality-recover";
+    public static final String LOCALITY_RECOVER_REL = "locality-recover";
+
+    public static final String HOSTED_REL = "hosted";
+
+    public static final String WORKLOAD_REL = "workload";
+
+    public static final String WORKLOAD_COLL_REL = "workloads";
 
     public static final String CHART_COLL_REL = "charts";
 

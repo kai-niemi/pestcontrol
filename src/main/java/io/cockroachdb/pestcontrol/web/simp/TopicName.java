@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.web.support;
+package io.cockroachdb.pestcontrol.web.simp;
 
 public enum TopicName {
     DASHBOARD_NODE_STATUS("/topic/dashboard/status"),

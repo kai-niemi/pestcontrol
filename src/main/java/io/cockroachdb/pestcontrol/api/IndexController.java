@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
 
-import io.cockroachdb.pestcontrol.api.chart.TimeSeriesChartController;
+import io.cockroachdb.pestcontrol.api.chart.MetersChartController;
 import io.cockroachdb.pestcontrol.api.chart.WorkloadChartController;
 import io.cockroachdb.pestcontrol.api.cluster.ClusterController;
 import io.cockroachdb.pestcontrol.api.toxiproxy.ToxiproxyController;
@@ -32,7 +32,7 @@ public class IndexController {
                         .index())
                         .withRel(LinkRelations.TOXIPROXY_REL)
                         .withTitle("Toxiproxy control resource"))
-                .add(linkTo(methodOn(TimeSeriesChartController.class)
+                .add(linkTo(methodOn(MetersChartController.class)
                         .index())
                         .withRel(LinkRelations.CHART_COLL_REL)
                         .withTitle("Timeseries metrics resource"))

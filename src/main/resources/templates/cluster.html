@@ -22,45 +22,43 @@
     <div class="py-5 bg-body-tertiary">
         <div class="container">
             <div class="alert alert-warning" role="alert"
-                 th:unless="${helper.isAvailable()}">
+                 th:unless="${model.isAvailable()}">
                 <h4 class="alert-heading">Cluster is Unresponsive</h4>
                 <p>Unable to retrieve cluster node status. This can be for several reasons:</p>
                 <ul>
                     <li>There are not enough available nodes in the cluster, check the
-                        <a target="_blank" th:href="${helper.clusterModel.getRequiredLink('admin')}">DB Console</a>.</li>
+                        <a target="_blank" th:href="${model.getAdminLink().getHref()}">DB Console</a>.</li>
                     <li>You are using a local cluster and have not started any nodes. Run <code>./cluster-admin start-all</code>.</li>
                     <li>You are using a local cluster and have not started haproxy. Run <code>./cluster-admin start-lb</code>.</li>
                 </ul>
                 <p>This page will automatically refresh.</p>
             </div>
 
-            <div th:each="locality: ${helper.clusterModel.getLocalities(level)}">
-                <h4 th:text="${locality.toTiers()}"></h4>
+            <div th:each="locality: ${model.getLocalities(level)}">
+                <h4 th:text="${locality.getTiers()}"></h4>
 
-                <div role="group" th:if="${locality.hasLink('disrupt') or locality.hasLink('recover')}">
+                <div role="group" th:if="${model.hasNodeWithRel(locality, 'locality-disrupt') or model.hasNodeWithRel(locality, 'locality-recover')}">
                     <form th:action="@{/cluster}" method="post">
-                        <input type="hidden" name="locality" th:value="${locality.toTiers()}"/>
+                        <input type="hidden" name="locality" th:value="${locality.getTiers()}"/>
                         <button class="btn btn-sm btn-outline-danger" type="submit"
                                name="action" value="disrupt-locality"
-                                th:if="${locality.hasLink('disrupt')}">Disrupt</button>
+                                th:if="${model.hasNodeWithRel(locality, 'locality-disrupt')}">Disrupt</button>
                         <button class="btn btn-sm btn-outline-info" type="submit"
                                name="action" value="recover-locality"
-                                th:if="${locality.hasLink('recover')}">Recover</button>
+                                th:if="${model.hasNodeWithRel(locality, 'locality-recover')}">Recover</button>
                     </form>
                 </div>
-
                 <hr/>
-
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                    <div th:each="node: ${helper.clusterModel.getNodes(locality.tiers)}">
+                    <div th:each="node: ${model.getNodes(locality.getTiers())}">
                         <form th:action="@{/cluster}" method="post">
                             <input type="hidden" name="node-id" th:value="${node.getId()}"/>
 
                             <div class="col">
                                 <div th:id="${'node-' + node.getId()}" class="card shadow-sm alert"
-                                     th:classappend="${helper.getCardClass(node.getNodeStatus())}">
+                                     th:classappend="${model.getCardClass(node.getNodeStatus())}">
                                     <svg class="bd-placeholder-img card-img-top" width=64 height=64 fill="currentColor">
-                                        <use th:href="${helper.getCardImage(node.getNodeStatus())}"></use>
+                                        <use th:href="${model.getCardImage(node.getNodeStatus())}"></use>
                                     </svg>
                                     <div class="card-body">
                                         <h5><a role="button" class="link-offset-3 link-underline link-underline-opacity-50"
@@ -78,13 +76,27 @@
                                     <div class="card-footer">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div role="group">
-                                                <button th:if="${node.hasLink('disrupt')}"
-                                                        class="btn btn-sm btn-outline-danger"
-                                                        type="submit"
-                                                        name="action" value="disrupt-node">Disrupt</button>
-                                                <button th:if="${node.hasLink('recover')}"
+                                                <button th:if="${node.hasLink('node-disrupt')}"
+                                                        class="btn btn-sm btn-outline-danger" type="submit"
+                                                        name="action" value="node-disrupt">Disrupt</button>
+                                                <button th:if="${node.hasLink('node-recover')}"
                                                         class="btn btn-sm btn-outline-info" type="submit"
-                                                        name="action" value="recover-node">Recover</button>
+                                                        name="action" value="node-recover">Recover</button>
+                                                <button th:if="${node.hasLink('node-start')}"
+                                                        class="btn btn-sm btn-outline-info" type="submit"
+                                                        name="action" value="node-start">Start</button>
+                                                <button th:if="${node.hasLink('node-stop')}"
+                                                        class="btn btn-sm btn-outline-info" type="submit"
+                                                        name="action" value="node-stop">Stop</button>
+                                                <button th:if="${node.hasLink('node-kill')}"
+                                                        class="btn btn-sm btn-outline-danger" type="submit"
+                                                        name="action" value="node-kill">Kill</button>
+                                                <button th:if="${node.hasLink('node-stop')}"
+                                                        class="btn btn-sm btn-outline-info" type="submit"
+                                                        name="action" value="node-init">Init</button>
+                                                <button th:if="${node.hasLink('node-install')}"
+                                                        class="btn btn-sm btn-outline-info" type="submit"
+                                                        name="action" value="node-init">Install</button>
                                             </div>
                                             <div class="pc-spinner" style="display: none">
                                                 <span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>

@@ -19,7 +19,7 @@ import io.cockroachdb.pestcontrol.api.LinkRelations;
 import io.cockroachdb.pestcontrol.api.MessageModel;
 import io.cockroachdb.pestcontrol.model.ApplicationProperties;
 import io.cockroachdb.pestcontrol.web.AbstractSessionController;
-import io.cockroachdb.pestcontrol.web.support.ClusterHelper;
+import io.cockroachdb.pestcontrol.web.ClusterModel;
 import io.cockroachdb.pestcontrol.workload.WorkloadManager;
 import io.cockroachdb.pestcontrol.workload.model.Metrics;
 import io.cockroachdb.pestcontrol.workload.model.Workload;
@@ -44,16 +44,16 @@ public class WorkloadChartController extends AbstractSessionController {
     }
 
     @GetMapping
-    public ResponseEntity<MessageModel> index(@SessionAttribute("helper") ClusterHelper clusterHelper) {
+    public ResponseEntity<MessageModel> index(@SessionAttribute("helper") ClusterModel clusterModel) {
         MessageModel index = new MessageModel();
         index.add(linkTo(methodOn(getClass())
-                .index(clusterHelper))
+                .index(clusterModel))
                 .withSelfRel());
         index.add(linkTo(methodOn(getClass())
-                .getWorkloadItems(clusterHelper))
+                .getWorkloadItems(clusterModel))
                 .withRel(LinkRelations.DATA_POINTS_REL));
         index.add(linkTo(methodOn(getClass())
-                .getWorkloadMetrics(clusterHelper))
+                .getWorkloadMetrics(clusterModel))
                 .withRel(LinkRelations.DATA_POINTS_REL));
         return ResponseEntity.ok(index);
     }
@@ -64,34 +64,34 @@ public class WorkloadChartController extends AbstractSessionController {
 
     @GetMapping("/items")
     public @ResponseBody List<Workload> getWorkloadItems(
-            @SessionAttribute("helper") ClusterHelper clusterHelper) {
-        return workloadManager.getWorkloads(clusterHelper.getId());
+            @SessionAttribute("helper") ClusterModel clusterModel) {
+        return workloadManager.getWorkloads(clusterModel.getId());
     }
 
     @GetMapping("/metrics")
     public @ResponseBody Metrics getWorkloadMetrics(
-            @SessionAttribute("helper") ClusterHelper clusterHelper) {
-        return workloadManager.getMetricsAggregate(clusterHelper.getId());
+            @SessionAttribute("helper") ClusterModel clusterModel) {
+        return workloadManager.getMetricsAggregate(clusterModel.getId());
     }
 
     @GetMapping(value = "/data-points/p99",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> getWorkloadDataPointsP99(
-            @SessionAttribute("helper") ClusterHelper clusterHelper) {
-        return workloadManager.getDataPoints(clusterHelper.getId(), Metrics::getP99);
+            @SessionAttribute("helper") ClusterModel clusterModel) {
+        return workloadManager.getDataPoints(clusterModel.getId(), Metrics::getP99);
     }
 
     @GetMapping(value = "/data-points/p999",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> getWorkloadDataPointsP999(
-            @SessionAttribute("helper") ClusterHelper clusterHelper) {
-        return workloadManager.getDataPoints(clusterHelper.getId(), Metrics::getP999);
+            @SessionAttribute("helper") ClusterModel clusterModel) {
+        return workloadManager.getDataPoints(clusterModel.getId(), Metrics::getP999);
     }
 
     @GetMapping(value = "/data-points/tps",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> getWorkloadDataPointsTPS(
-            @SessionAttribute("helper") ClusterHelper clusterHelper) {
-        return workloadManager.getDataPoints(clusterHelper.getId(), Metrics::getOpsPerSec);
+            @SessionAttribute("helper") ClusterModel clusterModel) {
+        return workloadManager.getDataPoints(clusterModel.getId(), Metrics::getOpsPerSec);
     }
 }

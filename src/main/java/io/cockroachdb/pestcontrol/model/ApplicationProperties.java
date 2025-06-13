@@ -69,6 +69,21 @@ public class ApplicationProperties {
         return dataSourceFactory.apply(getClusterPropertiesById(clusterId).getDataSourceProperties());
     }
 
+    public List<String> getClusterIds() {
+        return getClusters()
+                .stream()
+                .map(ClusterProperties::getClusterId)
+                .toList();
+    }
+
+    public List<String> getClusterIds(EnumSet<ClusterType> requiredTypes) {
+        return getClusters()
+                .stream()
+                .filter(x -> requiredTypes.contains(x.getClusterType()))
+                .map(ClusterProperties::getClusterId)
+                .toList();
+    }
+
     public ClusterProperties getClusterPropertiesById(String clusterId) {
         return getClusterPropertiesById(clusterId, EnumSet.allOf(ClusterType.class));
     }
@@ -85,13 +100,6 @@ public class ApplicationProperties {
                     .formatted(requiredTypes, clusterProperties.getClusterType()));
         }
         return clusterProperties;
-    }
-
-    public List<String> getClusterIds() {
-        return getClusters()
-                .stream()
-                .map(ClusterProperties::getClusterId)
-                .toList();
     }
 
     public List<ClusterProperties> getClusters() {

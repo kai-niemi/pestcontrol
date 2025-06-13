@@ -46,7 +46,7 @@ public class WorkloadController {
     private ApplicationProperties applicationProperties;
 
     @GetMapping("/{clusterId}")
-    public ResponseEntity<CollectionModel<Workload>> getClusterIndex(
+    public ResponseEntity<CollectionModel<Workload>> getWorkloads(
             @PathVariable("clusterId") String clusterId) {
         CollectionModel<Workload> collectionModel = workerModelAssembler
                 .toCollectionModel(workloadManager.getWorkloads(clusterId));
@@ -56,7 +56,7 @@ public class WorkloadController {
                 .withRel(LinkRelations.FORM_REL));
 
         Links newLinks = collectionModel.getLinks().merge(Links.MergeMode.REPLACE_BY_REL,
-                linkTo(methodOn(WorkloadController.class).getClusterIndex(clusterId))
+                linkTo(methodOn(WorkloadController.class).getWorkloads(clusterId))
                         .withSelfRel()
                         .andAffordance(afford(methodOn(WorkloadController.class)
                                 .newWorker(clusterId, null))));

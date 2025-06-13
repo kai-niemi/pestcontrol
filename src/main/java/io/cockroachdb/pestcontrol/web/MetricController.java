@@ -10,8 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import io.cockroachdb.pestcontrol.web.support.SimpMessagePublisher;
-import io.cockroachdb.pestcontrol.web.support.TopicName;
+import io.cockroachdb.pestcontrol.web.simp.SimpMessagePublisher;
+import io.cockroachdb.pestcontrol.web.simp.TopicName;
 
 @Controller
 @RequestMapping("/metrics")

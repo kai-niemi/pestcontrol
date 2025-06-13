@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.cockroachdb.pestcontrol.cluster.ClusterManager;
-import io.cockroachdb.pestcontrol.web.support.WebUtils;
 
 @WebController
 @RequestMapping("/")

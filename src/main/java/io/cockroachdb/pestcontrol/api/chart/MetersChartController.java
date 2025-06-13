@@ -24,8 +24,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * ChartJS generic data paint callback methods.
  */
 @RestController
-@RequestMapping(value = "/api/chart/ts")
-public class TimeSeriesChartController {
+@RequestMapping(value = "/api/chart/meters")
+public class MetersChartController {
     @Autowired
     @Qualifier("threadPoolTimeSeries")
     private TimeSeries threadPoolTimeSeries;
@@ -65,25 +65,25 @@ public class TimeSeriesChartController {
         return ResponseEntity.ok(index);
     }
 
-    @GetMapping(value = "/thread-pool",
+    @GetMapping(value = "/data-points/thread-pool",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> getThreadPoolDataPoints() {
         return threadPoolTimeSeries.getDataPoints();
     }
 
-    @GetMapping(value = "/cpu",
+    @GetMapping(value = "/data-points/cpu",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> getCpuDataPoints() {
         return cpuTimeSeries.getDataPoints();
     }
 
-    @GetMapping(value = "/storage",
+    @GetMapping(value = "/data-points/storage",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> storageDataPoints() {
         return storageTimeSeries.getDataPoints();
     }
 
-    @GetMapping(value = "/heap",
+    @GetMapping(value = "/data-points/heap",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> heapDataPoints() {
         return heapTimeSeries.getDataPoints();

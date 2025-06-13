@@ -1,4 +1,4 @@
-package io.cockroachdb.pestcontrol.web.support;
+package io.cockroachdb.pestcontrol.web;
 
 import java.util.Optional;
 

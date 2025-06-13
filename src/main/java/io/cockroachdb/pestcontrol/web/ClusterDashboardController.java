@@ -1,5 +1,6 @@
 package io.cockroachdb.pestcontrol.web;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -27,10 +28,8 @@ import io.cockroachdb.pestcontrol.api.cluster.NodeModel;
 import io.cockroachdb.pestcontrol.cluster.ClusterManager;
 import io.cockroachdb.pestcontrol.cluster.CommandException;
 import io.cockroachdb.pestcontrol.model.ClusterProperties;
-import io.cockroachdb.pestcontrol.web.support.ClusterHelper;
-import io.cockroachdb.pestcontrol.web.support.SimpMessagePublisher;
-import io.cockroachdb.pestcontrol.web.support.TopicName;
-import io.cockroachdb.pestcontrol.web.support.WebUtils;
+import io.cockroachdb.pestcontrol.web.simp.SimpMessagePublisher;
+import io.cockroachdb.pestcontrol.web.simp.TopicName;
 
 @WebController
 @RequestMapping("/cluster")
@@ -49,7 +48,7 @@ public class ClusterDashboardController extends AbstractSessionController {
         messagePublisher.convertAndSendNow(TopicName.DASHBOARD_MODEL_UPDATE);
     }
 
-    private Optional<CollectionModel<NodeModel>> newClusterNodes() {
+    private Optional<Collection<NodeModel>> newClusterNodes() {
         ClusterProperties clusterProperties = WebUtils.getAuthenticatedClusterProperties().orElseThrow(() ->
                 new AuthenticationCredentialsNotFoundException("Expected authentication token"));
 
@@ -57,7 +56,7 @@ public class ClusterDashboardController extends AbstractSessionController {
             CollectionModel<NodeModel> statusModel = nodeController
                     .getNodes(clusterProperties.getClusterId())
                     .getBody();
-            return Optional.ofNullable(statusModel);
+            return Optional.ofNullable(statusModel.getContent());
         } catch (Exception e) {
             logger.warn("Error creating cluster model", e);
             return Optional.empty();
@@ -66,18 +65,18 @@ public class ClusterDashboardController extends AbstractSessionController {
 
     @GetMapping
     public Callable<String> indexPage(
-            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
+            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
             @RequestParam(name = "level", defaultValue = "1", required = false) Integer level,
             Model model) {
 
-        model.addAttribute("helper", clusterHelper);
+        model.addAttribute("helper", clusterModel);
         model.addAttribute("level", level);
 
         newClusterNodes().ifPresentOrElse(x -> {
-            clusterHelper.setNodeModels(x);
-            clusterHelper.setAvailable(true);
+            clusterModel.setNodeModels(x);
+            clusterModel.setAvailable(true);
         }, () -> {
-            clusterHelper.setAvailable(false);
+            clusterModel.setAvailable(false);
         });
 
         return () -> "cluster";
@@ -85,10 +84,10 @@ public class ClusterDashboardController extends AbstractSessionController {
 
     @PostMapping(params = "action=disrupt-node")
     public Callable<String> disruptNode(
-            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
+            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
             @ModelAttribute("node-id") Integer nodeId,
             RedirectAttributes redirectAttributes) {
-        final String clusterId = clusterHelper.getId();
+        final String clusterId = clusterModel.getId();
 
         logger.debug(">> Performing 'disrupt-node' action: clusterId=%s, nodeId=%s"
                 .formatted(clusterId, nodeId));
@@ -117,10 +116,10 @@ public class ClusterDashboardController extends AbstractSessionController {
 
     @PostMapping(params = "action=recover-node")
     public Callable<String> recoverNode(
-            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
+            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
             @ModelAttribute("node-id") Integer nodeId,
             RedirectAttributes redirectAttributes) {
-        final String clusterId = clusterHelper.getId();
+        final String clusterId = clusterModel.getId();
 
         logger.debug(">> Performing 'recover-node' action: clusterId=%s, nodeId=%s"
                 .formatted(clusterId, nodeId));
@@ -148,9 +147,9 @@ public class ClusterDashboardController extends AbstractSessionController {
 
     @PostMapping(params = "action=disrupt-locality")
     public Callable<String> disruptLocality(
-            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
+            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
             @ModelAttribute("locality") String locality) {
-        final String clusterId = clusterHelper.getId();
+        final String clusterId = clusterModel.getId();
 
         logger.debug(">> Performing 'disrupt-locality' action: clusterId=%s, locality=%s"
                 .formatted(clusterId, locality));
@@ -177,9 +176,9 @@ public class ClusterDashboardController extends AbstractSessionController {
 
     @PostMapping(params = "action=recover-locality")
     public Callable<String> recoverLocality(
-            @ModelAttribute(value = "helper", binding = false) ClusterHelper clusterHelper,
+            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
             @ModelAttribute("locality") String locality) {
-        final String clusterId = clusterHelper.getId();
+        final String clusterId = clusterModel.getId();
 
         logger.debug(">> Performing 'recover-locality' action: clusterId=%s, locality=%s"
                 .formatted(clusterId, locality));
@@ -210,13 +209,13 @@ public class ClusterDashboardController extends AbstractSessionController {
 
     @GetMapping("/update")
     public @ResponseBody ResponseEntity<Void> modelUpdate(
-            @SessionAttribute(value = "helper") ClusterHelper clusterHelper) {
-        logger.debug("Performing cluster update (clusterId: %s)".formatted(clusterHelper.getId()));
+            @SessionAttribute(value = "helper") ClusterModel clusterModel) {
+        logger.debug("Performing cluster update (clusterId: %s)".formatted(clusterModel.getId()));
 
         newClusterNodes().ifPresentOrElse(x -> {
-            logger.debug("Cluster update successful (clusterId: %s)".formatted(clusterHelper.getId()));
+            logger.debug("Cluster update successful (clusterId: %s)".formatted(clusterModel.getId()));
 
-            if (clusterHelper.isDifferent(x) || !clusterHelper.isAvailable()) {
+            if (clusterModel.isDifferent(x) || !clusterModel.isAvailable()) {
                 logger.warn("Node count differs - forcing refresh");
 
                 messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
@@ -227,17 +226,17 @@ public class ClusterDashboardController extends AbstractSessionController {
                         messagePublisher.convertAndSendNow(TopicName.DASHBOARD_NODE_STATUS, nodeModel));
             }
 
-            clusterHelper.setAvailable(true);
-            clusterHelper.setNodeModels(x);
+            clusterModel.setAvailable(true);
+            clusterModel.setNodeModels(x);
         }, () -> {
-            logger.warn("Cluster update failed (clusterId: %s)".formatted(clusterHelper.getId()));
+            logger.warn("Cluster update failed (clusterId: %s)".formatted(clusterModel.getId()));
 
             messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
                     MessageModel.from("Cluster update failed - check log")
                             .setMessageType(MessageType.error));
             messagePublisher.convertAndSendNow(TopicName.DASHBOARD_REFRESH_PAGE);
 
-            clusterHelper.setAvailable(false);
+            clusterModel.setAvailable(false);
         });
 
         return ResponseEntity.ok().build();
