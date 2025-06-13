@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>io.cockroachdb.pestcontrol</groupId>
+    <groupId>io.cockroachdb.pest</groupId>
     <artifactId>pestcontrol</artifactId>
     <version>1.3.0-SNAPSHOT</version>
     <packaging>jar</packaging>

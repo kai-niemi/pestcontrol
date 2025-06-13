@@ -9,19 +9,19 @@
     <logger name="org.springframework" level="INFO"/>
 
     <springProfile name="verbose">
-        <logger name="io.cockroachdb.pestcontrol" level="TRACE"/>
+        <logger name="io.cockroachdb.pest" level="TRACE"/>
     </springProfile>
 
     <springProfile name="!verbose">
-        <logger name="io.cockroachdb.pestcontrol" level="INFO"/>
+        <logger name="io.cockroachdb.pest" level="INFO"/>
     </springProfile>
 
     <springProfile name="verbose-sql">
-        <logger name="io.cockroachdb.pestcontrol.SQL_TRACE" level="TRACE"/>
+        <logger name="io.cockroachdb.pest.SQL_TRACE" level="TRACE"/>
     </springProfile>
 
     <springProfile name="!verbose-sql">
-        <logger name="io.cockroachdb.pestcontrol.SQL_TRACE" level="INFO"/>
+        <logger name="io.cockroachdb.pest.SQL_TRACE" level="INFO"/>
     </springProfile>
 
     <springProfile name="verbose-http">
