@@ -39,7 +39,7 @@ public class LocalClusterOperator implements ClusterOperator {
 
     @Override
     public boolean supports(ClusterType clusterType) {
-        return EnumSet.of(ClusterType.local_insecure, ClusterType.local_secure).contains(clusterType);
+        return false;
     }
 
     @Override

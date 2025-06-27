@@ -17,8 +17,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.cockroachdb.pest.model.NodeProperties;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeStatus {
+    public static NodeStatus from(NodeProperties nodeProperties) {
+        NodeStatus nodeStatus = new NodeStatus();
+        nodeStatus.setId(nodeProperties.getId());
+        nodeStatus.setLocality(nodeProperties.getLocality());
+        nodeStatus.setAddress(nodeProperties.getListenAddr());
+        nodeStatus.setIsLive("false");
+        nodeStatus.setIsAvailable("false");
+        return nodeStatus;
+    }
+
     private static final List<DateTimeFormatter> ISO_DATE_TIME_FORMATTERS
             = List.of(
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"),

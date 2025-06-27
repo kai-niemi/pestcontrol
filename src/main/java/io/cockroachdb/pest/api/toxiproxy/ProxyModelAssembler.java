@@ -66,7 +66,7 @@ public class ProxyModelAssembler implements RepresentationModelAssembler<Proxy, 
 
         model.add(linkTo(methodOn(ToxiproxyController.class)
                 .findProxyToxics(entity.getName()))
-                .withRel(LinkRelations.TOXIC_COLL_REL));
+                .withRel(LinkRelations.TOXICS_REL));
 
         return model.add(selfLink);
     }

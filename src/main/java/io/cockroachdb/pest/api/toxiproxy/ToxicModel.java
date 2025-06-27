@@ -11,8 +11,8 @@ import eu.rekawek.toxiproxy.model.ToxicType;
 
 import io.cockroachdb.pest.api.LinkRelations;
 
-@Relation(value = LinkRelations.TOXIC_REL,
-        collectionRelation = LinkRelations.TOXIC_COLL_REL)
+@Relation(value = LinkRelations.TOXIC_REL)
+//        collectionRelation = LinkRelations.TOXIC_INDEX_REL)
 public class ToxicModel extends RepresentationModel<ToxicModel> {
     private String name;
 

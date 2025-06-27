@@ -5,135 +5,57 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 
 import io.cockroachdb.pest.api.cluster.NodeModel;
-import io.cockroachdb.pest.config.ClosableDataSource;
 import io.cockroachdb.pest.config.RestClientProvider;
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.repository.ClusterRepository;
-import io.cockroachdb.pest.repository.JdbcClusterRepository;
+import io.cockroachdb.pest.model.ClusterTypes;
 import io.cockroachdb.pest.schema.NodeDetail;
-import io.cockroachdb.pest.schema.NodeDetails;
 import io.cockroachdb.pest.schema.NodeStatus;
 
 @Component
 public class DefaultClusterManager implements ClusterManager {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Map<String, String> sessionTokens = new ConcurrentHashMap<>();
+
+    private final Map<String, List<NodeModel>> fallbackModels = new HashMap<>();
+
+    private CredentialsHandler credentialsHandler = new CredentialsHandler() {
+    };
 
     @Autowired
     private ApplicationProperties applicationProperties;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private Function<DataSourceProperties, ClosableDataSource> dataSourceFactory;
-
-    @Autowired
     private RestClientProvider restClientProvider;
 
-    // Initial failing credentials handler
-    private CredentialsHandler credentialsHandler = new CredentialsHandler() {
-    };
-
-    @Override
-    public void setCredentialsHandler(CredentialsHandler credentialsHandler) {
-        this.credentialsHandler = credentialsHandler;
-    }
-
-    protected String findSessionToken(String clusterId) {
-        if (!sessionTokens.containsKey(clusterId)) {
-            Pair<String, String> credentials = credentialsHandler
-                    .getAuthenticationCredentials(clusterId);
-            return login(clusterId, credentials.getFirst(), credentials.getSecond());
-        }
-        return sessionTokens.get(clusterId);
-    }
-
-    private List<NodeStatus> queryNodeStatus(ClusterProperties clusterProperties) {
-        try (ClosableDataSource dataSource
-                     = dataSourceFactory.apply(clusterProperties.getDataSourceProperties())) {
-
-            ClusterRepository clusterRepository = new JdbcClusterRepository(dataSource);
-            String json = clusterRepository.queryNodeStatus();
-
-            return Objects.isNull(json) ? List.of() :
-                    objectMapper.readerForListOf(NodeStatus.class).readValue(json);
-        } catch (DataAccessException e) {
-            throw new ClientErrorException("Unable to query node status", e);
-        } catch (JsonProcessingException e) {
-            throw new ClientErrorException("Unable to read status query JSON", e);
-        }
-    }
-
-    private Optional<NodeStatus> queryNodeStatusById(ClusterProperties clusterProperties, Integer nodeId) {
-        try (ClosableDataSource dataSource
-                     = dataSourceFactory.apply(clusterProperties.getDataSourceProperties())) {
-
-            ClusterRepository clusterRepository = new JdbcClusterRepository(dataSource);
-            String json = clusterRepository.queryNodeStatusById(nodeId);
-
-            NodeStatus nodeStatus = Objects.isNull(json) ? null
-                    : objectMapper.readerFor(NodeStatus.class)
-                    .readValue(json);
-            return Optional.ofNullable(nodeStatus);
-        } catch (DataAccessException e) {
-            throw new ClientErrorException("Unable to query node #" + nodeId + " status", e);
-        } catch (JsonProcessingException e) {
-            throw new ClientErrorException("Unable to read status query JSON", e);
-        }
-    }
+    @Autowired
+    private ClusterQuery clusterQuery;
 
     private RestClient restClient(ClusterProperties clusterProperties) {
         return restClientProvider.matches(clusterProperties);
     }
 
-    private List<NodeDetail> queryNodeDetails(ClusterProperties clusterProperties) {
-        String sessionToken = findSessionToken(clusterProperties.getClusterId());
-
-        // There's no way to narrow this down other than by pagination
-        ResponseEntity<NodeDetails> responseEntity = restClient(clusterProperties)
-                .get()
-                .uri(clusterProperties.getAdminUrl() + "/api/v2/nodes/")
-                .header("X-Cockroach-API-Session", sessionToken)
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .toEntity(NodeDetails.class);
-
-        return Objects.requireNonNull(responseEntity.getBody()).getNodes();
-    }
-
-    private Optional<NodeDetail> queryNodeDetailById(ClusterProperties clusterProperties, Integer nodeId) {
-        return queryNodeDetails(clusterProperties)
-                .stream()
-                .filter(nodeStatus -> nodeStatus.getNodeId().equals(nodeId))
-                .findFirst();
+    @Override
+    public void setCredentialsHandler(CredentialsHandler credentialsHandler) {
+        this.credentialsHandler = credentialsHandler;
     }
 
     @Override
@@ -146,22 +68,14 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public String getClusterVersion(String clusterId) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
-        try (ClosableDataSource dataSource
-                     = dataSourceFactory.apply(clusterProperties.getDataSourceProperties())) {
-            JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-            return jdbcTemplate.queryForObject("select version()", String.class);
-        } catch (DataAccessException e) {
-            throw new ServerErrorException("Unable to query cluster version", e);
-        }
+        return clusterQuery.queryClusterVersion(getClusterProperties(clusterId));
     }
 
     @Override
     public String login(String clusterId, String userName, String password) {
         ClusterProperties clusterProperties = getClusterProperties(clusterId);
 
-        if (EnumSet.of(ClusterType.local_insecure, ClusterType.remote_insecure,
-                        ClusterType.hosted_insecure, ClusterType.hosted_secure)
+        if (EnumSet.of(ClusterType.remote_insecure, ClusterType.hosted_insecure)
                 .contains(clusterProperties.getClusterType())) {
             logger.info("Implicit login for cluster type: %s"
                     .formatted(clusterProperties.getClusterType()));
@@ -214,6 +128,15 @@ public class DefaultClusterManager implements ClusterManager {
         return outcome;
     }
 
+    private String findSessionToken(String clusterId) {
+        if (!sessionTokens.containsKey(clusterId)) {
+            Pair<String, String> credentials = credentialsHandler
+                    .getAuthenticationCredentials(clusterId);
+            return login(clusterId, credentials.getFirst(), credentials.getSecond());
+        }
+        return sessionTokens.get(clusterId);
+    }
+
     @Override
     public boolean hasSessionToken(String clusterId) {
         return sessionTokens.containsKey(clusterId);
@@ -221,66 +144,15 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public NodeDetail queryNodeDetailById(String clusterId, Integer id) {
-        return queryNodeDetailById(getClusterProperties(clusterId), id)
+        return clusterQuery.queryNodeDetailById(getClusterProperties(clusterId), findSessionToken(clusterId),  id)
                 .orElseThrow(() -> new ResourceNotFoundException("No such node with ID: " + id));
     }
 
     @Override
     public NodeStatus queryNodeStatusById(String clusterId, Integer id) {
-        return queryNodeStatusById(getClusterProperties(clusterId), id)
+        return clusterQuery.queryNodeStatusById(getClusterProperties(clusterId), id)
                 .orElseThrow(() -> new ResourceNotFoundException("No such node with ID: " + id));
     }
-
-    // Cache of models to use if cluster becomes unavailable
-
-    private final Map<String, List<NodeModel>> fallbackModels = new HashMap<>();
-
-    @Override
-    public List<NodeModel> queryAllNodes(String clusterId) {
-        try {
-            List<NodeModel> nodeModelList = new ArrayList<>();
-            ClusterProperties clusterProperties = getClusterProperties(clusterId);
-            List<NodeStatus> nodeStatusList = queryNodeStatus(clusterProperties);
-            List<NodeDetail> nodeDetailList = queryNodeDetails(clusterProperties);
-
-            nodeDetailList.forEach(nodeDetail -> nodeStatusList.stream()
-                    .filter(nodeStatus -> nodeStatus.getId().equals(nodeDetail.getNodeId()))
-                    .findFirst()
-                    .ifPresentOrElse(nodeStatus -> {
-                        nodeModelList.add(new NodeModel(clusterId, nodeDetail, nodeStatus));
-                    }, () -> {
-                        nodeModelList.add(new NodeModel(clusterId, nodeDetail, new NodeStatus()));
-                        logger.warn("Unable to pair node detail (id: %s) with node status"
-                                .formatted(nodeDetail.getNodeId()));
-                    }));
-
-            fallbackModels.put(clusterId, nodeModelList);
-            return nodeModelList;
-        } catch (Exception e) {
-            if (fallbackModels.containsKey(clusterId)) {
-                List<NodeModel> cachedList = fallbackModels.get(clusterId);
-                cachedList.forEach(nodeModel -> {
-                    nodeModel.getNodeStatus().setIsLive("false");
-//                    nodeModel.getNodeStatus().setIsAvailable("false");
-                });
-                return cachedList;
-            } else {
-                throw e;
-            }
-        }
-
-    }
-
-//    public List<NodeModel> getNodes(List<Tier> tiers) {
-//        return nodes
-//                .getContent()
-//                .stream()
-//                .filter(node -> node.getLocality().matches(tiers))
-//                .sorted(Comparator.comparing(NodeModel::getId))
-//                .toList();
-//                        .sorted((n1, n2) -> n1.getLocality().toTiers()
-//                .compareToIgnoreCase(n2.getLocality().toTiers()))
-//    }
 
     @Override
     public NodeModel queryNodeById(String clusterId, Integer id) {
@@ -289,6 +161,53 @@ public class DefaultClusterManager implements ClusterManager {
                 .filter(node -> node.getNodeDetail().getNodeId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("No such node with ID: " + id));
+    }
+
+    @Override
+    public List<NodeModel> queryAllNodes(String clusterId) {
+        List<NodeModel> nodeModelList = new ArrayList<>();
+
+        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+
+        try {
+            List<NodeStatus> nodeStatusList = clusterQuery.queryNodeStatus(clusterProperties);
+            List<NodeDetail> nodeDetailList = clusterQuery.queryNodeDetails(clusterProperties,
+                    findSessionToken(clusterId));
+
+            nodeDetailList.forEach(nodeDetail -> nodeStatusList.stream()
+                    .filter(nodeStatus -> nodeStatus.getId().equals(nodeDetail.getNodeId()))
+                    .findFirst()
+                    .ifPresentOrElse(nodeStatus -> {
+                        nodeModelList.add(new NodeModel(clusterId, nodeDetail, nodeStatus));
+                    }, () -> {
+                        nodeModelList.add(new NodeModel(clusterId, nodeDetail, new NodeStatus()));
+                    }));
+
+            fallbackModels.put(clusterId, nodeModelList);
+            return nodeModelList;
+        } catch (Exception e) {
+            logger.warn("Error querying cluster status", e);
+
+            if (fallbackModels.containsKey(clusterId)) {
+                List<NodeModel> cachedList = fallbackModels.get(clusterId);
+                cachedList.forEach(nodeModel -> {
+                    nodeModel.getNodeStatus().setIsLive("false");
+                });
+                return cachedList;
+            } else {
+                if (ClusterTypes.isHosted((clusterProperties.getClusterType()))) {
+                    clusterProperties.getNodes()
+                            .forEach(nodeProperties -> {
+                                nodeModelList.add(new NodeModel(clusterId,
+                                        NodeDetail.from(nodeProperties),
+                                        NodeStatus.from(nodeProperties)));
+                            });
+                }
+
+                throw e;
+            }
+        }
+
     }
 
     @Override

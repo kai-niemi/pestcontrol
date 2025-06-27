@@ -14,7 +14,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import jakarta.servlet.http.HttpServletRequest;
 
 import io.cockroachdb.pest.model.ClusterProperties;
-import io.cockroachdb.pest.security.ClusterAuthenticationDetails;
+import io.cockroachdb.pest.web.security.ClusterAuthenticationDetails;
 
 @Component
 public class WebUtils {

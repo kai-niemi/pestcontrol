@@ -16,6 +16,6 @@ public abstract class AbstractSessionController {
     public ClusterModel clusterModel() {
         ClusterProperties clusterProperties = WebUtils.getAuthenticatedClusterProperties()
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Expected authentication token"));
-        return new ClusterModel(clusterProperties, false);
+        return new ClusterModel(clusterProperties);
     }
 }

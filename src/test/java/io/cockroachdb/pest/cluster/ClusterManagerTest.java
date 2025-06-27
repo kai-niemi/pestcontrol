@@ -100,7 +100,7 @@ public class ClusterManagerTest extends AbstractIntegrationTest {
 
         NodeModel nodeModel = clusterManager.queryNodeById(getTagValue(), 1);
         Assertions.assertNotNull(nodeModel);
-        Assertions.assertEquals(1, nodeModel.getId());
+        Assertions.assertEquals(1, nodeModel.getNodeId());
 
         logger.info("Received node model: " + nodeModel);
     }

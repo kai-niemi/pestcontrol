@@ -54,11 +54,10 @@ public class ClusterDashboardController extends AbstractSessionController {
 
         try {
             CollectionModel<NodeModel> statusModel = nodeController
-                    .getNodes(clusterProperties.getClusterId())
+                    .index(clusterProperties.getClusterId())
                     .getBody();
             return Optional.ofNullable(statusModel.getContent());
         } catch (Exception e) {
-            logger.warn("Error creating cluster model", e);
             return Optional.empty();
         }
     }
@@ -74,7 +73,6 @@ public class ClusterDashboardController extends AbstractSessionController {
 
         newClusterNodes().ifPresentOrElse(x -> {
             clusterModel.setNodeModels(x);
-            clusterModel.setAvailable(true);
         }, () -> {
             clusterModel.setAvailable(false);
         });
@@ -87,7 +85,7 @@ public class ClusterDashboardController extends AbstractSessionController {
             @ModelAttribute(value = "model", binding = false) ClusterModel clusterModel,
             @ModelAttribute("node-id") Integer nodeId,
             RedirectAttributes redirectAttributes) {
-        final String clusterId = clusterModel.getId();
+        final String clusterId = clusterModel.getClusterId();
 
         logger.debug(">> Performing 'disrupt-node' action: clusterId=%s, nodeId=%s"
                 .formatted(clusterId, nodeId));
@@ -119,7 +117,7 @@ public class ClusterDashboardController extends AbstractSessionController {
             @ModelAttribute(value = "model", binding = false) ClusterModel clusterModel,
             @ModelAttribute("node-id") Integer nodeId,
             RedirectAttributes redirectAttributes) {
-        final String clusterId = clusterModel.getId();
+        final String clusterId = clusterModel.getClusterId();
 
         logger.debug(">> Performing 'recover-node' action: clusterId=%s, nodeId=%s"
                 .formatted(clusterId, nodeId));
@@ -149,7 +147,7 @@ public class ClusterDashboardController extends AbstractSessionController {
     public Callable<String> disruptLocality(
             @ModelAttribute(value = "model", binding = false) ClusterModel clusterModel,
             @ModelAttribute("locality") String locality) {
-        final String clusterId = clusterModel.getId();
+        final String clusterId = clusterModel.getClusterId();
 
         logger.debug(">> Performing 'disrupt-locality' action: clusterId=%s, locality=%s"
                 .formatted(clusterId, locality));
@@ -178,7 +176,7 @@ public class ClusterDashboardController extends AbstractSessionController {
     public Callable<String> recoverLocality(
             @ModelAttribute(value = "model", binding = false) ClusterModel clusterModel,
             @ModelAttribute("locality") String locality) {
-        final String clusterId = clusterModel.getId();
+        final String clusterId = clusterModel.getClusterId();
 
         logger.debug(">> Performing 'recover-locality' action: clusterId=%s, locality=%s"
                 .formatted(clusterId, locality));
@@ -210,10 +208,10 @@ public class ClusterDashboardController extends AbstractSessionController {
     @GetMapping("/update")
     public @ResponseBody ResponseEntity<Void> modelUpdate(
             @SessionAttribute(value = "model") ClusterModel clusterModel) {
-        logger.debug("Performing cluster update (clusterId: %s)".formatted(clusterModel.getId()));
+        logger.debug("Performing cluster update (clusterId: %s)".formatted(clusterModel.getClusterId()));
 
         newClusterNodes().ifPresentOrElse(x -> {
-            logger.debug("Cluster update successful (clusterId: %s)".formatted(clusterModel.getId()));
+            logger.debug("Cluster update successful (clusterId: %s)".formatted(clusterModel.getClusterId()));
 
             if (clusterModel.isDifferent(x) || !clusterModel.isAvailable()) {
                 logger.warn("Node count differs - forcing refresh");
@@ -226,10 +224,9 @@ public class ClusterDashboardController extends AbstractSessionController {
                         messagePublisher.convertAndSendNow(TopicName.DASHBOARD_NODE_STATUS, nodeModel));
             }
 
-            clusterModel.setAvailable(true);
             clusterModel.setNodeModels(x);
         }, () -> {
-            logger.warn("Cluster update failed (clusterId: %s)".formatted(clusterModel.getId()));
+            logger.warn("Cluster update failed (clusterId: %s)".formatted(clusterModel.getClusterId()));
 
             messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
                     MessageModel.from("Cluster update failed - check log")

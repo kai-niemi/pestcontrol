@@ -12,48 +12,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.cockroachdb.pest.cluster.ClusterManager;
-import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.schema.NodeDetail;
 import io.cockroachdb.pest.schema.NodeStatus;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/api/cluster/node")
+@RequestMapping("/api/cluster")
 public class NodeController {
     @Autowired
     private ClusterManager clusterManager;
 
-    @Autowired
-    private ApplicationProperties applicationProperties;
-
-    @GetMapping("/{clusterId}")
-    public ResponseEntity<CollectionModel<NodeModel>> getNodes(
+    @GetMapping("/{clusterId}/node")
+    public ResponseEntity<CollectionModel<NodeModel>> index(
             @PathVariable("clusterId") String clusterId) {
-        final List<NodeModel> nodes
-                = clusterManager.queryAllNodes(clusterId);
-
+        final List<NodeModel> nodes = clusterManager.queryAllNodes(clusterId);
         return ResponseEntity.ok(CollectionModel.of(
-                        new NodeModelAssembler(applicationProperties
-                                .getClusterPropertiesById(clusterId).getClusterType())
-                                .toCollectionModel(nodes))
+                        new NodeModelAssembler().toCollectionModel(nodes))
                 .add(linkTo(methodOn(NodeController.class)
-                        .getNodes(clusterId))
+                        .index(clusterId))
                         .withSelfRel()));
     }
 
-    @GetMapping("/{clusterId}/{id}")
+    @GetMapping("/{clusterId}/node/{id}")
     public ResponseEntity<NodeModel> getNode(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {
-        ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
-        NodeModelAssembler assembler = new NodeModelAssembler(clusterProperties.getClusterType());
+        NodeModelAssembler assembler = new NodeModelAssembler();
         NodeModel nodeModel = clusterManager.queryNodeById(clusterId, id);
         return ResponseEntity.ok(assembler.toModel(nodeModel));
     }
 
-    @GetMapping("/{clusterId}/{id}/detail")
+    @GetMapping("/{clusterId}/node/{id}/detail")
     public ResponseEntity<EntityModel<NodeDetail>> getNodeDetail(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {
@@ -64,7 +54,7 @@ public class NodeController {
                         .withSelfRel()));
     }
 
-    @GetMapping("/{clusterId}/{id}/status")
+    @GetMapping("/{clusterId}/node/{id}/status")
     public ResponseEntity<EntityModel<NodeStatus>> getNodeStatus(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {

@@ -1,10 +1,10 @@
 package io.cockroachdb.pest.api;
 
+/**
+ * Domain specific link relations with attached semantics,
+ * in contrast to IANA standard links.
+ */
 public class LinkRelations {
-    public static final String DATA_POINTS_REL = "data-points";
-
-    public static final String ACTUATORS_REL = "actuators";
-
     public static final String CANCEL_REL = "cancel";
 
     public static final String DELETE_REL = "delete";
@@ -17,13 +17,13 @@ public class LinkRelations {
 
     public static final String CLUSTER_REL = "cluster";
 
-    public static final String CLUSTER_COLL_REL = "clusters";
+    public static final String CLUSTERS_REL = "clusters";
 
-    public static final String CLUSTER_ADMIN_REL = "admin";
+    public static final String CLUSTER_OPERATOR_REL = "cluster-operator";
 
     public static final String NODE_REL = "node";
 
-    public static final String NODE_COLL_REL = "nodes";
+    public static final String NODES_REL = "nodes";
 
     public static final String NODE_START_REL = "node-start";
 
@@ -47,27 +47,27 @@ public class LinkRelations {
 
     public static final String LOCALITY_RECOVER_REL = "locality-recover";
 
-    public static final String HOSTED_REL = "hosted";
+    public static final String WORKLOADS_REL = "workloads";
 
     public static final String WORKLOAD_REL = "workload";
 
-    public static final String WORKLOAD_COLL_REL = "workloads";
-
-    public static final String CHART_COLL_REL = "charts";
+    public static final String CHARTS_REL = "charts";
 
     public static final String TOXIPROXY_REL = "toxiproxy";
 
+    public static final String PROXIES_REL = "proxies";
+
     public static final String PROXY_REL = "proxy";
 
-    public static final String PROXY_COLL_REL = "proxies";
-
-    public static final String FORM_REL = "form";
+    public static final String TOXICS_REL = "toxics";
 
     public static final String TOXIC_REL = "toxic";
 
-    public static final String TOXIC_COLL_REL = "toxics";
-
     public static final String RESET_REL = "reset";
+
+    public static final String DATA_POINTS_REL = "data-points";
+
+    public static final String ACTUATORS_REL = "actuators";
 
     // IANA standard link relations:
     // http://www.iana.org/assignments/link-relations/link-relations.xhtml

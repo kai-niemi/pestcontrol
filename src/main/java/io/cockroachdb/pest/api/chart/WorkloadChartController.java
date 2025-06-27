@@ -65,33 +65,33 @@ public class WorkloadChartController extends AbstractSessionController {
     @GetMapping("/items")
     public @ResponseBody List<Workload> getWorkloadItems(
             @SessionAttribute("helper") ClusterModel clusterModel) {
-        return workloadManager.getWorkloads(clusterModel.getId());
+        return workloadManager.getWorkloads(clusterModel.getClusterId());
     }
 
     @GetMapping("/metrics")
     public @ResponseBody Metrics getWorkloadMetrics(
             @SessionAttribute("helper") ClusterModel clusterModel) {
-        return workloadManager.getMetricsAggregate(clusterModel.getId());
+        return workloadManager.getMetricsAggregate(clusterModel.getClusterId());
     }
 
     @GetMapping(value = "/data-points/p99",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> getWorkloadDataPointsP99(
             @SessionAttribute("helper") ClusterModel clusterModel) {
-        return workloadManager.getDataPoints(clusterModel.getId(), Metrics::getP99);
+        return workloadManager.getDataPoints(clusterModel.getClusterId(), Metrics::getP99);
     }
 
     @GetMapping(value = "/data-points/p999",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> getWorkloadDataPointsP999(
             @SessionAttribute("helper") ClusterModel clusterModel) {
-        return workloadManager.getDataPoints(clusterModel.getId(), Metrics::getP999);
+        return workloadManager.getDataPoints(clusterModel.getClusterId(), Metrics::getP999);
     }
 
     @GetMapping(value = "/data-points/tps",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> getWorkloadDataPointsTPS(
             @SessionAttribute("helper") ClusterModel clusterModel) {
-        return workloadManager.getDataPoints(clusterModel.getId(), Metrics::getOpsPerSec);
+        return workloadManager.getDataPoints(clusterModel.getClusterId(), Metrics::getOpsPerSec);
     }
 }

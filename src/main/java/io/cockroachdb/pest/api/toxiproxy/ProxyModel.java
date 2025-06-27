@@ -5,8 +5,8 @@ import org.springframework.hateoas.server.core.Relation;
 
 import io.cockroachdb.pest.api.LinkRelations;
 
-@Relation(value = LinkRelations.PROXY_REL,
-        collectionRelation = LinkRelations.PROXY_COLL_REL)
+@Relation(value = LinkRelations.PROXY_REL)
+//        collectionRelation = LinkRelations.PROXY_COLL_REL)
 public class ProxyModel extends RepresentationModel<ProxyModel> {
     private String path;
 

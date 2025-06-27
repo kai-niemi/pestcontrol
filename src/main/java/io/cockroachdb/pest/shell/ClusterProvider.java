@@ -1,7 +1,6 @@
 package io.cockroachdb.pest.shell;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import org.springframework.shell.standard.ValueProvider;
 
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.ClusterProperties;
-import io.cockroachdb.pest.model.ClusterType;
+import io.cockroachdb.pest.model.ClusterTypes;
 
 public class ClusterProvider implements ValueProvider {
     @Autowired
@@ -28,8 +27,7 @@ public class ClusterProvider implements ValueProvider {
             }
             if ((clusterProperties.getClusterName().startsWith(prefix)
                  || clusterProperties.getClusterId().startsWith(prefix))
-                && EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure)
-                        .contains(clusterProperties.getClusterType())) {
+                && ClusterTypes.isHosted(clusterProperties.getClusterType())) {
                 result.add(new CompletionProposal(clusterProperties.getClusterId())
                         .displayText(clusterProperties.getClusterId())
                         .description(clusterProperties.getClusterName() + " - " + clusterProperties.getClusterType()));

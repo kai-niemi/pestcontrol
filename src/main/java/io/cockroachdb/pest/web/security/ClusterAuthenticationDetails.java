@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.security;
+package io.cockroachdb.pest.web.security;
 
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 

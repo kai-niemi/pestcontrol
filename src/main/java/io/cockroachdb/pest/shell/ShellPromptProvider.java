@@ -17,7 +17,7 @@ public class ShellPromptProvider implements PromptProvider {
     public AttributedString getPrompt() {
         String profiles = String.join(",", environment.getActiveProfiles());
         AttributedStringBuilder sb = new AttributedStringBuilder();
-        sb.append("pestcontrol (", AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN));
+        sb.append("pest (", AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN));
         sb.append(profiles, AttributedStyle.DEFAULT.foreground(AttributedStyle.RED).faintOff());
         sb.append(")$ ", AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN));
         return sb.toAttributedString();

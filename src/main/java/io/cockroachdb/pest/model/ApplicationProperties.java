@@ -54,15 +54,13 @@ public class ApplicationProperties {
 
     public ClusterOperator clusterOperator(String clusterId)
             throws UnsupportedOperationException {
-        ClusterType clusterType = getClusterPropertiesById(clusterId,
-                EnumSet.allOf(ClusterType.class)).getClusterType();
-
+        ClusterType clusterType = getClusterPropertiesById(clusterId).getClusterType();
         return clusterOperators
                 .stream()
                 .filter(x -> x.supports(clusterType))
                 .min(new AnnotationAwareOrderComparator())
                 .orElseThrow(() -> new UnsupportedOperationException(
-                        "No operator found for cluster type " + clusterType));
+                        "No operator found for cluster type: " + clusterType));
     }
 
     public ClosableDataSource getDataSource(String clusterId) {

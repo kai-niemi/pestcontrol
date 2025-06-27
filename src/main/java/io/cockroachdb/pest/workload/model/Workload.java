@@ -17,8 +17,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.cockroachdb.pest.api.LinkRelations;
 import io.cockroachdb.pest.util.TimeUtils;
 
-@Relation(itemRelation = LinkRelations.WORKLOAD_REL,
-        collectionRelation = LinkRelations.WORKLOAD_COLL_REL)
+@Relation(itemRelation = LinkRelations.WORKLOAD_REL)
+//        collectionRelation = LinkRelations.WORKLOAD_INDEX_REL)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Workload extends RepresentationModel<Workload> {
     private final String clusterId;

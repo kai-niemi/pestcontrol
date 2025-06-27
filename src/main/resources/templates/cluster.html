@@ -52,19 +52,19 @@
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                     <div th:each="node: ${model.getNodes(locality.getTiers())}">
                         <form th:action="@{/cluster}" method="post">
-                            <input type="hidden" name="node-id" th:value="${node.getId()}"/>
+                            <input type="hidden" name="node-id" th:value="${node.getNodeId()}"/>
 
                             <div class="col">
-                                <div th:id="${'node-' + node.getId()}" class="card shadow-sm alert"
+                                <div th:id="${'node-' + node.getNodeId()}" class="card shadow-sm alert"
                                      th:classappend="${model.getCardClass(node.getNodeStatus())}">
                                     <svg class="bd-placeholder-img card-img-top" width=64 height=64 fill="currentColor">
                                         <use th:href="${model.getCardImage(node.getNodeStatus())}"></use>
                                     </svg>
                                     <div class="card-body">
                                         <h5><a role="button" class="link-offset-3 link-underline link-underline-opacity-50"
-                                               th:href="${node.getRequiredLink('self').href}" th:text="${'Node ' + node.getId()}"></a></h5>
+                                               th:href="${node.getRequiredLink('self').href}" th:text="${'Node ' + node.getNodeId()}"></a></h5>
                                         <h5 class="card-subtitle mb-3"
-                                            th:text="${node.getLocality()}"></h5>
+                                            th:text="${node.getNodeDetail().getLocality()}"></h5>
                                         <p class="card-subtitle mb-3"
                                             th:text="${node.getNodeDetail().getSqlAddress().getAddressField()}"></p>
                                         <p class="card-subtitle mb-3"
@@ -77,12 +77,14 @@
 <!--                                        <div class="d-flex gap-2 d-md-flex justify-content-md-start align-items-center">-->
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div role="group">
+<!--
                                                 <button th:if="${node.hasLink('node-disrupt')}"
                                                         class="btn btn-sm btn-outline-danger" type="submit"
                                                         name="action" value="node-disrupt">Disrupt</button>
                                                 <button th:if="${node.hasLink('node-recover')}"
                                                         class="btn btn-sm btn-outline-info" type="submit"
                                                         name="action" value="node-recover">Recover</button>
+-->
                                                 <button th:if="${node.hasLink('node-start')}"
                                                         class="btn btn-sm btn-outline-info" type="submit"
                                                         name="action" value="node-start">Start</button>

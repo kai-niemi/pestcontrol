@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.cockroachdb.pest.api.LinkRelations;
-import io.cockroachdb.pest.model.Locality;
 import io.cockroachdb.pest.schema.NodeDetail;
 import io.cockroachdb.pest.schema.NodeStatus;
 
@@ -16,7 +15,7 @@ import io.cockroachdb.pest.schema.NodeStatus;
  * Combination of node detail and status.
  */
 @Relation(value = LinkRelations.NODE_REL,
-        collectionRelation = LinkRelations.NODE_COLL_REL)
+        collectionRelation = LinkRelations.NODES_REL)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeModel extends RepresentationModel<NodeModel> {
     private final String clusterId;
@@ -29,7 +28,11 @@ public class NodeModel extends RepresentationModel<NodeModel> {
 
     public NodeModel(String clusterId, NodeDetail nodeDetail, NodeStatus nodeStatus) {
         Assert.notNull(nodeDetail, "nodeDetail is null");
+        Assert.notNull(nodeDetail.getNodeId(), "nodeDetail.id is null");
+        Assert.notNull(nodeDetail.getLocality(), "nodeDetail.locality is null");
+        Assert.notNull(nodeDetail.getSqlAddress(), "nodeDetail.aqlAddress");
         Assert.notNull(nodeStatus, "nodeStatus is null");
+
         this.clusterId = clusterId;
         this.nodeDetail = nodeDetail;
         this.nodeStatus = nodeStatus;
@@ -39,18 +42,14 @@ public class NodeModel extends RepresentationModel<NodeModel> {
         return clusterId;
     }
 
-    public String getDescription() {
-        return "Node " + getId()
-               + ", " + nodeDetail.getLocality()
-               + ", " + nodeDetail.getSqlAddress().getAddressField();
-    }
-
-    public Integer getId() {
+    public Integer getNodeId() {
         return nodeDetail.getNodeId();
     }
 
-    public Locality getLocality() {
-        return nodeDetail.getLocality();
+    public String getDescription() {
+        return "Node " + getNodeId()
+               + ", " + nodeDetail.getLocality()
+               + ", " + nodeDetail.getSqlAddress().getAddressField();
     }
 
     public NodeDetail getNodeDetail() {

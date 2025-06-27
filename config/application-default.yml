@@ -15,28 +15,23 @@ application:
   #
   #  cluster-id: Either a CockroachDB cloud cluster ID any unique ID for other cluster types
   #  cluster-name: Cluster display name
-  #  cluster-type: (one of:)
-  #     cloud_dedicated
-  #     local_secure
-  #     local_insecure
-  #     remote_secure
-  #     remote_insecure
-  #     hosted_secure
-  #     hosted_insecure
+  #  cluster-type: cloud_dedicated|remote_secure|remote_insecure|hosted_secure|hosted_insecure
   #  data-source-properties:
   #    url: The JDBC connection url
   #    username: The SQL user name with ADMIN role (optional)
   #    password: The SQL user password (optional)
-  # (cloud_dedicated type only:)
-  #  api-key: Required only for cloud_dedicated cluster type, see https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys
-  #  admin-url: Base URL for the Cluster API, typically the regional/local cluster load balancer endpoint.
-  # (hosted_insecure and hosted_secure type only:)
+  #  admin-url: Base URL for the Cluster API, typically the regional/local cluster load balancer endpoint (optional).
+  #
+  # For cloud_dedicated type only:
+  #  api-key: Required, see https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys
+  #
+  # For hosted_insecure and hosted_secure types only:
   #  version: (see below)
   #  nodes: (see below)
 
   clusters:
     - cluster-id: "97a73235-fa45-4b4d-a229-f5efd52168ba"
-      cluster-name: "Odin (cc)"
+      cluster-name: "Cloud Dedicated"
       cluster-type: cloud_dedicated
       admin-url: "https://admin-odin-qzx.cockroachlabs.cloud:8080"
       data-source-properties:
@@ -44,33 +39,6 @@ application:
         username: "craig"
         password: "cockroach"
       api-key: "<private-key>"
-
-    - cluster-id: "local-insecure"
-      cluster-name: "Local Cluster (Insecure)"
-      cluster-type: local_insecure
-      admin-url: "http://localhost:8080"
-      data-source-properties:
-        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
-        username: "craig"
-        password: ""
-
-    - cluster-id: "local-secure"
-      cluster-name: "Local Cluster (Secure)"
-      cluster-type: local_secure
-      admin-url: "https://localhost:443"
-      data-source-properties:
-        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
-        username: "craig"
-        password: "cockroach"
-
-    - cluster-id: "remote-secure"
-      cluster-name: "Remote Cluster (Secure)"
-      cluster-type: remote_secure
-      admin-url: "https://127.0.0.1:443"
-      data-source-properties:
-        url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=require"
-        username: "craig"
-        password: "cockroach"
 
     - cluster-id: "remote-insecure"
       cluster-name: "Remote Cluster (Insecure)"
@@ -81,7 +49,16 @@ application:
         username: "craig"
         password: ""
 
-    - cluster-id: "hosted-small"
+    - cluster-id: "remote-secure"
+      cluster-name: "Remote Cluster (Secure)"
+      cluster-type: remote_secure
+      admin-url: "https://127.0.0.1:443"
+      data-source-properties:
+        url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=require"
+        username: "craig"
+        password: "cockroach"
+
+    - cluster-id: "hosted-insecure"
       cluster-name: "Hosted 3-node Cluster (Insecure)"
       cluster-type: hosted_insecure
       admin-url: "http://127.0.0.1:8080"
@@ -95,9 +72,9 @@ application:
 #      version: "v25.1.3.linux-amd64"
 #      version: "v25.1.3.linux-arm64"
 
-      ## (optional) List of machines/VM nodes for managed remote cluster types (only).
+      ## (optional) List of machines/VM nodes for hosted cluster types.
       # Used to manage a cluster through pest control, potentially spanning multiple hosts as
-      # opposed to many instances on a local host (or cloud) on different ports.
+      # opposed to many instances on local host on different ports.
       # See: https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
       nodes:
         - url: http://${local-ip}:9090
@@ -122,66 +99,40 @@ application:
           sql-addr: ${local-ip}:26260
           http-addr: ${local-ip}:8083
 
-    - cluster-id: "hosted-large"
-      cluster-name: "Hosted 6-node Cluster (Insecure)"
-      cluster-type: hosted_insecure
-      admin-url: "http://127.0.0.1:8080"
+    - cluster-id: "hosted-secure"
+      cluster-name: "Hosted Cluster (Secure)"
+      cluster-type: hosted_secure
+      admin-url: "https://localhost:443"
       data-source-properties:
-        url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=disable"
+        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
         username: "craig"
-        password: ""
-      version: "v25.1.3.darwin-11.0-arm64"
-#      version: "v25.1.3.darwin-11.0-amd64"
-#      version: "v25.1.3.linux-amd64"
-#      version: "v25.1.3.linux-arm64"
-
-      ## (optional) List of machines/VM nodes for managed remote cluster types (only).
+        password: "cockroach"
+      ## (optional) List of machines/VM nodes for hosted cluster types.
       # Used to manage a cluster through pest control, potentially spanning multiple hosts as
-      # opposed to many instances on a local host (or cloud) on different ports.
+      # opposed to many instances on local host on different ports.
       # See: https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
       nodes:
         - url: http://${local-ip}:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-          listen-addr: ${local-ip}:27015
-          advertise-addr:
-          sql-addr: ${local-ip}:26257
-          http-addr: ${local-ip}:8080
-        - url: http://${local-ip}:9090
-          name: n2
-          locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-          listen-addr: ${local-ip}:27016
-          advertise-addr:
+          listen-addr: ${local-ip}:26258
+          advertise-addr: ${local-ip}:26258
           sql-addr: ${local-ip}:26258
           http-addr: ${local-ip}:8081
         - url: http://${local-ip}:9090
-          name: n3
+          name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          listen-addr: ${local-ip}:27017
-          advertise-addr:
+          listen-addr: ${local-ip}:26259
+          advertise-addr: ${local-ip}:26259
           sql-addr: ${local-ip}:26259
           http-addr: ${local-ip}:8082
         - url: http://${local-ip}:9090
-          name: n4
-          locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          listen-addr: ${local-ip}:27018
-          advertise-addr:
+          name: n3
+          locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
+          listen-addr: ${local-ip}:26260
+          advertise-addr: ${local-ip}:26259
           sql-addr: ${local-ip}:26260
           http-addr: ${local-ip}:8083
-        - url: http://${local-ip}:9090
-          name: n5
-          locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          listen-addr: ${local-ip}:27019
-          advertise-addr:
-          sql-addr: ${local-ip}:26261
-          http-addr: ${local-ip}:8084
-        - url: http://${local-ip}:9090
-          name: n6
-          locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          listen-addr: ${local-ip}:27020
-          advertise-addr:
-          sql-addr: ${local-ip}:26262
-          http-addr: ${local-ip}:8085
 
   # -1 denotes use of unbounded virtual threads
   threadPoolMaxSize: -1
@@ -197,6 +148,8 @@ application:
   toxiproxy:
     host: localhost
     port: 8474
+
+### Spring settings
 
 ## HTTP server parameters
 server:

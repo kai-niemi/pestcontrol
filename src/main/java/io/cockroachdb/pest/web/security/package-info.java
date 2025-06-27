@@ -1,4 +1,4 @@
 /**
  * Web and API security providers and authentication objects.
  */
-package io.cockroachdb.pest.security;
+package io.cockroachdb.pest.web.security;

@@ -22,12 +22,11 @@ public class ClusterModel {
 
     private Collection<NodeModel> nodeModels = List.of();
 
-    public ClusterModel(ClusterProperties clusterProperties, boolean available) {
+    public ClusterModel(ClusterProperties clusterProperties) {
         this.clusterProperties = clusterProperties;
-        this.available = available;
     }
 
-    public String getId() {
+    public String getClusterId() {
         return clusterProperties.getClusterId();
     }
 
@@ -37,6 +36,7 @@ public class ClusterModel {
 
     public void setNodeModels(Collection<NodeModel> nodeModels) {
         this.nodeModels = nodeModels;
+        this.available = true;
     }
 
     public boolean isDifferent(Collection<NodeModel> otherModel) {
@@ -57,7 +57,7 @@ public class ClusterModel {
 
     public boolean hasNodeWithRel(Locality locality, String rel) {
         return nodeModels.stream().anyMatch(nodeModel ->
-                nodeModel.getLocality().equals(locality) && nodeModel.hasLink(rel));
+                nodeModel.getNodeDetail().getLocality().equals(locality) && nodeModel.hasLink(rel));
     }
 
     /**
@@ -71,7 +71,7 @@ public class ClusterModel {
         Set<Locality> subLocalities = new LinkedHashSet<>();
 
         nodeModels.forEach(node -> {
-            Locality locality = node.getLocality();
+            Locality locality = node.getNodeDetail().getLocality();
 
             Locality subLocality = new Locality(new ArrayList<>(locality.getTiers()
                     .stream()
@@ -94,8 +94,10 @@ public class ClusterModel {
      * @return list of matching nodes, sorted by node ID in ascending order
      */
     public List<NodeModel> getNodes(List<Tier> tiers) {
-        return nodeModels.stream().filter(node -> node.getLocality().matches(tiers))
-                .sorted(Comparator.comparing(NodeModel::getId)).toList();
+        return nodeModels.stream()
+                .filter(node -> node.getNodeDetail().getLocality().matches(tiers))
+                .sorted(Comparator.comparing(NodeModel::getNodeId))
+                .toList();
     }
 
     public String getCardClass(NodeStatus nodeStatus) {
@@ -137,5 +139,4 @@ public class ClusterModel {
             return "#db-fail";
         }
     }
-
 }

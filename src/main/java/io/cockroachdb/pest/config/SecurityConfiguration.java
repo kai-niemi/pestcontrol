@@ -22,11 +22,11 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
-import io.cockroachdb.pest.security.ApiAuthenticationEntryPoint;
-import io.cockroachdb.pest.security.ApiAuthenticationFilter;
-import io.cockroachdb.pest.security.ApiAuthenticationService;
-import io.cockroachdb.pest.security.ClusterAuthenticationDetails;
-import io.cockroachdb.pest.security.ClusterAuthenticationProvider;
+import io.cockroachdb.pest.web.security.ApiAuthenticationEntryPoint;
+import io.cockroachdb.pest.web.security.ApiAuthenticationFilter;
+import io.cockroachdb.pest.web.security.ApiAuthenticationService;
+import io.cockroachdb.pest.web.security.ClusterAuthenticationDetails;
+import io.cockroachdb.pest.web.security.ClusterAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity

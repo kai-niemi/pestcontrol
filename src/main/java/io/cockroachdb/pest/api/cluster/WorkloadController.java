@@ -34,7 +34,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/api/cluster/workload")
+@RequestMapping("/api/cluster")
 public class WorkloadController {
     @Autowired
     private WorkloadManager workloadManager;
@@ -45,18 +45,19 @@ public class WorkloadController {
     @Autowired
     private ApplicationProperties applicationProperties;
 
-    @GetMapping("/{clusterId}")
-    public ResponseEntity<CollectionModel<Workload>> getWorkloads(
+    @GetMapping("/{clusterId}/workload")
+    public ResponseEntity<CollectionModel<Workload>> index(
             @PathVariable("clusterId") String clusterId) {
         CollectionModel<Workload> collectionModel = workerModelAssembler
                 .toCollectionModel(workloadManager.getWorkloads(clusterId));
 
         collectionModel.add(linkTo(methodOn(WorkloadController.class)
                 .getWorkerForm(clusterId))
-                .withRel(LinkRelations.FORM_REL));
+                .withSelfRel());
 
         Links newLinks = collectionModel.getLinks().merge(Links.MergeMode.REPLACE_BY_REL,
-                linkTo(methodOn(WorkloadController.class).getWorkloads(clusterId))
+                linkTo(methodOn(WorkloadController.class)
+                        .index(clusterId))
                         .withSelfRel()
                         .andAffordance(afford(methodOn(WorkloadController.class)
                                 .newWorker(clusterId, null))));
@@ -64,14 +65,14 @@ public class WorkloadController {
         return ResponseEntity.ok(CollectionModel.of(collectionModel.getContent(), newLinks));
     }
 
-    @GetMapping(value = "/{clusterId}/worker/{id}")
+    @GetMapping(value = "/{clusterId}/workload/{id}")
     public HttpEntity<Workload> getWorker(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {
         return ResponseEntity.ok(workerModelAssembler.toModel(workloadManager.findById(clusterId, id)));
     }
 
-    @PutMapping(value = "/{clusterId}/worker/{id}/cancel")
+    @PutMapping(value = "/{clusterId}/workload/{id}/cancel")
     public HttpEntity<Workload> cancelWorker(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {
@@ -84,7 +85,7 @@ public class WorkloadController {
         }
     }
 
-    @DeleteMapping(value = "/{clusterId}/worker/{id}/delete")
+    @DeleteMapping(value = "/{clusterId}/workload/{id}/delete")
     public HttpEntity<Void> deleteWorker(
             @PathVariable("clusterId") String clusterId,
             @PathVariable("id") Integer id) {
@@ -96,7 +97,7 @@ public class WorkloadController {
         }
     }
 
-    @GetMapping(value = "/{clusterId}/worker/form")
+    @GetMapping(value = "/{clusterId}/workload/form")
     public HttpEntity<WorkloadForm> getWorkerForm(@PathVariable("clusterId") String clusterId) {
         WorkloadForm form = new WorkloadForm();
         form.setWorkloadType(WorkloadType.random_wait);
@@ -111,7 +112,7 @@ public class WorkloadController {
                 ));
     }
 
-    @PostMapping("/{clusterId}/worker")
+    @PostMapping("/{clusterId}/workload")
     public HttpEntity<CollectionModel<Workload>> newWorker(
             @PathVariable("clusterId") String clusterId,
             @RequestBody WorkloadForm form) {

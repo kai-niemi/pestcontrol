@@ -86,9 +86,9 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
         model.addAttribute("form", workerForm);
         model.addAttribute("workers",
-                workloadAssembler.toCollectionModel(workloadManager.getWorkloads(clusterModel.getId())));
+                workloadAssembler.toCollectionModel(workloadManager.getWorkloads(clusterModel.getClusterId())));
         model.addAttribute("aggregatedMetrics",
-                workloadManager.getMetricsAggregate(clusterModel.getId()));
+                workloadManager.getMetricsAggregate(clusterModel.getClusterId()));
 
         return () -> "workload";
     }
@@ -101,12 +101,12 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
         final LocalTime time = LocalTime.parse(form.getDuration(), DateTimeFormatter.ofPattern("HH:mm"));
         final Duration duration = Duration.ofHours(time.getHour()).plusMinutes(time.getMinute());
-        final DataSource dataSource = applicationProperties.getDataSource(clusterModel.getId());
+        final DataSource dataSource = applicationProperties.getDataSource(clusterModel.getClusterId());
 
         IntStream.rangeClosed(1, form.getCount())
                 .forEach(value -> {
                     final Runnable task = form.getWorkloadType().createTask(dataSource);
-                    workloadManager.submitWorkload(clusterModel.getId(), duration, task,
+                    workloadManager.submitWorkload(clusterModel.getClusterId(), duration, task,
                             form.getWorkloadType().getDisplayValue());
                 });
 
@@ -120,7 +120,7 @@ public class WorkloadDashboardController extends AbstractSessionController {
             @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
             @PathVariable("id") Integer id, Model model) {
         return () -> {
-            Workload workload = workloadManager.findById(clusterModel.getId(), id);
+            Workload workload = workloadManager.findById(clusterModel.getClusterId(), id);
 
             model.addAttribute("form", workload);
 
@@ -131,14 +131,14 @@ public class WorkloadDashboardController extends AbstractSessionController {
     @PostMapping(value = "/cancelAll")
     public RedirectView cancelAllWorkers(
             @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel) {
-        workloadManager.cancelAll(clusterModel.getId());
+        workloadManager.cancelAll(clusterModel.getClusterId());
         return new RedirectView("/workload");
     }
 
     @PostMapping(value = "/deleteAll")
     public RedirectView deleteAllWorkers(
             @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel) {
-        workloadManager.deleteAll(clusterModel.getId());
+        workloadManager.deleteAll(clusterModel.getClusterId());
         return new RedirectView("/workload");
     }
 
@@ -146,7 +146,7 @@ public class WorkloadDashboardController extends AbstractSessionController {
     public RedirectView cancelWorker(
             @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
             @PathVariable("id") Integer id) {
-        Workload worker = workloadManager.findById(clusterModel.getId(), id);
+        Workload worker = workloadManager.findById(clusterModel.getClusterId(), id);
         worker.cancel();
         return new RedirectView("/workload");
     }
@@ -155,14 +155,14 @@ public class WorkloadDashboardController extends AbstractSessionController {
     public RedirectView deleteWorker(
             @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
             @PathVariable("id") Integer id) {
-        workloadManager.deleteById(clusterModel.getId(), id);
+        workloadManager.deleteById(clusterModel.getClusterId(), id);
         return new RedirectView("/workload");
     }
 
     @GetMapping("/data-points/clear")
     public RedirectView clearDataPoints(
             @SessionAttribute(value = "helper") ClusterModel clusterModel) {
-        workloadManager.clearDataPoints(clusterModel.getId());
+        workloadManager.clearDataPoints(clusterModel.getClusterId());
         return new RedirectView("/workload");
     }
 }
