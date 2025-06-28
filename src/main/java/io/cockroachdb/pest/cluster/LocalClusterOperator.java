@@ -1,37 +1,25 @@
 package io.cockroachdb.pest.cluster;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
 
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.model.Locality;
 import io.cockroachdb.pest.model.NodeProperties;
-import io.cockroachdb.pest.util.IoUtils;
+import static io.cockroachdb.pest.util.ProcessUtils.executeCommand;
 
 @Component
 public class LocalClusterOperator implements ClusterOperator {
-    public static final int PROCESS_TIMEOUT_SECONDS = 30;
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -47,7 +35,7 @@ public class LocalClusterOperator implements ClusterOperator {
         List<String> args = List.of("./cluster-admin", "agent-install",
                 "--version=" + clusterProperties.getVersion()
         );
-        return executeCommand(args);
+        return executeCommand(applicationProperties.getScriptDirectory(), args);
     }
 
     @Override
@@ -75,7 +63,7 @@ public class LocalClusterOperator implements ClusterOperator {
                 "--join=" + String.join(",", joinHosts)
         );
 
-        return executeCommand(args);
+        return executeCommand(applicationProperties.getScriptDirectory(),args);
     }
 
     @Override
@@ -86,7 +74,7 @@ public class LocalClusterOperator implements ClusterOperator {
                 "--sql-addr=" + nodeProperties.getSqlAddr()
         );
 
-        return executeCommand(args);
+        return executeCommand(applicationProperties.getScriptDirectory(),args);
     }
 
     @Override
@@ -98,7 +86,7 @@ public class LocalClusterOperator implements ClusterOperator {
                 "--sql-addr=" + nodeProperties.getSqlAddr()
         );
 
-        return executeCommand(args);
+        return executeCommand(applicationProperties.getScriptDirectory(),args);
     }
 
     @Override
@@ -112,7 +100,7 @@ public class LocalClusterOperator implements ClusterOperator {
 
         List<String> args = List.of("./cluster-admin", "disrupt", nodeProperties.getSqlAddr());
 
-        return executeCommand(args);
+        return executeCommand(applicationProperties.getScriptDirectory(),args);
     }
 
     @Override
@@ -121,7 +109,7 @@ public class LocalClusterOperator implements ClusterOperator {
 
         List<String> args = List.of("./cluster-admin", "recover", nodeProperties.getSqlAddr());
 
-        return executeCommand(args);
+        return executeCommand(applicationProperties.getScriptDirectory(),args);
     }
 
     @Override
@@ -134,47 +122,4 @@ public class LocalClusterOperator implements ClusterOperator {
         throw new UnsupportedOperationException();
     }
 
-    private String executeCommand(List<String> args) {
-        ByteArrayOutputStream barr = new ByteArrayOutputStream();
-        int code = executeCommand(args, barr);
-        if (code != 0) {
-            throw new CommandException(StreamUtils.copyToString(barr, Charset.defaultCharset()), code);
-        }
-        return StreamUtils.copyToString(barr, Charset.defaultCharset());
-    }
-
-    private int executeCommand(List<String> commands, ByteArrayOutputStream barr) {
-        Instant start = Instant.now();
-
-        try {
-            logger.debug("Starting process: %s".formatted(commands));
-
-            Process process = new ProcessBuilder()
-                    .command(commands)
-                    .directory(Paths.get(applicationProperties.getScriptPath()).toFile())
-                    .start();
-
-            logger.debug("Started process: %s".formatted(process.info()));
-
-            process.waitFor(PROCESS_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-
-            try (InputStream inputStream = process.getInputStream();
-                 InputStream errorStream = process.getErrorStream()) {
-                IoUtils.copy(inputStream, barr);
-                IoUtils.copy(errorStream, barr);
-            }
-
-            int code = process.exitValue();
-
-            logger.debug("Process finished in %s with exit code %d: %s"
-                    .formatted(Duration.between(start, Instant.now()), code, process.info()));
-
-            return code;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new CommandException("Timeout waiting for process completion", e);
-        } catch (IOException e) {
-            throw new CommandException(StreamUtils.copyToString(barr, Charset.defaultCharset()), e);
-        }
-    }
 }

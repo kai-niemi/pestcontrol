@@ -26,7 +26,7 @@ import io.cockroachdb.pest.api.MessageType;
 import io.cockroachdb.pest.api.cluster.NodeController;
 import io.cockroachdb.pest.api.cluster.NodeModel;
 import io.cockroachdb.pest.cluster.ClusterManager;
-import io.cockroachdb.pest.cluster.CommandException;
+import io.cockroachdb.pest.util.CommandException;
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.web.simp.SimpMessagePublisher;
 import io.cockroachdb.pest.web.simp.TopicName;

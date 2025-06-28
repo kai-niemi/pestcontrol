@@ -1,10 +1,6 @@
-package io.cockroachdb.pest.cluster;
+package io.cockroachdb.pest.util;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-public class CommandException extends ClusterException {
+public class CommandException extends RuntimeException {
     private int errorCode = 0;
 
     public CommandException(String message, Throwable cause) {

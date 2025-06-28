@@ -64,16 +64,32 @@ if [ -z "${name}" ]; then
   fn_print_error "Missing name parameter!"
   exit 1
 fi
-
 if [ -z "${locality}" ]; then
   fn_print_error "Missing locality parameter!"
   exit 1
 fi
-
+if [ -z "${listen_addr}" ]; then
+  fn_print_error "Missing listen_addr parameter!"
+  exit 1
+fi
+if [ -z "${advertise_addr}" ]; then
+  fn_print_error "Missing advertise_addr parameter!"
+  exit 1
+fi
+if [ -z "${sql_addr}" ]; then
+  fn_print_error "Missing sql_addr parameter!"
+  exit 1
+fi
+if [ -z "${http_addr}" ]; then
+  fn_print_error "Missing http_addr parameter!"
+  exit 1
+fi
 if [ -z "${join}" ]; then
   fn_print_error "Missing join parameter!"
   exit 1
 fi
+
+fn_assert_binaries
 
 #
 # Begin script
@@ -88,7 +104,6 @@ if [ "${status}" != "0" ]; then
   exit 0
 fi
 
-fn_assert_binaries
 
 fn_print_dots "Starting node ${name}"
 

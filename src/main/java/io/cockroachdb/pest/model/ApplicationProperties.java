@@ -1,5 +1,7 @@
 package io.cockroachdb.pest.model;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -126,6 +128,10 @@ public class ApplicationProperties {
 
     public String getScriptPath() {
         return scriptPath;
+    }
+
+    public File getScriptDirectory() {
+        return Paths.get(scriptPath).toFile();
     }
 
     public void setScriptPath(String scriptPath) {
