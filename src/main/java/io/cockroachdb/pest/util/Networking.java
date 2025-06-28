@@ -9,12 +9,16 @@ import java.net.Socket;
 import java.net.URL;
 
 import org.springframework.util.PropertyPlaceholderHelper;
+import org.springframework.util.StringUtils;
 
 public abstract class Networking {
     private Networking() {
     }
 
     public static String resolve(String input) {
+        if (!StringUtils.hasLength(input)) {
+            return input;
+        }
         return new PropertyPlaceholderHelper("${", "}")
                 .replacePlaceholders(input,
                         placeholderName -> switch (placeholderName.toLowerCase()) {

@@ -82,21 +82,21 @@ application:
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
           listen-addr: ${local-ip}:26258
           advertise-addr: ${local-ip}:26258
-          sql-addr: ${local-ip}:26258
+#          sql-addr: ${local-ip}:26258
           http-addr: ${local-ip}:8081
         - url: http://${local-ip}:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
           listen-addr: ${local-ip}:26259
           advertise-addr: ${local-ip}:26259
-          sql-addr: ${local-ip}:26259
+#          sql-addr: ${local-ip}:26259
           http-addr: ${local-ip}:8082
         - url: http://${local-ip}:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
           listen-addr: ${local-ip}:26260
           advertise-addr: ${local-ip}:26260
-          sql-addr: ${local-ip}:26260
+#          sql-addr: ${local-ip}:26260
           http-addr: ${local-ip}:8083
 
     - cluster-id: "hosted-secure"
@@ -117,21 +117,21 @@ application:
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
           listen-addr: ${local-ip}:26258
           advertise-addr: ${local-ip}:26258
-          sql-addr: ${local-ip}:26258
+#          sql-addr: ${local-ip}:26258
           http-addr: ${local-ip}:8081
         - url: http://${local-ip}:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
           listen-addr: ${local-ip}:26259
           advertise-addr: ${local-ip}:26259
-          sql-addr: ${local-ip}:26259
+#          sql-addr: ${local-ip}:26259
           http-addr: ${local-ip}:8082
         - url: http://${local-ip}:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
           listen-addr: ${local-ip}:26260
           advertise-addr: ${local-ip}:26260
-          sql-addr: ${local-ip}:26260
+#          sql-addr: ${local-ip}:26260
           http-addr: ${local-ip}:8083
 
   # -1 denotes use of unbounded virtual threads

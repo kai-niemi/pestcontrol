@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -18,11 +19,12 @@ import io.cockroachdb.pest.util.Networking;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Validated
 public class NodeProperties {
-    private int id;
+    private Integer id;
 
     @NotNull
     private String url;
 
+    @NotNull
     private String name;
 
     @NotNull
@@ -42,11 +44,11 @@ public class NodeProperties {
         return Link.of(Networking.resolve(url) + path);
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -66,30 +68,6 @@ public class NodeProperties {
         this.url = url;
     }
 
-    public String getAdvertiseAddr() {
-        return Networking.resolve(advertiseAddr);
-    }
-
-    public void setAdvertiseAddr(String advertiseAddr) {
-        this.advertiseAddr = advertiseAddr;
-    }
-
-    public String getHttpAddr() {
-        return Networking.resolve(httpAddr);
-    }
-
-    public void setHttpAddr(String httpAddr) {
-        this.httpAddr = httpAddr;
-    }
-
-    public String getListenAddr() {
-        return Networking.resolve(listenAddr);
-    }
-
-    public void setListenAddr(String listenAddr) {
-        this.listenAddr = listenAddr;
-    }
-
     public String getLocality() {
         return locality;
     }
@@ -98,6 +76,34 @@ public class NodeProperties {
         this.locality = locality;
     }
 
+    @JsonProperty("advertise-addr")
+    public String getAdvertiseAddr() {
+        return Networking.resolve(advertiseAddr);
+    }
+
+    public void setAdvertiseAddr(String advertiseAddr) {
+        this.advertiseAddr = advertiseAddr;
+    }
+
+    @JsonProperty("http-addr")
+    public String getHttpAddr() {
+        return Networking.resolve(httpAddr);
+    }
+
+    public void setHttpAddr(String httpAddr) {
+        this.httpAddr = httpAddr;
+    }
+
+    @JsonProperty("listen-addr")
+    public String getListenAddr() {
+        return Networking.resolve(listenAddr);
+    }
+
+    public void setListenAddr(String listenAddr) {
+        this.listenAddr = listenAddr;
+    }
+
+    @JsonProperty("sql-addr")
     public String getSqlAddr() {
         return Networking.resolve(sqlAddr);
     }
@@ -112,7 +118,7 @@ public class NodeProperties {
             return false;
         }
         NodeProperties that = (NodeProperties) o;
-        return id == that.id && Objects.equals(url, that.url) && Objects.equals(name, that.name)
+        return Objects.equals(id, that.id) && Objects.equals(url, that.url) && Objects.equals(name, that.name)
                && Objects.equals(locality, that.locality) && Objects.equals(listenAddr, that.listenAddr)
                && Objects.equals(advertiseAddr, that.advertiseAddr) && Objects.equals(sqlAddr,
                 that.sqlAddr) && Objects.equals(httpAddr, that.httpAddr);

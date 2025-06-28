@@ -2,9 +2,9 @@
 
 commandaction="Start node (agent)"
 
-# ./cluster-admin agent-start --name=n1 --locality=region=eu-north-1,zone=eu-north-1a --listen-addr=localhost:25258 --advertise-addr=localhost:25258 --sql-addr=localhost:26258 --http-addr=localhost:8081 --join=localhost:25258,localhost:25259,localhost:25260
-# ./cluster-admin agent-start --name=n2 --locality=region=eu-north-1,zone=eu-north-1b --listen-addr=localhost:25259 --advertise-addr=localhost:25259 --sql-addr=localhost:26259 --http-addr=localhost:8082 --join=localhost:25258,localhost:25259,localhost:25260
-# ./cluster-admin agent-start --name=n3 --locality=region=eu-north-1,zone=eu-north-1c --listen-addr=localhost:25260 --advertise-addr=localhost:25260 --sql-addr=localhost:26260 --http-addr=localhost:8083 --join=localhost:25258,localhost:25259,localhost:25260
+# ./cluster-admin agent-start --name=n1 --locality=region=eu-north-1,zone=eu-north-1a --listen-addr=localhost:26258 --advertise-addr=localhost:26258 --http-addr=localhost:8081 --join=localhost:25258,localhost:25259,localhost:25260
+# ./cluster-admin agent-start --name=n2 --locality=region=eu-north-1,zone=eu-north-1b --listen-addr=localhost:26259 --advertise-addr=localhost:26259 --http-addr=localhost:8082 --join=localhost:25258,localhost:25259,localhost:25260
+# ./cluster-admin agent-start --name=n3 --locality=region=eu-north-1,zone=eu-north-1c --listen-addr=localhost:26260 --advertise-addr=localhost:26260 --http-addr=localhost:8083 --join=localhost:25258,localhost:25259,localhost:25260
 
 # https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
 
@@ -68,22 +68,6 @@ if [ -z "${locality}" ]; then
   fn_print_error "Missing locality parameter!"
   exit 1
 fi
-if [ -z "${listen_addr}" ]; then
-  fn_print_error "Missing listen_addr parameter!"
-  exit 1
-fi
-if [ -z "${advertise_addr}" ]; then
-  fn_print_error "Missing advertise_addr parameter!"
-  exit 1
-fi
-if [ -z "${sql_addr}" ]; then
-  fn_print_error "Missing sql_addr parameter!"
-  exit 1
-fi
-if [ -z "${http_addr}" ]; then
-  fn_print_error "Missing http_addr parameter!"
-  exit 1
-fi
 if [ -z "${join}" ]; then
   fn_print_error "Missing join parameter!"
   exit 1
@@ -104,17 +88,16 @@ if [ "${status}" != "0" ]; then
   exit 0
 fi
 
-
 fn_print_dots "Starting node ${name}"
 
 case "$security_mode" in
   secure)
     fn_fail_check ${installdir}/cockroach start \
     --locality=${locality} \
-    --listen-addr=${listen_addr} \
-    --advertise-addr=${advertise_addr} \
-    --sql-addr=${sql_addr} \
-    --http-addr=${http_addr} \
+    ${listen_addr:+--listen-addr=${listen_addr}} \
+    ${advertise_addr:+--advertise-addr=${advertise_addr}} \
+    ${sql_addr:+--sql-addr=${sql_addr}} \
+    ${http_addr:+--http-addr=${http_addr}} \
     --join=${join} \
     --store=${datadir}/${name} \
     --cache=${mempool} \
@@ -126,10 +109,10 @@ case "$security_mode" in
   insecure)
     fn_fail_check ${installdir}/cockroach start \
     --locality=${locality} \
-    --listen-addr=${listen_addr} \
-    --advertise-addr=${advertise_addr} \
-    --sql-addr=${sql_addr} \
-    --http-addr=${http_addr} \
+    ${listen_addr:+--listen-addr=${listen_addr}} \
+    ${advertise_addr:+--advertise-addr=${advertise_addr}} \
+    ${sql_addr:+--sql-addr=${sql_addr}} \
+    ${http_addr:+--http-addr=${http_addr}} \
     --join=${join} \
     --store=${datadir}/${name} \
     --cache=${mempool} \

@@ -28,17 +28,18 @@ for i in "$@"; do
   esac
 done
 
-fn_print_info "listen_addr    = ${listen_addr}"
-fn_print_info "sql_addr       = ${sql_addr}"
-
 if [ -z "${listen_addr}" ]; then
   fn_print_error "Missing listen_addr parameter!"
   exit 1
 fi
+
 if [ -z "${sql_addr}" ]; then
   fn_print_error "Missing sql_addr parameter!"
   exit 1
 fi
+
+fn_print_info "listen_addr    = ${listen_addr}"
+fn_print_info "sql_addr       = ${sql_addr}"
 
 #
 # Begin script

@@ -1,7 +1,6 @@
 package io.cockroachdb.pest.cluster;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -10,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.ClusterProperties;
@@ -28,6 +28,21 @@ public class LocalClusterOperator implements ClusterOperator {
     @Override
     public boolean supports(ClusterType clusterType) {
         return false;
+    }
+
+    private void addNetworkingFlags(NodeProperties nodeProperties, List<String> args) {
+        if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
+            args.add("--listen-addr=" + nodeProperties.getListenAddr());
+        }
+        if (StringUtils.hasLength(nodeProperties.getAdvertiseAddr())) {
+            args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());
+        }
+        if (StringUtils.hasLength(nodeProperties.getSqlAddr())) {
+            args.add("--sql-addr=" + nodeProperties.getSqlAddr());
+        }
+        if (StringUtils.hasLength(nodeProperties.getHttpAddr())) {
+            args.add("--http-addr=" + nodeProperties.getHttpAddr());
+        }
     }
 
     @Override
@@ -51,17 +66,13 @@ public class LocalClusterOperator implements ClusterOperator {
                             .add(np.getListenAddr());
                 });
 
-        Collection<String> joinHosts = Locality.distributeJoinHosts(hosts);
+        List<String> args = new ArrayList<>(List.of("./cluster-admin", "agent-start"));
+        args.add("--name=n" + nodeId);
+        args.add("--locality=" + nodeProperties.getLocality());
 
-        List<String> args = List.of("./cluster-admin", "agent-start",
-                "--name=n" + nodeId,
-                "--locality=" + nodeProperties.getLocality(),
-                "--listen-addr=" + nodeProperties.getListenAddr(),
-                "--advertise-addr=" + nodeProperties.getAdvertiseAddr(),
-                "--sql-addr=" + nodeProperties.getSqlAddr(),
-                "--http-addr=" + nodeProperties.getHttpAddr(),
-                "--join=" + String.join(",", joinHosts)
-        );
+        addNetworkingFlags(nodeProperties, args);
+
+        args.add("--join=" + String.join(",", Locality.distributeJoinHosts(hosts)));
 
         return executeCommand(applicationProperties.getScriptDirectory(),args);
     }
@@ -70,9 +81,8 @@ public class LocalClusterOperator implements ClusterOperator {
     public String stopNode(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
-        List<String> args = List.of("./cluster-admin", "agent-stop",
-                "--sql-addr=" + nodeProperties.getSqlAddr()
-        );
+        List<String> args = new ArrayList<>(List.of("./cluster-admin", "agent-stop"));
+        addNetworkingFlags(nodeProperties, args);
 
         return executeCommand(applicationProperties.getScriptDirectory(),args);
     }
@@ -81,35 +91,30 @@ public class LocalClusterOperator implements ClusterOperator {
     public String init(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
-        List<String> args = List.of("./cluster-admin", "agent-init",
-                "--listen-addr=" + nodeProperties.getListenAddr(),
-                "--sql-addr=" + nodeProperties.getSqlAddr()
-        );
+        List<String> args = new ArrayList<>(List.of("./cluster-admin", "agent-init"));
+        addNetworkingFlags(nodeProperties, args);
 
         return executeCommand(applicationProperties.getScriptDirectory(),args);
     }
 
     @Override
     public String killNode(ClusterProperties clusterProperties, Integer nodeId) {
-        return stopNode(clusterProperties, nodeId);
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+
+        List<String> args = new ArrayList<>(List.of("./cluster-admin", "agent-kill"));
+        addNetworkingFlags(nodeProperties, args);
+
+        return executeCommand(applicationProperties.getScriptDirectory(),args);
     }
 
     @Override
     public String disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
-
-        List<String> args = List.of("./cluster-admin", "disrupt", nodeProperties.getSqlAddr());
-
-        return executeCommand(applicationProperties.getScriptDirectory(),args);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String recoverNode(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
-
-        List<String> args = List.of("./cluster-admin", "recover", nodeProperties.getSqlAddr());
-
-        return executeCommand(applicationProperties.getScriptDirectory(),args);
+        throw new UnsupportedOperationException();
     }
 
     @Override
