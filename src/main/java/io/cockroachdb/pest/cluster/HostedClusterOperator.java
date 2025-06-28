@@ -8,21 +8,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.client.Hop;
-import org.springframework.hateoas.client.Traverson;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.shell.client.HypermediaClient;
-import static io.cockroachdb.pest.api.LinkRelations.CLUSTER_OPERATOR_REL;
+import static io.cockroachdb.pest.api.LinkRelations.CLUSTER_TEMPLATE_REL;
+import static io.cockroachdb.pest.api.LinkRelations.OPERATOR_REL;
 import static io.cockroachdb.pest.api.LinkRelations.NODE_INIT_REL;
 import static io.cockroachdb.pest.api.LinkRelations.NODE_INSTALL_REL;
 import static io.cockroachdb.pest.api.LinkRelations.NODE_KILL_REL;
 import static io.cockroachdb.pest.api.LinkRelations.NODE_START_REL;
 import static io.cockroachdb.pest.api.LinkRelations.NODE_STOP_REL;
 import static io.cockroachdb.pest.api.LinkRelations.CLUSTERS_REL;
-import static io.cockroachdb.pest.api.LinkRelations.CLUSTER_REL;
 import static io.cockroachdb.pest.api.LinkRelations.CURIE_NAMESPACE;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
@@ -39,27 +38,27 @@ public class HostedClusterOperator implements ClusterOperator {
                 .contains(clusterType);
     }
 
-    private Traverson.TraversalBuilder fromLocalClusterForm(ClusterProperties clusterProperties,
-                                                            int nodeId) {
+    private Link nodeOperatorLink(ClusterProperties clusterProperties, int nodeId) {
         Link baseUrl = clusterProperties.findNodePropertiesById(nodeId).getBaseUrl();
         return hypermediaClient.from(baseUrl)
                 .follow(curied(CURIE_NAMESPACE, CLUSTERS_REL).value())
-                .follow(Hop.rel(curied(CURIE_NAMESPACE, CLUSTER_REL).value())
+                .follow(Hop.rel(curied(CURIE_NAMESPACE, CLUSTER_TEMPLATE_REL).value())
                         .withParameter("clusterId", clusterProperties.getClusterId()))
-                .follow(Hop.rel(curied(CURIE_NAMESPACE, CLUSTER_OPERATOR_REL).value())
-                        .withParameter("clusterId", clusterProperties.getClusterId()));
+                .follow(Hop.rel(curied(CURIE_NAMESPACE, OPERATOR_REL).value()))
+                .asTemplatedLink();
     }
 
     @Override
     public String install(ClusterProperties clusterProperties, Integer nodeId) {
-        Link link = fromLocalClusterForm(clusterProperties, nodeId)
+        Link operatorLink = nodeOperatorLink(clusterProperties, nodeId);
+        Link actionLink = hypermediaClient.from(operatorLink)
                 .follow(curied(CURIE_NAMESPACE, NODE_INSTALL_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", clusterProperties.getClusterId(),
                         "nodeId", nodeId));
 
-        ResponseEntity<String> response = hypermediaClient.post(link, clusterProperties, String.class);
+        ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("HTTP status: {}", response);
         } else {
@@ -71,14 +70,15 @@ public class HostedClusterOperator implements ClusterOperator {
 
     @Override
     public String startNode(ClusterProperties clusterProperties, Integer nodeId) {
-        Link link = fromLocalClusterForm(clusterProperties, nodeId)
+        Link operatorLink = nodeOperatorLink(clusterProperties, nodeId);
+        Link actionLink = hypermediaClient.from(operatorLink)
                 .follow(curied(CURIE_NAMESPACE, NODE_START_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", clusterProperties.getClusterId(),
                         "nodeId", nodeId));
 
-        ResponseEntity<String> response = hypermediaClient.post(link, clusterProperties, String.class);
+        ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("HTTP status: {}", response);
         } else {
@@ -90,14 +90,15 @@ public class HostedClusterOperator implements ClusterOperator {
 
     @Override
     public String stopNode(ClusterProperties clusterProperties, Integer nodeId) {
-        Link link = fromLocalClusterForm(clusterProperties, nodeId)
+        Link operatorLink = nodeOperatorLink(clusterProperties, nodeId);
+        Link actionLink = hypermediaClient.from(operatorLink)
                 .follow(curied(CURIE_NAMESPACE, NODE_STOP_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", clusterProperties.getClusterId(),
                         "nodeId", nodeId));
 
-        ResponseEntity<String> response = hypermediaClient.post(link, clusterProperties, String.class);
+        ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("HTTP status: {}", response);
         } else {
@@ -109,14 +110,15 @@ public class HostedClusterOperator implements ClusterOperator {
 
     @Override
     public String killNode(ClusterProperties clusterProperties, Integer nodeId) {
-        Link link = fromLocalClusterForm(clusterProperties, nodeId)
+        Link operatorLink = nodeOperatorLink(clusterProperties, nodeId);
+        Link actionLink = hypermediaClient.from(operatorLink)
                 .follow(curied(CURIE_NAMESPACE, NODE_KILL_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", clusterProperties.getClusterId(),
                         "nodeId", nodeId));
 
-        ResponseEntity<String> response = hypermediaClient.post(link, clusterProperties, String.class);
+        ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("HTTP status: {}", response);
         } else {
@@ -128,14 +130,15 @@ public class HostedClusterOperator implements ClusterOperator {
 
     @Override
     public String init(ClusterProperties clusterProperties, Integer nodeId) {
-        Link link = fromLocalClusterForm(clusterProperties, nodeId)
+        Link operatorLink = nodeOperatorLink(clusterProperties, nodeId);
+        Link actionLink = hypermediaClient.from(operatorLink)
                 .follow(curied(CURIE_NAMESPACE, NODE_INIT_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", clusterProperties.getClusterId(),
                         "nodeId", nodeId));
 
-        ResponseEntity<String> response = hypermediaClient.post(link, clusterProperties, String.class);
+        ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("HTTP status: {}", response);
         } else {

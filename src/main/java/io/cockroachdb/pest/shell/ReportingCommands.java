@@ -29,7 +29,7 @@ import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @ShellComponent
 @ShellCommandGroup(Constants.CLUSTER_COMMANDS)
-public class ReportCommands {
+public class ReportingCommands {
     @Autowired
     private HypermediaClient hypermediaClient;
 
@@ -42,7 +42,7 @@ public class ReportCommands {
     @Autowired
     private AnsiConsole ansiConsole;
 
-    @ShellMethod(value = "List hosted cluster information", key = {"nodes"})
+    @ShellMethod(value = "List cluster host information", key = {"list"})
     public void listHosts(
             @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
                     valueProvider = ClusterProvider.class, defaultValue = "hosted-insecure") String clusterId) {
@@ -63,12 +63,12 @@ public class ReportCommands {
                         clusterProperties.getClusterName(),
                         clusterProperties.getClusterType()
                         ).nl();
-                clusterProperties.getNodes().forEach(this::print);
+                clusterProperties.getNodes().forEach(this::printNode);
             }
         });
     }
 
-    private void print(NodeProperties nodeProperties) {
+    private void printNode(NodeProperties nodeProperties) {
         List<List<?>> tuples = new ArrayList<>();
 
         try {

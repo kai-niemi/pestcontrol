@@ -95,7 +95,7 @@ application:
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
           listen-addr: ${local-ip}:26260
-          advertise-addr: ${local-ip}:26259
+          advertise-addr: ${local-ip}:26260
           sql-addr: ${local-ip}:26260
           http-addr: ${local-ip}:8083
 
@@ -130,7 +130,7 @@ application:
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
           listen-addr: ${local-ip}:26260
-          advertise-addr: ${local-ip}:26259
+          advertise-addr: ${local-ip}:26260
           sql-addr: ${local-ip}:26260
           http-addr: ${local-ip}:8083
 

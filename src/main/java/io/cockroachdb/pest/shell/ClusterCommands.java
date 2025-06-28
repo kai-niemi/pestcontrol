@@ -16,12 +16,11 @@ public class ClusterCommands {
     @Autowired
     private ClusterManager clusterManager;
 
-
     @ShellMethod(value = "Run 'start' command on specified node(s)", key = {"start"})
     public void startNode(
             @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
                     valueProvider = ClusterProvider.class, defaultValue = "hosted-insecure") String clusterId,
-            @ShellOption(help = "Node ID (1-based)") int nodeId,
+            @ShellOption(help = "Node ID (1-based)", defaultValue = "1") int nodeId,
             @ShellOption(help = "Include all nodes", defaultValue = "false") boolean all) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
@@ -37,7 +36,7 @@ public class ClusterCommands {
     public void stopNode(
             @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
                     valueProvider = ClusterProvider.class, defaultValue = "hosted-insecure") String clusterId,
-            @ShellOption(help = "Node ID (1-based)") int nodeId,
+            @ShellOption(help = "Node ID (1-based)", defaultValue = "1") int nodeId,
             @ShellOption(help = "Include all nodes", defaultValue = "false") boolean all) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
@@ -53,7 +52,7 @@ public class ClusterCommands {
     public void killNode(
             @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
                     valueProvider = ClusterProvider.class, defaultValue = "hosted-insecure") String clusterId,
-            @ShellOption(help = "Node ID (1-based)") int nodeId,
+            @ShellOption(help = "Node ID (1-based)", defaultValue = "1") int nodeId,
             @ShellOption(help = "Include all nodes", defaultValue = "false") boolean all) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
@@ -69,7 +68,7 @@ public class ClusterCommands {
     public void initNode(
             @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
                     valueProvider = ClusterProvider.class, defaultValue = "hosted-insecure") String clusterId,
-            @ShellOption(help = "Node ID (1-based)") int nodeId,
+            @ShellOption(help = "Node ID (1-based)", defaultValue = "1") int nodeId,
             @ShellOption(help = "Include all nodes", defaultValue = "false") boolean all) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
@@ -85,7 +84,7 @@ public class ClusterCommands {
     public void installNode(
             @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
                     valueProvider = ClusterProvider.class, defaultValue = "hosted-insecure") String clusterId,
-            @ShellOption(help = "Node ID (1-based)") int nodeId,
+            @ShellOption(help = "Node ID (1-based)", defaultValue = "1") int nodeId,
             @ShellOption(help = "Include all nodes", defaultValue = "false") boolean all) {
         ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);

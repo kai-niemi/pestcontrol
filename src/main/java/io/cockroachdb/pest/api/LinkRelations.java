@@ -17,9 +17,11 @@ public class LinkRelations {
 
     public static final String CLUSTER_REL = "cluster";
 
+    public static final String CLUSTER_TEMPLATE_REL = "cluster-template";
+
     public static final String CLUSTERS_REL = "clusters";
 
-    public static final String CLUSTER_OPERATOR_REL = "cluster-operator";
+    public static final String OPERATOR_REL = "operator";
 
     public static final String NODE_REL = "node";
 

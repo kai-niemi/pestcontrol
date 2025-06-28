@@ -39,6 +39,7 @@ for i in "$@"; do
       shift
       ;;
     --secure)
+      security_mode=secure
       shift
       ;;
     -*|--*)
@@ -57,6 +58,7 @@ fn_print_info "advertise_addr = ${advertise_addr}"
 fn_print_info "sql_addr       = ${sql_addr}"
 fn_print_info "http_addr      = ${http_addr}"
 fn_print_info "join           = ${join}"
+fn_print_info "security_mode  = ${security_mode}"
 
 if [ -z "${name}" ]; then
   fn_print_error "Missing name parameter!"
@@ -88,7 +90,7 @@ fi
 
 fn_assert_binaries
 
-fn_print_dots "Starting node [--sql-addr=${sql_addr} --locality=${locality}] in $security_mode mode"
+fn_print_dots "Starting node ${name}"
 
 case "$security_mode" in
   secure)

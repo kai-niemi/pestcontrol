@@ -39,8 +39,8 @@ public class ClusterController {
                         .withRel(LinkRelations.CLUSTER_REL)));
 
         resource.add(linkTo(methodOn(ClusterController.class)
-                .getCluster(null))
-                .withRel(LinkRelations.CLUSTER_REL));
+                .getCluster(null)) // templated
+                .withRel(LinkRelations.CLUSTER_TEMPLATE_REL));
 
         return ResponseEntity.ok(resource);
     }
@@ -66,11 +66,11 @@ public class ClusterController {
         if (ClusterTypes.isHosted(clusterProperties.getClusterType())) {
             model.add(linkTo(methodOn(LocalController.class)
                     .index())
-                    .withRel(LinkRelations.CLUSTER_OPERATOR_REL));
+                    .withRel(LinkRelations.OPERATOR_REL));
         } else if (ClusterTypes.isCloud(clusterProperties.getClusterType())) {
             model.add(linkTo(methodOn(CloudController.class)
                     .index(clusterId))
-                    .withRel(LinkRelations.CLUSTER_OPERATOR_REL));
+                    .withRel(LinkRelations.OPERATOR_REL));
         }
 
         return ResponseEntity.ok(model);
