@@ -38,6 +38,8 @@ public class NodeProperties {
 
     private String httpAddr;
 
+    private boolean secure;
+
     @JsonIgnore
     public Link getBaseUrl() {
         String path = (url.endsWith("/") ? "api" : "/api");
@@ -110,6 +112,14 @@ public class NodeProperties {
 
     public void setSqlAddr(String sqlAddr) {
         this.sqlAddr = sqlAddr;
+    }
+
+    public boolean isSecure() {
+        return secure;
+    }
+
+    public void setSecure(boolean secure) {
+        this.secure = secure;
     }
 
     @Override

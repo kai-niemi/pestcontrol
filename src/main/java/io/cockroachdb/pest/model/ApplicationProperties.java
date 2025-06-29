@@ -1,6 +1,7 @@
 package io.cockroachdb.pest.model;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -47,7 +48,9 @@ public class ApplicationProperties {
 
     private Integer samplePeriodSeconds;
 
-    private String scriptPath;
+    private String baseDir;
+
+    private String certsDir;
 
     @PostConstruct
     public void init() {
@@ -126,16 +129,28 @@ public class ApplicationProperties {
         this.samplePeriodSeconds = samplePeriodSeconds;
     }
 
-    public String getScriptPath() {
-        return scriptPath;
+    public String getBaseDir() {
+        return baseDir;
     }
 
-    public File getScriptDirectory() {
-        return Paths.get(scriptPath).toFile();
+    public Path getScriptDirectory() {
+        return Paths.get(baseDir);
     }
 
-    public void setScriptPath(String scriptPath) {
-        this.scriptPath = scriptPath;
+    public void setBaseDir(String baseDir) {
+        this.baseDir = baseDir;
+    }
+
+    public String getCertsDir() {
+        return certsDir;
+    }
+
+    public Path getCertsDirectory() {
+        return Paths.get(certsDir);
+    }
+
+    public void setCertsDir(String certsDir) {
+        this.certsDir = certsDir;
     }
 
     public Integer getThreadPoolMaxSize() {

@@ -27,6 +27,8 @@ public class LinkRelations {
 
     public static final String NODES_REL = "nodes";
 
+    public static final String CERTS_REL = "certs";
+
     public static final String NODE_START_REL = "node-start";
 
     public static final String NODE_STOP_REL = "node-stop";

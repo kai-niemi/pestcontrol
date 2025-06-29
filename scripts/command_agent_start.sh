@@ -8,6 +8,8 @@ commandaction="Start node (agent)"
 
 # https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
 
+security_mode="insecure"
+
 for i in "$@"; do
   case $i in
     --name=*)
@@ -39,7 +41,7 @@ for i in "$@"; do
       shift
       ;;
     --secure)
-      security_mode=secure
+      security_mode="secure"
       shift
       ;;
     -*|--*)
@@ -81,12 +83,12 @@ fn_assert_binaries
 
 mempool="10%"
 
-fn_local_node_status $listen_addr
+#fn_local_node_status $listen_addr
 
-if [ "${status}" != "0" ]; then
-  fn_print_warn "Node with listen address ${listen_addr} is already running!"
-  exit 0
-fi
+#if [ "${status}" != "0" ]; then
+#  fn_print_warn "Node with listen address ${listen_addr} is already running!"
+#  exit 0
+#fi
 
 fn_print_dots "Starting node ${name}"
 

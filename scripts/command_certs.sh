@@ -19,12 +19,18 @@ if [ ! -f ${certsdir}/pestcontrol.p12 ]; then
   keytool -import -noprompt -alias pestcontrol -storepass cockroach -keystore ${certsdir}/pestcontrol.p12 -file ${certsdir}/ca.crt
 fi
 
+ip=$(ifconfig | grep "inet " | grep -Fv 127.0.0.1 | awk '{print $2}' )
+
 # Shared node cert
-fn_fail_check ${installdir}/cockroach cert create-node localhost $(hostname) --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
+fn_fail_check ${installdir}/cockroach cert create-node ${ip} $(hostname) --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
+
+#fn_fail_check ${installdir}/cockroach cert create-node localhost $(hostname) --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
 
 # Create both root and configured user client certs
 fn_fail_check ${installdir}/cockroach cert create-client root --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
 fn_fail_check ${installdir}/cockroach cert create-client ${db_username} --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
+
+# List
 fn_fail_check ${installdir}/cockroach cert list --certs-dir=${certsdir}
 
 fn_print_ok "Done"

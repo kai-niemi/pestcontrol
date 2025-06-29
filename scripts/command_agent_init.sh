@@ -6,6 +6,8 @@ commandaction="Initialize cluster (agent)"
 
 # https://www.cockroachlabs.com/docs/stable/cockroach-init#flags
 
+security_mode="insecure"
+
 for i in "$@"; do
   case $i in
     --listen-addr=*)
@@ -17,6 +19,7 @@ for i in "$@"; do
       shift
       ;;
     --secure)
+      security_mode="secure"
       shift
       ;;
     -*|--*)
@@ -40,6 +43,7 @@ fi
 
 fn_print_info "listen_addr    = ${listen_addr}"
 fn_print_info "sql_addr       = ${sql_addr}"
+fn_print_info "security_mode  = ${security_mode}"
 
 #
 # Begin script
@@ -47,7 +51,7 @@ fn_print_info "sql_addr       = ${sql_addr}"
 
 fn_assert_binaries
 
-fn_print_dots "Initialize node [--sql-addr=${sql_addr} --locality=${locality}] in $security_mode mode"
+fn_print_dots "Initialize node"
 
 case "$security_mode" in
   secure)

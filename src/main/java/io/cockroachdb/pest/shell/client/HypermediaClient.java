@@ -1,16 +1,22 @@
 package io.cockroachdb.pest.shell.client;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.client.Traverson;
 import org.springframework.hateoas.mediatype.hal.HalLinkDiscoverer;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 public class HypermediaClient {
@@ -49,6 +55,21 @@ public class HypermediaClient {
     public ResponseEntity<String> get(Link link) {
         Objects.requireNonNull(link);
         return restTemplate.getForEntity(link.toUri(), String.class);
+    }
+
+    public ResponseEntity<String> upload(Link link, List<Path> files) {
+        Objects.requireNonNull(link);
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        files.forEach(path -> body.add("files", new FileSystemResource(path)));
+
+        HttpHeaders httpHeaders= new HttpHeaders();
+        httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity
+                = new HttpEntity<>(body, httpHeaders);
+
+        return restTemplate.postForEntity(link.getTemplate().expand(), requestEntity, String.class);
     }
 
     public ResponseEntity<String> post(Link link) {

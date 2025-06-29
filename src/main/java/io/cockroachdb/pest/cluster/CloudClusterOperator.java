@@ -1,6 +1,9 @@
 package io.cockroachdb.pest.cluster;
 
+import java.nio.file.Path;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +32,11 @@ public class CloudClusterOperator implements ClusterOperator {
     @Override
     public boolean supports(ClusterType clusterType) {
         return EnumSet.of(ClusterType.cloud_dedicated).contains(clusterType);
+    }
+
+    @Override
+    public Map<Integer, List<Path>> certs(ClusterProperties cluster, List<Integer> nodeId) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -1,10 +1,10 @@
 package io.cockroachdb.pest.util;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -22,7 +22,7 @@ public abstract class ProcessUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessUtils.class);
 
-    public static String executeCommand(File directory, List<String> args) {
+    public static String executeCommand(Path directory, List<String> args) {
         ByteArrayOutputStream barr = new ByteArrayOutputStream();
         int code = executeCommand(directory, args, barr);
         if (code != 0) {
@@ -31,7 +31,7 @@ public abstract class ProcessUtils {
         return StreamUtils.copyToString(barr, Charset.defaultCharset());
     }
 
-    private static int executeCommand(File directory,
+    private static int executeCommand(Path directory,
                                      List<String> commands,
                                      ByteArrayOutputStream barr) {
         Instant start = Instant.now();
@@ -41,7 +41,7 @@ public abstract class ProcessUtils {
 
             Process process = new ProcessBuilder()
                     .command(commands)
-                    .directory(directory)
+                    .directory(directory.toFile())
                     .inheritIO()
                     .start();
 

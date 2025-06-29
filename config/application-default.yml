@@ -80,23 +80,23 @@ application:
         - url: http://${local-ip}:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-          listen-addr: ${local-ip}:26258
-          advertise-addr: ${local-ip}:26258
-#          sql-addr: ${local-ip}:26258
+          listen-addr: ${local-ip}:25258
+          advertise-addr: ${local-ip}:25258
+          sql-addr: ${local-ip}:26258
           http-addr: ${local-ip}:8081
         - url: http://${local-ip}:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          listen-addr: ${local-ip}:26259
-          advertise-addr: ${local-ip}:26259
-#          sql-addr: ${local-ip}:26259
+          listen-addr: ${local-ip}:25259
+          advertise-addr: ${local-ip}:25259
+          sql-addr: ${local-ip}:26259
           http-addr: ${local-ip}:8082
         - url: http://${local-ip}:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          listen-addr: ${local-ip}:26260
-          advertise-addr: ${local-ip}:26260
-#          sql-addr: ${local-ip}:26260
+          listen-addr: ${local-ip}:25260
+          advertise-addr: ${local-ip}:25260
+          sql-addr: ${local-ip}:26260
           http-addr: ${local-ip}:8083
 
     - cluster-id: "hosted-secure"
@@ -115,31 +115,36 @@ application:
         - url: http://${local-ip}:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-          listen-addr: ${local-ip}:26258
-          advertise-addr: ${local-ip}:26258
-#          sql-addr: ${local-ip}:26258
+          listen-addr: ${local-ip}:25258
+          advertise-addr: ${local-ip}:25258
+          sql-addr: ${local-ip}:26258
           http-addr: ${local-ip}:8081
+          secure: true
         - url: http://${local-ip}:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          listen-addr: ${local-ip}:26259
-          advertise-addr: ${local-ip}:26259
-#          sql-addr: ${local-ip}:26259
+          listen-addr: ${local-ip}:25259
+          advertise-addr: ${local-ip}:25259
+          sql-addr: ${local-ip}:26259
           http-addr: ${local-ip}:8082
+          secure: true
         - url: http://${local-ip}:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          listen-addr: ${local-ip}:26260
-          advertise-addr: ${local-ip}:26260
-#          sql-addr: ${local-ip}:26260
+          listen-addr: ${local-ip}:25260
+          advertise-addr: ${local-ip}:25260
+          sql-addr: ${local-ip}:26260
           http-addr: ${local-ip}:8083
+          secure: true
 
   # -1 denotes use of unbounded virtual threads
   threadPoolMaxSize: -1
   # Sample period for time-series data points in graphs
   samplePeriodSeconds: 300
   # Base directory for 'cluster-admin' shell script
-  scriptPath: "."
+  baseDir: "."
+  # Directory for TLS certificates
+  certsDir: ".certs"
   ## Other service parameters
   http:
     maxConnPerRoute: 0

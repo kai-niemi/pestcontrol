@@ -53,7 +53,7 @@ public class ClusterController {
         model.add(linkTo(methodOn(getClass())
                 .getCluster(clusterId))
                 .withSelfRel());
-        model.add(linkTo(methodOn(ClusterController.class)
+        model.add(linkTo(methodOn(getClass())
                 .getVersion(clusterId))
                 .withRel(LinkRelations.VERSION_REL));
         model.add(linkTo(methodOn(NodeController.class)
@@ -64,6 +64,9 @@ public class ClusterController {
                 .withRel(LinkRelations.WORKLOADS_REL));
 
         if (ClusterTypes.isHosted(clusterProperties.getClusterType())) {
+            model.add(linkTo(methodOn(CertificateController.class)
+                    .uploadCerts(null))
+                    .withRel(LinkRelations.CERTS_REL));
             model.add(linkTo(methodOn(LocalController.class)
                     .index())
                     .withRel(LinkRelations.OPERATOR_REL));

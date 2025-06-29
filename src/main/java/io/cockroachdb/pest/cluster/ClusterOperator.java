@@ -1,10 +1,16 @@
 package io.cockroachdb.pest.cluster;
 
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
 
 public interface ClusterOperator {
     boolean supports(ClusterType clusterType);
+
+    Map<Integer, List<Path>> certs(ClusterProperties clusterProperties, List<Integer> nodeIds);
 
     String install(ClusterProperties cluster, Integer nodeId);
 

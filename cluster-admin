@@ -28,6 +28,7 @@ scriptsdir="${rootdir}/scripts"
 configdir="${rootdir}/config"
 installdir="${rootdir}/.binaries"
 certsdir="${rootdir}/.certs"
+tempdir="${rootdir}/.tmp"
 datadir="${rootdir}/.datafiles"
 
 source "${configdir}/settings.cfg"
