@@ -62,9 +62,9 @@ public class LocalClusterOperator implements ClusterOperator {
         cluster.getNodes().forEach(nodeProperties -> {
             List<Path> expectedFiles = new ArrayList<>();
             expectedFiles.add(applicationProperties.getCertsDirectory()
-                    .resolve(nodeProperties.getName() + "_node.crt"));
+                    .resolve(nodeProperties.getName()).resolve("node.crt"));
             expectedFiles.add(applicationProperties.getCertsDirectory()
-                    .resolve(nodeProperties.getName() + "_node.key"));
+                    .resolve(nodeProperties.getName()).resolve("node.key"));
 
             executeCommand(applicationProperties.getScriptDirectory(),
                     List.of("./cluster-admin", "agent-node-cert",
@@ -74,7 +74,8 @@ public class LocalClusterOperator implements ClusterOperator {
 
             expectedFiles.forEach(path -> {
                 if (!Files.isReadable(path)) {
-                    throw new UncheckedIOException(new IOException("Expected node key file not found or readable: " + path));
+                    throw new UncheckedIOException(
+                            new IOException("Expected node key file not found or readable: " + path));
                 }
             });
 

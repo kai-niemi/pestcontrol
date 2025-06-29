@@ -42,6 +42,10 @@ public class ClusterController {
                 .getCluster(null)) // templated
                 .withRel(LinkRelations.CLUSTER_TEMPLATE_REL));
 
+        resource.add(linkTo(methodOn(CertificateController.class)
+                .uploadCerts(null))
+                .withRel(LinkRelations.CERTS_REL));
+
         return ResponseEntity.ok(resource);
     }
 
@@ -64,9 +68,6 @@ public class ClusterController {
                 .withRel(LinkRelations.WORKLOADS_REL));
 
         if (ClusterTypes.isHosted(clusterProperties.getClusterType())) {
-            model.add(linkTo(methodOn(CertificateController.class)
-                    .uploadCerts(null))
-                    .withRel(LinkRelations.CERTS_REL));
             model.add(linkTo(methodOn(LocalController.class)
                     .index())
                     .withRel(LinkRelations.OPERATOR_REL));

@@ -34,11 +34,15 @@ if [ -z "${advertise_addr}" ]; then
 fi
 
 fn_fail_check ${installdir}/cockroach cert create-node ${advertise_addr} --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
+
 # Prefix key pairs
-mv ${certsdir}/node.crt ${certsdir}/${name}_node.crt
-mv ${certsdir}/node.key ${certsdir}/${name}_node.key
+
+mkdir -p ${certsdir}/${name}
+mv ${certsdir}/node.crt ${certsdir}/${name}
+mv ${certsdir}/node.key ${certsdir}/${name}
 
 # List
 fn_fail_check ${installdir}/cockroach cert list --certs-dir=${certsdir}
+fn_fail_check ${installdir}/cockroach cert list --certs-dir=${certsdir}/${name}
 
 fn_print_ok "Done"

@@ -4,6 +4,12 @@ getopt=$1
 shift
 
 case "${getopt}" in
+    agent-cert)
+        command_agent_cert.sh $*
+        ;;
+    agent-node-cert)
+        command_agent_node_cert.sh $*
+        ;;
     agent-start)
         command_agent_start.sh $*
         ;;

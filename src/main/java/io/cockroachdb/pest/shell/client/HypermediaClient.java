@@ -3,8 +3,10 @@ package io.cockroachdb.pest.shell.client;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
@@ -63,13 +65,13 @@ public class HypermediaClient {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         files.forEach(path -> body.add("files", new FileSystemResource(path)));
 
-        HttpHeaders httpHeaders= new HttpHeaders();
+        HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity
                 = new HttpEntity<>(body, httpHeaders);
 
-        return restTemplate.postForEntity(link.getTemplate().expand(), requestEntity, String.class);
+        return restTemplate.exchange(link.getHref(), HttpMethod.POST, requestEntity, String.class);
     }
 
     public ResponseEntity<String> post(Link link) {

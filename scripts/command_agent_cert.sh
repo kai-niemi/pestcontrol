@@ -15,6 +15,9 @@ if [ ! -f ${certsdir}/pestcontrol.p12 ]; then
   keytool -import -noprompt -alias pestcontrol -storepass cockroach -keystore ${certsdir}/pestcontrol.p12 -file ${certsdir}/ca.crt
 fi
 
+rm -fv ${certsdir}/node.crt
+rm -fv ${certsdir}/node.key
+
 # Create root user client certs
 fn_fail_check ${installdir}/cockroach cert create-client root --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
 
