@@ -10,10 +10,6 @@ for i in "$@"; do
       name="${i#*=}"
       shift
       ;;
-#    --host-names=*)
-#      host_names="${i#*=}"
-#      shift
-#      ;;
     -*|--*)
       echo "Unknown option $i"
       exit 1
@@ -37,7 +33,7 @@ if [ -z "${host_names}" ]; then
   exit 1
 fi
 
-fn_fail_check ${installdir}/cockroach cert create-node localhost $(hostname) ${host_names} --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
+fn_fail_check ${installdir}/cockroach cert create-node ${host_names} --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
 
 # Prefix key pairs
 

@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.format.annotation.DurationFormat;
 import org.springframework.format.datetime.standard.DurationFormatterUtils;
@@ -49,9 +48,10 @@ public class AdminCommands implements Quit.Command {
     @ShellMethod(value = "Print IP addresses and base URLs")
     public void ip() {
         logger.info("Local IP: %s".formatted(Networking.getLocalIP()));
-        logger.info("Public IP: %s".formatted(Networking.getPublicIP()));
-        logger.info("Local address: http://%s:%d".formatted(Networking.getLocalIP(), serverPort));
-        logger.info("Public address: http://%s:%d".formatted(Networking.getPublicIP(), serverPort));
+        logger.info("External IP: %s".formatted(Networking.getExternalIP()));
+        logger.info("Hostname: %s".formatted(Networking.getHostname()));
+        logger.info("Local admin URL: http://%s:%d".formatted(Networking.getLocalIP(), serverPort));
+        logger.info("External admin URL: http://%s:%d".formatted(Networking.getExternalIP(), serverPort));
     }
 
     @ShellMethod(value = "Print application uptime")

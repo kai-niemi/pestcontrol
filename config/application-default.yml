@@ -40,6 +40,8 @@ application:
         password: "cockroach"
       api-key: "<private-key>"
 
+    #################################################################################
+
     - cluster-id: "remote-insecure"
       cluster-name: "Remote Cluster (Insecure)"
       cluster-type: remote_insecure
@@ -57,6 +59,8 @@ application:
         url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"
+
+    #################################################################################
 
     - cluster-id: "hosted-insecure"
       cluster-name: "Hosted 3-node Cluster (Insecure)"
@@ -99,6 +103,8 @@ application:
           sql-addr: ${local-ip}:26260
           http-addr: ${local-ip}:8083
 
+    #################################################################################
+
     - cluster-id: "hosted-secure"
       cluster-name: "Hosted Cluster (Secure)"
       cluster-type: hosted_secure
@@ -120,7 +126,7 @@ application:
           sql-addr: ${local-ip}:26258
           http-addr: ${local-ip}:8081
           secure: true
-          cert-hosts: ${local-ip}
+          cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
         - url: http://${local-ip}:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
@@ -129,7 +135,7 @@ application:
           sql-addr: ${local-ip}:26259
           http-addr: ${local-ip}:8082
           secure: true
-          cert-hosts: ${local-ip}
+          cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
         - url: http://${local-ip}:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
@@ -138,7 +144,7 @@ application:
           sql-addr: ${local-ip}:26260
           http-addr: ${local-ip}:8083
           secure: true
-          cert-hosts: ${local-ip}
+          cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
 
   # -1 denotes use of unbounded virtual threads
   threadPoolMaxSize: -1

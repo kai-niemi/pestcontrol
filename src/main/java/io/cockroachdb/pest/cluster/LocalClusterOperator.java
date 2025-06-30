@@ -67,13 +67,11 @@ public class LocalClusterOperator implements ClusterOperator {
             expectedFiles.add(applicationProperties.getCertsDirectory()
                     .resolve(nodeProperties.getName()).resolve("node.key"));
 
-            String hosts = String.join(",", nodeProperties.getCertHosts());
+            List<String> command = new ArrayList<>(List.of("./cluster-admin", "agent-node-cert"));
+            command.add("--name=" + nodeProperties.getName());
+            command.addAll(nodeProperties.getCertHosts());
 
-            executeCommand(applicationProperties.getScriptDirectory(),
-                    List.of("./cluster-admin", "agent-node-cert",
-                            "--name=" + nodeProperties.getName(),
-                            "--host-names=" + hosts
-                    ));
+            executeCommand(applicationProperties.getScriptDirectory(), command);
 
             expectedFiles.forEach(path -> {
                 if (!Files.isReadable(path)) {

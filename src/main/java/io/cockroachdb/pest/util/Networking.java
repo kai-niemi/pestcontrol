@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
@@ -23,7 +24,8 @@ public abstract class Networking {
                 .replacePlaceholders(input,
                         placeholderName -> switch (placeholderName.toLowerCase()) {
                             case "localip", "local-ip" -> Networking.getLocalIP();
-                            case "publicip", "public-ip" -> Networking.getPublicIP();
+                            case "publicip", "public-ip", "externalip", "external-ip" -> Networking.getExternalIP();
+                            case "hostname" -> Networking.getHostname();
                             default -> placeholderName;
                         });
     }
@@ -37,12 +39,20 @@ public abstract class Networking {
         }
     }
 
-    public static String getPublicIP() throws UncheckedIOException {
+    public static String getExternalIP() throws UncheckedIOException {
         try {
             URL url = new URL("http://checkip.amazonaws.com/");
             try (BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
                 return br.readLine();
             }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public static String getHostname() throws UncheckedIOException {
+        try {
+            return InetAddress.getLocalHost().getHostName();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
