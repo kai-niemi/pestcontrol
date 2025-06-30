@@ -7,6 +7,8 @@ commandaction="Initialize cluster (agent)"
 # https://www.cockroachlabs.com/docs/stable/cockroach-init#flags
 
 security_mode="insecure"
+db_username=craig
+db_password=cockroach
 
 for i in "$@"; do
   case $i in
@@ -43,6 +45,8 @@ fi
 
 fn_print_info "listen_addr    = ${listen_addr}"
 fn_print_info "sql_addr       = ${sql_addr}"
+fn_print_info "db_username    = ${db_username}"
+fn_print_info "db_password    = ******"
 fn_print_info "security_mode  = ${security_mode}"
 
 #
@@ -57,11 +61,11 @@ case "$security_mode" in
   secure)
     ${installdir}/cockroach init --certs-dir=${certsdir} --host=${listen_addr}
 
-#    ${installdir}/cockroach sql --certs-dir=${certsdir} --host=${sql_addr} \
-#    -e "CREATE USER IF NOT EXISTS ${db_username} WITH PASSWORD '${db_password}'"
+    ${installdir}/cockroach sql --certs-dir=${certsdir} --host=${sql_addr} \
+    -e "CREATE USER IF NOT EXISTS ${db_username} WITH PASSWORD '${db_password}'"
 
-#    ${installdir}/cockroach sql --certs-dir=${certsdir} --host=${sql_addr} \
-#    -e "ALTER ROLE ${db_username} WITH PASSWORD '${db_password}'; GRANT ADMIN to ${db_username};"
+    ${installdir}/cockroach sql --certs-dir=${certsdir} --host=${sql_addr} \
+    -e "ALTER ROLE ${db_username} WITH PASSWORD '${db_password}'; GRANT ADMIN to ${db_username};"
 
     ${installdir}/cockroach sql --certs-dir=${certsdir} --host=${sql_addr} < ${configdir}/init.sql
 
@@ -73,11 +77,11 @@ case "$security_mode" in
   insecure)
     ${installdir}/cockroach init --insecure --host=${listen_addr}
 
-#    ${installdir}/cockroach sql --insecure --host=${sql_addr} \
-#    -e "CREATE USER IF NOT EXISTS ${db_username}; GRANT ADMIN to ${db_username};"
+    ${installdir}/cockroach sql --insecure --host=${sql_addr} \
+    -e "CREATE USER IF NOT EXISTS ${db_username}; GRANT ADMIN to ${db_username};"
 
-#    ${installdir}/cockroach sql --insecure --host=${sql_addr} \
-#    -e "ALTER ROLE ${db_username} WITH PASSWORD NULL"
+    ${installdir}/cockroach sql --insecure --host=${sql_addr} \
+    -e "ALTER ROLE ${db_username} WITH PASSWORD NULL"
 
     ${installdir}/cockroach sql --insecure --host=${sql_addr} < ${configdir}/init.sql
 
