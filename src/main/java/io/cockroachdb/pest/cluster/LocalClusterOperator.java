@@ -5,6 +5,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,10 @@ public class LocalClusterOperator implements ClusterOperator {
                     .resolve(nodeProperties.getName()).resolve("node.crt"));
             expectedFiles.add(applicationProperties.getCertsDirectory()
                     .resolve(nodeProperties.getName()).resolve("node.key"));
+
+            // todo
+            String addr = nodeProperties.getAdvertiseAddr();
+//            addr = Arrays.stream(addr.split(":")).findFirst().orElseThrow();
 
             executeCommand(applicationProperties.getScriptDirectory(),
                     List.of("./cluster-admin", "agent-node-cert",
