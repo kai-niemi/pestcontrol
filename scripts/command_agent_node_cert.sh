@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ./cluster-admin agent-node-cert --name=n1 192.168.1.149,22
+
 commandaction="Generate node certificates"
 
 for i in "$@"; do
@@ -8,10 +10,10 @@ for i in "$@"; do
       name="${i#*=}"
       shift
       ;;
-    --advertise-addr=*)
-      advertise_addr="${i#*=}"
-      shift
-      ;;
+#    --host-names=*)
+#      host_names="${i#*=}"
+#      shift
+#      ;;
     -*|--*)
       echo "Unknown option $i"
       exit 1
@@ -21,25 +23,27 @@ for i in "$@"; do
   esac
 done
 
-fn_print_info "name           = ${name}"
-fn_print_info "advertise_addr = ${advertise_addr}"
+host_names=("$*")
+
+fn_print_info "name       = ${name}"
+fn_print_info "host_names = ${host_names}"
 
 if [ -z "${name}" ]; then
   fn_print_error "Missing name parameter!"
   exit 1
 fi
-if [ -z "${advertise_addr}" ]; then
-  fn_print_error "Missing advertise_addr parameter!"
+if [ -z "${host_names}" ]; then
+  fn_print_error "Missing host names!"
   exit 1
 fi
 
-fn_fail_check ${installdir}/cockroach cert create-node ${advertise_addr} --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
+fn_fail_check ${installdir}/cockroach cert create-node localhost $(hostname) ${host_names} --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
 
 # Prefix key pairs
 
 mkdir -p ${certsdir}/${name}
-mv ${certsdir}/node.crt ${certsdir}/${name}
-mv ${certsdir}/node.key ${certsdir}/${name}
+cp ${certsdir}/node.crt ${certsdir}/${name}
+cp ${certsdir}/node.key ${certsdir}/${name}
 
 # List
 fn_fail_check ${installdir}/cockroach cert list --certs-dir=${certsdir}

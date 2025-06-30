@@ -6,7 +6,13 @@ commandaction="Start node (agent)"
 # ./cluster-admin agent-start --name=n2 --locality=region=eu-north-1,zone=eu-north-1b --listen-addr=localhost:26259 --advertise-addr=localhost:26259 --http-addr=localhost:8082 --join=localhost:25258,localhost:25259,localhost:25260
 # ./cluster-admin agent-start --name=n3 --locality=region=eu-north-1,zone=eu-north-1c --listen-addr=localhost:26260 --advertise-addr=localhost:26260 --http-addr=localhost:8083 --join=localhost:25258,localhost:25259,localhost:25260
 
+# ./cluster-admin agent-start --name=n1 --locality=region=eu-north-1,zone=eu-north-1a --listen-addr=192.168.1.149:25258 --advertise-addr=192.168.1.149:25258 --sql-addr=192.168.1.149:26258 --http-addr=192.168.1.149:8081 --join=192.168.1.149:25258,192.168.1.149:25259,192.168.1.149:25260 --secure
+# ./cluster-admin agent-start --name=n2 --locality=region=eu-north-1,zone=eu-north-1b --listen-addr=192.168.1.149:25259 --advertise-addr=192.168.1.149:25259 --sql-addr=192.168.1.149:26259 --http-addr=192.168.1.149:8082 --join=192.168.1.149:25258,192.168.1.149:25259,192.168.1.149:25260 --secure
+# ./cluster-admin agent-start --name=n3 --locality=region=eu-north-1,zone=eu-north-1c --listen-addr=192.168.1.149:25260 --advertise-addr=192.168.1.149:25260 --sql-addr=192.168.1.149:26260 --http-addr=192.168.1.149:8083 --join=192.168.1.149:25258,192.168.1.149:25259,192.168.1.149:25260 --secure
+
+
 # https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
+
 
 security_mode="insecure"
 
@@ -83,12 +89,12 @@ fn_assert_binaries
 
 mempool="10%"
 
-#fn_local_node_status $listen_addr
+fn_local_node_status $listen_addr
 
-#if [ "${status}" != "0" ]; then
-#  fn_print_warn "Node with listen address ${listen_addr} is already running!"
-#  exit 0
-#fi
+if [ "${status}" != "0" ]; then
+  fn_print_warn "Node with listen address ${listen_addr} is already running!"
+  exit 0
+fi
 
 fn_print_dots "Starting node ${name}"
 

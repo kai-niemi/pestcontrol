@@ -67,14 +67,12 @@ public class LocalClusterOperator implements ClusterOperator {
             expectedFiles.add(applicationProperties.getCertsDirectory()
                     .resolve(nodeProperties.getName()).resolve("node.key"));
 
-            // todo
-            String addr = nodeProperties.getAdvertiseAddr();
-//            addr = Arrays.stream(addr.split(":")).findFirst().orElseThrow();
+            String hosts = String.join(",", nodeProperties.getCertHosts());
 
             executeCommand(applicationProperties.getScriptDirectory(),
                     List.of("./cluster-admin", "agent-node-cert",
                             "--name=" + nodeProperties.getName(),
-                            "--advertise-addr=" + nodeProperties.getAdvertiseAddr()
+                            "--host-names=" + hosts
                     ));
 
             expectedFiles.forEach(path -> {
@@ -141,8 +139,12 @@ public class LocalClusterOperator implements ClusterOperator {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         List<String> args = new ArrayList<>(List.of("./cluster-admin", "agent-init"));
-        addNetworkingFlags(nodeProperties, args);
-
+        if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
+            args.add("--listen-addr=" + nodeProperties.getListenAddr());
+        }
+        if (StringUtils.hasLength(nodeProperties.getSqlAddr())) {
+            args.add("--sql-addr=" + nodeProperties.getSqlAddr());
+        }
         if (nodeProperties.isSecure()) {
             args.add("--secure");
         }

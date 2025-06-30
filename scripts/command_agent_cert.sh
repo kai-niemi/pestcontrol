@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ./cluster-admin agent-cert
+
 commandaction="Generate CA certificate and key pairs"
 
 mkdir -p ${certsdir}

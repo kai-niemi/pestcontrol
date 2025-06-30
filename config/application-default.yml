@@ -120,6 +120,7 @@ application:
           sql-addr: ${local-ip}:26258
           http-addr: ${local-ip}:8081
           secure: true
+          cert-hosts: ${local-ip}
         - url: http://${local-ip}:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
@@ -128,6 +129,7 @@ application:
           sql-addr: ${local-ip}:26259
           http-addr: ${local-ip}:8082
           secure: true
+          cert-hosts: ${local-ip}
         - url: http://${local-ip}:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
@@ -136,6 +138,7 @@ application:
           sql-addr: ${local-ip}:26260
           http-addr: ${local-ip}:8083
           secure: true
+          cert-hosts: ${local-ip}
 
   # -1 denotes use of unbounded virtual threads
   threadPoolMaxSize: -1

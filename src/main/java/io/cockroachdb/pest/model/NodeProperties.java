@@ -1,6 +1,9 @@
 package io.cockroachdb.pest.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.hateoas.Link;
 import org.springframework.validation.annotation.Validated;
@@ -38,7 +41,18 @@ public class NodeProperties {
 
     private String httpAddr;
 
+    private List<String> certHosts = List.of();
+
     private boolean secure;
+
+    public List<String> getCertHosts() {
+        return certHosts.stream().map(Networking::resolve)
+                .collect(Collectors.toList());
+    }
+
+    public void setCertHosts(List<String> certHosts) {
+        this.certHosts = certHosts;
+    }
 
     @JsonIgnore
     public Link getBaseUrl() {
