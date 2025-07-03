@@ -29,8 +29,7 @@ for i in "$@"; do
       shift
       ;;
     -*|--*)
-      echo "Unknown option $i"
-      exit 1
+      fn_print_warn "Unknown option $i"
       ;;
     *)
       ;;

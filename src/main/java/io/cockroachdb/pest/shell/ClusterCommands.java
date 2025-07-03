@@ -12,6 +12,7 @@ import org.springframework.shell.standard.ShellOption;
 import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.shell.support.ClusterProvider;
 
 @ShellComponent
 @ShellCommandGroup(Constants.CLUSTER_COMMANDS)

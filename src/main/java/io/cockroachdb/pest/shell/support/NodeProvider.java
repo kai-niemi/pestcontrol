@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.shell;
+package io.cockroachdb.pest.shell.support;
 
 import java.util.ArrayList;
 import java.util.List;

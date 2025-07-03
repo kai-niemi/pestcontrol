@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Pair;
 import org.springframework.util.StreamUtils;
 
 public abstract class ProcessUtils {
@@ -22,18 +23,7 @@ public abstract class ProcessUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessUtils.class);
 
-    public static String executeCommand(Path directory, List<String> args) {
-        ByteArrayOutputStream barr = new ByteArrayOutputStream();
-        int code = executeCommand(directory, args, barr);
-        if (code != 0) {
-            throw new CommandException(StreamUtils.copyToString(barr, Charset.defaultCharset()), code);
-        }
-        return StreamUtils.copyToString(barr, Charset.defaultCharset());
-    }
-
-    private static int executeCommand(Path directory,
-                                     List<String> commands,
-                                     ByteArrayOutputStream barr) {
+    public static Pair<String, Integer> executeCommand(Path directory, List<String> commands) {
         Instant start = Instant.now();
 
         try {
@@ -43,31 +33,44 @@ public abstract class ProcessUtils {
                     .command(commands)
                     .directory(directory.toFile())
                     .inheritIO()
+//                    .redirectInput(ProcessBuilder.Redirect.PIPE)
+//                    .redirectError(ProcessBuilder.Redirect.PIPE)
+//                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
                     .start();
 
-            if (process.waitFor(PROCESS_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                logger.warn("Started process (terminated): %s".formatted(process.info()));
-            } else {
-                logger.info("Started process (waiting): %s".formatted(process.info()));
-            }
+            ByteArrayOutputStream stdOut = new ByteArrayOutputStream();
+            ByteArrayOutputStream stdErr = new ByteArrayOutputStream();
 
             try (InputStream inputStream = process.getInputStream();
                  InputStream errorStream = process.getErrorStream()) {
-                IoUtils.copy(inputStream, barr);
-                IoUtils.copy(errorStream, barr);
+                IoUtils.copy(inputStream, stdOut);
+                IoUtils.copy(errorStream, stdErr);
+            }
+
+            if (process.waitFor(PROCESS_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                logger.warn("Process terminated: %s".formatted(process.info()));
+            } else {
+                logger.info("Process running (waiting): %s".formatted(process.info()));
             }
 
             int code = process.exitValue();
 
-            logger.info("Finished process in %s exit code %d: %s"
-                    .formatted(Duration.between(start, Instant.now()), code, process.info()));
+            String output = StreamUtils.copyToString(stdOut, Charset.defaultCharset());
+            String error = StreamUtils.copyToString(stdErr, Charset.defaultCharset());
 
-            return code;
+            logger.info("Finished process in %s with exit code: %d, output: [%s], error: [%s]"
+                    .formatted(Duration.between(start, Instant.now()), code, output, error));
+
+            if (code != 0) {
+                throw new CommandException("Process error code " + code, code);
+            }
+
+            return Pair.of(output, code);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new CommandException("Timeout waiting for process completion", e);
         } catch (IOException e) {
-            throw new CommandException(StreamUtils.copyToString(barr, Charset.defaultCharset()), e);
+            throw new CommandException("Process I/O error", e);
         }
     }
 }

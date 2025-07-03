@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # ./cluster-admin agent-init --listen-addr=localhost:25258 --sql-addr=localhost:26258
+# ./cluster-admin agent-init --advertise-addr=192.168.68.105:26257
 
 commandaction="Initialize cluster (agent)"
 
@@ -12,8 +13,8 @@ db_password=cockroach
 
 for i in "$@"; do
   case $i in
-    --listen-addr=*)
-      listen_addr="${i#*=}"
+    --advertise-addr=*)
+      advertise_addr="${i#*=}"
       shift
       ;;
     --sql-addr=*)
@@ -25,29 +26,28 @@ for i in "$@"; do
       shift
       ;;
     -*|--*)
-      echo "Unknown option $i"
-      exit 1
+      fn_print_warn "Unknown option $i"
       ;;
     *)
       ;;
   esac
 done
 
-if [ -z "${listen_addr}" ]; then
-  fn_print_error "Missing listen_addr parameter!"
+if [ -z "${advertise_addr}" ]; then
+  fn_print_error "Missing advertise_addr parameter!"
   exit 1
 fi
 
 if [ -z "${sql_addr}" ]; then
-  fn_print_error "Missing sql_addr parameter!"
-  exit 1
+  sql_addr=${advertise_addr}
+  fn_print_warn "Missing sql_addr parameter -  fallback to advertise_addr!"
 fi
 
-fn_print_info "listen_addr    = ${listen_addr}"
+fn_print_info "advertise_addr = ${advertise_addr}"
 fn_print_info "sql_addr       = ${sql_addr}"
+fn_print_info "security_mode  = ${security_mode}"
 fn_print_info "db_username    = ${db_username}"
 fn_print_info "db_password    = ******"
-fn_print_info "security_mode  = ${security_mode}"
 
 #
 # Begin script
@@ -59,7 +59,7 @@ fn_print_dots "Initialize cluster"
 
 case "$security_mode" in
   secure)
-    ${installdir}/cockroach init --certs-dir=${certsdir} --host=${listen_addr}
+    ${installdir}/cockroach init --certs-dir=${certsdir} --host=${advertise_addr}
 
     ${installdir}/cockroach sql --certs-dir=${certsdir} --host=${sql_addr} \
     -e "CREATE USER IF NOT EXISTS ${db_username} WITH PASSWORD '${db_password}'"
@@ -75,7 +75,7 @@ case "$security_mode" in
 
     ;;
   insecure)
-    ${installdir}/cockroach init --insecure --host=${listen_addr}
+    ${installdir}/cockroach init --insecure --host=${advertise_addr}
 
     ${installdir}/cockroach sql --insecure --host=${sql_addr} \
     -e "CREATE USER IF NOT EXISTS ${db_username}; GRANT ADMIN to ${db_username};"

@@ -43,7 +43,7 @@ application:
     #################################################################################
 
     - cluster-id: "remote-insecure"
-      cluster-name: "Remote Cluster (Insecure)"
+      cluster-name: "Remote Cluster (insecure)"
       cluster-type: remote_insecure
       admin-url: "http://127.0.0.1:8080"
       data-source-properties:
@@ -52,7 +52,7 @@ application:
         password: ""
 
     - cluster-id: "remote-secure"
-      cluster-name: "Remote Cluster (Secure)"
+      cluster-name: "Remote Cluster (secure)"
       cluster-type: remote_secure
       admin-url: "https://127.0.0.1:443"
       data-source-properties:
@@ -63,7 +63,7 @@ application:
     #################################################################################
 
     - cluster-id: "hosted-insecure"
-      cluster-name: "Hosted 3-node Cluster (Insecure)"
+      cluster-name: "Hosted 3-node Cluster (insecure)"
       cluster-type: hosted_insecure
       admin-url: "http://127.0.0.1:8080"
       data-source-properties:
@@ -84,31 +84,31 @@ application:
         - url: http://${local-ip}:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-          listen-addr: ${local-ip}:25258
-          advertise-addr: ${local-ip}:25258
-          sql-addr: ${local-ip}:26258
-          http-addr: ${local-ip}:8081
+          advertise-addr: ${local-ip}:26257
+#          listen-addr: ${local-ip}:26257
+#          sql-addr: ${local-ip}:26257
+          http-addr: ${local-ip}:8080
         - url: http://${local-ip}:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          listen-addr: ${local-ip}:25259
-          advertise-addr: ${local-ip}:25259
-          sql-addr: ${local-ip}:26259
-          http-addr: ${local-ip}:8082
+          advertise-addr: ${local-ip}:26258
+#          listen-addr: ${local-ip}:26258
+#          sql-addr: ${local-ip}:26258
+          http-addr: ${local-ip}:8081
         - url: http://${local-ip}:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          listen-addr: ${local-ip}:25260
-          advertise-addr: ${local-ip}:25260
-          sql-addr: ${local-ip}:26260
-          http-addr: ${local-ip}:8083
+          advertise-addr: ${local-ip}:26259
+#          listen-addr: ${local-ip}:26259
+#          sql-addr: ${local-ip}:26259
+          http-addr: ${local-ip}:8082
 
     #################################################################################
 
     - cluster-id: "hosted-secure"
-      cluster-name: "Hosted Cluster (Secure)"
+      cluster-name: "Hosted 3-node Cluster (secure)"
       cluster-type: hosted_secure
-      admin-url: "https://localhost:443"
+      admin-url: "http://127.0.0.1:8080"
       data-source-properties:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
         username: "craig"
@@ -121,28 +121,28 @@ application:
         - url: http://${local-ip}:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-          listen-addr: ${local-ip}:25258
-          advertise-addr: ${local-ip}:25258
-          sql-addr: ${local-ip}:26258
-          http-addr: ${local-ip}:8081
+          advertise-addr: ${local-ip}:26257
+#          listen-addr: ${local-ip}:26257
+#          sql-addr: ${local-ip}:26257
+          http-addr: ${local-ip}:8080
           secure: true
           cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
         - url: http://${local-ip}:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          listen-addr: ${local-ip}:25259
-          advertise-addr: ${local-ip}:25259
-          sql-addr: ${local-ip}:26259
-          http-addr: ${local-ip}:8082
+          advertise-addr: ${local-ip}:26258
+#          listen-addr: ${local-ip}:26258
+#          sql-addr: ${local-ip}:26258
+#          http-addr: ${local-ip}:8081
           secure: true
           cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
         - url: http://${local-ip}:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          listen-addr: ${local-ip}:25260
-          advertise-addr: ${local-ip}:25260
-          sql-addr: ${local-ip}:26260
-          http-addr: ${local-ip}:8083
+          advertise-addr: ${local-ip}:25259
+#          listen-addr: ${local-ip}:25259
+#          sql-addr: ${local-ip}:26259
+#          http-addr: ${local-ip}:8082
           secure: true
           cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
 

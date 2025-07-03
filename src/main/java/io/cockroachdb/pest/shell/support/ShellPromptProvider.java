@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.shell;
+package io.cockroachdb.pest.shell.support;
 
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;

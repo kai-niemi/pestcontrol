@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.shell;
+package io.cockroachdb.pest.shell.support;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ public class ClusterProvider implements ValueProvider {
                 && ClusterTypes.isHosted(clusterProperties.getClusterType())) {
                 result.add(new CompletionProposal(clusterProperties.getClusterId())
                         .displayText(clusterProperties.getClusterId())
-                        .description(clusterProperties.getClusterName() + " - " + clusterProperties.getClusterType()));
+                        .description(clusterProperties.getClusterName()));
             }
         }
 

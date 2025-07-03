@@ -3,8 +3,8 @@ package io.cockroachdb.pest.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.cockroachdb.pest.shell.ClusterProvider;
-import io.cockroachdb.pest.shell.NodeProvider;
+import io.cockroachdb.pest.shell.support.ClusterProvider;
+import io.cockroachdb.pest.shell.support.NodeProvider;
 
 @Configuration
 public class ShellConfig {

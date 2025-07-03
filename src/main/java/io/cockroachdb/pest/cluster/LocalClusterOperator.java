@@ -5,10 +5,10 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import org.slf4j.Logger;
@@ -22,6 +22,7 @@ import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.model.Locality;
 import io.cockroachdb.pest.model.NodeProperties;
+import io.cockroachdb.pest.util.Networking;
 import static io.cockroachdb.pest.util.ProcessUtils.executeCommand;
 
 @Component
@@ -36,18 +37,53 @@ public class LocalClusterOperator implements ClusterOperator {
         return false;
     }
 
-    private void addNetworkingFlags(NodeProperties nodeProperties, List<String> args) {
+    private void addServerNetworkingFlags(NodeProperties nodeProperties, List<String> args) {
         if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
             args.add("--listen-addr=" + nodeProperties.getListenAddr());
         }
+
         if (StringUtils.hasLength(nodeProperties.getAdvertiseAddr())) {
             args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());
         }
+
         if (StringUtils.hasLength(nodeProperties.getSqlAddr())) {
             args.add("--sql-addr=" + nodeProperties.getSqlAddr());
         }
+
         if (StringUtils.hasLength(nodeProperties.getHttpAddr())) {
             args.add("--http-addr=" + nodeProperties.getHttpAddr());
+        }
+
+        if (nodeProperties.isSecure()) {
+            args.add("--secure");
+        }
+    }
+
+    private void addClientNetworkingFlags(NodeProperties nodeProperties, List<String> args) {
+        if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
+            args.add("--listen-addr=" + nodeProperties.getListenAddr());
+        }
+
+        if (StringUtils.hasLength(nodeProperties.getAdvertiseAddr())) {
+            args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());
+        } else {
+            if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
+                args.add("--advertise-addr=" + nodeProperties.getListenAddr());
+            } else {
+                args.add("--advertise-addr=" + Networking.getCanonicalHostName() + ":26257");
+            }
+        }
+
+        if (StringUtils.hasLength(nodeProperties.getSqlAddr())) {
+            args.add("--sql-addr=" + nodeProperties.getSqlAddr());
+        }
+
+        if (StringUtils.hasLength(nodeProperties.getHttpAddr())) {
+            args.add("--http-addr=" + nodeProperties.getHttpAddr());
+        }
+
+        if (nodeProperties.isSecure()) {
+            args.add("--secure");
         }
     }
 
@@ -91,7 +127,7 @@ public class LocalClusterOperator implements ClusterOperator {
         List<String> args = List.of("./cluster-admin", "agent-install",
                 "--version=" + clusterProperties.getVersion()
         );
-        return executeCommand(applicationProperties.getScriptDirectory(), args);
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }
 
     @Override
@@ -104,22 +140,18 @@ public class LocalClusterOperator implements ClusterOperator {
                 .forEach(np -> {
                     Locality locality = Locality.fromTiers(np.getLocality());
                     hosts.computeIfAbsent(locality, x -> new ArrayList<>())
-                            .add(np.getListenAddr());
+                            .add(Objects.requireNonNull(np.getAdvertiseAddr()));
                 });
 
         List<String> args = new ArrayList<>(List.of("./cluster-admin", "agent-start"));
         args.add("--name=n" + nodeId);
         args.add("--locality=" + nodeProperties.getLocality());
 
-        addNetworkingFlags(nodeProperties, args);
+        addServerNetworkingFlags(nodeProperties, args);
 
         args.add("--join=" + String.join(",", Locality.distributeJoinHosts(hosts)));
 
-        if (nodeProperties.isSecure()) {
-            args.add("--secure");
-        }
-
-        return executeCommand(applicationProperties.getScriptDirectory(), args);
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }
 
     @Override
@@ -127,9 +159,9 @@ public class LocalClusterOperator implements ClusterOperator {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         List<String> args = new ArrayList<>(List.of("./cluster-admin", "agent-stop"));
-        addNetworkingFlags(nodeProperties, args);
+        addServerNetworkingFlags(nodeProperties, args);
 
-        return executeCommand(applicationProperties.getScriptDirectory(), args);
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }
 
     @Override
@@ -137,17 +169,9 @@ public class LocalClusterOperator implements ClusterOperator {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         List<String> args = new ArrayList<>(List.of("./cluster-admin", "agent-init"));
-        if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
-            args.add("--listen-addr=" + nodeProperties.getListenAddr());
-        }
-        if (StringUtils.hasLength(nodeProperties.getSqlAddr())) {
-            args.add("--sql-addr=" + nodeProperties.getSqlAddr());
-        }
-        if (nodeProperties.isSecure()) {
-            args.add("--secure");
-        }
+        addClientNetworkingFlags(nodeProperties, args);
 
-        return executeCommand(applicationProperties.getScriptDirectory(), args);
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }
 
     @Override
@@ -155,9 +179,9 @@ public class LocalClusterOperator implements ClusterOperator {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         List<String> args = new ArrayList<>(List.of("./cluster-admin", "agent-kill"));
-        addNetworkingFlags(nodeProperties, args);
+        addServerNetworkingFlags(nodeProperties, args);
 
-        return executeCommand(applicationProperties.getScriptDirectory(), args);
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }
 
     @Override

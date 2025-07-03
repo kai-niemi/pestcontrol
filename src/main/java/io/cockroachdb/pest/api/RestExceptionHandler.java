@@ -27,13 +27,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 .forStatusAndDetail(problem.getStatus(), problem.getDetail());
         problemDetail.setTitle(problem.getTitle());
         problemDetail.setInstance(problem.getInstance());
-
-        if (problem.getStatus().is5xxServerError()) {
-            logger.error("Server error processing request: %s".formatted(problem.getDetail()));
-        } else {
-            logger.warn("Client error processing request: %s".formatted(problem.getDetail()));
-        }
-
         return ResponseEntity
                 .status(problem.getStatus())
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON)
@@ -45,6 +38,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         if (ex instanceof UndeclaredThrowableException) {
             ex = ((UndeclaredThrowableException) ex).getUndeclaredThrowable();
         }
+
+        logger.error("Server error processing request", ex);
 
         ResponseStatus responseStatus = AnnotationUtils.findAnnotation(ex.getClass(), ResponseStatus.class);
 

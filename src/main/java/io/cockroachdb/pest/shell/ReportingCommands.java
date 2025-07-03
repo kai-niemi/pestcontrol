@@ -21,6 +21,8 @@ import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.model.NodeProperties;
 import io.cockroachdb.pest.shell.client.HypermediaClient;
+import io.cockroachdb.pest.shell.support.AnsiConsole;
+import io.cockroachdb.pest.shell.support.ClusterProvider;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
 import static io.cockroachdb.pest.api.LinkRelations.ACTUATORS_REL;

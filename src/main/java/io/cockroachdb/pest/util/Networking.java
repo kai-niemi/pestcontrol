@@ -57,4 +57,12 @@ public abstract class Networking {
             throw new UncheckedIOException(e);
         }
     }
+
+    public static String getCanonicalHostName() throws UncheckedIOException {
+        try {
+            return InetAddress.getLocalHost().getCanonicalHostName();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
 }

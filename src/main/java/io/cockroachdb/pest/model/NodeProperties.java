@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.hateoas.Link;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -92,6 +93,15 @@ public class NodeProperties {
         this.locality = locality;
     }
 
+    @JsonProperty("listen-addr")
+    public String getListenAddr() {
+        return Networking.resolve(listenAddr);
+    }
+
+    public void setListenAddr(String listenAddr) {
+        this.listenAddr = listenAddr;
+    }
+
     @JsonProperty("advertise-addr")
     public String getAdvertiseAddr() {
         return Networking.resolve(advertiseAddr);
@@ -108,15 +118,6 @@ public class NodeProperties {
 
     public void setHttpAddr(String httpAddr) {
         this.httpAddr = httpAddr;
-    }
-
-    @JsonProperty("listen-addr")
-    public String getListenAddr() {
-        return Networking.resolve(listenAddr);
-    }
-
-    public void setListenAddr(String listenAddr) {
-        this.listenAddr = listenAddr;
     }
 
     @JsonProperty("sql-addr")

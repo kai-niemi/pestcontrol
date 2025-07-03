@@ -51,8 +51,7 @@ for i in "$@"; do
       shift
       ;;
     -*|--*)
-      echo "Unknown option $i"
-      exit 1
+      fn_print_warn "Unknown option $i"
       ;;
     *)
       ;;
@@ -89,10 +88,10 @@ fn_assert_binaries
 
 mempool="10%"
 
-fn_local_node_status $listen_addr
+fn_local_node_status $advertise_addr
 
 if [ "${status}" != "0" ]; then
-  fn_print_warn "Node with listen address ${listen_addr} is already running!"
+  fn_print_warn "Node with advertise address ${advertise_addr} is already running!"
   exit 0
 fi
 
