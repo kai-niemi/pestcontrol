@@ -112,3 +112,25 @@ server:
     include-message: always
     include-stacktrace: always
     include-binding-errors: always
+
+#############################
+# Base application settings
+#############################
+application:
+  # Base directory for 'cluster-admin' shell script
+  baseDir: "."
+  # Directory for TLS certificates
+  certsDir: ".certs"
+  # -1 denotes use of unbounded virtual threads
+  threadPoolMaxSize: -1
+  # Sample period for time-series data points in graphs
+  samplePeriodSeconds: 300
+  ## Other service parameters
+  http:
+    maxConnPerRoute: 0
+    maxTotal: 0
+  # Host settings for toxiproxy
+  toxiproxy:
+    host: localhost
+    port: 8474
+

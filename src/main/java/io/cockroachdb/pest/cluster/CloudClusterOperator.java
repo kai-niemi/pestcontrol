@@ -65,6 +65,11 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
+    public String sqlNode(ClusterProperties cluster, Integer nodeId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public String disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 

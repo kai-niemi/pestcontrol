@@ -220,4 +220,10 @@ public class DefaultClusterManager implements ClusterManager {
             throws UnsupportedOperationException {
         return applicationProperties.clusterOperator(clusterId);
     }
+
+    @Override
+    public ClusterOperator getClusterOperator(ClusterType clusterType)
+            throws UnsupportedOperationException {
+        return applicationProperties.clusterOperator(clusterType);
+    }
 }

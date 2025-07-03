@@ -20,6 +20,7 @@ fn_print_help() {
 }
 
 case "${getopt}" in
+    # Remote commands
     cert)
         command_cert.sh $*
         ;;
@@ -41,6 +42,10 @@ case "${getopt}" in
     init)
         command_init.sh $*
         ;;
+    sql)
+        command_sql.sh $*
+        ;;
+    # Local commands
     run-service)
         command_run_service.sh $*
         ;;

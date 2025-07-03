@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.api.cluster.NodeModel;
+import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.schema.NodeDetail;
 import io.cockroachdb.pest.schema.NodeStatus;
 
@@ -31,4 +32,6 @@ public interface ClusterManager {
     ClusterProperties getClusterProperties(String clusterId);
 
     ClusterOperator getClusterOperator(String clusterId);
+
+    ClusterOperator getClusterOperator(ClusterType clusterType);
 }

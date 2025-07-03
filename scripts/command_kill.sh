@@ -4,7 +4,7 @@
 # ./pest-control agent-kill --listen-addr=localhost:26259
 # ./pest-control agent-kill --listen-addr=localhost:26260
 
-commandaction="Kill node (agent)"
+commandaction="Kill node "
 
 for i in "$@"; do
   case $i in

@@ -3,7 +3,7 @@
 # ./pest-control agent-init --listen-addr=localhost:25258 --sql-addr=localhost:26258
 # ./pest-control agent-init --advertise-addr=192.168.68.105:26257
 
-commandaction="Initialize cluster (agent)"
+commandaction="Initialize cluster "
 
 # https://www.cockroachlabs.com/docs/stable/cockroach-init#flags
 

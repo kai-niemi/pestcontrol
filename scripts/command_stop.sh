@@ -4,7 +4,7 @@
 # ./pest-control agent-stop --listen-addr=localhost:26259
 # ./pest-control agent-stop --listen-addr=localhost:26260
 
-commandaction="Stop node (agent)"
+commandaction="Stop node "
 
 for i in "$@"; do
   case $i in

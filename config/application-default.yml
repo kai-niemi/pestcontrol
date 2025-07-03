@@ -1,13 +1,13 @@
 ###############################################################################################################
 # Pest Control Application Configuration
 #
-# This file overrides the application configuration properties mainly by providing a list of available
-# CockroachDB clusters for users to pick from at login time. The credentials are used to retrieve Cluster API
-# session tokens and provide bearer tokens in case of CockroachDB cloud (Cloud API). The cluster type is used
-# to adapt security settings and certain UI features.
+# This file overrides the default application configuration properties (src/main/resources/application.yml).
+# Mainly by providing a list of available CockroachDB cluster settings for users to pick from.
+# Cluster credentials are used to retrieve Cluster API session tokens and bearer tokens in case
+# of using CockroachDB cloud (via Cloud API).
 #
-# See 'src/resources/application.yml' for all other properties or
-# https://docs.spring.io/spring-boot/appendix/application-properties/index.html for all spring boot properties.
+# See https://docs.spring.io/spring-boot/appendix/application-properties/index.html for all spring boot
+# properties and src/main/resources/application.yml for application defaults.
 ###############################################################################################################
 
 application:
@@ -145,43 +145,3 @@ application:
 #          http-addr: ${local-ip}:8082
           secure: true
           cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
-
-  # -1 denotes use of unbounded virtual threads
-  threadPoolMaxSize: -1
-  # Sample period for time-series data points in graphs
-  samplePeriodSeconds: 300
-  # Base directory for 'cluster-admin' shell script
-  baseDir: "."
-  # Directory for TLS certificates
-  certsDir: ".certs"
-  ## Other service parameters
-  http:
-    maxConnPerRoute: 0
-    maxTotal: 0
-  # Host settings for toxiproxy
-  toxiproxy:
-    host: localhost
-    port: 8474
-
-### Spring settings
-
-## HTTP server parameters
-server:
-  port: 9090
-
-## Profile with a truststore for SSL/TLS access to secure clusters.
-# Activate this profile if you intend to sign in to a secure, self-hosted CockroachDB cluster.
-# The truststore is created with the 'cluster-admin certs' command.
----
-spring:
-  config:
-    activate:
-      on-profile: ssl
-  ssl:
-    bundle:
-      jks:
-        pestcontrol:
-          truststore:
-            location: "file:.certs/pestcontrol.p12"
-            password: "cockroach"
-            type: "PKCS12"

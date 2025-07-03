@@ -163,6 +163,16 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
+    public String sqlNode(ClusterProperties clusterProperties, Integer nodeId) {
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+
+        List<String> args = new ArrayList<>(List.of("./pest-control", "sql"));
+        addNetworkingFlags(nodeProperties, args);
+
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+    }
+
+    @Override
     public String disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
         throw new UnsupportedOperationException();
     }

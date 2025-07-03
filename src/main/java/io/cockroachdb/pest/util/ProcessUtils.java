@@ -47,10 +47,13 @@ public abstract class ProcessUtils {
                 IoUtils.copy(errorStream, stdErr);
             }
 
-            if (process.waitFor(PROCESS_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                logger.warn("Process terminated: %s".formatted(process.info()));
-            } else {
-                logger.info("Process running (waiting): %s".formatted(process.info()));
+            while (process.isAlive()) {
+                if (process.waitFor(PROCESS_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                    logger.warn("Process terminated: %s".formatted(process.info()));
+                    break;
+                } else {
+                    logger.info("Process running (waiting): %s".formatted(process.info()));
+                }
             }
 
             int code = process.exitValue();

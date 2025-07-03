@@ -1,6 +1,6 @@
 #!/bin/bash
 
-commandaction="Start node (agent)"
+commandaction="Start node "
 
 # ./pest-control agent-start --name=n1 --locality=region=eu-north-1,zone=eu-north-1a --listen-addr=localhost:26258 --advertise-addr=localhost:26258 --http-addr=localhost:8081 --join=localhost:25258,localhost:25259,localhost:25260
 # ./pest-control agent-start --name=n2 --locality=region=eu-north-1,zone=eu-north-1b --listen-addr=localhost:26259 --advertise-addr=localhost:26259 --http-addr=localhost:8082 --join=localhost:25258,localhost:25259,localhost:25260

@@ -60,6 +60,11 @@ public class ApplicationProperties {
     public ClusterOperator clusterOperator(String clusterId)
             throws UnsupportedOperationException {
         ClusterType clusterType = getClusterPropertiesById(clusterId).getClusterType();
+        return clusterOperator(clusterType);
+    }
+
+    public ClusterOperator clusterOperator(ClusterType clusterType)
+            throws UnsupportedOperationException {
         return clusterOperators
                 .stream()
                 .filter(x -> x.supports(clusterType))

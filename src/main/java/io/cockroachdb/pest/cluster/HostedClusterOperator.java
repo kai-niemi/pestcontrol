@@ -187,6 +187,11 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     @Override
+    public String sqlNode(ClusterProperties clusterProperties, Integer nodeId) {
+        return localClusterOperator.sqlNode(clusterProperties, nodeId);
+    }
+
+    @Override
     public String disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
         return killNode(clusterProperties, nodeId);
     }

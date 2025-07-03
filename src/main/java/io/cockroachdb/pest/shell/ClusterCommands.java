@@ -122,4 +122,20 @@ public class ClusterCommands {
             clusterOperator.install(clusterProperties, nodeId);
         }
     }
+
+    @ShellMethod(value = "Run 'sql' command on local node", key = {"sql"})
+    public void sqlNode(
+            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
+                    valueProvider = ClusterProvider.class, defaultValue = DEFAULT_CLUSTER_ID) String clusterId,
+            @ShellOption(help = "Node ID (1-based)", defaultValue = DEFAULT_NODE_ID) int nodeId,
+            @ShellOption(help = "Include all nodes", defaultValue = "false") boolean all) {
+        ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
+        if (all) {
+            clusterProperties.getNodes().forEach(nodeProperties ->
+                    clusterOperator.install(clusterProperties, nodeProperties.getId()));
+        } else {
+            clusterOperator.sqlNode(clusterProperties, nodeId);
+        }
+    }
 }

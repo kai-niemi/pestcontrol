@@ -40,6 +40,11 @@ command_certs.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
+command_sql.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
 
 command_start_lb.sh(){
   modulefile="${FUNCNAME[0]}"
