@@ -32,8 +32,6 @@ tempdir="${rootdir}/.tmp"
 datadir="${rootdir}/.datafiles"
 
 source "${configdir}/settings.cfg"
-source "${configdir}/settings-${security_mode}.cfg"
-
 source "${scriptsdir}/core_commands.sh"
 source "${scriptsdir}/core_functions.sh"
 source "${scriptsdir}/local_functions.sh"

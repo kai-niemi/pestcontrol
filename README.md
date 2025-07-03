@@ -274,7 +274,7 @@ The JDBC datasource configuration for querying node status and running workloads
 
 Start the app in the background:
     
-    ./cluster-admin start-service
+    ./pest-control start-service
 
 Now you can access the application via http://localhost:9090 and login to the cluster 
 of choice.
@@ -283,7 +283,7 @@ of choice.
 
 Start the app in the foreground:
     
-    ./cluster-admin run-service <args>
+    ./pest-control run-service <args>
 
 Equivalent to:
 
@@ -320,24 +320,24 @@ Think of it like valves or filters put on a pipe to regulate water flow.
 
 ### Insecure Mode (default)
 
-    ./cluster-admin install  
-    ./cluster-admin start-toxi (if enabled)
-    ./cluster-admin start-all (pick 1,2,3 to begin with)
-    ./cluster-admin start-lb
-    ./cluster-admin init
-    ./cluster-admin open
+    ./pest-control install  
+    ./pest-control start-toxi (if enabled)
+    ./pest-control start-all (pick 1,2,3 to begin with)
+    ./pest-control start-lb
+    ./pest-control init
+    ./pest-control open
 
 ### Secure Mode
 
 First edit the `config/application.yml` file and uncomment the `spring.ssl` section.
 
-    ./cluster-admin install  
-    ./cluster-admin certs
-    ./cluster-admin start-toxi (if enabled)
-    ./cluster-admin start-all (pick 1,2,3 to begin with)
-    ./cluster-admin start-lb
-    ./cluster-admin init
-    ./cluster-admin open
+    ./pest-control install  
+    ./pest-control certs
+    ./pest-control start-toxi (if enabled)
+    ./pest-control start-all (pick 1,2,3 to begin with)
+    ./pest-control start-lb
+    ./pest-control init
+    ./pest-control open
 
 The secure mode will use self-signed CA certificates and keys in `.certs` including the
 PKCS12 truststore used by the web app.
@@ -356,19 +356,17 @@ set proper SQL user roles and secrets.
 
 To shut things down, run the inverse:
 
-    ./cluster-admin stop-service
-    ./cluster-admin stop-lb
-    ./cluster-admin stop-all
-    ./cluster-admin stop-toxi
-    ./cluster-admin clean
+    ./pest-control stop-service
+    ./pest-control stop-lb
+    ./pest-control stop-all
+    ./pest-control stop-toxi
+    ./pest-control clean
 
 # Appendix: Configuration Files
 
 Pest Control can be configured through the files available in the `config` directory:
 
 1. [settings.sh](config/settings.cfg) - Settings for creating and managing a local CockroachDB cluster.
-1. [settings-insecure.sh](config/settings-insecure.cfg) - Settings for using a local CockroachDB self-hosted cluster in insecure mode.
-1. [settings-secure.sh](config/settings-secure.cfg) - Settings for using a local CockroachDB self-hosted cluster in secure mode.
 1. [init.sql](config/init.sql) - Init SQL statements (optional).
 1. [haproxy.cfg](config/haproxy.cfg) - HAProxy configuration for local insecure CockroachDB cluster.
 1. [haproxy-secure.cfg](config/haproxy-secure.cfg) - HAProxy configuration for local secure CockroachDB cluster.

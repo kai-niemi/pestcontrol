@@ -37,29 +37,7 @@ public class LocalClusterOperator implements ClusterOperator {
         return false;
     }
 
-    private void addServerNetworkingFlags(NodeProperties nodeProperties, List<String> args) {
-        if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
-            args.add("--listen-addr=" + nodeProperties.getListenAddr());
-        }
-
-        if (StringUtils.hasLength(nodeProperties.getAdvertiseAddr())) {
-            args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());
-        }
-
-        if (StringUtils.hasLength(nodeProperties.getSqlAddr())) {
-            args.add("--sql-addr=" + nodeProperties.getSqlAddr());
-        }
-
-        if (StringUtils.hasLength(nodeProperties.getHttpAddr())) {
-            args.add("--http-addr=" + nodeProperties.getHttpAddr());
-        }
-
-        if (nodeProperties.isSecure()) {
-            args.add("--secure");
-        }
-    }
-
-    private void addClientNetworkingFlags(NodeProperties nodeProperties, List<String> args) {
+    private void addNetworkingFlags(NodeProperties nodeProperties, List<String> args) {
         if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
             args.add("--listen-addr=" + nodeProperties.getListenAddr());
         }
@@ -91,7 +69,7 @@ public class LocalClusterOperator implements ClusterOperator {
     public Map<Integer, List<Path>> certs(ClusterProperties cluster, List<Integer> nodeIds) {
         // First create CA cert and key pairs
         executeCommand(applicationProperties.getScriptDirectory(),
-                List.of("./cluster-admin", "agent-cert"));
+                List.of("./pest-control", "cert"));
 
         Map<Integer, List<Path>> keyFiles = new HashMap<>();
 
@@ -103,7 +81,7 @@ public class LocalClusterOperator implements ClusterOperator {
             expectedFiles.add(applicationProperties.getCertsDirectory()
                     .resolve(nodeProperties.getName()).resolve("node.key"));
 
-            List<String> command = new ArrayList<>(List.of("./cluster-admin", "agent-node-cert"));
+            List<String> command = new ArrayList<>(List.of("./pest-control", "node-cert"));
             command.add("--name=" + nodeProperties.getName());
             command.addAll(nodeProperties.getCertHosts());
 
@@ -124,7 +102,7 @@ public class LocalClusterOperator implements ClusterOperator {
 
     @Override
     public String install(ClusterProperties clusterProperties, Integer nodeId) {
-        List<String> args = List.of("./cluster-admin", "agent-install",
+        List<String> args = List.of("./pest-control", "install",
                 "--version=" + clusterProperties.getVersion()
         );
         return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
@@ -143,11 +121,11 @@ public class LocalClusterOperator implements ClusterOperator {
                             .add(Objects.requireNonNull(np.getAdvertiseAddr()));
                 });
 
-        List<String> args = new ArrayList<>(List.of("./cluster-admin", "agent-start"));
+        List<String> args = new ArrayList<>(List.of("./pest-control", "start"));
         args.add("--name=n" + nodeId);
         args.add("--locality=" + nodeProperties.getLocality());
 
-        addServerNetworkingFlags(nodeProperties, args);
+        addNetworkingFlags(nodeProperties, args);
 
         args.add("--join=" + String.join(",", Locality.distributeJoinHosts(hosts)));
 
@@ -158,8 +136,8 @@ public class LocalClusterOperator implements ClusterOperator {
     public String stopNode(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
-        List<String> args = new ArrayList<>(List.of("./cluster-admin", "agent-stop"));
-        addServerNetworkingFlags(nodeProperties, args);
+        List<String> args = new ArrayList<>(List.of("./pest-control", "stop"));
+        addNetworkingFlags(nodeProperties, args);
 
         return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }
@@ -168,8 +146,8 @@ public class LocalClusterOperator implements ClusterOperator {
     public String init(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
-        List<String> args = new ArrayList<>(List.of("./cluster-admin", "agent-init"));
-        addClientNetworkingFlags(nodeProperties, args);
+        List<String> args = new ArrayList<>(List.of("./pest-control", "init"));
+        addNetworkingFlags(nodeProperties, args);
 
         return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }
@@ -178,8 +156,8 @@ public class LocalClusterOperator implements ClusterOperator {
     public String killNode(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
-        List<String> args = new ArrayList<>(List.of("./cluster-admin", "agent-kill"));
-        addServerNetworkingFlags(nodeProperties, args);
+        List<String> args = new ArrayList<>(List.of("./pest-control", "kill"));
+        addNetworkingFlags(nodeProperties, args);
 
         return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }

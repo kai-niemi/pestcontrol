@@ -17,9 +17,9 @@ import io.cockroachdb.pest.shell.support.ClusterProvider;
 @ShellComponent
 @ShellCommandGroup(Constants.CLUSTER_COMMANDS)
 public class ClusterCommands {
-    private static final String DEFAULT_CLUSTER_ID = "hosted-insecure";
+    private static final String DEFAULT_CLUSTER_ID = ShellOption.NONE;
 
-    private static final String DEFAULT_NODE_ID = "1";
+    private static final String DEFAULT_NODE_ID = ShellOption.NONE;
 
     @Autowired
     private ClusterManager clusterManager;

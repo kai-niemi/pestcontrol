@@ -1,57 +1,27 @@
 #!/bin/bash
 
-command_agent_cert.sh(){
+command_cert.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }
 
-command_agent_node_cert.sh(){
+command_node_cert.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }
 
-command_agent_start.sh(){
+command_start.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }
 
-command_agent_stop.sh(){
+command_stop.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }
 
-command_agent_install.sh(){
+command_install.sh(){
   modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_agent_init.sh(){
-  modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_agent_kill.sh(){
-  modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_certs.sh(){
-  modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_wipe.sh(){
-  modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_decommission.sh() {
-	modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_drain.sh() {
-	modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }
 
@@ -65,25 +35,11 @@ command_kill.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
-command_kill_all.sh(){
+command_certs.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }
 
-command_recommission.sh() {
-	modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_start.sh(){
-  modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_start_all.sh(){
-  modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
 
 command_start_lb.sh(){
   modulefile="${FUNCNAME[0]}"
@@ -91,16 +47,6 @@ command_start_lb.sh(){
 }
 
 command_start_proxy.sh(){
-  modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_stop.sh(){
-  modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_stop_all.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }
@@ -114,8 +60,6 @@ command_stop_proxy.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }
-
-## Common commands
 
 command_run_service.sh(){
   modulefile="${FUNCNAME[0]}"
@@ -132,55 +76,7 @@ command_stop_service.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
-command_install.sh(){
-  modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_disrupt.sh() {
-	modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_login.sh() {
-	modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_logout.sh() {
-	modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_nodes.sh() {
-	modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_critical_nodes.sh(){
-  modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_open.sh() {
-	modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_recover.sh() {
-	modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_sql.sh() {
-	modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_status.sh() {
-	modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
+## Common commands
 
 core_getopt.sh() {
 	modulefile="${FUNCNAME[0]}"

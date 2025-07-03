@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ./cluster-admin agent-node-cert --name=n1 192.168.1.149,22
+# ./pest-control agent-node-cert --name=n1 192.168.1.149,22
 
 commandaction="Generate node certificates"
 

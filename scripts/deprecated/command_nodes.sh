@@ -3,7 +3,7 @@
 case "$security_mode" in
   secure)
     if [ ! -f ${certsdir}/local_api.key ]; then
-      fn_print_error "No API key found, run: ./cluster-admin login"
+      fn_print_error "No API key found, run: ./pest-control login"
       exit 1
     fi
 

@@ -44,7 +44,7 @@ public class ReportingCommands {
     @Autowired
     private AnsiConsole ansiConsole;
 
-    @ShellMethod(value = "List cluster host information", key = {"list"})
+    @ShellMethod(value = "List cluster endpoint information (pestcontrol instances)", key = {"list"})
     public void listHosts(
             @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
                     valueProvider = ClusterProvider.class, defaultValue = "hosted-insecure") String clusterId) {
@@ -53,7 +53,8 @@ public class ReportingCommands {
         if (StringUtils.hasLength(clusterId)) {
             ids.add(clusterId);
         } else {
-            ids.addAll(applicationProperties.getClusterIds(EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure)));
+            ids.addAll(applicationProperties.getClusterIds(
+                    EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure)));
         }
 
         ids.forEach(id -> {

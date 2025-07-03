@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ./cluster-admin agent-cert
+# ./pest-control agent-cert
 
 commandaction="Generate CA certificate and key pairs"
 
