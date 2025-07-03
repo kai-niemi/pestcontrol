@@ -113,6 +113,8 @@ application:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"
+      # CockroachDB binary version for remote/hosted
+      version: "v25.1.3.darwin-11.0-arm64"
       ## (optional) List of machines/VM nodes for hosted cluster types.
       # Used to manage a cluster through pest control, potentially spanning multiple hosts as
       # opposed to many instances on local host on different ports.

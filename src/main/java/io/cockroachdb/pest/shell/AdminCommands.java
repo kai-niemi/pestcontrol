@@ -11,7 +11,6 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.format.annotation.DurationFormat;
@@ -24,7 +23,6 @@ import org.springframework.shell.standard.commands.Quit;
 import ch.qos.logback.classic.Level;
 
 import io.cockroachdb.pest.config.DataSourceConfiguration;
-import io.cockroachdb.pest.util.Networking;
 
 @ShellComponent
 @ShellCommandGroup(Constants.ADMIN_COMMANDS)
@@ -34,24 +32,12 @@ public class AdminCommands implements Quit.Command {
     @Autowired
     private ConfigurableApplicationContext applicationContext;
 
-    @Value("${server.port:8080}")
-    private int serverPort;
-
     @ShellMethod(value = "Exit the shell", key = {"quit", "exit", "q"})
     public void quit() {
         logger.info("Quitting");
 
         SpringApplication.exit(applicationContext, () -> 0);
         System.exit(0);
-    }
-
-    @ShellMethod(value = "Print IP addresses and base URLs")
-    public void ip() {
-        logger.info("Local IP: %s".formatted(Networking.getLocalIP()));
-        logger.info("External IP: %s".formatted(Networking.getExternalIP()));
-        logger.info("Hostname: %s".formatted(Networking.getHostname()));
-        logger.info("Local admin URL: http://%s:%d".formatted(Networking.getLocalIP(), serverPort));
-        logger.info("External admin URL: http://%s:%d".formatted(Networking.getExternalIP(), serverPort));
     }
 
     @ShellMethod(value = "Print application uptime")

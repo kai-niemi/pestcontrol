@@ -33,6 +33,8 @@ public class ClusterProperties {
     @NotNull
     private ClusterType clusterType;
 
+    private String version;
+
     private String adminUrl;
 
     private String apiKey;
@@ -43,8 +45,6 @@ public class ClusterProperties {
     private DataSourceProperties dataSourceProperties;
 
     private List<@Valid NodeProperties> nodes = new ArrayList<>();
-
-    private String version;
 
     public void init() {
         AtomicInteger id = new AtomicInteger();
