@@ -18,7 +18,7 @@ import io.cockroachdb.pest.schema.NodeStatus;
         collectionRelation = LinkRelations.NODES_REL)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeModel extends RepresentationModel<NodeModel> {
-    private final String clusterId;
+    private String clusterId;
 
     @JsonProperty("detail")
     private NodeDetail nodeDetail;

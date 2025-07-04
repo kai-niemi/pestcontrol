@@ -8,6 +8,7 @@ import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.Availability;
 import org.springframework.shell.jline.PromptProvider;
 import org.springframework.shell.standard.ShellCommandGroup;
@@ -15,6 +16,9 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
+import org.springframework.util.StringUtils;
+
+import jakarta.annotation.PostConstruct;
 
 import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.cluster.ClusterOperator;
@@ -39,6 +43,16 @@ public class ClusterCommands implements PromptProvider {
         return Objects.isNull(CLUSTER_SELECTION.get())
                 ? Availability.unavailable("No cluster ID selected")
                 : Availability.available();
+    }
+
+    @Value("${application.defaultClusterId}")
+    private String defaultClusterId;
+
+    @PostConstruct
+    public void init() {
+        if (StringUtils.hasLength(defaultClusterId)) {
+            selectClusterID(defaultClusterId);
+        }
     }
 
     @Override
@@ -66,14 +80,14 @@ public class ClusterCommands implements PromptProvider {
         return sb.toAttributedString();
     }
 
-    @ShellMethod(value = "Select cluster ID to use in commands", key = {"select"})
+    @ShellMethod(value = "Select cluster ID to use in commands", key = {"set-cluster-default", "cd"})
     public void selectClusterID(
             @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)", valueProvider = ClusterProvider.class)
             String clusterId) {
         CLUSTER_SELECTION.set(clusterManager.getClusterProperties(clusterId));
     }
 
-    @ShellMethod(value = "Select default node ID to use in commands", key = {"select-node"})
+    @ShellMethod(value = "Select default node ID to use in commands", key = {"set-node-default", "nd"})
     public void selectNodeID(
             @ShellOption(help = "Node ID (1-based)") Integer nodeId) {
         NODE_ID_SELECTION.set(nodeId);

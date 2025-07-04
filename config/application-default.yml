@@ -65,9 +65,9 @@ application:
     - cluster-id: "hosted-insecure"
       cluster-name: "Hosted 3-node Cluster (insecure)"
       cluster-type: hosted_insecure
-      admin-url: "http://127.0.0.1:8080"
+      admin-url: "http://${local-ip}:8080"
       data-source-properties:
-        url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=disable"
+        url: "jdbc:postgresql://${local-ip}:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
       # CockroachDB binary version for remote/hosted
@@ -108,9 +108,9 @@ application:
     - cluster-id: "hosted-secure"
       cluster-name: "Hosted 3-node Cluster (secure)"
       cluster-type: hosted_secure
-      admin-url: "http://127.0.0.1:8080"
+      admin-url: "http://${local-ip}:8080"
       data-source-properties:
-        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
+        url: "jdbc:postgresql://${local-ip}:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"
       # CockroachDB binary version for remote/hosted

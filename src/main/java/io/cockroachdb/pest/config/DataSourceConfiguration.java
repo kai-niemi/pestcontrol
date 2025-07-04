@@ -25,6 +25,8 @@ import net.ttddyy.dsproxy.listener.logging.SLF4JLogLevel;
 import net.ttddyy.dsproxy.listener.logging.SLF4JQueryLoggingListener;
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 
+import io.cockroachdb.pest.util.Networking;
+
 @Configuration
 public class DataSourceConfiguration {
     public static final String SQL_TRACE_LOGGER = "io.cockroachdb.pest.SQL_TRACE";
@@ -36,6 +38,8 @@ public class DataSourceConfiguration {
     @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public Function<DataSourceProperties, ClosableDataSource> dataSourceFactory() {
         return props -> {
+            props.setUrl(Networking.resolve(props.getUrl()));
+
             HikariDataSource ds = props
                     .initializeDataSourceBuilder()
                     .type(HikariDataSource.class)

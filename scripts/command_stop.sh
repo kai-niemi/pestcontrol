@@ -4,7 +4,7 @@
 # ./pest-control agent-stop --listen-addr=localhost:26259
 # ./pest-control agent-stop --listen-addr=localhost:26260
 
-commandaction="Stop node "
+commandaction="Stop node"
 
 for i in "$@"; do
   case $i in
@@ -46,7 +46,6 @@ fn_print_info "http_addr      = ${http_addr}"
 #
 
 if [ -z $pid ]; then
-    fn_local_pids
     fn_print_error "No cockroachdb process found"
     exit 1
 fi

@@ -52,19 +52,18 @@ public class ApplicationProperties {
 
     private String certsDir;
 
+    private String defaultClusterId;
+
     @PostConstruct
     public void init() {
         clusters.forEach(ClusterProperties::init);
     }
 
-    public ClusterOperator clusterOperator(String clusterId)
-            throws UnsupportedOperationException {
-        ClusterType clusterType = getClusterPropertiesById(clusterId).getClusterType();
-        return clusterOperator(clusterType);
+    public ClusterOperator clusterOperator(String clusterId) {
+        return clusterOperator(getClusterPropertiesById(clusterId).getClusterType());
     }
 
-    public ClusterOperator clusterOperator(ClusterType clusterType)
-            throws UnsupportedOperationException {
+    public ClusterOperator clusterOperator(ClusterType clusterType) {
         return clusterOperators
                 .stream()
                 .filter(x -> x.supports(clusterType))
@@ -172,5 +171,13 @@ public class ApplicationProperties {
 
     public void setHttp(HttpClientProperties http) {
         this.http = http;
+    }
+
+    public String getDefaultClusterId() {
+        return defaultClusterId;
+    }
+
+    public void setDefaultClusterId(String defaultClusterId) {
+        this.defaultClusterId = defaultClusterId;
     }
 }

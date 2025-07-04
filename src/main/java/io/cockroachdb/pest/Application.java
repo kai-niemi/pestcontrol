@@ -72,6 +72,13 @@ public class Application {
                 }
                 profiles.clear();
                 profiles.addAll(StringUtils.commaDelimitedListToSet(argsList.pop()));
+            } else if (arg.equals("--cluster-id")) {
+                if (argsList.isEmpty()) {
+                    printHelpAndExit(ansiConsole -> {
+                        ansiConsole.red("Expected cluster ID");
+                    });
+                }
+                System.setProperty("application.defaultClusterId", argsList.pop());
             } else {
                 if (arg.startsWith("--") || arg.startsWith("@")) {
                     passThroughArgs.add(arg);

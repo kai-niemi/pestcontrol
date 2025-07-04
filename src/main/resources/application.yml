@@ -117,6 +117,7 @@ server:
 # Base application settings
 #############################
 application:
+  defaultClusterId: ""
   # Base directory for 'cluster-admin' shell script
   baseDir: "."
   # Directory for TLS certificates

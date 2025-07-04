@@ -58,18 +58,27 @@ public class ReportingCommands {
                 : Availability.available();
     }
 
+    @ShellMethod(value = "Print local IP addresses and admin URLs", key = "local-ip")
+    public void localIP() {
+        logger.info("Local IP: %s".formatted(Networking.getLocalIP()));
+        logger.info("External IP: %s".formatted(Networking.getExternalIP()));
+        logger.info("Hostname: %s".formatted(Networking.getHostname()));
+        logger.info("Local admin URL: http://%s:%d".formatted(Networking.getLocalIP(), serverPort));
+        logger.info("External admin URL: http://%s:%d".formatted(Networking.getExternalIP(), serverPort));
+    }
+
     @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Print cluster IP addresses and admin URLs", key = {"cluster-ip", "ip"})
+    @ShellMethod(value = "Print cluster IP addresses and admin URLs", key = {"cluster-ip"})
     public void ip(
-            @ShellOption(help = "Node ID (1-based)", defaultValue = ClusterCommands.DEFAULT_NODE_ID) Integer nodeId,
+            @ShellOption(help = "Node ID (1-based)", defaultValue = ShellOption.NULL) Integer nodeId,
             @ShellOption(help = "Include all nodes", defaultValue = "false") Boolean all) {
         ClusterProperties clusterProperties = CLUSTER_SELECTION.get();
 
-        List<NodeProperties> nodes = new ArrayList<>();
-        if (all) {
-            nodes.addAll(clusterProperties.getNodes());
+        List<NodeProperties> nodePropertiesList = new ArrayList<>();
+        if (Objects.isNull(nodeId) || all) {
+            nodePropertiesList.addAll(clusterProperties.getNodes());
         } else {
-            nodes.add(clusterProperties.getNodes()
+            nodePropertiesList.add(clusterProperties.getNodes()
                     .stream()
                     .filter(x -> x.getId().equals(nodeId))
                     .findFirst().orElseThrow());
@@ -77,19 +86,20 @@ public class ReportingCommands {
 
         List<List<?>> tuples = new ArrayList<>();
 
-        nodes.forEach(nodeProperties -> {
+        nodePropertiesList.forEach(nodeProperties -> {
             tuples.add(List.of(
-                    nodeProperties.getId(),
-                    "%s//%s".formatted(nodeProperties.getBaseUrl(),
-                            "%s//%s".formatted(nodeProperties.isSecure() ? "https:" : "http",
-                                    nodeProperties.getHttpAddr()),
-                            nodeProperties.getSqlAddr()
-                    )));
+                            Objects.requireNonNull(nodeProperties.getId()),
+                            nodeProperties.getBaseUrl().getHref(),
+                            "http%s//%s".formatted(nodeProperties.isSecure() ? "s:" : ":",
+                                    Objects.requireNonNull(nodeProperties.getHttpAddr())),
+                            Objects.requireNonNullElse(nodeProperties.getSqlAddr(), "n/a")
+                    )
+            );
         });
 
         String table = TableUtils.prettyPrint(
                 new ListTableModel<>(tuples,
-                        List.of("Id", "Base URL", "Admin URL", "SQL Addr"),
+                        List.of("Id", "API URL", "Admin URL", "SQL Addr"),
                         (object, column) -> switch (column) {
                             case 0 -> object.get(0);
                             case 1 -> object.get(1);
@@ -101,21 +111,11 @@ public class ReportingCommands {
         logger.info("\n%s".formatted(table));
     }
 
-    @ShellMethod(value = "Print local IP addresses and admin URLs", key = "local-ip")
-    public void localIP() {
-        logger.info("Local IP: %s".formatted(Networking.getLocalIP()));
-        logger.info("External IP: %s".formatted(Networking.getExternalIP()));
-        logger.info("Hostname: %s".formatted(Networking.getHostname()));
-        logger.info("Local admin URL: http://%s:%d".formatted(Networking.getLocalIP(), serverPort));
-        logger.info("External admin URL: http://%s:%d".formatted(Networking.getExternalIP(), serverPort));
-    }
-
-    @ShellMethod(value = "Print cluster configuration(s)", key = {"config"})
+    @ShellMethod(value = "Print cluster configuration(s)", key = {"cluster-config"})
     public void printConfig(@ShellOption(help = "Cluster ID to use (all of hosted type if empty)",
-            valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL)
-                            String clusterId) {
+            valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
         List<ClusterProperties> clusterPropertiesList = new ArrayList<>();
-        if (StringUtils.hasLength(clusterId)) {
+        if (!Objects.isNull(clusterId)) {
             clusterPropertiesList.add(applicationProperties.getClusterPropertiesById(clusterId));
         } else {
             applicationProperties.getClusterIds(

@@ -70,7 +70,8 @@ public class ClusterQuery {
     }
 
     public List<NodeStatus> queryNodeStatus(ClusterProperties clusterProperties) {
-        try (ClosableDataSource dataSource = dataSourceFactory.apply(clusterProperties.getDataSourceProperties())) {
+        try (ClosableDataSource dataSource = dataSourceFactory.apply(clusterProperties
+                .getDataSourceProperties())) {
             ClusterRepository clusterRepository = new JdbcClusterRepository(dataSource);
             String json = clusterRepository.queryNodeStatus();
 

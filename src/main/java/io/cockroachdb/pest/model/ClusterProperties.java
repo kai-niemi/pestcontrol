@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.Valid;

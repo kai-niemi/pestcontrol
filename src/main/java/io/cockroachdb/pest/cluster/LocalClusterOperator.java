@@ -109,6 +109,16 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
+    public String init(ClusterProperties clusterProperties, Integer nodeId) {
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+
+        List<String> args = new ArrayList<>(List.of("./pest-control", "init"));
+        addNetworkingFlags(nodeProperties, args);
+
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+    }
+
+    @Override
     public String startNode(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
@@ -143,16 +153,6 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String init(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
-
-        List<String> args = new ArrayList<>(List.of("./pest-control", "init"));
-        addNetworkingFlags(nodeProperties, args);
-
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
-    }
-
-    @Override
     public String killNode(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
@@ -174,12 +174,12 @@ public class LocalClusterOperator implements ClusterOperator {
 
     @Override
     public String disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
-        throw new UnsupportedOperationException();
+        return killNode(clusterProperties, nodeId);
     }
 
     @Override
     public String recoverNode(ClusterProperties clusterProperties, Integer nodeId) {
-        throw new UnsupportedOperationException();
+        return startNode(clusterProperties, nodeId);
     }
 
     @Override
