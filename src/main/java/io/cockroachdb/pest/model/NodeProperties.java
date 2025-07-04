@@ -1,12 +1,10 @@
 package io.cockroachdb.pest.model;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.hateoas.Link;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

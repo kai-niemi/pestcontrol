@@ -1,6 +1,6 @@
 package io.cockroachdb.pest.model;
 
-public class ToxiproxyProperties {
+public class ProxyProperties {
     private String host;
 
     private int port;

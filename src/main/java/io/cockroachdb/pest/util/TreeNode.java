@@ -15,7 +15,6 @@ import java.util.function.Predicate;
  * @param <T> the node type
  */
 public class TreeNode<T> implements Iterable<TreeNode<T>> {
-
     public static <T> void breadthFirstTraversal(TreeNode<T> root,
                                                  Predicate<TreeNode<T>> filter) {
         Deque<TreeNode<T>> stack = new ArrayDeque<>();

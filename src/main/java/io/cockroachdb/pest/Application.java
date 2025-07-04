@@ -37,12 +37,11 @@ public class Application {
         try (Terminal terminal = TerminalBuilder.terminal()) {
             AnsiConsole console = new AnsiConsole(terminal);
             console.green("Usage: java -jar pestcontrol.jar [options] <profile> [args...]").nl().nl();
-            console.cyan("Unrecognized options and arguments following <profile> "
-                         + "are passed as arguments to the spring boot container.").nl().nl();
-            console.cyan("Options include:").nl();
+            console.green("Options include:").nl();
             {
                 console.cyan("--help                    this help").nl();
                 console.cyan("--profiles [profile,..]   override spring profiles to activate").nl();
+                console.cyan("--cluster-id [id]         set default cluster id to use in shell commands").nl();
             }
             console.nl();
             message.accept(console);

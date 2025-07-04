@@ -12,19 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.hateoas.mediatype.hal.HalLinkRelation;
-import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResourceAccessException;
 
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.model.NodeProperties;
 import io.cockroachdb.pest.shell.client.HypermediaClient;
 import io.cockroachdb.pest.shell.support.ClusterProvider;
 import io.cockroachdb.pest.shell.support.ListTableModel;
@@ -32,7 +28,6 @@ import io.cockroachdb.pest.shell.support.TableUtils;
 import io.cockroachdb.pest.util.Networking;
 import static io.cockroachdb.pest.api.LinkRelations.ACTUATORS_REL;
 import static io.cockroachdb.pest.api.LinkRelations.CURIE_NAMESPACE;
-import static io.cockroachdb.pest.shell.ClusterCommands.CLUSTER_SELECTION;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @ShellComponent
@@ -52,50 +47,30 @@ public class ReportingCommands {
     @Value("${server.port:8080}")
     private Integer serverPort;
 
-    public Availability ifClusterSelected() {
-        return Objects.isNull(CLUSTER_SELECTION.get())
-                ? Availability.unavailable("No cluster ID selected")
-                : Availability.available();
-    }
-
-    @ShellMethod(value = "Print local IP addresses and admin URLs", key = "local-ip")
-    public void localIP() {
+    @Autowired
+    private ClusterCommands clusterCommands;
+    
+    @ShellMethod(value = "Print cluster IP addresses and admin URLs", key = {"cluster-ip"})
+    public void clusterIP(
+            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
+                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId,
+            @ShellOption(help = "Include all nodes", defaultValue = "false") Boolean all) {
         logger.info("Local IP: %s".formatted(Networking.getLocalIP()));
         logger.info("External IP: %s".formatted(Networking.getExternalIP()));
         logger.info("Hostname: %s".formatted(Networking.getHostname()));
         logger.info("Local admin URL: http://%s:%d".formatted(Networking.getLocalIP(), serverPort));
         logger.info("External admin URL: http://%s:%d".formatted(Networking.getExternalIP(), serverPort));
-    }
-
-    @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Print cluster IP addresses and admin URLs", key = {"cluster-ip"})
-    public void ip(
-            @ShellOption(help = "Node ID (1-based)", defaultValue = ShellOption.NULL) Integer nodeId,
-            @ShellOption(help = "Include all nodes", defaultValue = "false") Boolean all) {
-        ClusterProperties clusterProperties = CLUSTER_SELECTION.get();
-
-        List<NodeProperties> nodePropertiesList = new ArrayList<>();
-        if (Objects.isNull(nodeId) || all) {
-            nodePropertiesList.addAll(clusterProperties.getNodes());
-        } else {
-            nodePropertiesList.add(clusterProperties.getNodes()
-                    .stream()
-                    .filter(x -> x.getId().equals(nodeId))
-                    .findFirst().orElseThrow());
-        }
 
         List<List<?>> tuples = new ArrayList<>();
 
-        nodePropertiesList.forEach(nodeProperties -> {
-            tuples.add(List.of(
-                            Objects.requireNonNull(nodeProperties.getId()),
-                            nodeProperties.getBaseUrl().getHref(),
-                            "http%s//%s".formatted(nodeProperties.isSecure() ? "s:" : ":",
-                                    Objects.requireNonNull(nodeProperties.getHttpAddr())),
-                            Objects.requireNonNullElse(nodeProperties.getSqlAddr(), "n/a")
-                    )
-            );
-        });
+        clusterCommands.getClusterProperties(clusterId)
+                .getNodes().forEach(nodeProperties ->
+                        tuples.add(List.of(Objects.requireNonNull(nodeProperties.getId()),
+                                nodeProperties.getBaseUrl().getHref(),
+                                "http%s//%s".formatted(nodeProperties.isSecure() ? "s:" : ":",
+                                        Objects.requireNonNull(nodeProperties.getHttpAddr())),
+                                Objects.requireNonNullElse(nodeProperties.getSqlAddr(), "n/a"))
+                        ));
 
         String table = TableUtils.prettyPrint(
                 new ListTableModel<>(tuples,
@@ -112,29 +87,19 @@ public class ReportingCommands {
     }
 
     @ShellMethod(value = "Print cluster configuration(s)", key = {"cluster-config"})
-    public void printConfig(@ShellOption(help = "Cluster ID to use (all of hosted type if empty)",
-            valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
-        List<ClusterProperties> clusterPropertiesList = new ArrayList<>();
-        if (!Objects.isNull(clusterId)) {
-            clusterPropertiesList.add(applicationProperties.getClusterPropertiesById(clusterId));
-        } else {
-            applicationProperties.getClusterIds(
-                            EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure))
-                    .forEach(id -> {
-                        clusterPropertiesList.add(applicationProperties.getClusterPropertiesById(id));
-                    });
-        }
-
+    public void printConfig() {
         List<List<?>> tuples = new ArrayList<>();
 
-        clusterPropertiesList.forEach(clusterProperties -> {
-            tuples.add(List.of(
-                    clusterProperties.getClusterId(),
-                    clusterProperties.getClusterName(),
-                    clusterProperties.getClusterType(),
-                    Objects.requireNonNullElse(clusterProperties.getVersion(), "(n/a)")
-            ));
-        });
+        applicationProperties.getClusterIds(EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure))
+                .forEach(id -> {
+                    ClusterProperties clusterProperties = clusterCommands.getClusterProperties(id);
+                    tuples.add(List.of(
+                            clusterProperties.getClusterId(),
+                            clusterProperties.getClusterName(),
+                            clusterProperties.getClusterType(),
+                            Objects.requireNonNullElse(clusterProperties.getVersion(), "(n/a)")
+                    ));
+                });
 
         String table = TableUtils.prettyPrint(
                 new ListTableModel<>(tuples,
@@ -151,48 +116,34 @@ public class ReportingCommands {
     }
 
     @ShellMethod(value = "Ping cluster endpoints and report version", key = {"ping"})
-    public void ping(
-            @ShellOption(help = "Cluster ID to use (all of hosted type if empty)",
-                    valueProvider = ClusterProvider.class, defaultValue = ClusterCommands.DEFAULT_CLUSTER_ID)
-            String clusterId) {
+    public void ping(@ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
+            valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
+        ClusterProperties clusterProperties = clusterCommands.getClusterProperties(clusterId);
 
-        List<ClusterProperties> clusterPropertiesList = new ArrayList<>();
-        if (StringUtils.hasLength(clusterId)) {
-            clusterPropertiesList.add(applicationProperties.getClusterPropertiesById(clusterId));
-        } else {
-            applicationProperties.getClusterIds(
-                            EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure))
-                    .forEach(id ->
-                            clusterPropertiesList.add(applicationProperties.getClusterPropertiesById(id)));
-        }
+        logger.info("%s (%s)".formatted(clusterProperties.getClusterId(), clusterProperties.getClusterName()));
 
         List<List<?>> tuples = new ArrayList<>();
 
-        clusterPropertiesList.forEach(clusterProperties -> {
-            logger.info("%s (%s)".formatted(clusterProperties.getClusterId(),
-                    clusterProperties.getClusterName()));
+        clusterProperties.getNodes().forEach(nodeProperties -> {
+            try {
+                Map<String, Object> build = hypermediaClient.from(nodeProperties.getBaseUrl())
+                        .follow(curied(CURIE_NAMESPACE, ACTUATORS_REL).value())
+                        .follow(HalLinkRelation.uncuried("info").value())
+                        .toObject("$.build");
 
-            clusterProperties.getNodes().forEach(nodeProperties -> {
-                try {
-                    Map<String, Object> build = hypermediaClient.from(nodeProperties.getBaseUrl())
-                            .follow(curied(CURIE_NAMESPACE, ACTUATORS_REL).value())
-                            .follow(HalLinkRelation.uncuried("info").value())
-                            .toObject("$.build");
+                Object name = build.getOrDefault("name", "n/a");
+                Object version = build.getOrDefault("version", "n/a");
 
-                    Object name = build.getOrDefault("name", "n/a");
-                    Object version = build.getOrDefault("version", "n/a");
-
-                    tuples.add(List.of(
-                            nodeProperties.getId(),
-                            nodeProperties.getName(),
-                            nodeProperties.getUrl(),
-                            name,
-                            version,
-                            version.equals(buildProperties.getVersion()) ? "" : "Version divergence!"));
-                } catch (ResourceAccessException e) {
-                    tuples.add(List.of(nodeProperties.getUrl(), "??", "??", e.getMessage()));
-                }
-            });
+                tuples.add(List.of(
+                        nodeProperties.getId(),
+                        nodeProperties.getName(),
+                        nodeProperties.getUrl(),
+                        name,
+                        version,
+                        version.equals(buildProperties.getVersion()) ? "" : "Version divergence!"));
+            } catch (ResourceAccessException e) {
+                tuples.add(List.of(nodeProperties.getUrl(), "??", "??", e.getMessage()));
+            }
         });
 
         String table = TableUtils.prettyPrint(
@@ -206,7 +157,6 @@ public class ReportingCommands {
                             case 4 -> object.get(4);
                             default -> "??";
                         }));
-
         logger.info("\n%s".formatted(table));
     }
 }

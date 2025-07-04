@@ -1,6 +1,5 @@
 package io.cockroachdb.pest.model;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -38,11 +37,11 @@ public class ApplicationProperties {
     private ObjectProvider<ClusterOperator> clusterOperators;
 
     @Valid
-    private ToxiproxyProperties toxiproxy;
+    private ProxyProperties toxiproxy;
 
     @Valid
     @NotNull
-    private HttpClientProperties http;
+    private ClientProperties http;
 
     private Integer threadPoolMaxSize;
 
@@ -117,11 +116,11 @@ public class ApplicationProperties {
         this.clusters = clusters;
     }
 
-    public ToxiproxyProperties getToxiproxy() {
+    public ProxyProperties getToxiproxy() {
         return toxiproxy;
     }
 
-    public void setToxiproxy(ToxiproxyProperties toxiproxy) {
+    public void setToxiproxy(ProxyProperties toxiproxy) {
         this.toxiproxy = toxiproxy;
     }
 
@@ -165,11 +164,11 @@ public class ApplicationProperties {
         this.threadPoolMaxSize = threadPoolMaxSize;
     }
 
-    public HttpClientProperties getHttp() {
+    public ClientProperties getHttp() {
         return http;
     }
 
-    public void setHttp(HttpClientProperties http) {
+    public void setHttp(ClientProperties http) {
         this.http = http;
     }
 
