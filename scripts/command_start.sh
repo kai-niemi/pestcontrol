@@ -13,7 +13,6 @@ commandaction="Start node "
 
 # https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
 
-
 security_mode="insecure"
 
 for i in "$@"; do

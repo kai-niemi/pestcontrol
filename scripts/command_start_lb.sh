@@ -2,14 +2,36 @@
 
 commandaction="Start haproxy"
 
+security_mode="insecure"
+
+for i in "$@"; do
+  case $i in
+    --advertise-addr=*)
+      advertise_addr="${i#*=}"
+      shift
+      ;;
+    --secure)
+      security_mode="secure"
+      shift
+      ;;
+    -*|--*)
+      fn_print_warn "Unknown option $i"
+      ;;
+    *)
+      ;;
+  esac
+done
+
+fn_print_info "security_mode  = ${security_mode}"
+
 fn_assert_binaries
 
 case "$security_mode" in
   secure)
-    configfile=${configdir}/haproxy-secure.cfg
+    configfile=${datadir}/haproxy-secure.cfg
     ;;
   insecure)
-    configfile=${configdir}/haproxy.cfg
+    configfile=${datadir}/haproxy.cfg
     ;;
   *)
     echo "Bad security mode: $security_mode"
@@ -17,21 +39,36 @@ case "$security_mode" in
 esac
 
 if [ ! -f ${configfile} ]; then
-  fn_print_info "No '${configfile}' found - generating it"
+  if [ -z "${advertise_addr}" ]; then
+    fn_print_warn "Missing advertise_addr parameter - using default!"
+    advertise_addr="localhost:26257"
+  fi
 
   case "$security_mode" in
     secure)
-      fn_fail_check ${installdir}/cockroach gen haproxy --certs-dir=${certsdir} --host=${host}:${rpcportbase}
+      fn_fail_check ${installdir}/cockroach gen haproxy --certs-dir=${certsdir} --host=${advertise_addr}
       ;;
     insecure)
-      fn_fail_check ${installdir}/cockroach gen haproxy --insecure --host=${host}:${rpcportbase}
+      fn_fail_check ${installdir}/cockroach gen haproxy --insecure --host=${advertise_addr}
       ;;
     *)
       echo "Bad security mode: $security_mode"
       exit 1
   esac
 
-  fn_fail_check mv ${rootdir}/haproxy.cfg ${configfile}
+  echo "listen stats" >> ${rootdir}/haproxy.cfg
+  echo "    bind :7070" >> ${rootdir}/haproxy.cfg
+  echo "    mode http" >> ${rootdir}/haproxy.cfg
+  echo "    stats enable" >> ${rootdir}/haproxy.cfg
+  echo "    stats hide-version" >> ${rootdir}/haproxy.cfg
+  echo "    stats realm Haproxy\ Statistics" >> ${rootdir}/haproxy.cfg
+  echo "    stats uri /" >> ${rootdir}/haproxy.cfg
+
+  mv ${rootdir}/haproxy.cfg ${configfile}
+
+  fn_print_info "No '${configfile}' file found - generated it"
+else
+  fn_print_info "Using existing '${configfile}' file (delete to re-generate)"
 fi
 
 if [ -f .haproxy.pid ]; then
@@ -42,3 +79,5 @@ fi
 fn_fail_check haproxy -D -f ${configfile} -p .haproxy.pid
 
 fn_print_ok "Started haproxy (pid: $(<.haproxy.pid))"
+
+open "http://localhost:7070"

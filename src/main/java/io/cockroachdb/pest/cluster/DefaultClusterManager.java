@@ -95,7 +95,8 @@ public class DefaultClusterManager implements ClusterManager {
                 .retrieve()
                 .toEntity(String.class);
 
-        String token = JsonPath.parse(responseEntity.getBody()).read("$.session", String.class);
+        String token = JsonPath.parse(responseEntity.getBody())
+                .read("$.session", String.class);
 
         sessionTokens.put(clusterId, token);
 
