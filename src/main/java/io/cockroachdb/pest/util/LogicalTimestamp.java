@@ -12,6 +12,8 @@ import org.springframework.util.StringUtils;
  * are composed of a physical component always close to local wall time and
  * a logical component used to distinguish between events with the same physical
  * component.
+ *
+ * @author Kai Niemi
  */
 public class LogicalTimestamp implements Comparable<LogicalTimestamp> {
     private final long physicalWallClockTimeNanos;

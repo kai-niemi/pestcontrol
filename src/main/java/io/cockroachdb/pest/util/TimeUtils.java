@@ -3,13 +3,11 @@ package io.cockroachdb.pest.util;
 import java.time.Duration;
 import java.util.Locale;
 
-//@Deprecated(forRemoval = true) // Replaced by DurationFormatterUtils
 public abstract class TimeUtils {
     private TimeUtils() {
     }
 
     public static String durationToDisplayString(Duration duration) {
-        //        return DurationFormatterUtils.print(getRemainingDuration(), DurationFormat.Style.COMPOSITE);
         return millisecondsToDisplayString(duration.toMillis());
     }
 

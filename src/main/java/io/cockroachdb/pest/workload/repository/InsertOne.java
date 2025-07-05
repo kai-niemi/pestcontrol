@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.workload.profile;
+package io.cockroachdb.pest.workload.repository;
 
 import javax.sql.DataSource;
 
@@ -9,6 +9,6 @@ public class InsertOne extends CyclicWorker {
 
     @Override
     public void run() {
-        profileRepository.insertProfileSingleton();
+        sampleRepository.insertSingleton();
     }
 }

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-import io.cockroachdb.pest.workload.profile.WorkloadType;
+import io.cockroachdb.pest.workload.repository.WorkloadType;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class WorkloadForm extends RepresentationModel<WorkloadForm> {

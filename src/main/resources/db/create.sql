@@ -1,6 +1,5 @@
 
--- User profiles workload
-create table if not exists pc_user_profile
+create table if not exists test_table
 (
     id        uuid                 default gen_random_uuid(),
     version   int         not null default 0,
@@ -9,5 +8,3 @@ create table if not exists pc_user_profile
 
     primary key (id, version)
 );
-
--- insert into pc_user_profile (payload, expire_at) values ('{}', current_timestamp());

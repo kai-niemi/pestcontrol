@@ -41,3 +41,23 @@ fn_local_node_status() {
   fi
 }
 
+fn_local_kill() {
+  pid=$1
+
+  if [ $# -eq 0 ]; then
+      echo -e "Expected pid"
+      exit 1
+  fi
+
+  kill -KILL ${pid}
+
+  fn_print_dots "Waiting for server to stop (pid: $pid)"
+
+  while kill -0 $pid 2>/dev/null; do
+      printf '.'
+      sleep 1
+  done
+
+  fn_print_ok "Killed (pid: $pid)"
+}
+

@@ -28,7 +28,7 @@ import io.cockroachdb.pest.api.LinkRelations;
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.workload.WorkloadManager;
 import io.cockroachdb.pest.workload.model.Workload;
-import io.cockroachdb.pest.workload.profile.WorkloadType;
+import io.cockroachdb.pest.workload.repository.WorkloadType;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

@@ -30,7 +30,7 @@ import io.cockroachdb.pest.web.simp.SimpMessagePublisher;
 import io.cockroachdb.pest.web.simp.TopicName;
 import io.cockroachdb.pest.workload.WorkloadManager;
 import io.cockroachdb.pest.workload.model.Workload;
-import io.cockroachdb.pest.workload.profile.WorkloadType;
+import io.cockroachdb.pest.workload.repository.WorkloadType;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -75,7 +75,7 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
     @GetMapping
     public Callable<String> indexPage(
-            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
+            @ModelAttribute(value = "model", binding = false) ClusterModel clusterModel,
             Model model) {
         WebUtils.getAuthenticatedClusterProperties().orElseThrow(() ->
                 new AuthenticationCredentialsNotFoundException("Expected authentication token"));
@@ -95,7 +95,7 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
     @PostMapping
     public Callable<String> submitForm(
-            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
+            @ModelAttribute(value = "model", binding = false) ClusterModel clusterModel,
             @ModelAttribute WorkloadForm form,
             Model model) {
 
@@ -117,7 +117,7 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
     @GetMapping("/{id}")
     public Callable<String> getDetails(
-            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
+            @ModelAttribute(value = "model", binding = false) ClusterModel clusterModel,
             @PathVariable("id") Integer id, Model model) {
         return () -> {
             Workload workload = workloadManager.findById(clusterModel.getClusterId(), id);
@@ -130,21 +130,21 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
     @PostMapping(value = "/cancelAll")
     public RedirectView cancelAllWorkers(
-            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel) {
+            @ModelAttribute(value = "model", binding = false) ClusterModel clusterModel) {
         workloadManager.cancelAll(clusterModel.getClusterId());
         return new RedirectView("/workload");
     }
 
     @PostMapping(value = "/deleteAll")
     public RedirectView deleteAllWorkers(
-            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel) {
+            @ModelAttribute(value = "model", binding = false) ClusterModel clusterModel) {
         workloadManager.deleteAll(clusterModel.getClusterId());
         return new RedirectView("/workload");
     }
 
     @GetMapping(value = "/cancel/{id}")
     public RedirectView cancelWorker(
-            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
+            @ModelAttribute(value = "model", binding = false) ClusterModel clusterModel,
             @PathVariable("id") Integer id) {
         Workload worker = workloadManager.findById(clusterModel.getClusterId(), id);
         worker.cancel();
@@ -153,7 +153,7 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
     @GetMapping(value = "/delete/{id}")
     public RedirectView deleteWorker(
-            @ModelAttribute(value = "helper", binding = false) ClusterModel clusterModel,
+            @ModelAttribute(value = "model", binding = false) ClusterModel clusterModel,
             @PathVariable("id") Integer id) {
         workloadManager.deleteById(clusterModel.getClusterId(), id);
         return new RedirectView("/workload");
@@ -161,7 +161,7 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
     @GetMapping("/data-points/clear")
     public RedirectView clearDataPoints(
-            @SessionAttribute(value = "helper") ClusterModel clusterModel) {
+            @SessionAttribute(value = "model") ClusterModel clusterModel) {
         workloadManager.clearDataPoints(clusterModel.getClusterId());
         return new RedirectView("/workload");
     }

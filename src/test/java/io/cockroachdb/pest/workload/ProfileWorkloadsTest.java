@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import io.cockroachdb.pest.AbstractIntegrationTest;
-import io.cockroachdb.pest.repository.JdbcProfileRepository;
-import io.cockroachdb.pest.repository.ProfileEntity;
-import io.cockroachdb.pest.repository.ProfileRepository;
-import io.cockroachdb.pest.workload.profile.WorkloadType;
+import io.cockroachdb.pest.workload.repository.JdbcSampleRepository;
+import io.cockroachdb.pest.workload.repository.SampleEntity;
+import io.cockroachdb.pest.workload.repository.SampleRepository;
+import io.cockroachdb.pest.workload.repository.WorkloadType;
 
 public class ProfileWorkloadsTest extends AbstractIntegrationTest {
-    private ProfileRepository profileRepository;
+    private SampleRepository sampleRepository;
 
     private DataSource dataSource;
 
@@ -30,14 +30,14 @@ public class ProfileWorkloadsTest extends AbstractIntegrationTest {
                 new JdbcTemplate(dataSource)
                         .queryForObject("select version()", String.class)));
 
-        this.profileRepository = new JdbcProfileRepository(dataSource);
-        this.profileRepository.deleteAll();
+        this.sampleRepository = new JdbcSampleRepository(dataSource);
+        this.sampleRepository.deleteAll();
     }
 
     @Order(0)
     @Test
     public void whenStartingInsertWorkload_thenExpectRows() {
-        List<ProfileEntity> before = profileRepository.findAll(65536);
+        List<SampleEntity> before = sampleRepository.findAll(65536);
 
         Runnable action = WorkloadType.singleton_insert
                 .createTask(dataSource);
@@ -49,14 +49,14 @@ public class ProfileWorkloadsTest extends AbstractIntegrationTest {
             }
         });
 
-        List<ProfileEntity> after = profileRepository.findAll(65536);
+        List<SampleEntity> after = sampleRepository.findAll(65536);
         Assertions.assertEquals(before.size() + 10, after.size());
     }
 
     @Order(1)
     @Test
     public void whenStartingBatchInsertWorkload_thenExpectRows() {
-        List<ProfileEntity> before = profileRepository.findAll(65536);
+        List<SampleEntity> before = sampleRepository.findAll(65536);
 
         Runnable action = WorkloadType.batch_insert
                 .createTask(dataSource);
@@ -68,7 +68,7 @@ public class ProfileWorkloadsTest extends AbstractIntegrationTest {
             }
         });
 
-        List<ProfileEntity> after = profileRepository.findAll(65536);
+        List<SampleEntity> after = sampleRepository.findAll(65536);
         Assertions.assertEquals(before.size() + 10 * 32, after.size());
     }
 

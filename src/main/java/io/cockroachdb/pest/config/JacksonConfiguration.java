@@ -32,7 +32,7 @@ public class JacksonConfiguration {
                 .enable(SerializationFeature.INDENT_OUTPUT)
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL)
                 .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-                .registerModule(new Jackson2HalModule())
+//                .registerModule(new Jackson2HalModule())
                 .registerModule(module);
     }
 

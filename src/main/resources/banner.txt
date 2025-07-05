@@ -4,7 +4,7 @@ ${AnsiColor.BRIGHT_YELLOW}
 ▄██▄████▄██▄▀█▄  | |_) / _ \/ __| __| | |   / _ \| '_ \| __| '__/ _ \| |
 ─▀▀─█▀█▀▄▀███▀   |  __/  __/\__ \ |_  | |__| (_) | | | | |_| | | (_) | |
 ──▄▄▀─█──▀▄▄     |_|   \___||___/\__|  \____\___/|_| |_|\__|_|  \___/|_|
-${AnsiColor.BRIGHT_MAGENTA}CockroachDB Sandbox and Chaos Testing Tool${AnsiColor.BRIGHT_YELLOW}
+${AnsiColor.BRIGHT_MAGENTA}A Chaos Testing Sandbox for CockroachDB${AnsiColor.BRIGHT_YELLOW}
 ${AnsiColor.BRIGHT_GREEN}${application.title}${application.formatted-version} powered by Spring Boot${spring-boot.formatted-version}
 ${AnsiColor.BRIGHT_GREEN}     Active profiles: ${AnsiColor.BRIGHT_YELLOW}${spring.profiles.active}${AnsiColor.DEFAULT}
 ${AnsiColor.BRIGHT_GREEN}Admin URL (internal): ${AnsiColor.BRIGHT_YELLOW}http://${server.address:localhost}:${server.port:9090}${AnsiColor.DEFAULT}

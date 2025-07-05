@@ -13,6 +13,7 @@ AppDashboard.prototype = {
         stompClient.connect({}, function (frame) {
             stompClient.subscribe(_this.settings.topics.status, function (payload) {
                 var _event = JSON.parse(payload.body);
+                console.log("Status update");
                 _this.handleStatusUpdate(_event);
             });
 
@@ -44,11 +45,14 @@ AppDashboard.prototype = {
     handleStatusUpdate: function (node) {
         var _this = this;
 
-        var divElt = _this.getElement("node-" +  node.id);
+        var divElt = _this.getElement("node-" +  node.nodeId);
 
         // Flash spinner for a few sec
         var _spinnerElt = divElt.find(".pc-spinner");
         _spinnerElt.attr('style','display: block');
+
+        console.log("spinner: node-" + node.nodeId);
+
         setTimeout(function () {
             _spinnerElt.attr('style','display: none');
         }, 2000);

@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.repository;
+package io.cockroachdb.pest.workload.repository;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -7,7 +7,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 
-public class ProfileEntity extends AbstractEntity<UUID> {
+import io.cockroachdb.pest.repository.AbstractEntity;
+
+public class SampleEntity extends AbstractEntity<UUID> {
     @Id
     @Column("id")
     private UUID id;

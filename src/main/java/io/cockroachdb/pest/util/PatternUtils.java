@@ -1,13 +1,15 @@
 package io.cockroachdb.pest.util;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
+
+import org.springframework.data.util.Pair;
 
 public abstract class PatternUtils {
     private static final Pattern LOCALITY_PATTERN
@@ -30,19 +32,28 @@ public abstract class PatternUtils {
         return map;
     }
 
-    private static Map<String, String> parseTuples(Path path) throws IOException {
-        Map<String, String> map = new LinkedHashMap<>();
-        Pattern tuples = Pattern.compile("(\\S+?)\\s*=\\s*\"([^\\t]+)\"\\s*");
+    public static List<Integer> parseIntRange(String input) {
+        List<Integer> list = new ArrayList<>();
 
-        if (Files.exists(path)) {
-            Files.readAllLines(path).forEach(line -> {
-                Matcher m = tuples.matcher(line);
-                if (m.matches()) {
-                    map.put(m.group(1), m.group(2));
-                }
-            });
+        for (String part : input.split(",")) {
+            parseRange(part).ifPresentOrElse(pair ->
+                            IntStream.rangeClosed(pair.getFirst(), pair.getSecond()).forEach(list::add),
+                    () -> list.add(Integer.parseInt(part)));
         }
 
-        return Collections.unmodifiableMap(map);
+        return list;
+    }
+
+    public static Optional<Pair<Integer, Integer>> parseRange(String input) {
+        Pattern tuples = Pattern.compile("(\\d+)\\s*[:-]\\s*(\\d+)");
+
+        Matcher m = tuples.matcher(input);
+        if (m.matches()) {
+            return Optional.of(Pair.of(
+                    Integer.parseInt(m.group(1)),
+                    Integer.parseInt(m.group(2))));
+        }
+
+        return Optional.empty();
     }
 }

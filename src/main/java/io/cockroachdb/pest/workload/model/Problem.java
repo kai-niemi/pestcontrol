@@ -1,14 +1,20 @@
 package io.cockroachdb.pest.workload.model;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.Instant;
-
-import io.cockroachdb.pest.util.ExceptionUtils;
 
 public class Problem {
     public static Problem of(Throwable t) {
         return new Problem(t.getClass().getSimpleName(),
                 t.getMessage(),
-                ExceptionUtils.toString(t));
+                toString(t));
+    }
+
+    private static String toString(Throwable t) {
+        StringWriter sw = new StringWriter();
+        t.printStackTrace(new PrintWriter(sw, true));
+        return sw.toString();
     }
 
     private final String className;

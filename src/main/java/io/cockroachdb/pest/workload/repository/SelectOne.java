@@ -1,8 +1,8 @@
-package io.cockroachdb.pest.workload.profile;
+package io.cockroachdb.pest.workload.repository;
 
 import javax.sql.DataSource;
 
-public class SelectOne extends AbstractProfileWorkload {
+public class SelectOne extends AbstractSampleWorkload {
     public SelectOne(DataSource dataSource) {
         super(dataSource);
     }

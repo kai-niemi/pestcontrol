@@ -1,14 +1,14 @@
-package io.cockroachdb.pest.workload.profile;
+package io.cockroachdb.pest.workload.repository;
 
 import javax.sql.DataSource;
 
-public class InsertBatch extends AbstractProfileWorkload {
+public class InsertBatch extends AbstractSampleWorkload {
     public InsertBatch(DataSource dataSource) {
         super(dataSource);
     }
 
     @Override
     public void run() {
-        profileRepository.insertProfileBatch(32);
+        sampleRepository.insertBatch(32);
     }
 }

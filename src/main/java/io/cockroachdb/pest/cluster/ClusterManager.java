@@ -1,5 +1,6 @@
 package io.cockroachdb.pest.cluster;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import io.cockroachdb.pest.model.ClusterProperties;
@@ -31,7 +32,7 @@ public interface ClusterManager {
 
     ClusterProperties getClusterProperties(String clusterId);
 
-    ClusterOperator getClusterOperator(String clusterId);
+    ClusterProperties getClusterProperties(String clusterId, EnumSet<ClusterType> clusterTypes);
 
-    ClusterOperator getClusterOperator(ClusterType clusterType);
+    ClusterOperator getClusterOperator(String clusterId);
 }

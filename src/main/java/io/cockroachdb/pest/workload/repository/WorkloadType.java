@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.workload.profile;
+package io.cockroachdb.pest.workload.repository;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;

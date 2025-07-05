@@ -1,8 +1,10 @@
 package io.cockroachdb.pest.util;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -33,9 +35,6 @@ public abstract class ProcessUtils {
                     .command(commands)
                     .directory(directory.toFile())
                     .inheritIO()
-//                    .redirectInput(ProcessBuilder.Redirect.PIPE)
-//                    .redirectError(ProcessBuilder.Redirect.PIPE)
-//                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
                     .start();
 
             ByteArrayOutputStream stdOut = new ByteArrayOutputStream();
@@ -43,8 +42,8 @@ public abstract class ProcessUtils {
 
             try (InputStream inputStream = process.getInputStream();
                  InputStream errorStream = process.getErrorStream()) {
-                IoUtils.copy(inputStream, stdOut);
-                IoUtils.copy(errorStream, stdErr);
+                StreamUtils.copy(inputStream, stdOut);
+                StreamUtils.copy(errorStream, stdErr);
             }
 
             while (process.isAlive()) {

@@ -44,7 +44,7 @@ public class WorkloadChartController extends AbstractSessionController {
     }
 
     @GetMapping
-    public ResponseEntity<MessageModel> index(@SessionAttribute("helper") ClusterModel clusterModel) {
+    public ResponseEntity<MessageModel> index(@SessionAttribute("model") ClusterModel clusterModel) {
         MessageModel index = new MessageModel();
         index.add(linkTo(methodOn(getClass())
                 .index(clusterModel))
@@ -64,34 +64,34 @@ public class WorkloadChartController extends AbstractSessionController {
 
     @GetMapping("/items")
     public @ResponseBody List<Workload> getWorkloadItems(
-            @SessionAttribute("helper") ClusterModel clusterModel) {
+            @SessionAttribute("model") ClusterModel clusterModel) {
         return workloadManager.getWorkloads(clusterModel.getClusterId());
     }
 
     @GetMapping("/metrics")
     public @ResponseBody Metrics getWorkloadMetrics(
-            @SessionAttribute("helper") ClusterModel clusterModel) {
+            @SessionAttribute("model") ClusterModel clusterModel) {
         return workloadManager.getMetricsAggregate(clusterModel.getClusterId());
     }
 
     @GetMapping(value = "/data-points/p99",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> getWorkloadDataPointsP99(
-            @SessionAttribute("helper") ClusterModel clusterModel) {
+            @SessionAttribute("model") ClusterModel clusterModel) {
         return workloadManager.getDataPoints(clusterModel.getClusterId(), Metrics::getP99);
     }
 
     @GetMapping(value = "/data-points/p999",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> getWorkloadDataPointsP999(
-            @SessionAttribute("helper") ClusterModel clusterModel) {
+            @SessionAttribute("model") ClusterModel clusterModel) {
         return workloadManager.getDataPoints(clusterModel.getClusterId(), Metrics::getP999);
     }
 
     @GetMapping(value = "/data-points/tps",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Map<String, Object>> getWorkloadDataPointsTPS(
-            @SessionAttribute("helper") ClusterModel clusterModel) {
+            @SessionAttribute("model") ClusterModel clusterModel) {
         return workloadManager.getDataPoints(clusterModel.getClusterId(), Metrics::getOpsPerSec);
     }
 }

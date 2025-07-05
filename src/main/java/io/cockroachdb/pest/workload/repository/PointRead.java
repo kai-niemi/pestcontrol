@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.workload.profile;
+package io.cockroachdb.pest.workload.repository;
 
 import javax.sql.DataSource;
 
@@ -12,6 +12,6 @@ public class PointRead extends CyclicWorker {
 
     @Override
     public void run() {
-        findNextProfile(followerRead);
+        findNext(followerRead);
     }
 }

@@ -5,6 +5,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,11 +14,43 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.util.Pair;
 
 @Tags(value = {
         @Tag("unit-test")
 })
 public class PatternUtilsTest {
+    @Test
+    public void whenMatchingRangeExpression_expectRange() {
+        Pair<Integer, Integer> p = PatternUtils.parseRange("1-10").orElseThrow();
+        Assertions.assertEquals(1, p.getFirst());
+        Assertions.assertEquals(10, p.getSecond());
+    }
+
+    @Test
+    public void whenMatchingIntRangeExpression_expectRange() {
+        List<Integer> p = PatternUtils.parseIntRange("1-5,7,10");
+        Assertions.assertEquals(1, p.get(0));
+        Assertions.assertEquals(2, p.get(1));
+        Assertions.assertEquals(3, p.get(2));
+        Assertions.assertEquals(4, p.get(3));
+        Assertions.assertEquals(5, p.get(4));
+        Assertions.assertEquals(7, p.get(5));
+        Assertions.assertEquals(10, p.get(6));
+    }
+
+    @Test
+    public void whenMatchingIntRangeExpression_expectRange2() {
+        List<Integer> p = PatternUtils.parseIntRange("3,2-5,7,10");
+        Assertions.assertEquals(3, p.get(0));
+        Assertions.assertEquals(2, p.get(1));
+        Assertions.assertEquals(3, p.get(2));
+        Assertions.assertEquals(4, p.get(3));
+        Assertions.assertEquals(5, p.get(4));
+        Assertions.assertEquals(7, p.get(5));
+        Assertions.assertEquals(10, p.get(6));
+    }
+
     @Test
     public void whenMatchingLocalityString_expectKeyValueTuples() {
         final String regex = "([^=,]+)=([^\0]+?)(?=,[^,]+=|$)";

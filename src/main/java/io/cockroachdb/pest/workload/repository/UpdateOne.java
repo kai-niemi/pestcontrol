@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.workload.profile;
+package io.cockroachdb.pest.workload.repository;
 
 import javax.sql.DataSource;
 
@@ -10,8 +10,8 @@ public class UpdateOne extends CyclicWorker {
     @Override
     public void run() {
         transactionTemplate.executeWithoutResult(transactionStatus -> {
-            findNextProfile(false)
-                    .ifPresent(profileRepository::updateProfile);
+            findNext(false)
+                    .ifPresent(sampleRepository::updateSingleton);
         });
     }
 }

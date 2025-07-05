@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.workload.profile;
+package io.cockroachdb.pest.workload.repository;
 
 import javax.sql.DataSource;
 
@@ -9,18 +9,15 @@ import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import io.cockroachdb.pest.repository.JdbcProfileRepository;
-import io.cockroachdb.pest.repository.ProfileRepository;
-
-public abstract class AbstractProfileWorkload implements Runnable {
-    protected final ProfileRepository profileRepository;
+public abstract class AbstractSampleWorkload implements Runnable {
+    protected final SampleRepository sampleRepository;
 
     protected final JdbcTemplate jdbcTemplate;
 
     protected final TransactionTemplate transactionTemplate;
 
-    protected AbstractProfileWorkload(DataSource dataSource) {
-        this.profileRepository = new JdbcProfileRepository(dataSource);
+    protected AbstractSampleWorkload(DataSource dataSource) {
+        this.sampleRepository = new JdbcSampleRepository(dataSource);
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.transactionTemplate = new TransactionTemplate(new DataSourceTransactionManager(dataSource));
 
@@ -31,7 +28,7 @@ public abstract class AbstractProfileWorkload implements Runnable {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.setCommentPrefix("--");
         populator.setIgnoreFailedDrops(true);
-        populator.addScript(new ClassPathResource("db/profile/profile-create.sql"));
+        populator.addScript(new ClassPathResource("db/create.sql"));
 
         DatabasePopulatorUtils.execute(populator, dataSource);
     }

@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.repository;
+package io.cockroachdb.pest.workload.repository;
 
 import java.io.StringReader;
 import java.sql.PreparedStatement;
@@ -21,7 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 
-public class JdbcProfileRepository implements ProfileRepository {
+public class JdbcSampleRepository implements SampleRepository {
     public static final Calendar tzUTC = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
     private static final String JSON_DATA =
@@ -77,13 +77,13 @@ public class JdbcProfileRepository implements ProfileRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcProfileRepository(DataSource dataSource) {
+    public JdbcSampleRepository(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     @Override
-    public ProfileEntity insertProfileSingleton() {
-        ProfileEntity profile = new ProfileEntity();
+    public SampleEntity insertSingleton() {
+        SampleEntity profile = new SampleEntity();
         profile.setExpireAt(LocalDateTime.now());
         profile.setVersion(0);
         profile.setProfile(JSON_DATA);
@@ -92,7 +92,7 @@ public class JdbcProfileRepository implements ProfileRepository {
 
         jdbcTemplate.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO pc_user_profile (expire_at,payload,version) "
+                    "INSERT INTO test_table (expire_at,payload,version) "
                     + "VALUES (?,?,?) returning id::uuid",
                     PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setObject(1, profile.getExpireAt());
@@ -107,11 +107,11 @@ public class JdbcProfileRepository implements ProfileRepository {
     }
 
     @Override
-    public List<ProfileEntity> insertProfileBatch(int batchSize) {
-        List<ProfileEntity> profileBatch = new ArrayList<>();
+    public List<SampleEntity> insertBatch(int batchSize) {
+        List<SampleEntity> profileBatch = new ArrayList<>();
 
         IntStream.rangeClosed(1, batchSize).forEach(value -> {
-            ProfileEntity profile = new ProfileEntity();
+            SampleEntity profile = new SampleEntity();
             profile.setId(UUID.randomUUID());
             profile.setExpireAt(LocalDateTime.now());
             profile.setVersion(0);
@@ -120,7 +120,7 @@ public class JdbcProfileRepository implements ProfileRepository {
         });
 
         jdbcTemplate.update(
-                "INSERT INTO pc_user_profile (id,expire_at,payload,version) "
+                "INSERT INTO test_table (id,expire_at,payload,version) "
                 + "select unnest(?) as id, "
                 + "       unnest(?) as expire_at, "
                 + "       unnest(?) as payload, "
@@ -152,17 +152,17 @@ public class JdbcProfileRepository implements ProfileRepository {
     }
 
     @Override
-    public void updateProfile(ProfileEntity profile) {
-        final String sql = "UPDATE pc_user_profile SET expire_at=?,payload=?,version=? "
+    public void updateSingleton(SampleEntity entity) {
+        final String sql = "UPDATE test_table SET expire_at=?,payload=?,version=? "
                            + "WHERE id=? and version=?";
 
         int rows = jdbcTemplate.update(sql,
                 ps -> {
-                    ps.setObject(1, profile.getExpireAt());
-                    ps.setCharacterStream(2, new StringReader(profile.getProfile()));
-                    ps.setInt(3, profile.getVersion());
-                    ps.setObject(4, profile.getId());
-                    ps.setInt(5, profile.getVersion());
+                    ps.setObject(1, entity.getExpireAt());
+                    ps.setCharacterStream(2, new StringReader(entity.getProfile()));
+                    ps.setInt(3, entity.getVersion());
+                    ps.setObject(4, entity.getId());
+                    ps.setInt(5, entity.getVersion());
                 });
 
         if (rows != 1) {
@@ -171,43 +171,43 @@ public class JdbcProfileRepository implements ProfileRepository {
     }
 
     @Override
-    public void deleteProfileById(UUID id) {
-        jdbcTemplate.update("DELETE from pc_user_profile WHERE id=? and version=0",
+    public void deleteById(UUID id) {
+        jdbcTemplate.update("DELETE from test_table WHERE id=? and version=0",
                 ps -> ps.setObject(1, id));
     }
 
     @Override
-    public List<ProfileEntity> findAll(int limit) {
-        return jdbcTemplate.query("SELECT * FROM pc_user_profile limit " + limit,
+    public List<SampleEntity> findAll(int limit) {
+        return jdbcTemplate.query("SELECT * FROM test_table limit " + limit,
                 profileRowMapper());
     }
 
     @Override
-    public Optional<ProfileEntity> findFirst(boolean followerRead) {
+    public Optional<SampleEntity> findFirst(boolean followerRead) {
         return jdbcTemplate
-                .query(followerRead ? "SELECT * FROM pc_user_profile "
+                .query(followerRead ? "SELECT * FROM test_table "
                                       + "as of system time follower_read_timestamp() order by id limit 1" :
-                                "SELECT * FROM pc_user_profile order by id limit 1",
+                                "SELECT * FROM test_table order by id limit 1",
                         profileRowMapper())
                 .stream()
                 .findFirst();
     }
 
     @Override
-    public Optional<ProfileEntity> findByNextId(UUID id, boolean followerRead) {
+    public Optional<SampleEntity> findByNextId(UUID id, boolean followerRead) {
         return jdbcTemplate
-                .query(followerRead ? "SELECT * FROM pc_user_profile "
+                .query(followerRead ? "SELECT * FROM test_table "
                                       + "as of system time follower_read_timestamp() where id > ? order by id limit 1" :
-                                "SELECT * FROM pc_user_profile where id > ? order by id limit 1",
+                                "SELECT * FROM test_table where id > ? order by id limit 1",
                         profileRowMapper(), id)
                 .stream()
                 .findFirst();
     }
 
     @Override
-    public Optional<ProfileEntity> findByRandomId() {
+    public Optional<SampleEntity> findByRandomId() {
         return jdbcTemplate
-                .query("SELECT * FROM pc_user_profile ORDER BY random() limit 1",
+                .query("SELECT * FROM test_table ORDER BY random() limit 1",
                         profileRowMapper())
                 .stream()
                 .findFirst();
@@ -215,12 +215,12 @@ public class JdbcProfileRepository implements ProfileRepository {
 
     @Override
     public void deleteAll() {
-        jdbcTemplate.execute("delete from pc_user_profile where 1=1");
+        jdbcTemplate.execute("delete from test_table where 1=1");
     }
 
-    private RowMapper<ProfileEntity> profileRowMapper() {
+    private RowMapper<SampleEntity> profileRowMapper() {
         return (rs, rowNum) -> {
-            ProfileEntity profile = new ProfileEntity();
+            SampleEntity profile = new SampleEntity();
             profile.setId(rs.getObject("id", UUID.class));
             profile.setVersion(rs.getInt("version"));
 

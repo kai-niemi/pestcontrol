@@ -1,14 +1,14 @@
-package io.cockroachdb.pest.workload.profile;
+package io.cockroachdb.pest.workload.repository;
 
 import javax.sql.DataSource;
 
-public class FullScan extends AbstractProfileWorkload {
+public class FullScan extends AbstractSampleWorkload {
     public FullScan(DataSource dataSource) {
         super(dataSource);
     }
 
     @Override
     public void run() {
-        profileRepository.findByRandomId();
+        sampleRepository.findByRandomId();
     }
 }

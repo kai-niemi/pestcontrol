@@ -13,6 +13,7 @@ import java.util.function.Predicate;
  * with different traversals.
  *
  * @param <T> the node type
+ * @author Kai Niemi
  */
 public class TreeNode<T> implements Iterable<TreeNode<T>> {
     public static <T> void breadthFirstTraversal(TreeNode<T> root,

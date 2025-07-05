@@ -50,11 +50,10 @@ public class ReportingCommands {
     @Autowired
     private ClusterCommands clusterCommands;
     
-    @ShellMethod(value = "Print cluster IP addresses and admin URLs", key = {"cluster-ip"})
+    @ShellMethod(value = "Print cluster IP addresses and admin URLs", key = {"ip"})
     public void clusterIP(
             @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId,
-            @ShellOption(help = "Include all nodes", defaultValue = "false") Boolean all) {
+                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
         logger.info("Local IP: %s".formatted(Networking.getLocalIP()));
         logger.info("External IP: %s".formatted(Networking.getExternalIP()));
         logger.info("Hostname: %s".formatted(Networking.getHostname()));
@@ -83,10 +82,10 @@ public class ReportingCommands {
                             default -> "??";
                         }));
 
-        logger.info("\n%s".formatted(table));
+        logger.info("Nodes:\n%s".formatted(table));
     }
 
-    @ShellMethod(value = "Print cluster configuration(s)", key = {"cluster-config"})
+    @ShellMethod(value = "Print cluster configuration(s)", key = {"config"})
     public void printConfig() {
         List<List<?>> tuples = new ArrayList<>();
 
@@ -112,18 +111,15 @@ public class ReportingCommands {
                             default -> "??";
                         }));
 
-        logger.info("\n%s".formatted(table));
+        logger.info("Clusters:\n%s".formatted(table));
     }
 
     @ShellMethod(value = "Ping cluster endpoints and report version", key = {"ping"})
     public void ping(@ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
             valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
-        ClusterProperties clusterProperties = clusterCommands.getClusterProperties(clusterId);
-
-        logger.info("%s (%s)".formatted(clusterProperties.getClusterId(), clusterProperties.getClusterName()));
-
         List<List<?>> tuples = new ArrayList<>();
 
+        ClusterProperties clusterProperties = clusterCommands.getClusterProperties(clusterId);
         clusterProperties.getNodes().forEach(nodeProperties -> {
             try {
                 Map<String, Object> build = hypermediaClient.from(nodeProperties.getBaseUrl())
@@ -157,6 +153,6 @@ public class ReportingCommands {
                             case 4 -> object.get(4);
                             default -> "??";
                         }));
-        logger.info("\n%s".formatted(table));
+        logger.info("Endpoints:\n%s".formatted(table));
     }
 }

@@ -144,7 +144,7 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public NodeDetail queryNodeDetailById(String clusterId, Integer id) {
-        return clusterQuery.queryNodeDetailById(getClusterProperties(clusterId), findSessionToken(clusterId),  id)
+        return clusterQuery.queryNodeDetailById(getClusterProperties(clusterId), findSessionToken(clusterId), id)
                 .orElseThrow(() -> new ResourceNotFoundException("No such node with ID: " + id));
     }
 
@@ -212,18 +212,16 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public ClusterProperties getClusterProperties(String clusterId) {
-        return applicationProperties.getClusterPropertiesById(clusterId);
+        return applicationProperties.getClusterPropertiesById(clusterId, EnumSet.allOf(ClusterType.class));
     }
 
     @Override
-    public ClusterOperator getClusterOperator(String clusterId)
-            throws UnsupportedOperationException {
+    public ClusterProperties getClusterProperties(String clusterId, EnumSet<ClusterType> clusterTypes) {
+        return applicationProperties.getClusterPropertiesById(clusterId, clusterTypes);
+    }
+
+    @Override
+    public ClusterOperator getClusterOperator(String clusterId) {
         return applicationProperties.clusterOperator(clusterId);
-    }
-
-    @Override
-    public ClusterOperator getClusterOperator(ClusterType clusterType)
-            throws UnsupportedOperationException {
-        return applicationProperties.clusterOperator(clusterType);
     }
 }
