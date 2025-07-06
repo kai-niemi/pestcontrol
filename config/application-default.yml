@@ -11,7 +11,7 @@
 ###############################################################################################################
 
 application:
-  # Preset cluster ID
+  # Preset cluster ID (can also be set with --cluster-id XX)
   defaultClusterId: "local-secure"
 
   ## List of pre-configured CockroachDB clusters
@@ -74,10 +74,10 @@ application:
         username: "root"
         password: ""
       # CockroachDB binary version for remote/hosted
-      version: "v25.1.3.darwin-11.0-arm64"
-      #      version: "v25.1.3.darwin-11.0-amd64"
-      #      version: "v25.1.3.linux-amd64"
-      #      version: "v25.1.3.linux-arm64"
+      version: "v25.2.2.darwin-11.0-arm64"
+      #      version: "v25.2.2.darwin-11.0-amd64"
+      #      version: "v25.2.2.linux-amd64"
+      #      version: "v25.2.2.linux-arm64"
       ## List of machines/VM nodes for hosted cluster types.
       # Used to manage a cluster through pest control, potentially spanning multiple hosts as
       # opposed to many instances on local host on different ports.
@@ -87,18 +87,21 @@ application:
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
           advertise-addr: 127.0.0.1:25257
+          listen-addr: 127.0.0.1:25257
           sql-addr: 127.0.0.1:26257
           http-addr: localhost:8080
         - url: http://localhost:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
           advertise-addr: 127.0.0.1:25258
+          listen-addr: 127.0.0.1:25258
           sql-addr: 127.0.0.1:26258
           http-addr: localhost:8081
         - url: http://localhost:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
           advertise-addr: 127.0.0.1:25259
+          listen-addr: 127.0.0.1:25259
           sql-addr: 127.0.0.1:26259
           http-addr: localhost:8082
 
@@ -110,7 +113,7 @@ application:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"
-      version: "v25.1.3.darwin-11.0-arm64"
+      version: "v25.2.2.darwin-11.0-arm64"
       nodes:
         - url: http://localhost:9090
           name: n1
@@ -150,23 +153,27 @@ application:
         url: "jdbc:postgresql://${local-ip}:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
+      # Replace example addresses below with actual IP/hostnames of cluster machines.
       nodes:
         - url: http://${local-ip}:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
           advertise-addr: ${local-ip}:25257
+          listen-addr: ${local-ip}:25257
           sql-addr: ${local-ip}::26257
           http-addr: ${local-ip}:8080
         - url: http://${local-ip}:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
           advertise-addr: ${local-ip}:25258
+          listen-addr: ${local-ip}:25258
           sql-addr: ${local-ip}::26258
           http-addr: ${local-ip}:8081
         - url: http://${local-ip}:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
           advertise-addr: ${local-ip}:25259
+          listen-addr: ${local-ip}:25259
           sql-addr: ${local-ip}::26259
           http-addr: ${local-ip}:8082
 
@@ -178,12 +185,14 @@ application:
         url: "jdbc:postgresql://${local-ip}:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"
-      version: "v25.1.3.darwin-11.0-arm64"
+      version: "v25.2.2.darwin-11.0-arm64"
+      # Replace example addresses below with actual IP/hostnames of cluster machines.
       nodes:
         - url: http://${local-ip}:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
           advertise-addr: ${local-ip}:25257
+          listen-addr: ${local-ip}:25257
           sql-addr: ${local-ip}::26257
           http-addr: ${local-ip}:8080
           secure: true
@@ -192,6 +201,7 @@ application:
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
           advertise-addr: ${local-ip}:25258
+          listen-addr: ${local-ip}:25258
           sql-addr: ${local-ip}::26258
           http-addr: ${local-ip}:8081
           secure: true
@@ -200,6 +210,7 @@ application:
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
           advertise-addr: ${local-ip}:25259
+          listen-addr: ${local-ip}:25259
           sql-addr: ${local-ip}::26259
           http-addr: ${local-ip}:8082
           secure: true
