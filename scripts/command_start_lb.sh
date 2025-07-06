@@ -41,7 +41,7 @@ esac
 if [ ! -f ${configfile} ]; then
   if [ -z "${advertise_addr}" ]; then
     fn_print_warn "Missing advertise_addr parameter - using default!"
-    advertise_addr="localhost:26257"
+    advertise_addr="localhost:25257"
   fi
 
   case "$security_mode" in

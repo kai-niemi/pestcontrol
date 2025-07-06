@@ -20,8 +20,9 @@ fi
 rm -fv ${certsdir}/node.crt
 rm -fv ${certsdir}/node.key
 
-# Create root user client certs
+# Create user client certs
 fn_fail_check ${installdir}/cockroach cert create-client root --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
+fn_fail_check ${installdir}/cockroach cert create-client craig --overwrite --certs-dir=${certsdir} --ca-key=${certsdir}/ca.key
 
 # List
 fn_fail_check ${installdir}/cockroach cert list --certs-dir=${certsdir}

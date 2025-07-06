@@ -9,6 +9,18 @@ if [ $# -eq 0 ]; then
     port=$option
 fi
 
+### Base port for RPC traffic (each node increments by 1)
+#rpcportbase=25258
+#
+### Base port number for data traffic (leaving 26257 for LB)
+## NOTE: If you change this you need to also need to edit haproxy.cfg
+#sqlportbase=26258
+#
+### Base port number for HTTP traffic (leaving 8080 for LB)
+## NOTE: If you change this you need to also need to edit haproxy.cfg
+#httpportbase=8081
+
+
 let node=0
 let matching=0
 let port1=${rpcportbase}
