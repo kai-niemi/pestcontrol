@@ -1,5 +1,5 @@
 #!/bin/bash
-# Pest Control Cluster Admin script
+# Pest Control script for shell commands
 
 #### DO NOT EDIT ####
 
@@ -31,9 +31,13 @@ certsdir="${rootdir}/.certs"
 tempdir="${rootdir}/.tmp"
 datadir="${rootdir}/.datafiles"
 
-source "${configdir}/settings.cfg"
+## Enable shell ansi colors
+ansi="on"
+
 source "${scriptsdir}/core_commands.sh"
 source "${scriptsdir}/core_functions.sh"
 source "${scriptsdir}/local_functions.sh"
 
-core_getopt.sh $*
+source "${scriptsdir}/shell_commands.sh"
+
+shell_getopt.sh $*

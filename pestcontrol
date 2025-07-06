@@ -1,0 +1,43 @@
+#!/bin/bash
+# Pest Control script for control plane
+
+#### DO NOT EDIT ####
+
+case "$OSTYPE" in
+  darwin*)
+        rootdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+        selfname=$(basename "$(readlink -f "${BASH_SOURCE[0]}")")
+        ;;
+  *)
+        rootdir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+        selfname=$(basename "$(readlink -f "${BASH_SOURCE[0]}")")
+        ;;
+esac
+
+if [ ! "$(command -v curl 2> /dev/null)" ]; then
+	echo -e "[ FAIL ] Curl is not installed"
+	exit 1
+fi
+
+if [ "$(whoami)" == "root" ]; then
+    echo -e "[ FAIL ] Do NOT run as root!"
+    exit 1
+fi
+
+scriptsdir="${rootdir}/scripts"
+configdir="${rootdir}/config"
+installdir="${rootdir}/.binaries"
+certsdir="${rootdir}/.certs"
+tempdir="${rootdir}/.tmp"
+datadir="${rootdir}/.datafiles"
+
+## Enable shell ansi colors
+ansi="on"
+
+source "${scriptsdir}/core_commands.sh"
+source "${scriptsdir}/core_functions.sh"
+source "${scriptsdir}/local_functions.sh"
+
+source "${scriptsdir}/control_commands.sh"
+
+control_getopt.sh $*

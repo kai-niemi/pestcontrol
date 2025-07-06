@@ -366,10 +366,7 @@ To shut things down, run the inverse:
 
 Pest Control can be configured through the files available in the `config` directory:
 
-1. [settings.sh](config/settings.cfg) - Settings for creating and managing a local CockroachDB cluster.
 1. [init.sql](config/init.sql) - Init SQL statements (optional).
-1. [haproxy.cfg](config/haproxy.cfg) - HAProxy configuration for local insecure CockroachDB cluster.
-1. [haproxy-secure.cfg](config/haproxy-secure.cfg) - HAProxy configuration for local secure CockroachDB cluster.
 1. [application-default.yml](config/application-default.yml) - Cluster connection settings.
 
 ---

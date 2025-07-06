@@ -5,7 +5,9 @@ shift
 
 fn_print_help() {
     echo -e "${green}Usage: $0 [command]${default}"
-    echo -e "${default}Pest Control Admin Tool${default}"
+    echo -e "${default}Pest Control Plane Script${default}"
+    echo -e ""
+    echo -e "${yellow}This script is intended to be used from the control plane host only.${default}"
     echo -e ""
     echo -e "${lightgreen}[Commands]${default}"
     {
@@ -14,55 +16,29 @@ fn_print_help() {
         echo -e "${green}stop-service\t${default}      | Stop Pest Control service"
         echo -e "${green}start-lb\t${default}      | Start HAProxy load balancer"
         echo -e "${green}stop-lb\t${default}      | Stop HAProxy load balancer"
-#        echo -e "${green}start-toxi\t${default}      | Start Toxiproxy server and add node proxies"
-#        echo -e "${green}stop-toxi\t${default}      | Stop Toxiproxy server"
+        echo -e "${green}start-toxi\t${default}      | Start Toxiproxy server"
+        echo -e "${green}stop-toxi\t${default}      | Stop Toxiproxy server"
     } | column -s $'\t' -t
 }
 
 case "${getopt}" in
-    # Remote commands
-    cert)
-        command_cert.sh $*
-        ;;
-    node-cert)
-        command_node_cert.sh $*
-        ;;
-    start)
-        command_start.sh $*
-        ;;
-    stop)
-        command_stop.sh $*
-        ;;
-    kill)
-        command_kill.sh $*
-        ;;
-    install)
-        command_install.sh $*
-        ;;
-    init)
-        command_init.sh $*
-        ;;
-    sql)
-        command_sql.sh $*
-        ;;
-    # Local commands
     run-service)
         command_run_service.sh $*
         ;;
     start-service)
         command_start_service.sh $*
         ;;
-    start-lb)
-        command_start_lb.sh $*
-        ;;
-    start-toxi)
-        command_start_proxy.sh $*
-        ;;
     stop-service)
         command_stop_service.sh $*
         ;;
+    start-lb)
+        command_start_lb.sh $*
+        ;;
     stop-lb)
         command_stop_lb.sh $*
+        ;;
+    start-toxi)
+        command_start_proxy.sh $*
         ;;
     stop-toxi)
         command_stop_proxy.sh $*

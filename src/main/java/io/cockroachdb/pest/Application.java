@@ -36,12 +36,17 @@ public class Application {
     private static void printHelpAndExit(Consumer<AnsiConsole> message) {
         try (Terminal terminal = TerminalBuilder.terminal()) {
             AnsiConsole console = new AnsiConsole(terminal);
-            console.green("Usage: java -jar pestcontrol.jar [options] <profile> [args...]").nl().nl();
-            console.green("Options include:").nl();
+            console.green("Usage: java -jar pestcontrol.jar [options] [args...]").nl().nl();
+            console.yellow("Options include:").nl();
             {
-                console.cyan("--help                    this help").nl();
-                console.cyan("--profiles [profile,..]   override spring profiles to activate").nl();
                 console.cyan("--cluster-id [id]         set default cluster id to use in shell commands").nl();
+                console.cyan("--profiles [profile,..]   override spring profiles to activate").nl();
+                console.cyan("--secure                  enables the 'ssl' profile for secure clusters").nl();
+                console.cyan("--verbose                 enables the 'verbose' profile for extensive logging").nl();
+                console.cyan("--verbose-http            enables the 'verbose-http' profile for HTTP trace logging")
+                        .nl();
+                console.cyan("--verbose-sql             enables the 'verbose-sql' profile for SQL trace logging").nl();
+                console.cyan("--help                    this help").nl();
             }
             console.nl();
             message.accept(console);
@@ -63,6 +68,14 @@ public class Application {
             if (arg.equals("--help")) {
                 printHelpAndExit(ansiConsole -> {
                 });
+            } else if (arg.equals("--secure") | arg.equals("--ssl")) {
+                profiles.add("ssl");
+            } else if (arg.equals("--verbose")) {
+                profiles.add("verbose");
+            } else if (arg.equals("--verbose-http")) {
+                profiles.add("verbose-http");
+            } else if (arg.equals("--verbose-sql")) {
+                profiles.add("verbose-sql");
             } else if (arg.equals("--profiles")) {
                 if (argsList.isEmpty()) {
                     printHelpAndExit(ansiConsole -> {
@@ -82,7 +95,8 @@ public class Application {
                 if (arg.startsWith("--") || arg.startsWith("@")) {
                     passThroughArgs.add(arg);
                 } else {
-                    profiles.add(arg);
+                    printHelpAndExit(ansiConsole -> {
+                    });
                 }
             }
         }

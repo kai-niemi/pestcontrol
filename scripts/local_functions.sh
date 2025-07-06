@@ -60,4 +60,3 @@ fn_local_kill() {
 
   fn_print_ok "Killed (pid: $pid)"
 }
-
