@@ -6,25 +6,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.hateoas.mediatype.hal.HalLinkRelation;
-import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
-import org.springframework.shell.standard.ShellOption;
 import org.springframework.web.client.ResourceAccessException;
 
-import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.shell.client.HypermediaClient;
-import io.cockroachdb.pest.shell.support.ClusterProvider;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
 import io.cockroachdb.pest.util.Networking;
@@ -33,28 +27,16 @@ import static io.cockroachdb.pest.api.LinkRelations.CURIE_NAMESPACE;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @ShellComponent
-@ShellCommandGroup(Constants.REPORTING_COMMANDS)
-public class ReportingCommands {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
+@ShellCommandGroup(Constants.STATUS_COMMANDS)
+public class StatusCommands extends AbstractCommand {
     @Autowired
     private HypermediaClient hypermediaClient;
 
     @Autowired
     private BuildProperties buildProperties;
 
-    @Autowired
-    private ApplicationProperties applicationProperties;
-
     @Value("${server.port:8080}")
     private Integer serverPort;
-
-    @Autowired
-    private ClusterCommands clusterCommands;
-
-    public Availability ifClusterSelected() {
-        return clusterCommands.ifClusterSelected();
-    }
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Print cluster IP addresses and admin URLs", key = {"ip"})
@@ -67,7 +49,7 @@ public class ReportingCommands {
 
         List<List<?>> tuples = new ArrayList<>();
 
-        clusterCommands.getClusterProperties()
+        getClusterProperties()
                 .getNodes().forEach(nodeProperties ->
                         tuples.add(List.of(Objects.requireNonNull(nodeProperties.getId()),
                                 nodeProperties.getBaseUrl().getHref(),
@@ -97,7 +79,7 @@ public class ReportingCommands {
 
         applicationProperties.getClusterIds(EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure))
                 .forEach(id -> {
-                    ClusterProperties clusterProperties = clusterCommands.getClusterProperties();
+                    ClusterProperties clusterProperties = getClusterProperties();
                     tuples.add(List.of(
                             clusterProperties.getClusterId(),
                             clusterProperties.getClusterName(),
@@ -125,8 +107,7 @@ public class ReportingCommands {
     public void ping() {
         List<List<?>> tuples = new ArrayList<>();
 
-        ClusterProperties clusterProperties = clusterCommands.getClusterProperties();
-        clusterProperties.getNodes().forEach(nodeProperties -> {
+        getClusterProperties().getNodes().forEach(nodeProperties -> {
             try {
                 Map<String, Object> build = hypermediaClient.from(nodeProperties.getBaseUrl())
                         .follow(curied(CURIE_NAMESPACE, ACTUATORS_REL).value())
