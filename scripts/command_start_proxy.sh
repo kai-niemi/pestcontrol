@@ -37,7 +37,7 @@ fi
 
 pid=$(ps -ef | grep "toxiproxy-server" | grep "host" | awk '{print $2}')
 if [ ! -x ${pid} ]; then
-   fn_print_info "toxiproxy-server (pid: ${pid}) appears to be running - listing proxies"
+   fn_print_info "toxiproxy-server (pid: ${pid}) appears to be running"
    exit 0
 fi
 

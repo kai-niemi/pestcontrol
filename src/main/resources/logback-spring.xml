@@ -7,6 +7,7 @@
     <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
 
     <logger name="org.springframework.messaging.simp.broker" level="WARN"/>
+    <logger name="org.springframework.web.socket.config" level="WARN"/>
     <logger name="org.eclipse.jetty" level="WARN"/>
     <logger name="com.zaxxer.hikari" level="WARN"/>
     <logger name="org.springframework" level="INFO"/>

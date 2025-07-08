@@ -111,7 +111,7 @@ public class CloudController {
     public ResponseEntity<Void> disruptLocality(@PathVariable("clusterId") String clusterId,
                                                 @PathVariable("tiers") String tiers) {
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-        clusterOperator.disruptNodes(clusterManager.getClusterProperties(clusterId), tiers);
+        clusterOperator.disruptLocality(clusterManager.getClusterProperties(clusterId), tiers);
         return ResponseEntity.ok().build();
     }
 
@@ -119,7 +119,7 @@ public class CloudController {
     public ResponseEntity<Void> recoverLocality(@PathVariable("clusterId") String clusterId,
                                                 @PathVariable("tiers") String tiers) {
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-        clusterOperator.recoverNodes(clusterManager.getClusterProperties(clusterId), tiers);
+        clusterOperator.recoverLocality(clusterManager.getClusterProperties(clusterId), tiers);
         return ResponseEntity.ok().build();
     }
 

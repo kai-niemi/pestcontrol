@@ -12,7 +12,7 @@
 
 application:
   # Preset cluster ID (can also be set with --cluster-id XX)
-  defaultClusterId: "local-secure"
+  defaultClusterId: "local-insecure"
 
   ## List of pre-configured CockroachDB clusters
   #

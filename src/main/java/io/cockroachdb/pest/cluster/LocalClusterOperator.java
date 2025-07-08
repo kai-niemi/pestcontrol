@@ -5,14 +5,11 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -27,9 +24,7 @@ import static io.cockroachdb.pest.util.ProcessUtils.executeCommand;
 
 @Component
 public class LocalClusterOperator implements ClusterOperator {
-    private static final String OPERATOR_SCRIPT = "./pestcontrol-operator";
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final String OPERATOR_SCRIPT = "./pest-operator";
 
     @Autowired
     private ApplicationProperties applicationProperties;
@@ -194,20 +189,20 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String disruptNodes(ClusterProperties clusterProperties, String locality) {
+    public String disruptLocality(ClusterProperties cluster, String locality) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String recoverNodes(ClusterProperties clusterProperties, String locality) {
+    public String recoverLocality(ClusterProperties cluster, String locality) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public String startProxyServer(ClusterProperties cluster) {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-proxy"));
-        args.add("--toxiproxy-host=localhost");
-        args.add("--toxiproxy-port=8474");
+        args.add("--toxiproxy-host=" + applicationProperties.getToxiproxy().getHost());
+        args.add("--toxiproxy-port=" + applicationProperties.getToxiproxy().getPort());
         return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }
 
@@ -216,8 +211,8 @@ public class LocalClusterOperator implements ClusterOperator {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-proxy-cli"));
-        args.add("--toxiproxy-host=localhost");
-        args.add("--toxiproxy-port=8474");
+        args.add("--toxiproxy-host=" + applicationProperties.getToxiproxy().getHost());
+        args.add("--toxiproxy-port=" + applicationProperties.getToxiproxy().getPort());
         args.add("--listen_addr=" + nodeProperties.getAdvertiseAddr());
         args.add("--upstream_addr=" + nodeProperties.getListenAddr());
         args.add("--name=" + nodeProperties.getName());
@@ -227,15 +222,15 @@ public class LocalClusterOperator implements ClusterOperator {
 
     @Override
     public String stopProxyServer(ClusterProperties cluster) {
-        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-proxy"));
-        args.add("--toxiproxy-host=localhost");
-        args.add("--toxiproxy-port=8474");
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop-proxy"));
+        args.add("--toxiproxy-host=" + applicationProperties.getToxiproxy().getHost());
+        args.add("--toxiproxy-port=" + applicationProperties.getToxiproxy().getPort());
         return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }
 
     @Override
     public String startLoadBalancer(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById( nodeId);
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-lb"));
         args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());

@@ -1,8 +1,8 @@
 package io.cockroachdb.pest.shell;
 
 import java.util.EnumSet;
+import java.util.HashMap;
 
-import org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -16,10 +16,11 @@ import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.shell.support.ClusterProvider;
+import io.cockroachdb.pest.util.PatternUtils;
 
 @ShellComponent
-@ShellCommandGroup(Constants.CLUSTER_COMMANDS)
-public class ClusterCommands extends AbstractCommand {
+@ShellCommandGroup(Constants.SETUP_COMMANDS)
+public class SetupCommands extends AbstractCommand {
     @PostConstruct
     public void init() {
         if (StringUtils.hasLength(applicationProperties.getDefaultClusterId())) {
@@ -36,19 +37,39 @@ public class ClusterCommands extends AbstractCommand {
     }
 
     @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Start toxiproxy server on this host", key = {"start-proxy"})
-    public void startProxy() {
+    @ShellMethod(value = "Run 'install' command on specified node(s)", key = {"install"})
+    public void installNode(
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
         ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
-        clusterOperator.startProxyServer(clusterProperties);
+        PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.install(clusterProperties, id));
     }
 
     @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Stop toxiproxy server on this host", key = {"stop-proxy"})
-    public void stopProxy() {
+    @ShellMethod(value = "Create and distribute node certificates and key pairs", key = {"certs"})
+    public void createCerts(
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
         ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
-        clusterOperator.stopProxyServer(clusterProperties);
+        clusterOperator.certs(clusterProperties, PatternUtils.parseIntRange(nodes), new HashMap<>());
+    }
+
+    @ShellMethodAvailability("ifClusterSelected")
+    @ShellMethod(value = "Run 'init' command on specified node(s)", key = {"init"})
+    public void initNode(
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
+        ClusterProperties clusterProperties = getClusterProperties();
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.init(clusterProperties, id));
+    }
+
+    @ShellMethodAvailability("ifClusterSelected")
+    @ShellMethod(value = "Run 'wipe' command on specified node(s)", key = {"init"})
+    public void wipeNode(
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
+        ClusterProperties clusterProperties = getClusterProperties();
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.wipe(clusterProperties, id));
     }
 
     @ShellMethodAvailability("ifClusterSelected")

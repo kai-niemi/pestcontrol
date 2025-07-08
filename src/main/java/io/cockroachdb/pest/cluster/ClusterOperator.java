@@ -30,9 +30,9 @@ public interface ClusterOperator {
 
     String recoverNode(ClusterProperties cluster, Integer nodeId);
 
-    String disruptNodes(ClusterProperties cluster, String locality);
+    String disruptLocality(ClusterProperties cluster, String locality);
 
-    String recoverNodes(ClusterProperties cluster, String locality);
+    String recoverLocality(ClusterProperties cluster, String locality);
 
     String startProxyServer(ClusterProperties cluster);
 

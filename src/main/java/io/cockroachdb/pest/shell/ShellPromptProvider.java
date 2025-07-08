@@ -12,7 +12,7 @@ import io.cockroachdb.pest.model.ClusterProperties;
 @Component
 public class ShellPromptProvider implements PromptProvider {
     @Autowired
-    private ClusterCommands clusterCommands;
+    private SetupCommands setupCommands;
 
     @Override
     public AttributedString getPrompt() {
@@ -20,11 +20,11 @@ public class ShellPromptProvider implements PromptProvider {
         sb.append("pest", AttributedStyle.DEFAULT
                 .foreground(AttributedStyle.GREEN | AttributedStyle.BRIGHT));
 
-        if (!clusterCommands.ifClusterSelected().isAvailable()) {
+        if (!setupCommands.ifClusterSelected().isAvailable()) {
             sb.append(" $ ", AttributedStyle.DEFAULT
                     .foreground(AttributedStyle.BLUE | AttributedStyle.BRIGHT));
         } else {
-            ClusterProperties clusterProperties = clusterCommands.getClusterProperties();
+            ClusterProperties clusterProperties = setupCommands.getClusterProperties();
             sb.append(" cluster:(", AttributedStyle.DEFAULT
                     .foreground(AttributedStyle.BLUE | AttributedStyle.BRIGHT));
             sb.append(clusterProperties.getClusterId(), AttributedStyle.DEFAULT

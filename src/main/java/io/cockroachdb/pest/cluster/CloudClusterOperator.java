@@ -142,7 +142,7 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String disruptNodes(ClusterProperties clusterProperties, String tiers) {
+    public String disruptLocality(ClusterProperties clusterProperties, String tiers) {
         Locality locality = Locality.fromTiers(tiers);
 
         final RegionalDisruptorSpecification regionalDisruptorSpecification = new RegionalDisruptorSpecification();
@@ -180,7 +180,7 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String recoverNodes(ClusterProperties clusterProperties, String tiers) {
+    public String recoverLocality(ClusterProperties clusterProperties, String locality) {
         String bearerToken = clusterProperties.getApiKey();
 
         ResponseEntity<String> responseEntity = RestClient.create()

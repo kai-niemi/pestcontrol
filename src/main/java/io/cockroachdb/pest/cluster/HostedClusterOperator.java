@@ -18,17 +18,17 @@ import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.shell.client.HypermediaClient;
 import static io.cockroachdb.pest.api.LinkRelations.CERTS_REL;
+import static io.cockroachdb.pest.api.LinkRelations.CLUSTERS_REL;
 import static io.cockroachdb.pest.api.LinkRelations.CLUSTER_TEMPLATE_REL;
-import static io.cockroachdb.pest.api.LinkRelations.NODE_PROXY_START_REL;
-import static io.cockroachdb.pest.api.LinkRelations.NODE_WIPE_REL;
-import static io.cockroachdb.pest.api.LinkRelations.OPERATOR_REL;
+import static io.cockroachdb.pest.api.LinkRelations.CURIE_NAMESPACE;
 import static io.cockroachdb.pest.api.LinkRelations.NODE_INIT_REL;
 import static io.cockroachdb.pest.api.LinkRelations.NODE_INSTALL_REL;
 import static io.cockroachdb.pest.api.LinkRelations.NODE_KILL_REL;
+import static io.cockroachdb.pest.api.LinkRelations.NODE_START_PROXY_REL;
 import static io.cockroachdb.pest.api.LinkRelations.NODE_START_REL;
 import static io.cockroachdb.pest.api.LinkRelations.NODE_STOP_REL;
-import static io.cockroachdb.pest.api.LinkRelations.CLUSTERS_REL;
-import static io.cockroachdb.pest.api.LinkRelations.CURIE_NAMESPACE;
+import static io.cockroachdb.pest.api.LinkRelations.NODE_WIPE_REL;
+import static io.cockroachdb.pest.api.LinkRelations.OPERATOR_REL;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @Component
@@ -212,7 +212,7 @@ public class HostedClusterOperator implements ClusterOperator {
     public String startProxyClient(ClusterProperties clusterProperties, Integer nodeId) {
         Link operatorLink = nodeOperatorLink(clusterProperties, nodeId);
         Link actionLink = hypermediaClient.from(operatorLink)
-                .follow(curied(CURIE_NAMESPACE, NODE_PROXY_START_REL).value())
+                .follow(curied(CURIE_NAMESPACE, NODE_START_PROXY_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", clusterProperties.getClusterId(),
@@ -244,12 +244,12 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String disruptNodes(ClusterProperties cluster, String locality) {
+    public String disruptLocality(ClusterProperties cluster, String locality) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String recoverNodes(ClusterProperties cluster, String locality) {
+    public String recoverLocality(ClusterProperties cluster, String locality) {
         throw new UnsupportedOperationException();
     }
 
@@ -265,7 +265,7 @@ public class HostedClusterOperator implements ClusterOperator {
 
     @Override
     public String startLoadBalancer(ClusterProperties cluster, Integer nodeId) {
-        return localClusterOperator.startLoadBalancer(cluster,nodeId);
+        return localClusterOperator.startLoadBalancer(cluster, nodeId);
     }
 
     @Override

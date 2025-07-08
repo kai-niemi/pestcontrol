@@ -54,6 +54,12 @@ public class LocalController {
                 .add(linkTo(methodOn(getClass())
                         .install(null, null))
                         .withRel(LinkRelations.NODE_INSTALL_REL))
+                .add(linkTo(methodOn(getClass())
+                        .wipe(null, null))
+                        .withRel(LinkRelations.NODE_WIPE_REL))
+                .add(linkTo(methodOn(getClass())
+                        .startProxyClient(null, null))
+                        .withRel(LinkRelations.NODE_START_PROXY_REL))
         );
     }
 
@@ -127,6 +133,38 @@ public class LocalController {
                 .formatted(clusterProperties.getClusterId(), nodeId, clusterProperties.getVersion()));
 
         String responseString = clusterOperator.install(clusterProperties, nodeId);
+
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .body(responseString);
+    }
+
+    @PostMapping("/{nodeId}/wipe")
+    public HttpEntity<String> wipe(
+            @PathVariable("nodeId") Integer nodeId,
+            @RequestBody @Valid ClusterProperties clusterProperties) {
+        Assert.isTrue(nodeId > 0, "nodeId must be > 0");
+
+        logger.info("Wipe cluster '%s' node %d version %s"
+                .formatted(clusterProperties.getClusterId(), nodeId, clusterProperties.getVersion()));
+
+        String responseString = clusterOperator.wipe(clusterProperties, nodeId);
+
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .body(responseString);
+    }
+
+    @PostMapping("/{nodeId}/start-proxy-cli")
+    public HttpEntity<String> startProxyClient(
+            @PathVariable("nodeId") Integer nodeId,
+            @RequestBody @Valid ClusterProperties clusterProperties) {
+        Assert.isTrue(nodeId > 0, "nodeId must be > 0");
+
+        logger.info("Start proxy client for '%s' node %d version %s"
+                .formatted(clusterProperties.getClusterId(), nodeId, clusterProperties.getVersion()));
+
+        String responseString = clusterOperator.startProxyClient(clusterProperties, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)

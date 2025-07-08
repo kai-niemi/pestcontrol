@@ -35,17 +35,6 @@
             <div th:each="locality: ${model.getLocalities(level)}">
                 <h4 th:text="${locality.getTiers()}"></h4>
 
-                <div role="group" th:if="${model.hasNodeWithRel(locality, 'locality-disrupt') or model.hasNodeWithRel(locality, 'locality-recover')}">
-                    <form th:action="@{/cluster}" method="post">
-                        <input type="hidden" name="locality" th:value="${locality.getTiers()}"/>
-                        <button class="btn btn-sm btn-outline-danger" type="submit"
-                               name="action" value="disrupt-locality"
-                                th:if="${model.hasNodeWithRel(locality, 'locality-disrupt')}">Disrupt</button>
-                        <button class="btn btn-sm btn-outline-info" type="submit"
-                               name="action" value="recover-locality"
-                                th:if="${model.hasNodeWithRel(locality, 'locality-recover')}">Recover</button>
-                    </form>
-                </div>
                 <hr/>
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                     <div th:each="node: ${model.getNodes(locality.getTiers())}">
@@ -72,32 +61,8 @@
                                     </div>
 
                                     <div class="card-footer">
-<!--                                        <div class="d-flex gap-2 d-md-flex justify-content-md-start align-items-center">-->
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div role="group">
-<!--
-                                                <button th:if="${node.hasLink('node-disrupt')}"
-                                                        class="btn btn-sm btn-outline-danger" type="submit"
-                                                        name="action" value="node-disrupt">Disrupt</button>
-                                                <button th:if="${node.hasLink('node-recover')}"
-                                                        class="btn btn-sm btn-outline-info" type="submit"
-                                                        name="action" value="node-recover">Recover</button>
--->
-                                                <button th:if="${node.hasLink('node-start')}"
-                                                        class="btn btn-sm btn-outline-info" type="submit"
-                                                        name="action" value="node-start">Start</button>
-                                                <button th:if="${node.hasLink('node-stop')}"
-                                                        class="btn btn-sm btn-outline-info" type="submit"
-                                                        name="action" value="node-stop">Stop</button>
-                                                <button th:if="${node.hasLink('node-kill')}"
-                                                        class="btn btn-sm btn-outline-danger" type="submit"
-                                                        name="action" value="node-kill">Kill</button>
-                                                <button th:if="${node.hasLink('node-stop')}"
-                                                        class="btn btn-sm btn-outline-info" type="submit"
-                                                        name="action" value="node-init">Init</button>
-                                                <button th:if="${node.hasLink('node-install')}"
-                                                        class="btn btn-sm btn-outline-info" type="submit"
-                                                        name="action" value="node-init">Install</button>
                                                 <small class="pc-last-active" th:text="${node.getNodeStatus().getLastActive()}"></small>
                                             </div>
                                             <div class="pc-spinner" style="display: none">

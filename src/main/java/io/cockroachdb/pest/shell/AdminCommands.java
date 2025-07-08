@@ -35,7 +35,6 @@ public class AdminCommands implements Quit.Command {
     @ShellMethod(value = "Exit the shell", key = {"quit", "exit", "q"})
     public void quit() {
         logger.info("Quitting");
-
         SpringApplication.exit(applicationContext, () -> 0);
         System.exit(0);
     }
