@@ -82,7 +82,6 @@ application:
       # Used to manage a cluster through pest control, potentially spanning multiple hosts as
       # opposed to many instances on local host on different ports.
       # See: https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
-      toxi-proxy-enabled: true
       nodes:
         - url: http://localhost:9090
           name: n1
