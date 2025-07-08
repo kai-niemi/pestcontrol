@@ -3,15 +3,13 @@
 pid=$(ps -ef | grep "toxiproxy-server" | grep "host" | awk '{print $2}')
 
 if [ -x ${pid} ]; then
-   fn_print_error "No process found - is it running?"
+   fn_print_error "No toxiproxy process found - is it running?"
    exit 1
 fi
 
-echo $pid
-
 kill -TERM ${pid}
 
-fn_print_dots "Waiting for server to stop (pid: $pid)"
+fn_print_dots "Waiting for toxiproxy server to stop (pid: $pid)"
 
 let attempts=0
 while kill -0 $pid 2>/dev/null; do

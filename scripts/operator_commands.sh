@@ -31,6 +31,26 @@ command_stop.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
+command_start_proxy.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
+command_stop_proxy.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
+command_start_proxy_cli.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
+command_stop_proxy_cli.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
 command_kill.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
@@ -41,7 +61,12 @@ command_sql.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
-shell_getopt.sh(){
+command_wipe.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
+operator_getopt.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }

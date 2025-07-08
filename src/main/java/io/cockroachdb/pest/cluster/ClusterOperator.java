@@ -10,11 +10,13 @@ import io.cockroachdb.pest.model.ClusterType;
 public interface ClusterOperator {
     boolean supports(ClusterType clusterType);
 
-    Map<Integer, List<Path>> certs(ClusterProperties clusterProperties, List<Integer> nodeIds);
+    String certs(ClusterProperties clusterProperties, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles);
 
     String install(ClusterProperties cluster, Integer nodeId);
 
     String init(ClusterProperties cluster, Integer nodeId);
+
+    String wipe(ClusterProperties cluster, Integer nodeId);
 
     String startNode(ClusterProperties cluster, Integer nodeId);
 
@@ -31,4 +33,14 @@ public interface ClusterOperator {
     String disruptNodes(ClusterProperties cluster, String locality);
 
     String recoverNodes(ClusterProperties cluster, String locality);
+
+    String startProxyServer(ClusterProperties cluster);
+
+    String stopProxyServer(ClusterProperties cluster);
+
+    String startProxyClient(ClusterProperties cluster, Integer nodeId);
+
+    String startLoadBalancer(ClusterProperties cluster);
+
+    String stopLoadBalancer(ClusterProperties cluster);
 }

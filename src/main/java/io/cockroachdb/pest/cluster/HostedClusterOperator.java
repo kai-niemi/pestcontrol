@@ -19,6 +19,8 @@ import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.shell.client.HypermediaClient;
 import static io.cockroachdb.pest.api.LinkRelations.CERTS_REL;
 import static io.cockroachdb.pest.api.LinkRelations.CLUSTER_TEMPLATE_REL;
+import static io.cockroachdb.pest.api.LinkRelations.NODE_PROXY_START_REL;
+import static io.cockroachdb.pest.api.LinkRelations.NODE_WIPE_REL;
 import static io.cockroachdb.pest.api.LinkRelations.OPERATOR_REL;
 import static io.cockroachdb.pest.api.LinkRelations.NODE_INIT_REL;
 import static io.cockroachdb.pest.api.LinkRelations.NODE_INSTALL_REL;
@@ -64,8 +66,8 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public Map<Integer, List<Path>> certs(ClusterProperties clusterProperties, List<Integer> nodeIds) {
-        Map<Integer, List<Path>> keyFiles = localClusterOperator.certs(clusterProperties, nodeIds);
+    public String certs(ClusterProperties clusterProperties, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
+        localClusterOperator.certs(clusterProperties, nodeIds, keyFiles);
 
         nodeIds.forEach(nodeId -> {
             Link clusterLink = clusterLink(clusterProperties, nodeId);
@@ -83,7 +85,7 @@ public class HostedClusterOperator implements ClusterOperator {
             }
         });
 
-        return keyFiles;
+        return "";
     }
 
     @Override
@@ -171,6 +173,46 @@ public class HostedClusterOperator implements ClusterOperator {
         Link operatorLink = nodeOperatorLink(clusterProperties, nodeId);
         Link actionLink = hypermediaClient.from(operatorLink)
                 .follow(curied(CURIE_NAMESPACE, NODE_INIT_REL).value())
+                .asTemplatedLink()
+                .expand(Map.of(
+                        "clusterId", clusterProperties.getClusterId(),
+                        "nodeId", nodeId));
+
+        ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            logger.info("HTTP status: {}", response);
+        } else {
+            logger.warn("Unexpected HTTP status: {}", response);
+        }
+
+        return response.getBody();
+    }
+
+    @Override
+    public String wipe(ClusterProperties clusterProperties, Integer nodeId) {
+        Link operatorLink = nodeOperatorLink(clusterProperties, nodeId);
+        Link actionLink = hypermediaClient.from(operatorLink)
+                .follow(curied(CURIE_NAMESPACE, NODE_WIPE_REL).value())
+                .asTemplatedLink()
+                .expand(Map.of(
+                        "clusterId", clusterProperties.getClusterId(),
+                        "nodeId", nodeId));
+
+        ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            logger.info("HTTP status: {}", response);
+        } else {
+            logger.warn("Unexpected HTTP status: {}", response);
+        }
+
+        return response.getBody();
+    }
+
+    @Override
+    public String startProxyClient(ClusterProperties clusterProperties, Integer nodeId) {
+        Link operatorLink = nodeOperatorLink(clusterProperties, nodeId);
+        Link actionLink = hypermediaClient.from(operatorLink)
+                .follow(curied(CURIE_NAMESPACE, NODE_PROXY_START_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", clusterProperties.getClusterId(),

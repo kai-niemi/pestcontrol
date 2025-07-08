@@ -38,6 +38,6 @@ source "${scriptsdir}/core_commands.sh"
 source "${scriptsdir}/core_functions.sh"
 source "${scriptsdir}/local_functions.sh"
 
-source "${scriptsdir}/shell_commands.sh"
+source "${scriptsdir}/operator_commands.sh"
 
-shell_getopt.sh $*
+operator_getopt.sh $*

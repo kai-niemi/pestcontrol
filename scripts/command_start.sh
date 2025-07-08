@@ -1,15 +1,10 @@
 #!/bin/bash
 
-commandaction="Start node "
+commandaction="Start node"
 
-# ./pest-control agent-start --name=n1 --locality=region=eu-north-1,zone=eu-north-1a --listen-addr=localhost:26258 --advertise-addr=localhost:26258 --http-addr=localhost:8081 --join=localhost:25258,localhost:25259,localhost:25260
-# ./pest-control agent-start --name=n2 --locality=region=eu-north-1,zone=eu-north-1b --listen-addr=localhost:26259 --advertise-addr=localhost:26259 --http-addr=localhost:8082 --join=localhost:25258,localhost:25259,localhost:25260
-# ./pest-control agent-start --name=n3 --locality=region=eu-north-1,zone=eu-north-1c --listen-addr=localhost:26260 --advertise-addr=localhost:26260 --http-addr=localhost:8083 --join=localhost:25258,localhost:25259,localhost:25260
-
-# ./pest-control agent-start --name=n1 --locality=region=eu-north-1,zone=eu-north-1a --listen-addr=192.168.1.149:25258 --advertise-addr=192.168.1.149:25258 --sql-addr=192.168.1.149:26258 --http-addr=192.168.1.149:8081 --join=192.168.1.149:25258,192.168.1.149:25259,192.168.1.149:25260 --secure
-# ./pest-control agent-start --name=n2 --locality=region=eu-north-1,zone=eu-north-1b --listen-addr=192.168.1.149:25259 --advertise-addr=192.168.1.149:25259 --sql-addr=192.168.1.149:26259 --http-addr=192.168.1.149:8082 --join=192.168.1.149:25258,192.168.1.149:25259,192.168.1.149:25260 --secure
-# ./pest-control agent-start --name=n3 --locality=region=eu-north-1,zone=eu-north-1c --listen-addr=192.168.1.149:25260 --advertise-addr=192.168.1.149:25260 --sql-addr=192.168.1.149:26260 --http-addr=192.168.1.149:8083 --join=192.168.1.149:25258,192.168.1.149:25259,192.168.1.149:25260 --secure
-
+# ./pest-operator start --name=n1 --locality=region=eu-north-1,zone=eu-north-1a --listen-addr=localhost:26257 --advertise-addr=localhost:26257 --http-addr=localhost:8080 --join=localhost:25257,localhost:25258,localhost:25259
+# ./pest-operator start --name=n2 --locality=region=eu-north-1,zone=eu-north-1b --listen-addr=localhost:26258 --advertise-addr=localhost:26258 --http-addr=localhost:8081 --join=localhost:25257,localhost:25258,localhost:25259
+# ./pest-operator start --name=n3 --locality=region=eu-north-1,zone=eu-north-1c --listen-addr=localhost:26259 --advertise-addr=localhost:26259 --http-addr=localhost:8082 --join=localhost:25257,localhost:25258,localhost:25259
 
 # https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
 

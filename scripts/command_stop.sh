@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# ./pest-control agent-stop --listen-addr=localhost:26258
-# ./pest-control agent-stop --listen-addr=localhost:26259
-# ./pest-control agent-stop --listen-addr=localhost:26260
+# ./pest-operator stop --listen-addr=localhost:26257
 
 commandaction="Stop node"
 

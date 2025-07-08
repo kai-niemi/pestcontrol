@@ -35,6 +35,10 @@ public class LinkRelations {
 
     public static final String NODE_INIT_REL = "node-init";
 
+    public static final String NODE_WIPE_REL = "node-wipe";
+
+    public static final String NODE_PROXY_START_REL = "node-proxy-start";
+
     public static final String NODE_KILL_REL = "node-kill";
 
     public static final String NODE_INSTALL_REL = "node-install";

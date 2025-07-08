@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ./pest-control start-lb --advertise-addr=localhost:26257
+
 commandaction="Start haproxy"
 
 security_mode="insecure"

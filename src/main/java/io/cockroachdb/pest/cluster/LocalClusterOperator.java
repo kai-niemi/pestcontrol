@@ -27,6 +27,8 @@ import static io.cockroachdb.pest.util.ProcessUtils.executeCommand;
 
 @Component
 public class LocalClusterOperator implements ClusterOperator {
+    private static final String OPERATOR_SCRIPT = "./pestcontrol-operator";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -37,18 +39,24 @@ public class LocalClusterOperator implements ClusterOperator {
         return false;
     }
 
-    private void addNetworkingFlags(NodeProperties nodeProperties, List<String> args) {
+    private void addNetworkingFlags(ClusterProperties clusterProperties,
+                                    NodeProperties nodeProperties, List<String> args) {
         if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
             args.add("--listen-addr=" + nodeProperties.getListenAddr());
         }
 
-        if (StringUtils.hasLength(nodeProperties.getAdvertiseAddr())) {
-            args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());
+        if (clusterProperties.isToxiProxyEnabled()) {
+            args.add("--advertise-addr=" +
+                     Objects.requireNonNull(nodeProperties.getAdvertiseProxyAddr()));
         } else {
-            if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
-                args.add("--advertise-addr=" + nodeProperties.getListenAddr());
+            if (StringUtils.hasLength(nodeProperties.getAdvertiseAddr())) {
+                args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());
             } else {
-                args.add("--advertise-addr=" + Networking.getCanonicalHostName() + ":26257");
+                if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
+                    args.add("--advertise-addr=" + nodeProperties.getListenAddr());
+                } else {
+                    args.add("--advertise-addr=" + Networking.getCanonicalHostName() + ":26257");
+                }
             }
         }
 
@@ -66,22 +74,19 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public Map<Integer, List<Path>> certs(ClusterProperties cluster, List<Integer> nodeIds) {
+    public String certs(ClusterProperties clusterProperties, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
         // First create CA cert and key pairs
-        executeCommand(applicationProperties.getScriptDirectory(),
-                List.of("./pest-control", "cert"));
-
-        Map<Integer, List<Path>> keyFiles = new HashMap<>();
+        executeCommand(applicationProperties.getScriptDirectory(), List.of(OPERATOR_SCRIPT, "cert"));
 
         // Then create node cert and key pairs
-        cluster.getNodes().forEach(nodeProperties -> {
+        clusterProperties.getNodes().forEach(nodeProperties -> {
             List<Path> expectedFiles = new ArrayList<>();
             expectedFiles.add(applicationProperties.getCertsDirectory()
                     .resolve(nodeProperties.getName()).resolve("node.crt"));
             expectedFiles.add(applicationProperties.getCertsDirectory()
                     .resolve(nodeProperties.getName()).resolve("node.key"));
 
-            List<String> command = new ArrayList<>(List.of("./pest-control", "node-cert"));
+            List<String> command = new ArrayList<>(List.of(OPERATOR_SCRIPT, "node-cert"));
             command.add("--name=" + nodeProperties.getName());
             command.addAll(nodeProperties.getCertHosts());
 
@@ -97,12 +102,12 @@ public class LocalClusterOperator implements ClusterOperator {
             keyFiles.put(nodeProperties.getId(), expectedFiles);
         });
 
-        return keyFiles;
+        return "";
     }
 
     @Override
     public String install(ClusterProperties clusterProperties, Integer nodeId) {
-        List<String> args = List.of("./pest-control", "install",
+        List<String> args = List.of(OPERATOR_SCRIPT, "install",
                 "--version=" + clusterProperties.getVersion()
         );
         return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
@@ -112,8 +117,28 @@ public class LocalClusterOperator implements ClusterOperator {
     public String init(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
-        List<String> args = new ArrayList<>(List.of("./pest-control", "init"));
-        addNetworkingFlags(nodeProperties, args);
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "init"));
+        addNetworkingFlags(clusterProperties, nodeProperties, args);
+
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+    }
+
+    @Override
+    public String wipe(ClusterProperties clusterProperties, Integer nodeId) {
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "wipe"));
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+    }
+
+    @Override
+    public String startProxyClient(ClusterProperties clusterProperties, Integer nodeId) {
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-proxy-cli"));
+        args.add("--toxiproxy-host=localhost");
+        args.add("--toxiproxy-port=8474");
+        args.add("--listen_addr=" + nodeProperties.getAdvertiseAddr());
+        args.add("--upstream_addr=" + nodeProperties.getListenAddr());
+        args.add("--namer=" + nodeProperties.getName());
 
         return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }
@@ -131,11 +156,11 @@ public class LocalClusterOperator implements ClusterOperator {
                             .add(Objects.requireNonNull(np.getAdvertiseAddr()));
                 });
 
-        List<String> args = new ArrayList<>(List.of("./pest-control", "start"));
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start"));
         args.add("--name=n" + nodeId);
         args.add("--locality=" + nodeProperties.getLocality());
 
-        addNetworkingFlags(nodeProperties, args);
+        addNetworkingFlags(clusterProperties, nodeProperties, args);
 
         args.add("--join=" + String.join(",", Locality.distributeJoinHosts(hosts)));
 
@@ -146,8 +171,8 @@ public class LocalClusterOperator implements ClusterOperator {
     public String stopNode(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
-        List<String> args = new ArrayList<>(List.of("./pest-control", "stop"));
-        addNetworkingFlags(nodeProperties, args);
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop"));
+        addNetworkingFlags(clusterProperties, nodeProperties, args);
 
         return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }
@@ -156,8 +181,8 @@ public class LocalClusterOperator implements ClusterOperator {
     public String killNode(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
-        List<String> args = new ArrayList<>(List.of("./pest-control", "kill"));
-        addNetworkingFlags(nodeProperties, args);
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "kill"));
+        addNetworkingFlags(clusterProperties, nodeProperties, args);
 
         return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }
@@ -166,8 +191,8 @@ public class LocalClusterOperator implements ClusterOperator {
     public String sqlNode(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
-        List<String> args = new ArrayList<>(List.of("./pest-control", "sql"));
-        addNetworkingFlags(nodeProperties, args);
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "sql"));
+        addNetworkingFlags(clusterProperties, nodeProperties, args);
 
         return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
     }

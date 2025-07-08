@@ -41,6 +41,33 @@ fn_local_node_status() {
   fi
 }
 
+fn_local_stop() {
+  pid=$1
+
+  if [ $# -eq 0 ]; then
+      echo -e "Expected pid"
+      exit 1
+  fi
+
+  kill -TERM ${pid}
+
+  fn_print_dots "Waiting for server to stop (pid: $pid)"
+
+  let attempts=0
+  while kill -0 $pid 2>/dev/null; do
+      printf '.'
+      sleep 2
+      let attempts=attempts+1
+      if [ ${attempts} -gt 5 ]; then
+        fn_print_warn "Giving up waiting (${attempts}) - issuing SIGKILL (pid: $pid)"
+        kill -KILL ${pid}
+        break
+      fi
+  done
+
+  fn_print_ok "Stopped (pid: $pid)"
+}
+
 fn_local_kill() {
   pid=$1
 

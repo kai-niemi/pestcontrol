@@ -82,11 +82,13 @@ application:
       # Used to manage a cluster through pest control, potentially spanning multiple hosts as
       # opposed to many instances on local host on different ports.
       # See: https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
+      toxi-proxy-enabled: true
       nodes:
         - url: http://localhost:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
           advertise-addr: 127.0.0.1:25257
+          advertise-proxy-addr: 127.0.0.1:35257
           listen-addr: 127.0.0.1:25257
           sql-addr: 127.0.0.1:26257
           http-addr: localhost:8080
@@ -94,6 +96,7 @@ application:
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
           advertise-addr: 127.0.0.1:25258
+          advertise-proxy-addr: 127.0.0.1:35258
           listen-addr: 127.0.0.1:25258
           sql-addr: 127.0.0.1:26258
           http-addr: localhost:8081
@@ -101,6 +104,7 @@ application:
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
           advertise-addr: 127.0.0.1:25259
+          advertise-proxy-addr: 127.0.0.1:35259
           listen-addr: 127.0.0.1:25259
           sql-addr: 127.0.0.1:26259
           http-addr: localhost:8082

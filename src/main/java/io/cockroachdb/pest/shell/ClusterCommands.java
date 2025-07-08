@@ -1,6 +1,7 @@
 package io.cockroachdb.pest.shell;
 
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +82,7 @@ public class ClusterCommands {
                     valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
         ClusterProperties clusterProperties = getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
-        clusterOperator.certs(clusterProperties, PatternUtils.parseIntRange(nodes));
+        clusterOperator.certs(clusterProperties, PatternUtils.parseIntRange(nodes), new HashMap<>());
     }
 
     @ShellMethod(value = "Run 'start' command on specified node(s)", key = {"start"})
@@ -125,13 +126,59 @@ public class ClusterCommands {
         PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.init(clusterProperties, id));
     }
 
-    @ShellMethod(value = "Run 'sql' command on local node", key = {"sql"})
+    @ShellMethod(value = "Run 'sql' command on this host and connect to a specified node", key = {"sql"})
     public void sqlNode(
+            @ShellOption(help = "Node ID (1-based)") String node,
+            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
+                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
+        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        clusterOperator.sqlNode(clusterProperties, Integer.parseInt(node));
+    }
+
+    @ShellMethod(value = "Start toxiproxy server on this host", key = {"start-proxy"})
+    public void proxyStart(
+            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
+                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
+        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        clusterOperator.startProxyServer(clusterProperties);
+    }
+
+    @ShellMethod(value = "Start toxiproxy client on local node(s)", key = {"start-proxy-cli"})
+    public void proxyClientStart(
             @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes,
             @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
                     valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
         ClusterProperties clusterProperties = getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
-        PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.sqlNode(clusterProperties, id));
+        PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.startProxyClient(clusterProperties, id));
+    }
+
+    @ShellMethod(value = "Stop toxiproxy server on this host", key = {"stop-proxy"})
+    public void proxyStop(
+            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
+                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
+        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        clusterOperator.stopProxyServer(clusterProperties);
+    }
+
+    @ShellMethod(value = "Start load balancer on this host", key = {"start-lb"})
+    public void lbStart(
+            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
+                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
+        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        clusterOperator.startLoadBalancer(clusterProperties);
+    }
+
+    @ShellMethod(value = "Stop load balancer on this host", key = {"stop-lb"})
+    public void lbStop(
+            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
+                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
+        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        clusterOperator.stopLoadBalancer(clusterProperties);
     }
 }

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ./pest-operator start-proxy
+
 commandaction="Start toxiproxy server"
 
 # Toxiproxy server host

@@ -36,6 +36,8 @@ public class NodeProperties {
 
     private String advertiseAddr;
 
+    private String advertiseProxyAddr;
+
     private String sqlAddr;
 
     private String httpAddr;
@@ -107,6 +109,15 @@ public class NodeProperties {
 
     public void setAdvertiseAddr(String advertiseAddr) {
         this.advertiseAddr = advertiseAddr;
+    }
+
+    @JsonProperty("advertise-proxy-addr")
+    public String getAdvertiseProxyAddr() {
+        return advertiseProxyAddr;
+    }
+
+    public void setAdvertiseProxyAddr(String advertiseProxyAddr) {
+        this.advertiseProxyAddr = advertiseProxyAddr;
     }
 
     @JsonProperty("http-addr")

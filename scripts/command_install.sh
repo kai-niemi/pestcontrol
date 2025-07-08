@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ./pest-control agent-install --version=v25.1.3.darwin-11.0-arm64
+# ./pest-operator install --version=v25.2.2.darwin-11.0-arm64
 
 commandaction="Install binaries"
 

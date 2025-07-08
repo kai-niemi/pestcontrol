@@ -35,7 +35,7 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public Map<Integer, List<Path>> certs(ClusterProperties cluster, List<Integer> nodeId) {
+    public String certs(ClusterProperties clusterProperties, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
         throw new UnsupportedOperationException();
     }
 
@@ -46,6 +46,16 @@ public class CloudClusterOperator implements ClusterOperator {
 
     @Override
     public String init(ClusterProperties clusterProperties, Integer nodeId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String wipe(ClusterProperties cluster, Integer nodeId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String startProxyClient(ClusterProperties cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
