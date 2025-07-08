@@ -7,7 +7,7 @@ fn_print_help() {
     echo -e "${green}Usage: $0 [command]${default}"
     echo -e "${default}Pest Control :: Operator Script${default}"
     echo -e ""
-    echo -e "${yellow}Note: This script is intended to be used by operators via RPC${default}"
+    echo -e "${yellow}Note: This script is intended to be called programmatically or via RPC. Use './pest-control help' instead.${default}"
     echo -e ""
     echo -e "${lightgreen}[Commands]${default}"
     {
@@ -81,9 +81,9 @@ case "${getopt}" in
         fn_print_help
         ;;
     *)
-      if [ -n "${getopt}" ]; then
-          fn_print_help
-          echo -e ""
-          echo -e "${red}Unknown command${default}: $0 ${getopt}"
-      fi
+        fn_print_help
+        if [ -n "${getopt}" ]; then
+            echo -e ""
+            echo -e "${red}Unknown command${default}: $0 ${getopt}"
+        fi
 esac

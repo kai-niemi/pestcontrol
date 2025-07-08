@@ -130,20 +130,6 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String startProxyClient(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
-
-        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-proxy-cli"));
-        args.add("--toxiproxy-host=localhost");
-        args.add("--toxiproxy-port=8474");
-        args.add("--listen_addr=" + nodeProperties.getAdvertiseAddr());
-        args.add("--upstream_addr=" + nodeProperties.getListenAddr());
-        args.add("--namer=" + nodeProperties.getName());
-
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
-    }
-
-    @Override
     public String startNode(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
@@ -217,4 +203,50 @@ public class LocalClusterOperator implements ClusterOperator {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public String startProxyServer(ClusterProperties cluster) {
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-proxy"));
+        args.add("--toxiproxy-host=localhost");
+        args.add("--toxiproxy-port=8474");
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+    }
+
+    @Override
+    public String startProxyClient(ClusterProperties clusterProperties, Integer nodeId) {
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-proxy-cli"));
+        args.add("--toxiproxy-host=localhost");
+        args.add("--toxiproxy-port=8474");
+        args.add("--listen_addr=" + nodeProperties.getAdvertiseAddr());
+        args.add("--upstream_addr=" + nodeProperties.getListenAddr());
+        args.add("--name=" + nodeProperties.getName());
+
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+    }
+
+    @Override
+    public String stopProxyServer(ClusterProperties cluster) {
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-proxy"));
+        args.add("--toxiproxy-host=localhost");
+        args.add("--toxiproxy-port=8474");
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+    }
+
+    @Override
+    public String startLoadBalancer(ClusterProperties clusterProperties, Integer nodeId) {
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById( nodeId);
+
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-lb"));
+        args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());
+
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+    }
+
+    @Override
+    public String stopLoadBalancer(ClusterProperties cluster) {
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop-lb"));
+
+        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+    }
 }

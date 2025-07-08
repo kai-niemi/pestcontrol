@@ -5,6 +5,7 @@
 commandaction="Start haproxy"
 
 security_mode="insecure"
+configfile=${datadir}/haproxy.cfg
 
 for i in "$@"; do
   case $i in
@@ -24,28 +25,17 @@ for i in "$@"; do
   esac
 done
 
+if [ -z "${advertise_addr}" ]; then
+  fn_print_warn "Missing advertise_addr parameter - using default!"
+  advertise_addr="localhost:25257"
+fi
+
+fn_print_info "advertise_addr = ${advertise_addr}"
 fn_print_info "security_mode  = ${security_mode}"
 
 fn_assert_binaries
 
-case "$security_mode" in
-  secure)
-    configfile=${datadir}/haproxy-secure.cfg
-    ;;
-  insecure)
-    configfile=${datadir}/haproxy.cfg
-    ;;
-  *)
-    echo "Bad security mode: $security_mode"
-    exit 1
-esac
-
 if [ ! -f ${configfile} ]; then
-  if [ -z "${advertise_addr}" ]; then
-    fn_print_warn "Missing advertise_addr parameter - using default!"
-    advertise_addr="localhost:25257"
-  fi
-
   case "$security_mode" in
     secure)
       fn_fail_check ${installdir}/cockroach gen haproxy --certs-dir=${certsdir} --host=${advertise_addr}

@@ -5,7 +5,9 @@ shift
 
 fn_print_help() {
     echo -e "${green}Usage: $0 [command]${default}"
-    echo -e "${default}Pest Control${default}"
+    echo -e "${default}Pest Control :: Launcher Script${default}"
+    echo -e ""
+    echo -e "${cyan}This script operates the pest control service and shell.${default}"
     echo -e ""
     echo -e "${lightgreen}[Commands]${default}"
     {

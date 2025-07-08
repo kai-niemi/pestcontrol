@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.hateoas.mediatype.hal.HalLinkRelation;
+import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -49,11 +51,14 @@ public class ReportingCommands {
 
     @Autowired
     private ClusterCommands clusterCommands;
-    
+
+    public Availability ifClusterSelected() {
+        return clusterCommands.ifClusterSelected();
+    }
+
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Print cluster IP addresses and admin URLs", key = {"ip"})
-    public void clusterIP(
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
+    public void clusterIP() {
         logger.info("Local IP: %s".formatted(Networking.getLocalIP()));
         logger.info("External IP: %s".formatted(Networking.getExternalIP()));
         logger.info("Hostname: %s".formatted(Networking.getHostname()));
@@ -62,7 +67,7 @@ public class ReportingCommands {
 
         List<List<?>> tuples = new ArrayList<>();
 
-        clusterCommands.getClusterProperties(clusterId)
+        clusterCommands.getClusterProperties()
                 .getNodes().forEach(nodeProperties ->
                         tuples.add(List.of(Objects.requireNonNull(nodeProperties.getId()),
                                 nodeProperties.getBaseUrl().getHref(),
@@ -85,13 +90,14 @@ public class ReportingCommands {
         logger.info("Nodes:\n%s".formatted(table));
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Print cluster configuration(s)", key = {"config"})
     public void printConfig() {
         List<List<?>> tuples = new ArrayList<>();
 
         applicationProperties.getClusterIds(EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure))
                 .forEach(id -> {
-                    ClusterProperties clusterProperties = clusterCommands.getClusterProperties(id);
+                    ClusterProperties clusterProperties = clusterCommands.getClusterProperties();
                     tuples.add(List.of(
                             clusterProperties.getClusterId(),
                             clusterProperties.getClusterName(),
@@ -114,12 +120,12 @@ public class ReportingCommands {
         logger.info("Clusters:\n%s".formatted(table));
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Ping cluster endpoints and report version", key = {"ping"})
-    public void ping(@ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-            valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
+    public void ping() {
         List<List<?>> tuples = new ArrayList<>();
 
-        ClusterProperties clusterProperties = clusterCommands.getClusterProperties(clusterId);
+        ClusterProperties clusterProperties = clusterCommands.getClusterProperties();
         clusterProperties.getNodes().forEach(nodeProperties -> {
             try {
                 Map<String, Object> build = hypermediaClient.from(nodeProperties.getBaseUrl())

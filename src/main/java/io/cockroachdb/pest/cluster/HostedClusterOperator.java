@@ -252,4 +252,24 @@ public class HostedClusterOperator implements ClusterOperator {
     public String recoverNodes(ClusterProperties cluster, String locality) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public String startProxyServer(ClusterProperties cluster) {
+        return localClusterOperator.startProxyServer(cluster);
+    }
+
+    @Override
+    public String stopProxyServer(ClusterProperties cluster) {
+        return localClusterOperator.stopProxyServer(cluster);
+    }
+
+    @Override
+    public String startLoadBalancer(ClusterProperties cluster, Integer nodeId) {
+        return localClusterOperator.startLoadBalancer(cluster,nodeId);
+    }
+
+    @Override
+    public String stopLoadBalancer(ClusterProperties cluster) {
+        return localClusterOperator.stopLoadBalancer(cluster);
+    }
 }

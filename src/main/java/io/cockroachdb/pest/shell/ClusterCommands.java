@@ -9,6 +9,7 @@ import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 import org.springframework.util.StringUtils;
 
@@ -39,14 +40,11 @@ public class ClusterCommands {
                 : Availability.available();
     }
 
-    public ClusterProperties getClusterProperties(String clusterId) {
-        if (Objects.isNull(clusterId) && Objects.isNull(CLUSTER_ID_SELECTION.get())) {
+    public ClusterProperties getClusterProperties() {
+        if (Objects.isNull(CLUSTER_ID_SELECTION.get())) {
             throw new IllegalStateException("Cluster ID not specified");
         }
-        return Objects.isNull(clusterId)
-                ? CLUSTER_ID_SELECTION.get()
-                : clusterManager.getClusterProperties(clusterId,
-                EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure));
+        return CLUSTER_ID_SELECTION.get();
     }
 
     @PostConstruct
@@ -64,120 +62,106 @@ public class ClusterCommands {
                 EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure)));
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'install' command on specified node(s)", key = {"install"})
     public void installNode(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes,
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId
-            ) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.install(clusterProperties, id));
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Create and distribute node certificates and key pairs", key = {"certs"})
     public void createCerts(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes,
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         clusterOperator.certs(clusterProperties, PatternUtils.parseIntRange(nodes), new HashMap<>());
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'start' command on specified node(s)", key = {"start"})
     public void startNode(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes,
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.startNode(clusterProperties, id));
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'stop' command on specified node(s)", key = {"stop"})
     public void stopNode(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes,
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId
-            ) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.stopNode(clusterProperties, id));
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'kill' command on specified node(s)", key = {"kill"})
     public void killNode(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes,
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.killNode(clusterProperties, id));
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'init' command on specified node(s)", key = {"init"})
     public void initNode(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes,
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.init(clusterProperties, id));
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'sql' command on this host and connect to a specified node", key = {"sql"})
     public void sqlNode(
-            @ShellOption(help = "Node ID (1-based)") String node,
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+            @ShellOption(help = "Node ID (1-based)") String node) {
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         clusterOperator.sqlNode(clusterProperties, Integer.parseInt(node));
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Start toxiproxy server on this host", key = {"start-proxy"})
-    public void proxyStart(
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+    public void startProxy() {
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         clusterOperator.startProxyServer(clusterProperties);
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Start toxiproxy client on local node(s)", key = {"start-proxy-cli"})
-    public void proxyClientStart(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes,
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+    public void startProxyCli(
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.startProxyClient(clusterProperties, id));
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Stop toxiproxy server on this host", key = {"stop-proxy"})
-    public void proxyStop(
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+    public void stopProxy() {
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         clusterOperator.stopProxyServer(clusterProperties);
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Start load balancer on this host", key = {"start-lb"})
-    public void lbStart(
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+    public void startLB(@ShellOption(help = "Node ID (1-based)") String node) {
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
-        clusterOperator.startLoadBalancer(clusterProperties);
+        clusterOperator.startLoadBalancer(clusterProperties, Integer.parseInt(node));
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Stop load balancer on this host", key = {"stop-lb"})
-    public void lbStop(
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class, defaultValue = ShellOption.NULL) String clusterId) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+    public void stopLB() {
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         clusterOperator.stopLoadBalancer(clusterProperties);
     }

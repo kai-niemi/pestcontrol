@@ -194,4 +194,24 @@ public class CloudClusterOperator implements ClusterOperator {
         logger.info("Disrupt recovery command successful: %s".formatted(responseEntity.getBody()));
         return responseEntity.getBody();
     }
+
+    @Override
+    public String startProxyServer(ClusterProperties cluster) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String stopProxyServer(ClusterProperties cluster) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String startLoadBalancer(ClusterProperties cluster, Integer nodeId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String stopLoadBalancer(ClusterProperties cluster) {
+        throw new UnsupportedOperationException();
+    }
 }

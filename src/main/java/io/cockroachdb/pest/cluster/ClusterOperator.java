@@ -40,7 +40,7 @@ public interface ClusterOperator {
 
     String startProxyClient(ClusterProperties cluster, Integer nodeId);
 
-    String startLoadBalancer(ClusterProperties cluster);
+    String startLoadBalancer(ClusterProperties cluster, Integer nodeId);
 
     String stopLoadBalancer(ClusterProperties cluster);
 }
