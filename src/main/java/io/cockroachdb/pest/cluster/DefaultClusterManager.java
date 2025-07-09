@@ -25,7 +25,6 @@ import io.cockroachdb.pest.config.RestClientProvider;
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.model.ClusterTypes;
 import io.cockroachdb.pest.schema.NodeDetail;
 import io.cockroachdb.pest.schema.NodeStatus;
 
@@ -166,11 +165,10 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public List<NodeModel> queryAllNodes(String clusterId) {
-        List<NodeModel> nodeModelList = new ArrayList<>();
-
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+        final List<NodeModel> nodeModelList = new ArrayList<>();
 
         try {
+            ClusterProperties clusterProperties = getClusterProperties(clusterId);
             List<NodeStatus> nodeStatusList = clusterQuery.queryNodeStatus(clusterProperties);
             List<NodeDetail> nodeDetailList = clusterQuery.queryNodeDetails(clusterProperties,
                     findSessionToken(clusterId));
@@ -185,29 +183,18 @@ public class DefaultClusterManager implements ClusterManager {
                     }));
 
             fallbackModels.put(clusterId, nodeModelList);
-            return nodeModelList;
         } catch (Exception e) {
-            logger.warn("Error querying cluster status", e);
-
             if (fallbackModels.containsKey(clusterId)) {
-                List<NodeModel> cachedList = fallbackModels.get(clusterId);
-                cachedList.forEach(nodeModel -> {
+                logger.warn("Error querying cluster status - using fallback", e);
+                nodeModelList.addAll(fallbackModels.get(clusterId));
+                nodeModelList.forEach(nodeModel -> {
                     nodeModel.getNodeStatus().setIsLive("false");
                 });
-                return cachedList;
             } else {
-                if (ClusterTypes.isHosted((clusterProperties.getClusterType()))) {
-                    clusterProperties.getNodes()
-                            .forEach(nodeProperties -> {
-                                nodeModelList.add(new NodeModel(clusterId,
-                                        NodeDetail.from(nodeProperties),
-                                        NodeStatus.from(nodeProperties)));
-                            });
-                }
-
                 throw e;
             }
         }
+        return nodeModelList;
 
     }
 

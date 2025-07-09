@@ -96,6 +96,7 @@ public class ClusterDashboardController extends AbstractSessionController {
             }
 
             clusterModel.setNodeModels(x);
+            clusterModel.setAvailable(true);
         }, () -> {
             logger.warn("Cluster update failed (clusterId: %s)".formatted(clusterModel.getClusterId()));
 

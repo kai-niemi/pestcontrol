@@ -30,13 +30,8 @@ public class ClusterModel {
         return clusterProperties.getClusterId();
     }
 
-    public Collection<NodeModel> getNodeModels() {
-        return nodeModels;
-    }
-
     public void setNodeModels(Collection<NodeModel> nodeModels) {
         this.nodeModels = nodeModels;
-        this.available = true;
     }
 
     public boolean isDifferent(Collection<NodeModel> otherModel) {
@@ -53,11 +48,6 @@ public class ClusterModel {
 
     public Link getAdminLink() {
         return Link.of(clusterProperties.getAdminUrl());
-    }
-
-    public boolean hasNodeWithRel(Locality locality, String rel) {
-        return nodeModels.stream().anyMatch(nodeModel ->
-                nodeModel.getNodeDetail().getLocality().equals(locality) && nodeModel.hasLink(rel));
     }
 
     /**

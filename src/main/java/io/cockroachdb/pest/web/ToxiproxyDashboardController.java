@@ -94,8 +94,6 @@ public class ToxiproxyDashboardController {
         }
 
         if (bindingResult.hasErrors()) {
-//            model.addAttribute("proxy", toxiproxyRestController.findProxy(name).getBody());
-//            model.addAttribute("toxics", toxiproxyRestController.findProxyToxics(name).getBody());
             model.addAttribute("form", form);
 
             switch (form.getToxicType()) {

@@ -116,6 +116,14 @@ application:
           listen-addr: 127.0.0.1:25259
           sql-addr: 127.0.0.1:26259
           http-addr: localhost:8082
+        - url: http://localhost:9090
+          name: n4
+          locality: "region=aws-eu-central-1,zone=aws-eu-central-1d"
+          advertise-addr: 127.0.0.1:25260
+          advertise-proxy-addr: 127.0.0.1:35260
+          listen-addr: 127.0.0.1:25260
+          sql-addr: 127.0.0.1:26260
+          http-addr: localhost:8083
 
     - cluster-id: "local-secure"
       cluster-name: "Local 3-node Cluster (secure)"
