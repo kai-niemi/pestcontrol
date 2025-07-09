@@ -117,8 +117,7 @@ like slowing down responses, limiting bandwidth etc.
 See [Installing Toxiproxy](https://github.com/Shopify/toxiproxy?tab=readme-ov-file#1-installing-toxiproxy)
 
 > Toxiproxy is disabled by default. See configuration section on how
-> to [enable](#enable-toxiproxy-optional) it to intercept the gRPC traffic 
-> between nodes.
+> to enable it to intercept and trash the gRPC traffic between nodes.
 
 # Building
 
@@ -185,7 +184,7 @@ Collection of cluster definitions.
 | Field Name             | Optional | Default         | Description                                                                                                                                    |
 |------------------------|----------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------|
 | cluster-id             | No       | -               | Either a CockroachDB Cloud cluster ID or a unique string for a local cluster                                                                   |
-| cluster-type           | Yes      | cloud_dedicated | `cloud_dedicated,local_secure,local_insecure,remote_secure,remote_insecure`                                                                    |
+| cluster-type           | Yes      | hosted_insecure | `cloud_serverless,cloud_standard,cloud_dedicated,remote_insecure,remote_secure,hosted_insecure,hosted_secure`                                  |
 | api-key                | Yes      | -               | Only required for `cloud_dedicated`, see [Create API Keys](https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys). |
 | admin-url              | No       | -               | Base URL for the Cluster API which is typically the regional/local cluster load balancer endpoint.                                             |
 | data-source-properties | No       | -               | Data source connection parameters.                                                                                                             |
@@ -265,7 +264,11 @@ the PKCS12 truststore used by the web app.
 
 ## Remarks
 
-If you switch between the `secure` and `insecure` modes, re-run the `init` command to 
+- To manage `hosted` cluster types on dedicated machines, you also need to deploy 
+pestcontrol on each host. These instances will act as gateways to run local bash scripts to 
+start, stop, kill nodes etc. One instance then acts as control plan and sends HTTP requests
+to the other instances when running such shell commands.
+- If you switch between the `secure` and `insecure` modes, re-run the `init` command to 
 set proper SQL user roles and secrets.
 
 # Appendix: Configuration Files
