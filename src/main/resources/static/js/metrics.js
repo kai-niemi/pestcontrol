@@ -18,7 +18,9 @@ var borderColors = [
     'rgb(201, 203, 207)'
 ];
 
-const chartThreadPool = new Chart(document.getElementById("chart-container-thread-pool"), {
+const ctx = document.getElementById("chart-container-thread-pool");
+
+const chartThreadPool = new Chart(ctx, {
     type: 'line',
     data: {
         labels: [],
@@ -209,19 +211,19 @@ MetricChartsDashboard.prototype = {
     handleChartsUpdate: function() {
         var _this = this;
 
-        $.getJSON("api/chart/data-points/thread-pool", function (json) {
+        $.getJSON("api/chart/meters/data-points/thread-pool", function (json) {
             _this.updateChart(chartThreadPool,json);
         });
 
-        $.getJSON("api/chart/data-points/cpu", function(json) {
+        $.getJSON("api/chart/meters/data-points/cpu", function(json) {
             _this.updateChart(chartCpu,json);
         });
 
-        $.getJSON("api/chart/data-points/storage", function(json) {
+        $.getJSON("api/chart/meters/data-points/storage", function(json) {
             _this.updateChart(chartStorage,json);
         });
 
-        $.getJSON("api/chart/data-points/heap", function(json) {
+        $.getJSON("api/chart/meters/data-points/heap", function(json) {
             _this.updateChart(chartHeap,json);
         });
     },

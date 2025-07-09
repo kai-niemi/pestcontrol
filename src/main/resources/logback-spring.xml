@@ -3,21 +3,33 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}pestcontrol.log}"/>
+    <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
+
+    <logger name="org.springframework.messaging.simp.broker" level="WARN"/>
+    <logger name="org.springframework.web.socket.config" level="WARN"/>
     <logger name="org.eclipse.jetty" level="WARN"/>
-    <logger name="org.springframework" level="INFO"/>
     <logger name="com.zaxxer.hikari" level="WARN"/>
+    <logger name="org.springframework" level="INFO"/>
 
     <springProfile name="verbose">
-        <logger name="io.cockroachdb.pc" level="TRACE"/>
-        <logger name="io.cockroachdb.pc.SQL_TRACE" level="TRACE"/>
+        <logger name="io.cockroachdb.pest" level="TRACE"/>
     </springProfile>
 
     <springProfile name="!verbose">
-        <logger name="io.cockroachdb.pc" level="INFO"/>
-        <logger name="io.cockroachdb.pc.SQL_TRACE" level="INFO"/>
+        <logger name="io.cockroachdb.pest" level="INFO"/>
+    </springProfile>
+
+    <springProfile name="verbose-sql">
+        <logger name="io.cockroachdb.pest.SQL_TRACE" level="TRACE"/>
+    </springProfile>
+
+    <springProfile name="!verbose-sql">
+        <logger name="io.cockroachdb.pest.SQL_TRACE" level="INFO"/>
     </springProfile>
 
     <springProfile name="verbose-http">
+        <logger name="org.springframework.web.client.RestTemplate" level="DEBUG"/>
         <logger name="org.apache.hc.client5.http" level="DEBUG"/>
         <logger name="org.apache.hc.client5.http.wire" level="INFO"/>
         <logger name="org.apache.hc.client5.http.header" level="INFO"/>
@@ -25,5 +37,6 @@
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
     </root>
 </configuration>

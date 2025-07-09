@@ -64,7 +64,7 @@
                 <include>${project.groupId}:pestcontrol:jar:${project.version}</include>
             </includes>
             <outputDirectory>.</outputDirectory>
-            <outputFileNameMapping>pc.jar</outputFileNameMapping>
+            <outputFileNameMapping>pestcontrol.jar</outputFileNameMapping>
         </dependencySet>
     </dependencySets>
 </assembly>

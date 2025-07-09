@@ -1,1 +1,0 @@
-package io.cockroachdb.pc.workload.model;
