@@ -5,6 +5,8 @@ public class ProxyProperties {
 
     private int port;
 
+    private boolean enabled;
+
     public String getHost() {
         return host;
     }
@@ -19,5 +21,13 @@ public class ProxyProperties {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

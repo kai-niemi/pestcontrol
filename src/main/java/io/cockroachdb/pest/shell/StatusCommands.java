@@ -77,9 +77,8 @@ public class StatusCommands extends AbstractCommand {
     public void printConfig() {
         List<List<?>> tuples = new ArrayList<>();
 
-        applicationProperties.getClusterIds(EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure))
-                .forEach(id -> {
-                    ClusterProperties clusterProperties = getClusterProperties();
+        applicationProperties.getClusters()
+                .forEach(clusterProperties -> {
                     tuples.add(List.of(
                             clusterProperties.getClusterId(),
                             clusterProperties.getClusterName(),

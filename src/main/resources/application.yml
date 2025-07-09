@@ -123,11 +123,6 @@ server:
 # Base application settings
 #############################
 application:
-  defaultClusterId: ""
-  # Base directory for 'cluster-admin' shell script
-  baseDir: "."
-  # Directory for TLS certificates
-  certsDir: ".certs"
   # -1 denotes use of unbounded virtual threads
   threadPoolMaxSize: -1
   # Sample period for time-series data points in graphs
@@ -136,8 +131,3 @@ application:
   http:
     maxConnPerRoute: 0
     maxTotal: 0
-  # Host settings for toxiproxy
-  toxiproxy:
-    host: localhost
-    port: 8474
-

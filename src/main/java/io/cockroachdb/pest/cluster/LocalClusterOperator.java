@@ -35,12 +35,13 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     private void addNetworkingFlags(ClusterProperties clusterProperties,
-                                    NodeProperties nodeProperties, List<String> args) {
+                                    NodeProperties nodeProperties,
+                                    List<String> args) {
         if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
             args.add("--listen-addr=" + nodeProperties.getListenAddr());
         }
 
-        if (clusterProperties.isToxiProxyEnabled()) {
+        if (applicationProperties.getToxiproxy().isEnabled()) {
             args.add("--advertise-addr=" +
                      Objects.requireNonNull(nodeProperties.getAdvertiseProxyAddr()));
         } else {

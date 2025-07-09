@@ -45,19 +45,9 @@ public class ClusterProperties {
 
     private List<@Valid NodeProperties> nodes = new ArrayList<>();
 
-    private boolean toxiProxyEnabled = false;
-
     public void init() {
         AtomicInteger id = new AtomicInteger();
         nodes.forEach(properties -> properties.setId(id.incrementAndGet()));
-    }
-
-    public boolean isToxiProxyEnabled() {
-        return toxiProxyEnabled;
-    }
-
-    public void setToxiProxyEnabled(boolean toxiProxyEnabled) {
-        this.toxiProxyEnabled = toxiProxyEnabled;
     }
 
     public NodeProperties findNodePropertiesById(int nodeId) {
