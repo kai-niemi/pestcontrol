@@ -20,15 +20,10 @@
   * [Clusters](#clusters)
   * [DataSource Properties](#datasource-properties)
 * [Running](#running)
-* [Local Cluster Management](#local-cluster-management)
-  * [Local Cluster Configuration](#local-cluster-configuration)
-    * [Enable Toxiproxy (optional)](#enable-toxiproxy-optional)
-  * [Start cluster](#start-cluster)
-    * [Insecure Mode (default)](#insecure-mode-default)
-    * [Secure Mode](#secure-mode)
-  * [Next Steps](#next-steps)
+* [Tutorials](#tutorials)
+  * [Insecure 3-node self-hosted cluster (default)](#insecure-3-node-self-hosted-cluster-default)
+  * [Secure 3-node self-hosted cluster](#secure-3-node-self-hosted-cluster-)
   * [Remarks](#remarks)
-  * [Shutdown](#shutdown)
 * [Appendix: Configuration Files](#appendix-configuration-files)
 <!-- TOC -->
 
@@ -45,11 +40,11 @@ easy-to-use control scripts.
 
 The main features include:
 
-- Visualize cluster layout and node health. 
-- Provide node disruption and recovery controls.
+- Install and bootstrap self-hosted CockroachDB clusters.
+- Visualize cluster layout and node health.
+- CockroachDB Cloud disruption API controls.
 - Integrate with [Toxiproxy](https://github.com/Shopify/toxiproxy) for chaos testing.
-- Tigger client workloads and visualize impact during steady state and node / zone / region disruptions.
-- Provide easy-to-use bash scripts for local CockroachDB cluster deployment and management.
+- Run client workloads and visualize impact during steady state and adverse events.
 
 Dashboard showing cluster layout and node status:
 
