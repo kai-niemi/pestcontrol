@@ -7,7 +7,9 @@ public abstract class Constants {
 
     public static final String CHAOS_COMMANDS = "3) Chaos Commands";
 
-    public static final String STATUS_COMMANDS = "4) Status Commands";
+    public static final String PROXY_COMMANDS = "4) Toxiproxy Commands";
+
+    public static final String STATUS_COMMANDS = "5) Status Commands";
 
     public static final String ADMIN_COMMANDS = "Admin Commands";
 

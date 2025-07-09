@@ -6,7 +6,6 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
-import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 
 import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.model.ClusterProperties;
@@ -24,7 +23,7 @@ public class ChaosCommands extends AbstractCommand {
     }
 
     @ShellMethodAvailability("ifCockroachCloudCluster")
-    @ShellMethod(value = "Disrupt specified node(s) in a Cockroach Cloud cluster", key = {"disrupt"})
+    @ShellMethod(value = "Disrupt specified node(s)", key = {"disrupt"})
     public void disruptNode(
             @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
         ClusterProperties clusterProperties = getClusterProperties();
@@ -33,7 +32,7 @@ public class ChaosCommands extends AbstractCommand {
     }
 
     @ShellMethodAvailability("ifCockroachCloudCluster")
-    @ShellMethod(value = "Recover specified node(s) in a Cockroach Cloud cluster", key = {"recover"})
+    @ShellMethod(value = "Recover specified node(s)", key = {"recover"})
     public void recoverNode(
             @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
         ClusterProperties clusterProperties = getClusterProperties();
@@ -42,7 +41,7 @@ public class ChaosCommands extends AbstractCommand {
     }
 
     @ShellMethodAvailability("ifCockroachCloudCluster")
-    @ShellMethod(value = "Disrupt a specified locality in a Cockroach Cloud cluster", key = {"disrupt-locality"})
+    @ShellMethod(value = "Disrupt nodes in a specified locality", key = {"disrupt-locality"})
     public void disruptLocality(
             @ShellOption(help = "The locality tier(s) to disrupt") String locality) {
         ClusterProperties clusterProperties = getClusterProperties();
@@ -51,7 +50,7 @@ public class ChaosCommands extends AbstractCommand {
     }
 
     @ShellMethodAvailability("ifCockroachCloudCluster")
-    @ShellMethod(value = "Recover specified node(s) in a Cockroach Cloud cluster", key = {"recover-locality"})
+    @ShellMethod(value = "Recover nodes in a specified locality", key = {"recover-locality"})
     public void recoverLocality(
             @ShellOption(help = "The locality tier(s) to disrupt") String locality) {
         ClusterProperties clusterProperties = getClusterProperties();

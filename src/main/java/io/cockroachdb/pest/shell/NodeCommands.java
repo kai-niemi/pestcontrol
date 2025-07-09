@@ -75,13 +75,4 @@ public class NodeCommands extends AbstractCommand {
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         clusterOperator.sqlNode(clusterProperties, Integer.parseInt(node));
     }
-
-    @ShellMethodAvailability("ifToxiProxyRunning")
-    @ShellMethod(value = "Start toxiproxy client on specified node(s)", key = {"proxy-cli"})
-    public void startProxyCli(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
-        ClusterProperties clusterProperties = getClusterProperties();
-        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
-        PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.startProxyClient(clusterProperties, id));
-    }
 }

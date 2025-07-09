@@ -25,7 +25,7 @@ spring:
     noninteractive:
       enabled: false
     history:
-      name: .datafiles/pestcontrol.history
+      name: pestcontrol.history
 
   ## Common hikari connection pool settings for all cluster data sources
   datasource:
@@ -103,7 +103,7 @@ logging:
     console: "%clr(%d{${LOG_DATEFORMAT_PATTERN:HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) [%t] %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"
     file: "%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:%5p} [%t] %logger{49} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"
   file:
-    name: .datafiles/pestcontrol.log
+    name: pestcontrol.log
   logback:
     rollingpolicy:
       max-history: 3
