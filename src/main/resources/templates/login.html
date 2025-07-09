@@ -22,13 +22,6 @@
 
 <div class="container col-xl-10 col-xxl-8 px-4 py-5">
     <div class="row align-items-center g-lg-5 py-5">
-<!--
-        <div class="col-lg-7 text-center text-lg-start">
-            <h1 class="display-4 fw-bold lh-1 text-body-emphasis mb-3">[[#{authentication.login.headline}]]</h1>
-            <p class="col-lg-10 fs-4">
-            </p>
-        </div>
--->
         <div class="col-md-10 mx-auto col-lg-7">
             <div class="alert alert-danger" role="alert" th:if="${MSG_ERROR}" th:text="${MSG_ERROR}">
             </div>
@@ -40,10 +33,11 @@
                   class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="post">
 
                 <div class="form-floating mb-3">
-                    <select th:field="*{clusterId}" id="cluster-id" class="form-select"
-                            aria-label="Default select">
+                    <select th:field="*{clusterId}" id="cluster-id" class="form-select" aria-label="Default select">
                         <option th:each="id : ${clusterIds}"
-                                th:value="${id}" th:text="${id}"></option>
+                                th:value="${id}"
+                                th:text="${id}"
+                                th:selected="${id == defaultClusterId}"></option>
                     </select>
                     <label for="cluster-id">Cluster ID</label>
                 </div>
@@ -69,14 +63,9 @@
                            id="password" placeholder="Password">
                     <label for="password">SQL user password</label>
                 </div>
-<!--
-                <div class="checkbox mb-3">
-                    <label>
-                        <input type="checkbox" value="remember-me"> Remember me
-                    </label>
-                </div>
--->
+
                 <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+
                 <hr class="my-4">
                 <small class="text-body-secondary">By signing in, you request a
                     <a href="https://www.cockroachlabs.com/docs/stable/cluster-api">Cluster API</a> session token.</small>

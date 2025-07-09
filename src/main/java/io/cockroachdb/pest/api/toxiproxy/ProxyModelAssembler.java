@@ -10,6 +10,7 @@ import eu.rekawek.toxiproxy.Proxy;
 import jakarta.validation.constraints.NotNull;
 
 import io.cockroachdb.pest.api.LinkRelations;
+import io.cockroachdb.pest.web.ToxiproxyDashboardController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -42,7 +43,7 @@ public class ProxyModelAssembler implements RepresentationModelAssembler<Proxy, 
                 .deleteProxy(entity.getName()))
                 .withRel(LinkRelations.DELETE_REL));
 
-        model.add(linkTo(methodOn(ToxiproxyController.class)
+        model.add(linkTo(methodOn(ToxiproxyDashboardController.class)
                 .deleteProxy(entity.getName()))
                 .withRel(LinkRelations.DELETE_REL + "-redirect"));
 
@@ -51,7 +52,7 @@ public class ProxyModelAssembler implements RepresentationModelAssembler<Proxy, 
                     .disableProxy(entity.getName()))
                     .withRel(LinkRelations.DISABLE_REL));
 
-            model.add(linkTo(methodOn(ToxiproxyController.class)
+            model.add(linkTo(methodOn(ToxiproxyDashboardController.class)
                     .disableProxy(entity.getName()))
                     .withRel(LinkRelations.DISABLE_REL + "-redirect"));
         } else {
@@ -59,7 +60,7 @@ public class ProxyModelAssembler implements RepresentationModelAssembler<Proxy, 
                     .enableProxy(entity.getName()))
                     .withRel(LinkRelations.ENABLE_REL));
 
-            model.add(linkTo(methodOn(ToxiproxyController.class)
+            model.add(linkTo(methodOn(ToxiproxyDashboardController.class)
                     .enableProxy(entity.getName()))
                     .withRel(LinkRelations.ENABLE_REL + "-redirect"));
         }

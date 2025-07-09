@@ -14,6 +14,7 @@ import eu.rekawek.toxiproxy.model.toxic.Timeout;
 import jakarta.validation.constraints.NotNull;
 
 import io.cockroachdb.pest.api.LinkRelations;
+import io.cockroachdb.pest.web.ToxiproxyDashboardController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -76,7 +77,7 @@ final class ToxicModelAssembler implements RepresentationModelAssembler<Toxic, T
                 .deleteProxyToxic(proxy, entity.getName()))
                 .withRel(LinkRelations.DELETE_REL));
 
-        resource.add(linkTo(methodOn(ToxiproxyController.class)
+        resource.add(linkTo(methodOn(ToxiproxyDashboardController.class)
                 .deleteProxyToxic(proxy, entity.getName()))
                 .withRel(LinkRelations.DELETE_REL + "-redirect"));
 

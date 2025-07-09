@@ -29,6 +29,8 @@ public class AuthenticationController {
             final Model model) {
         model.addAttribute("authentication", authenticationRequest);
         model.addAttribute("clusterIds", applicationProperties.getClusterIds());
+        model.addAttribute("defaultClusterId", applicationProperties.getDefaultClusterId());
+
         if (loginRequired) {
             model.addAttribute(WebUtils.MSG_INFO, WebUtils.getMessage("authentication.login.required"));
         } else if (logoutSuccess) {
@@ -37,6 +39,7 @@ public class AuthenticationController {
         if (loginError) {
             model.addAttribute(WebUtils.MSG_ERROR, WebUtils.getMessage("authentication.login.error"));
         }
+
         return "login";
     }
 
