@@ -299,7 +299,7 @@
         </profile>
 
         <profile>
-            <id>clean-deep</id>
+            <id>deep</id>
             <build>
                 <plugins>
                     <plugin>
@@ -319,6 +319,7 @@
                                         <include>*.log</include>
                                         <include>*.pid</include>
                                         <include>*.jar</include>
+                                        <include>*.history</include>
                                         <include>*.DS_Store</include>
                                     </includes>
                                 </fileset>
