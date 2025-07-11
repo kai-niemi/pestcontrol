@@ -34,23 +34,26 @@ machinetypes="n2-standard-4"
 # Secure (default) or insecure cluster
 insecure=on
 # Dry run mode
-dryrun=off
-# Application assembly name
-assembly="pestcontrol"
+dryrun=on
 
 # DO NOT EDIT BELOW THIS LINE
 #############################
 
 case "$OSTYPE" in
   darwin*)
-        rootdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-        selfname=$(basename "$(readlink -f "${BASH_SOURCE[0]}")")
-        ;;
+    rootdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    selfname=$(basename "$(readlink -f "${BASH_SOURCE[0]}")")
+    ;;
   *)
-        rootdir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-        selfname=$(basename "$(readlink -f "${BASH_SOURCE[0]}")")
-        ;;
+    rootdir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+    selfname=$(basename "$(readlink -f "${BASH_SOURCE[0]}")")
+    ;;
 esac
+
+if [ "$(whoami)" == "root" ]; then
+    echo -e "[ FAIL ] Do NOT run as root!"
+    exit 1
+fi
 
 basedir="${rootdir}/.."
 functionsdir="${rootdir}/scripts"

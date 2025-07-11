@@ -9,12 +9,11 @@ target/
 *.log
 *.csv
 *.pid
-.disruption.json
+pestcontrol.history
+pestcontrol.log
 .DS_Store
 .DS_Store?
 Thumbs.db
 pestcontrol.jar
 /bash.lnk
-/settings.cfg
 /config/init-dev.sql
-/config/application-dev.yml

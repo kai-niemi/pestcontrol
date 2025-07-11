@@ -14,4 +14,3 @@ main.sh(){
 	modulefile="${FUNCNAME[0]}"
 	source "${functionsdir}/${modulefile}"
 }
-
