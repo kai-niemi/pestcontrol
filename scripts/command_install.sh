@@ -18,21 +18,6 @@ for i in "$@"; do
   esac
 done
 
-if [ -z "${version}" ]; then
-  case "$OSTYPE" in
-    darwin*)
-      release_version=${version_darwin}
-      ;;
-    *)
-      release_version=${version_linux}
-      ;;
-  esac
-
-  version=${release_version}
-
-  fn_print_warn "Missing version parameter - using default!"
-fi
-
 fn_print_info "version = ${version}"
 
 #

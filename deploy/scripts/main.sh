@@ -73,7 +73,3 @@ done
 if fn_prompt_yes_no "Proceed with creating this cluster?" Y; then
   create_cluster.sh
 fi
-
-if fn_prompt_yes_no "Proceed with deploying client(s)?" Y; then
-  deploy_clients.sh
-fi

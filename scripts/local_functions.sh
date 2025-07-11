@@ -2,18 +2,8 @@
 
 fn_assert_binaries() {
   if [ ! -f ${installdir}/cockroach ]; then
-     fn_print_error "No cockroach binary found! Run ./pest-control install"
+     fn_print_error "No cockroach binary found!"
      exit 1
-  fi
-}
-
-fn_assert_proxies() {
-  if [ "${toxiproxy}" != "off" ]; then
-    pid=$(ps -ef | grep "toxiproxy-server" | grep "host" | awk '{print $2}')
-    if [ -x ${pid} ]; then
-       fn_print_error "toxiproxy mode is on but no toxiproxy-server appears to be running. You need to run 'start-toxi' before starting any nodes."
-       exit 1
-    fi
   fi
 }
 

@@ -41,6 +41,7 @@ cp ${certsdir}/node.crt ${certsdir}/${name}
 cp ${certsdir}/node.key ${certsdir}/${name}
 
 # List
+
 fn_fail_check ${installdir}/cockroach cert list --certs-dir=${certsdir}
 fn_fail_check ${installdir}/cockroach cert list --certs-dir=${certsdir}/${name}
 

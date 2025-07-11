@@ -10,11 +10,6 @@ create_cluster.sh(){
 	source "${functionsdir}/${modulefile}"
 }
 
-deploy_clients.sh(){
-	modulefile="${FUNCNAME[0]}"
-	source "${functionsdir}/${modulefile}"
-}
-
 main.sh(){
 	modulefile="${FUNCNAME[0]}"
 	source "${functionsdir}/${modulefile}"

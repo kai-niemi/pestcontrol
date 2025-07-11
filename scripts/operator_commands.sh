@@ -61,16 +61,6 @@ command_stop_proxy.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
-command_start_proxy_cli.sh(){
-  modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_stop_proxy_cli.sh(){
-  modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
 command_kill.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"

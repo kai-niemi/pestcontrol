@@ -40,6 +40,30 @@ fn_start_cluster() {
 fn_stage_clients() {
   fn_echo_info_nl "Stage clients ${CLUSTER}:$clientnodes"
 
+  if [ "${insecure}" == "on" ]; then
+    fn_failcheck roachprod run --insecure ${CLUSTER}:$clientnodes 'sudo apt-get -qq update'
+    fn_failcheck roachprod run --insecure ${CLUSTER}:$clientnodes 'sudo apt-get -qq install -y openjdk-21-jre-headless htop dstat haproxy'
+
+    fn_failcheck roachprod run --insecure ${CLUSTER}:$crdbnodes 'sudo apt-get -qq update'
+    fn_failcheck roachprod run --insecure ${CLUSTER}:$crdbnodes 'sudo apt-get -qq install -y openjdk-21-jre-headless htop dstat haproxy'
+  else
+    fn_failcheck roachprod run ${CLUSTER}:$clientnodes 'sudo apt-get -qq update'
+    fn_failcheck roachprod run ${CLUSTER}:$clientnodes 'sudo apt-get -qq install -y openjdk-21-jre-headless htop dstat haproxy'
+
+    fn_failcheck roachprod run ${CLUSTER}:$clientnodes 'sudo apt-get -qq update'
+    fn_failcheck roachprod run ${CLUSTER}:$clientnodes 'sudo apt-get -qq install -y openjdk-21-jre-headless htop dstat haproxy'
+  fi
+
+  fn_failcheck roachprod put ${CLUSTER}:${clientnodes} ${basedir}/target/${assembly}.tar.gz ${assembly}.tar.gz
+  fn_failcheck roachprod run ${CLUSTER}:${clientnodes} "tar xvf ${assembly}.tar.gz"
+
+  fn_failcheck roachprod put ${CLUSTER}:${crdbnodes} ${basedir}/target/${assembly}.tar.gz ${assembly}.tar.gz
+  fn_failcheck roachprod run ${CLUSTER}:${crdbnodes} "tar xvf ${assembly}.tar.gz"
+}
+
+fn_start_lb() {
+  fn_echo_info_nl "Start haproxy ${CLUSTER}:$clientnodes"
+
   i=0;
   for c in $clientnodes_arr
   do
@@ -56,12 +80,8 @@ fn_stage_clients() {
   done
 
   if [ "${insecure}" == "on" ]; then
-    fn_failcheck roachprod run --insecure ${CLUSTER}:$clientnodes 'sudo apt-get -qq update'
-    fn_failcheck roachprod run --insecure ${CLUSTER}:$clientnodes 'sudo apt-get -qq install -y openjdk-21-jre-headless htop dstat haproxy'
     fn_failcheck roachprod run --insecure ${CLUSTER}:$clientnodes 'nohup haproxy -f haproxy.cfg > /dev/null 2>&1 &'
   else
-    fn_failcheck roachprod run ${CLUSTER}:$clientnodes 'sudo apt-get -qq update'
-    fn_failcheck roachprod run ${CLUSTER}:$clientnodes 'sudo apt-get -qq install -y openjdk-21-jre-headless htop dstat haproxy'
     fn_failcheck roachprod run ${CLUSTER}:$clientnodes 'nohup haproxy -f haproxy.cfg > /dev/null 2>&1 &'
   fi
 }
@@ -81,6 +101,10 @@ fi
 }
 
 ##################################################################
+
+if fn_prompt_yes_no "Proceed with creating this cluster?" Y; then
+  create_cluster.sh
+fi
 
 if fn_prompt_yes_no "Create new cluster?" Y; then
   fn_create_cluster
