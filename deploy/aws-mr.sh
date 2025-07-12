@@ -2,7 +2,7 @@
 # Configuration
 ########################
 
-title="CockroachDB single region deployment (AWS)"
+title="CockroachDB multi region deployment (AWS)"
 # CRDB release version
 releaseversion="v25.2.2"
 # Number of node instances in total including clients

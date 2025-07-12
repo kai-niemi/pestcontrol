@@ -20,21 +20,14 @@
         </fileSet>
 
         <fileSet>
-            <directory>${project.basedir}/.certs</directory>
-            <outputDirectory>.certs</outputDirectory>
-            <includes>
-                <include>**/*</include>
-            </includes>
-            <useDefaultExcludes>true</useDefaultExcludes>
-            <fileMode>0700</fileMode>
-        </fileSet>
-
-        <fileSet>
             <directory>${project.basedir}/config</directory>
             <outputDirectory>config</outputDirectory>
             <includes>
                 <include>**/*</include>
             </includes>
+            <excludes>
+                <exclude>init-dev.sql</exclude>
+            </excludes>
             <useDefaultExcludes>true</useDefaultExcludes>
         </fileSet>
 
@@ -52,7 +45,8 @@
             <directory>${project.basedir}</directory>
             <outputDirectory>.</outputDirectory>
             <includes>
-                <include>cluster-admin</include>
+                <include>pest-control</include>
+                <include>pest-operator</include>
             </includes>
             <fileMode>0755</fileMode>
         </fileSet>

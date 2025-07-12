@@ -78,12 +78,12 @@ fn_prompt_yes_no(){
 
 	while true; do
 	  echo -e "${prompt}"
-		select yn in "Yes" "No" "Quit"; do
+		select yn in "Yes" "Skip" "Quit"; do
         case $yn in
             Yes ) return 0 ;;
-            No ) return 1 ;;
+            Skip ) return 1 ;;
             Quit ) exit 0 ;;
-        *) echo -e "Please answer yes, no or quit." ;;
+        *) echo -e "Please answer yes, skip or quit." ;;
         esac
 	  done
 	done

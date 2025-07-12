@@ -131,3 +131,12 @@ application:
   http:
     maxConnPerRoute: 0
     maxTotal: 0
+  # Base directory for shell scripts
+  baseDir: "."
+  # Directory for TLS certificates
+  certsDir: ".certs"
+  # Host settings for toxiproxy
+  toxiproxy:
+    host: localhost
+    port: 8474
+    enabled: false

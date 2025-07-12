@@ -1,11 +1,15 @@
-# Cloud Deployment
+# Deployment Scripts
 
-Deployment scripts using [roachprod](https://github.com/cockroachdb/cockroach/tree/master/pkg/cmd/roachprod) 
-which is a Cockroach Labs internal tool for quickly staging AWS/GCE/Azure clusters.
+Optional deployment scripts using [roachprod](https://github.com/cockroachdb/cockroach/tree/master/pkg/cmd/roachprod), which is a Cockroach Labs internal 
+tool for quickly staging and operating AWS/GCE/Azure clusters.
 
-These scripts will:
+These scripts assist with the following:
 
-- Create VMs
-- Stage CockroachDB binaries
+- Create cloud VMs for hosting:
+  - CockroachDB (on each node)
+  - Pestcontrol agents (on each node)
+  - Toxiproxy server (on control client/s)
+  - Haproxy (on control client/s)
+- Stage CockroachDB binaries 
 - Stage pestcontrol binaries
-- Start pestcontrol
+- Start pestcontrol agents on nodes

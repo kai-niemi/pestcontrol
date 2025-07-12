@@ -30,9 +30,6 @@ if [ ! -f ${assembly_path} ]; then
   exit 1
 fi
 
-fn_split_array ${nodes}
-nodes_arr=("${OUT[@]}")
-
 fn_split_array ${clientnodes}
 clientnodes_arr=("${OUT[@]}")
 
@@ -62,6 +59,4 @@ for value in "${zones_arr[@]}" ; do
   echo -e "${lightyellow}$value${default}"
 done
 
-if fn_prompt_yes_no "Proceed with creating this cluster?" Y; then
-  create_cluster.sh
-fi
+create_cluster.sh

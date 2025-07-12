@@ -13,15 +13,6 @@
 application:
   # Preset cluster ID (can also be set with --cluster-id XX)
   defaultClusterId: "local-insecure"
-  # Base directory for shell scripts
-  baseDir: "."
-  # Directory for TLS certificates
-  certsDir: ".certs"
-  # Host settings for toxiproxy
-  toxiproxy:
-    host: localhost
-    port: 8474
-    enabled: false
 
   ## List of pre-configured CockroachDB clusters
   #

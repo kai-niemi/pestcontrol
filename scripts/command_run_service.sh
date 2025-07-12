@@ -12,7 +12,7 @@ fi
 pid=$(ps -ef | grep "java" | grep "pestcontrol.jar" | awk '{print $2}')
 
 if [ ! -x ${pid} ]; then
-   fn_print_error "Existing process found (${pid}) - is it running?"
+   fn_print_error "Existing process ${pid} found - is it running?"
    exit 1
 fi
 

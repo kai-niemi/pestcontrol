@@ -21,55 +21,81 @@ fn_create_cluster() {
   fi
 }
 
-fn_stage_cluster() {
-  fn_echo_info_nl "Stage binaries $releaseversion"
-
-  fn_failcheck roachprod stage $CLUSTER release $releaseversion
-}
-
 fn_stage_clients() {
-  fn_echo_info_nl "Stage clients ${CLUSTER}:$nodes"
+  fn_echo_info_nl "Stage clients"
 
+  security_mode=""
   if [ "${insecure}" == "on" ]; then
-    fn_failcheck roachprod run --insecure ${CLUSTER}:$nodes 'sudo apt-get -qq update'
-    fn_failcheck roachprod run --insecure ${CLUSTER}:$nodes 'sudo apt-get -qq install -y openjdk-21-jre-headless htop dstat haproxy'
-  else
-    fn_failcheck roachprod run ${CLUSTER}:$nodes 'sudo apt-get -qq update'
-    fn_failcheck roachprod run ${CLUSTER}:$nodes 'sudo apt-get -qq install -y openjdk-21-jre-headless htop dstat haproxy'
+    security_mode="--insecure"
   fi
 
-  fn_failcheck roachprod put ${CLUSTER}:${nodes} ${basedir}/target/pestcontrol.tar.gz pestcontrol.tar.gz
-  fn_failcheck roachprod run ${CLUSTER}:${nodes} "tar xvf pestcontrol.tar.gz"
+  fn_failcheck roachprod run $security_mode ${CLUSTER}:$clientnodes 'sudo apt-get -qq update'
+  fn_failcheck roachprod run $security_mode ${CLUSTER}:$clientnodes 'sudo apt-get -qq install -y openjdk-21-jre-headless htop dstat haproxy'
+
+  fn_failcheck roachprod run $security_mode ${CLUSTER}:$crdbnodes 'sudo apt-get -qq update'
+  fn_failcheck roachprod run $security_mode ${CLUSTER}:$crdbnodes 'sudo apt-get -qq install -y openjdk-21-jre-headless'
 }
 
-fn_start_clients() {
-  fn_echo_info_nl "Start services ${CLUSTER}:$nodes with cluster id $cluster_id"
+fn_deploy_agents() {
+  fn_echo_info_nl "Deploy agents to all nodes"
 
-  i=0;
-  for c in $nodes_arr
+  security_mode=""
+  if [ "${insecure}" == "on" ]; then
+    security_mode="--insecure"
+  fi
+
+  fn_failcheck roachprod put $security_mode ${CLUSTER}:$clientnodes $basedir/target/pestcontrol.tar.gz pestcontrol.tar.gz
+  fn_failcheck roachprod run $security_mode ${CLUSTER}:$clientnodes "tar xvf pestcontrol.tar.gz"
+
+  fn_failcheck roachprod put $security_mode ${CLUSTER}:$crdbnodes $basedir/target/pestcontrol.tar.gz pestcontrol.tar.gz
+  fn_failcheck roachprod run $security_mode ${CLUSTER}:$crdbnodes "tar xvf pestcontrol.tar.gz"
+}
+
+fn_start_agents() {
+  fn_echo_info_nl "Start agents on crdb nodes"
+
+  for c in $crdbnodes_arr
   do
     if [ "${insecure}" == "on" ]; then
-      fn_failcheck roachprod run --insecure ${CLUSTER}:$c "./pest-control --cluster-id=$cluster_id"
+      fn_failcheck roachprod run --insecure ${CLUSTER}:$c "cd pestcontrol && ./pest-control start-service --profiles cloud --cluster-id=cloud-insecure"
     else
-      fn_failcheck roachprod run ${CLUSTER}:$c "./pest-control --cluster-id=$cluster_id"
+      fn_failcheck roachprod run ${CLUSTER}:$c "cd pestcontrol && ./pest-control start-service --profiles cloud --cluster-id=cloud-secure"
     fi
   done
 }
 
-##################################################################
+fn_deploy_ip() {
+  fn_echo_info_nl "Deploy IP lists to client nodes"
+
+  # Write node IPs to text files
+  security_mode=""
+  if [ "${insecure}" == "on" ]; then
+    security_mode="--insecure"
+  fi
+
+  fn_failcheck roachprod ip $CLUSTER > ip-internal.txt
+  fn_failcheck roachprod ip $CLUSTER --external > ip-external.txt
+
+  fn_failcheck roachprod put $security_mode ${CLUSTER}:$clientnodes ip-internal.txt pestcontrol/config/ip-internal.txt
+  fn_failcheck roachprod put $security_mode ${CLUSTER}:$clientnodes ip-external.txt pestcontrol/config/ip-external.txt
+}
 
 if fn_prompt_yes_no "Create cluster?" Y; then
   fn_create_cluster
 fi
 
 if fn_prompt_yes_no "Stage clients?" Y; then
-  fn_stage_cluster
+  fn_stage_clients
 fi
 
-if fn_prompt_yes_no "Start clients?" Y; then
-  fn_start_clients
+if fn_prompt_yes_no "Deploy agents?" Y; then
+  fn_deploy_agents
 fi
 
-roachprod ip $CLUSTER --external
+if fn_prompt_yes_no "Start agents?" Y; then
+  fn_start_agents
+fi
+
+fn_deploy_ip
 
 fn_echo_info_nl "Done"
