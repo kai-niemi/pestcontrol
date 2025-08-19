@@ -1,5 +1,5 @@
 #!/bin/bash
-# Pest Control script for shell commands
+# Pest Control script for operator host commands
 
 #### DO NOT EDIT ####
 
@@ -36,7 +36,6 @@ ansi="on"
 source "${scriptsdir}/core_commands.sh"
 source "${scriptsdir}/core_functions.sh"
 source "${scriptsdir}/local_functions.sh"
+source "${scriptsdir}/local_commands.sh"
 
-source "${scriptsdir}/operator_commands.sh"
-
-operator_getopt.sh $*
+command_getopt.sh $*

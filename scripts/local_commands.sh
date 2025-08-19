@@ -76,7 +76,22 @@ command_wipe.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
-operator_getopt.sh(){
+command_run_service.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
+command_start_service.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
+command_stop_service.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
+command_getopt.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }

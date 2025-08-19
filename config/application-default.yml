@@ -133,7 +133,6 @@ application:
           listen-addr: localhost:25257
           sql-addr: localhost:26257
           http-addr: localhost:8080
-          secure: true
           cert-hosts: localhost,${external-ip},${hostname},localhost,127.0.0.1
         - url: http://localhost:9090
           name: n2
@@ -142,7 +141,6 @@ application:
           listen-addr: localhost:25258
           sql-addr: localhost:26258
           http-addr: localhost:8081
-          secure: true
           cert-hosts: localhost,${external-ip},${hostname},localhost,127.0.0.1
         - url: http://localhost:9090
           name: n3
@@ -151,7 +149,6 @@ application:
           listen-addr: localhost:25259
           sql-addr: localhost:26259
           http-addr: localhost:8082
-          secure: true
           cert-hosts: localhost,${external-ip},${hostname},localhost,127.0.0.1
 
     #################################################################################
@@ -206,7 +203,6 @@ application:
           listen-addr: ${local-ip}:25257
           sql-addr: ${local-ip}::26257
           http-addr: ${local-ip}:8080
-          secure: true
           cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
         - url: http://${local-ip}:9090
           name: n2
@@ -215,7 +211,6 @@ application:
           listen-addr: ${local-ip}:25258
           sql-addr: ${local-ip}::26258
           http-addr: ${local-ip}:8081
-          secure: true
           cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
         - url: http://${local-ip}:9090
           name: n3
@@ -224,5 +219,4 @@ application:
           listen-addr: ${local-ip}:25259
           sql-addr: ${local-ip}::26259
           http-addr: ${local-ip}:8082
-          secure: true
           cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1

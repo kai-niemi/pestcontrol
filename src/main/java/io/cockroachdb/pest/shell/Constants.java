@@ -11,7 +11,7 @@ public abstract class Constants {
 
     public static final String STATUS_COMMANDS = "5) Status Commands";
 
-    public static final String ADMIN_COMMANDS = "Admin Commands";
+    public static final String ADMIN_COMMANDS = "6) Admin Commands";
 
     private Constants() {
     }

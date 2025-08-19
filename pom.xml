@@ -137,7 +137,7 @@
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline-terminal</artifactId>
-            <version>3.26.3</version>
+            <version>3.30.5</version>
         </dependency>
 
         <!-- For converting hypermedia link rel descriptions in markdown to HTML -->

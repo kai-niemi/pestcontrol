@@ -29,7 +29,7 @@ import io.cockroachdb.pest.model.NodeProperties;
 import io.cockroachdb.pest.model.Root;
 
 @ShellComponent
-@ShellCommandGroup(Constants.ADMIN_COMMANDS)
+@ShellCommandGroup(Constants.SETUP_COMMANDS)
 public class ConfigCommands {
     @Autowired
     @Qualifier("yamlObjectMapper")
@@ -37,8 +37,8 @@ public class ConfigCommands {
 
     private static final char[] ZONES = "abcdefg".toCharArray();
 
-    @ShellMethod(value = "Generate application YAML", key = {"gen"})
-    public void generateYaml(
+//    @ShellMethod(value = "Generate application YAML", key = {"gen"})
+    public void __generateYaml(
             @ShellOption(help = "Output file path") String output,
 //            @ShellOption(help = "Region list") List<String> regions,
 //            @ShellOption(help = "Zone list") List<String> zones,
