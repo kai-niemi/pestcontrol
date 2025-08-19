@@ -1,6 +1,6 @@
 package io.cockroachdb.pest.model;
 
-public class ClientProperties {
+public class HttpProperties {
     private int maxTotal;
 
     private int maxConnPerRoute;

@@ -9,6 +9,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.validation.annotation.Validated;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +22,9 @@ import io.cockroachdb.pest.util.Networking;
  * Connection properties for connecting to a CockroachDB cluster.
  */
 @Validated
+@JsonPropertyOrder({
+        "clusterId", "clusterName", "clusterType", "version",
+        "adminUrl", "apiKey", "secure", "dataSourceProperties", "nodes"})
 public class ClusterProperties {
     @NotNull
     @NotBlank
@@ -40,7 +46,10 @@ public class ClusterProperties {
 
     private Path certificatePath;
 
+    private boolean secure;
+
     @Valid
+    @JsonIgnoreProperties({"xa", "generateUniqueName"})
     private DataSourceProperties dataSourceProperties;
 
     private List<@Valid NodeProperties> nodes = new ArrayList<>();
@@ -55,6 +64,14 @@ public class ClusterProperties {
                 .filter(agent -> Objects.equals(nodeId, agent.getId()))
                 .findFirst()
                 .orElseThrow();
+    }
+
+    public boolean isSecure() {
+        return secure;
+    }
+
+    public void setSecure(boolean secure) {
+        this.secure = secure;
     }
 
     public String getVersion() {

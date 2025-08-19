@@ -15,13 +15,15 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-import io.cockroachdb.pest.config.ClosableDataSource;
 import io.cockroachdb.pest.cluster.ClusterOperator;
+import io.cockroachdb.pest.config.ClosableDataSource;
 
 @Component
 @Validated
@@ -41,7 +43,7 @@ public class ApplicationProperties {
 
     @Valid
     @NotNull
-    private ClientProperties http;
+    private HttpProperties http;
 
     private Integer threadPoolMaxSize;
 
@@ -75,21 +77,6 @@ public class ApplicationProperties {
         return dataSourceFactory.apply(getClusterPropertiesById(clusterId).getDataSourceProperties());
     }
 
-    public List<String> getClusterIds() {
-        return getClusters()
-                .stream()
-                .map(ClusterProperties::getClusterId)
-                .toList();
-    }
-
-    public List<String> getClusterIds(EnumSet<ClusterType> requiredTypes) {
-        return getClusters()
-                .stream()
-                .filter(x -> requiredTypes.contains(x.getClusterType()))
-                .map(ClusterProperties::getClusterId)
-                .toList();
-    }
-
     public ClusterProperties getClusterPropertiesById(String clusterId) {
         return getClusterPropertiesById(clusterId, EnumSet.allOf(ClusterType.class));
     }
@@ -106,6 +93,14 @@ public class ApplicationProperties {
                     .formatted(requiredTypes, clusterProperties.getClusterType()));
         }
         return clusterProperties;
+    }
+
+    @JsonIgnore
+    public List<String> getClusterIds() {
+        return getClusters()
+                .stream()
+                .map(ClusterProperties::getClusterId)
+                .toList();
     }
 
     public List<ClusterProperties> getClusters() {
@@ -136,7 +131,8 @@ public class ApplicationProperties {
         return baseDir;
     }
 
-    public Path getScriptDirectory() {
+    @JsonIgnore
+    public Path getBaseDirPath() {
         return Paths.get(baseDir);
     }
 
@@ -148,7 +144,8 @@ public class ApplicationProperties {
         return certsDir;
     }
 
-    public Path getCertsDirectory() {
+    @JsonIgnore
+    public Path getCertsDirPath() {
         return Paths.get(certsDir);
     }
 
@@ -164,11 +161,11 @@ public class ApplicationProperties {
         this.threadPoolMaxSize = threadPoolMaxSize;
     }
 
-    public ClientProperties getHttp() {
+    public HttpProperties getHttp() {
         return http;
     }
 
-    public void setHttp(ClientProperties http) {
+    public void setHttp(HttpProperties http) {
         this.http = http;
     }
 

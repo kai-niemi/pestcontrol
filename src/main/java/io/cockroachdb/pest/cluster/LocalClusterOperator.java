@@ -64,7 +64,7 @@ public class LocalClusterOperator implements ClusterOperator {
             args.add("--http-addr=" + nodeProperties.getHttpAddr());
         }
 
-        if (nodeProperties.isSecure()) {
+        if (clusterProperties.isSecure()) {
             args.add("--secure");
         }
     }
@@ -72,21 +72,21 @@ public class LocalClusterOperator implements ClusterOperator {
     @Override
     public String certs(ClusterProperties clusterProperties, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
         // First create CA cert and key pairs
-        executeCommand(applicationProperties.getScriptDirectory(), List.of(OPERATOR_SCRIPT, "cert"));
+        executeCommand(applicationProperties.getBaseDirPath(), List.of(OPERATOR_SCRIPT, "cert"));
 
         // Then create node cert and key pairs
         clusterProperties.getNodes().forEach(nodeProperties -> {
             List<Path> expectedFiles = new ArrayList<>();
-            expectedFiles.add(applicationProperties.getCertsDirectory()
+            expectedFiles.add(applicationProperties.getCertsDirPath()
                     .resolve(nodeProperties.getName()).resolve("node.crt"));
-            expectedFiles.add(applicationProperties.getCertsDirectory()
+            expectedFiles.add(applicationProperties.getCertsDirPath()
                     .resolve(nodeProperties.getName()).resolve("node.key"));
 
             List<String> command = new ArrayList<>(List.of(OPERATOR_SCRIPT, "node-cert"));
             command.add("--name=" + nodeProperties.getName());
             command.addAll(nodeProperties.getCertHosts());
 
-            executeCommand(applicationProperties.getScriptDirectory(), command);
+            executeCommand(applicationProperties.getBaseDirPath(), command);
 
             expectedFiles.forEach(path -> {
                 if (!Files.isReadable(path)) {
@@ -106,7 +106,7 @@ public class LocalClusterOperator implements ClusterOperator {
         List<String> args = List.of(OPERATOR_SCRIPT, "install",
                 "--version=" + clusterProperties.getVersion()
         );
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 
     @Override
@@ -116,13 +116,13 @@ public class LocalClusterOperator implements ClusterOperator {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "init"));
         addNetworkingFlags(clusterProperties, nodeProperties, args);
 
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 
     @Override
     public String wipe(ClusterProperties clusterProperties, Integer nodeId) {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "wipe"));
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 
     @Override
@@ -146,7 +146,7 @@ public class LocalClusterOperator implements ClusterOperator {
 
         args.add("--join=" + String.join(",", Locality.distributeJoinHosts(hosts)));
 
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 
     @Override
@@ -156,7 +156,7 @@ public class LocalClusterOperator implements ClusterOperator {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop"));
         addNetworkingFlags(clusterProperties, nodeProperties, args);
 
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 
     @Override
@@ -166,7 +166,7 @@ public class LocalClusterOperator implements ClusterOperator {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "kill"));
         addNetworkingFlags(clusterProperties, nodeProperties, args);
 
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 
     @Override
@@ -176,7 +176,7 @@ public class LocalClusterOperator implements ClusterOperator {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "sql"));
         addNetworkingFlags(clusterProperties, nodeProperties, args);
 
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 
     @Override
@@ -204,7 +204,7 @@ public class LocalClusterOperator implements ClusterOperator {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-proxy"));
         args.add("--toxiproxy-host=" + applicationProperties.getToxiproxy().getHost());
         args.add("--toxiproxy-port=" + applicationProperties.getToxiproxy().getPort());
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 
     @Override
@@ -218,7 +218,7 @@ public class LocalClusterOperator implements ClusterOperator {
         args.add("--upstream_addr=" + nodeProperties.getListenAddr());
         args.add("--name=" + nodeProperties.getName());
 
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 
     @Override
@@ -226,7 +226,7 @@ public class LocalClusterOperator implements ClusterOperator {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop-proxy"));
         args.add("--toxiproxy-host=" + applicationProperties.getToxiproxy().getHost());
         args.add("--toxiproxy-port=" + applicationProperties.getToxiproxy().getPort());
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 
     @Override
@@ -236,13 +236,13 @@ public class LocalClusterOperator implements ClusterOperator {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-lb"));
         args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());
 
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 
     @Override
     public String stopLoadBalancer(ClusterProperties cluster) {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop-lb"));
 
-        return executeCommand(applicationProperties.getScriptDirectory(), args).getFirst();
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 }

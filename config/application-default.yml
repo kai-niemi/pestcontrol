@@ -48,18 +48,18 @@ application:
     - cluster-id: "remote-insecure"
       cluster-name: "Remote Cluster (insecure)"
       cluster-type: remote_insecure
-      admin-url: "http://127.0.0.1:8080"
+      admin-url: "http://localhost:8080"
       data-source-properties:
-        url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=disable"
+        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
 
     - cluster-id: "remote-secure"
       cluster-name: "Remote Cluster (secure)"
       cluster-type: remote_secure
-      admin-url: "https://127.0.0.1:8080"
+      admin-url: "https://localhost:8080"
       data-source-properties:
-        url: "jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=require"
+        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"
 
@@ -86,34 +86,34 @@ application:
         - url: http://localhost:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-          advertise-addr: 127.0.0.1:25257
-          advertise-proxy-addr: 127.0.0.1:35257
-          listen-addr: 127.0.0.1:25257
-          sql-addr: 127.0.0.1:26257
+          advertise-addr: localhost:25257
+          advertise-proxy-addr: localhost:35257
+          listen-addr: localhost:25257
+          sql-addr: localhost:26257
           http-addr: localhost:8080
         - url: http://localhost:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          advertise-addr: 127.0.0.1:25258
-          advertise-proxy-addr: 127.0.0.1:35258
-          listen-addr: 127.0.0.1:25258
-          sql-addr: 127.0.0.1:26258
+          advertise-addr: localhost:25258
+          advertise-proxy-addr: localhost:35258
+          listen-addr: localhost:25258
+          sql-addr: localhost:26258
           http-addr: localhost:8081
         - url: http://localhost:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          advertise-addr: 127.0.0.1:25259
-          advertise-proxy-addr: 127.0.0.1:35259
-          listen-addr: 127.0.0.1:25259
-          sql-addr: 127.0.0.1:26259
+          advertise-addr: localhost:25259
+          advertise-proxy-addr: localhost:35259
+          listen-addr: localhost:25259
+          sql-addr: localhost:26259
           http-addr: localhost:8082
         - url: http://localhost:9090
           name: n4
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1d"
-          advertise-addr: 127.0.0.1:25260
-          advertise-proxy-addr: 127.0.0.1:35260
-          listen-addr: 127.0.0.1:25260
-          sql-addr: 127.0.0.1:26260
+          advertise-addr: localhost:25260
+          advertise-proxy-addr: localhost:35260
+          listen-addr: localhost:25260
+          sql-addr: localhost:26260
           http-addr: localhost:8083
 
     - cluster-id: "local-secure"
@@ -129,17 +129,17 @@ application:
         - url: http://localhost:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-          advertise-addr: 127.0.0.1:25257
-          listen-addr: 127.0.0.1:25257
-          sql-addr: 127.0.0.1:26257
+          advertise-addr: localhost:25257
+          listen-addr: localhost:25257
+          sql-addr: localhost:26257
           http-addr: localhost:8080
           secure: true
           cert-hosts: localhost,${external-ip},${hostname},localhost,127.0.0.1
         - url: http://localhost:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          advertise-addr: 127.0.0.1:25258
-          listen-addr: 127.0.0.1:25258
+          advertise-addr: localhost:25258
+          listen-addr: localhost:25258
           sql-addr: localhost:26258
           http-addr: localhost:8081
           secure: true
@@ -147,8 +147,8 @@ application:
         - url: http://localhost:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          advertise-addr: 127.0.0.1:25259
-          listen-addr: 127.0.0.1:25259
+          advertise-addr: localhost:25259
+          listen-addr: localhost:25259
           sql-addr: localhost:26259
           http-addr: localhost:8082
           secure: true

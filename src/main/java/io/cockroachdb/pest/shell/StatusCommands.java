@@ -49,11 +49,13 @@ public class StatusCommands extends AbstractCommand {
 
         List<List<?>> tuples = new ArrayList<>();
 
+        String protocol = "http%s".formatted(getClusterProperties().isSecure() ? "s" : "");
+
         getClusterProperties()
                 .getNodes().forEach(nodeProperties ->
                         tuples.add(List.of(Objects.requireNonNull(nodeProperties.getId()),
                                 nodeProperties.getBaseUrl().getHref(),
-                                "http%s//%s".formatted(nodeProperties.isSecure() ? "s:" : ":",
+                                "%s://%s".formatted(protocol,
                                         Objects.requireNonNull(nodeProperties.getHttpAddr())),
                                 Objects.requireNonNullElse(nodeProperties.getSqlAddr(), "n/a"))
                         ));

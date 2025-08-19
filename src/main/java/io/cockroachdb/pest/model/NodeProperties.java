@@ -8,8 +8,8 @@ import org.springframework.hateoas.Link;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -18,16 +18,19 @@ import io.cockroachdb.pest.util.Networking;
 /**
  * Node properties describing a local or remote network node.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Validated
+@JsonPropertyOrder({
+        "id", "name", "url", "locality",
+        "listenAddr", "advertiseAddr", "advertiseProxyAddr",
+        "sqlAddr", "httpAddr", "certHosts"})
 public class NodeProperties {
     private Integer id;
 
     @NotNull
-    private String url;
+    private String name;
 
     @NotNull
-    private String name;
+    private String url;
 
     @NotNull
     private String locality;
@@ -44,7 +47,11 @@ public class NodeProperties {
 
     private List<String> certHosts = List.of();
 
-    private boolean secure;
+    @JsonIgnore
+    public Link getBaseUrl() {
+        String path = (url.endsWith("/") ? "api" : "/api");
+        return Link.of(Networking.resolve(url) + path);
+    }
 
     public List<String> getCertHosts() {
         return certHosts.stream().map(Networking::resolve)
@@ -56,11 +63,6 @@ public class NodeProperties {
     }
 
     @JsonIgnore
-    public Link getBaseUrl() {
-        String path = (url.endsWith("/") ? "api" : "/api");
-        return Link.of(Networking.resolve(url) + path);
-    }
-
     public Integer getId() {
         return id;
     }
@@ -136,14 +138,6 @@ public class NodeProperties {
 
     public void setSqlAddr(String sqlAddr) {
         this.sqlAddr = sqlAddr;
-    }
-
-    public boolean isSecure() {
-        return secure;
-    }
-
-    public void setSecure(boolean secure) {
-        this.secure = secure;
     }
 
     @Override

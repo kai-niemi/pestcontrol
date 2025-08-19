@@ -64,8 +64,8 @@ fn_start_agents() {
   done
 }
 
-fn_deploy_ip() {
-  fn_echo_info_nl "Deploy IP lists to client nodes"
+fn_deploy_cfg() {
+  fn_echo_info_nl "Deploy application config with IP lists to client nodes"
 
   # Write node IPs to text files
   security_mode=""
@@ -73,11 +73,16 @@ fn_deploy_ip() {
     security_mode="--insecure"
   fi
 
-  fn_failcheck roachprod ip $CLUSTER > ip-internal.txt
-  fn_failcheck roachprod ip $CLUSTER --external > ip-external.txt
+  ip_internal=$(roachprod ip $CLUSTER)
+  ip_external=$(roachprod ip $CLUSTER --external)
+#  value=$(<config.txt)
 
-  fn_failcheck roachprod put $security_mode ${CLUSTER}:$clientnodes ip-internal.txt pestcontrol/config/ip-internal.txt
-  fn_failcheck roachprod put $security_mode ${CLUSTER}:$clientnodes ip-external.txt pestcontrol/config/ip-external.txt
+  $basedir/target/pestcontrol.jar --generate \
+   --zones $zones \
+   --ip-internal $ip_internal \
+   --ip-external $ip_external > application-cloud.yml
+
+  fn_failcheck roachprod put $security_mode ${CLUSTER}:$clientnodes application-cloud.yml pestcontrol/config/application-cloud.yml
 }
 
 if fn_prompt_yes_no "Create cluster?" Y; then

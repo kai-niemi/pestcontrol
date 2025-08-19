@@ -96,6 +96,7 @@ public class Application {
                     passThroughArgs.add(arg);
                 } else {
                     printHelpAndExit(ansiConsole -> {
+                        ansiConsole.red("Unknown argument: " + arg).nl().nl();
                     });
                 }
             }

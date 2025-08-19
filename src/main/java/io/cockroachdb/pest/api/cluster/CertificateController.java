@@ -6,9 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -69,7 +67,7 @@ public class CertificateController {
     }
 
     private boolean uploadFile(MultipartFile file) throws UncheckedIOException {
-        Path targetPath = applicationProperties.getCertsDirectory()
+        Path targetPath = applicationProperties.getCertsDirPath()
                 .resolve(Objects.requireNonNull(file.getOriginalFilename()));
         try {
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
