@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ApplicationSettings;
 
 @WebController
 public class AuthenticationController {
     @Autowired
-    private ApplicationProperties applicationProperties;
+    private ApplicationSettings applicationSettings;
 
     @ModelAttribute("authentication")
     public AuthenticationRequest authenticationRequest() {
@@ -28,8 +28,8 @@ public class AuthenticationController {
             @RequestParam(name = "logoutSuccess", defaultValue = "false", required = false) Boolean logoutSuccess,
             final Model model) {
         model.addAttribute("authentication", authenticationRequest);
-        model.addAttribute("clusterIds", applicationProperties.getClusterIds());
-        model.addAttribute("defaultClusterId", applicationProperties.getDefaultClusterId());
+        model.addAttribute("clusterIds", applicationSettings.getClusterIds());
+        model.addAttribute("defaultClusterId", applicationSettings.getDefaultClusterId());
 
         if (loginRequired) {
             model.addAttribute(WebUtils.MSG_INFO, WebUtils.getMessage("authentication.login.required"));

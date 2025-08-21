@@ -20,7 +20,7 @@ import jakarta.validation.Valid;
 import io.cockroachdb.pest.api.LinkRelations;
 import io.cockroachdb.pest.api.MessageModel;
 import io.cockroachdb.pest.cluster.ClusterOperator;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.ClusterSettings;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -66,12 +66,12 @@ public class LocalController {
     @PostMapping("/{nodeId}/start")
     public HttpEntity<String> startNode(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid ClusterSettings clusterSettings) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Start cluster '%s' node %d".formatted(clusterProperties.getClusterId(), nodeId));
+        logger.info("Start cluster '%s' node %d".formatted(clusterSettings.getClusterId(), nodeId));
 
-        String responseString = clusterOperator.startNode(clusterProperties, nodeId);
+        String responseString = clusterOperator.startNode(clusterSettings, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -81,12 +81,12 @@ public class LocalController {
     @PostMapping("/{nodeId}/stop")
     public HttpEntity<String> stopNode(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid ClusterSettings clusterSettings) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Stop cluster '%s' node %d".formatted(clusterProperties.getClusterId(), nodeId));
+        logger.info("Stop cluster '%s' node %d".formatted(clusterSettings.getClusterId(), nodeId));
 
-        String responseString = clusterOperator.stopNode(clusterProperties, nodeId);
+        String responseString = clusterOperator.stopNode(clusterSettings, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -96,12 +96,12 @@ public class LocalController {
     @PostMapping("/{nodeId}/kill")
     public HttpEntity<String> killNode(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid ClusterSettings clusterSettings) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Kill cluster '%s' node %d".formatted(clusterProperties.getClusterId(), nodeId));
+        logger.info("Kill cluster '%s' node %d".formatted(clusterSettings.getClusterId(), nodeId));
 
-        String responseString = clusterOperator.killNode(clusterProperties, nodeId);
+        String responseString = clusterOperator.killNode(clusterSettings, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -111,12 +111,12 @@ public class LocalController {
     @PostMapping("/{nodeId}/init")
     public HttpEntity<String> init(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid ClusterSettings clusterSettings) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Init cluster '%s' via node %d".formatted(clusterProperties.getClusterId(), nodeId));
+        logger.info("Init cluster '%s' via node %d".formatted(clusterSettings.getClusterId(), nodeId));
 
-        String responseString = clusterOperator.init(clusterProperties, nodeId);
+        String responseString = clusterOperator.init(clusterSettings, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -126,13 +126,13 @@ public class LocalController {
     @PostMapping("/{nodeId}/install")
     public HttpEntity<String> install(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid ClusterSettings clusterSettings) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         logger.info("Install cluster '%s' node %d version %s"
-                .formatted(clusterProperties.getClusterId(), nodeId, clusterProperties.getVersion()));
+                .formatted(clusterSettings.getClusterId(), nodeId, clusterSettings.getVersion()));
 
-        String responseString = clusterOperator.install(clusterProperties, nodeId);
+        String responseString = clusterOperator.install(clusterSettings, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -142,13 +142,13 @@ public class LocalController {
     @PostMapping("/{nodeId}/wipe")
     public HttpEntity<String> wipe(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid ClusterSettings clusterSettings) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         logger.info("Wipe cluster '%s' node %d version %s"
-                .formatted(clusterProperties.getClusterId(), nodeId, clusterProperties.getVersion()));
+                .formatted(clusterSettings.getClusterId(), nodeId, clusterSettings.getVersion()));
 
-        String responseString = clusterOperator.wipe(clusterProperties, nodeId);
+        String responseString = clusterOperator.wipe(clusterSettings, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -158,13 +158,13 @@ public class LocalController {
     @PostMapping("/{nodeId}/start-proxy-cli")
     public HttpEntity<String> startProxyClient(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid ClusterSettings clusterSettings) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         logger.info("Start proxy client for '%s' node %d version %s"
-                .formatted(clusterProperties.getClusterId(), nodeId, clusterProperties.getVersion()));
+                .formatted(clusterSettings.getClusterId(), nodeId, clusterSettings.getVersion()));
 
-        String responseString = clusterOperator.startProxyClient(clusterProperties, nodeId);
+        String responseString = clusterOperator.startProxyClient(clusterSettings, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)

@@ -1,7 +1,6 @@
 package io.cockroachdb.pest.shell;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -16,8 +15,6 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.web.client.ResourceAccessException;
 
-import io.cockroachdb.pest.model.ClusterProperties;
-import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.shell.client.HypermediaClient;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
@@ -79,7 +76,7 @@ public class StatusCommands extends AbstractCommand {
     public void printConfig() {
         List<List<?>> tuples = new ArrayList<>();
 
-        applicationProperties.getClusters()
+        applicationSettings.getClusters()
                 .forEach(clusterProperties -> {
                     tuples.add(List.of(
                             clusterProperties.getClusterId(),

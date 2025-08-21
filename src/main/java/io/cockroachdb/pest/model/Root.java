@@ -1,22 +1,22 @@
 package io.cockroachdb.pest.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder(value = {"applicationProperties"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Root {
     @JsonProperty("application")
-    private ApplicationProperties applicationProperties;
+    private ApplicationSettings applicationSettings;
 
-    public Root(ApplicationProperties applicationProperties) {
-        this.applicationProperties = applicationProperties;
+    public Root(ApplicationSettings applicationSettings) {
+        this.applicationSettings = applicationSettings;
     }
 
-    public ApplicationProperties getApplicationProperties() {
-        return applicationProperties;
+    public ApplicationSettings getApplicationProperties() {
+        return applicationSettings;
     }
 
-    public void setApplicationProperties(ApplicationProperties applicationProperties) {
-        this.applicationProperties = applicationProperties;
+    public void setApplicationProperties(ApplicationSettings applicationSettings) {
+        this.applicationSettings = applicationSettings;
     }
 }

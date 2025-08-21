@@ -8,7 +8,7 @@ import jakarta.annotation.PostConstruct;
 
 import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.cluster.CredentialsHandler;
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ApplicationSettings;
 
 @Configuration
 public class ClusterConfiguration {
@@ -16,17 +16,17 @@ public class ClusterConfiguration {
     private ClusterManager clusterManager;
 
     @Autowired
-    private ApplicationProperties applicationProperties;
+    private ApplicationSettings applicationSettings;
 
     @PostConstruct
     public void init() {
         clusterManager.setCredentialsHandler(new CredentialsHandler() {
             @Override
             public Pair<String, String> getAuthenticationCredentials(String clusterId) {
-                String username = applicationProperties.getClusterPropertiesById(clusterId)
+                String username = applicationSettings.getClusterPropertiesById(clusterId)
                         .getDataSourceProperties()
                         .getUsername();
-                String password = applicationProperties.getClusterPropertiesById(clusterId)
+                String password = applicationSettings.getClusterPropertiesById(clusterId)
                         .getDataSourceProperties()
                         .getPassword();
                 return Pair.of(username, password);

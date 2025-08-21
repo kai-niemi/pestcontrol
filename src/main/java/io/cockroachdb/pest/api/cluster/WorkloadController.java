@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ApplicationSettings;
 import io.cockroachdb.pest.workload.WorkloadManager;
 import io.cockroachdb.pest.workload.model.Workload;
 import io.cockroachdb.pest.workload.repository.WorkloadType;
@@ -42,7 +42,7 @@ public class WorkloadController {
     private WorkloadModelAssembler workerModelAssembler;
 
     @Autowired
-    private ApplicationProperties applicationProperties;
+    private ApplicationSettings applicationSettings;
 
     @GetMapping("/{clusterId}/workload")
     public ResponseEntity<CollectionModel<Workload>> index(
@@ -118,7 +118,7 @@ public class WorkloadController {
 
         final LocalTime time = LocalTime.parse(form.getDuration(), DateTimeFormatter.ofPattern("HH:mm"));
         final Duration duration = Duration.ofHours(time.getHour()).plusMinutes(time.getMinute());
-        final DataSource dataSource = applicationProperties.getDataSource(clusterId);
+        final DataSource dataSource = applicationSettings.getDataSource(clusterId);
 
         List<Workload> entities = new ArrayList<>();
 

@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.schema;
+package io.cockroachdb.pest.model.schema;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,18 +9,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.cockroachdb.pest.model.Locality;
-import io.cockroachdb.pest.model.NodeProperties;
+import io.cockroachdb.pest.model.NodeSettings;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeDetail {
-    public static NodeDetail from(NodeProperties nodeProperties) {
+    public static NodeDetail from(NodeSettings nodeSettings) {
         NodeDetail nodeDetail = new NodeDetail();
-        nodeDetail.setNodeId(nodeProperties.getId());
-        nodeDetail.setLocality(Locality.fromTiers(nodeProperties.getLocality()));
+        nodeDetail.setNodeId(nodeSettings.getId());
+        nodeDetail.setLocality(Locality.fromTiers(nodeSettings.getLocality()));
 
         Address address = new Address();
-        address.setAddressField(nodeProperties.getListenAddr());
-        address.setNetworkField(nodeProperties.getListenAddr());
+        address.setAddressField(nodeSettings.getListenAddr());
+        address.setNetworkField(nodeSettings.getListenAddr());
         nodeDetail.setAddress(address);
 
         return nodeDetail;

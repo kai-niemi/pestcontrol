@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.cockroachdb.pest.api.LinkRelations;
-import io.cockroachdb.pest.schema.NodeDetail;
-import io.cockroachdb.pest.schema.NodeStatus;
+import io.cockroachdb.pest.model.schema.NodeDetail;
+import io.cockroachdb.pest.model.schema.NodeStatus;
 
 /**
  * Combination of node detail and status.

@@ -1,7 +1,6 @@
-package io.cockroachdb.pest.schema;
+package io.cockroachdb.pest.model.schema;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -11,21 +10,34 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class NodeDetails {
-    @JsonProperty("nodes")
-    private List<NodeDetail> nodeDetails;
+public class Address {
+    @JsonProperty("network_field")
+    private String networkField;
+
+    @JsonProperty("address_field")
+    private String addressField;
 
     @JsonIgnore
     private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
 
-    @JsonProperty("nodes")
-    public List<NodeDetail> getNodes() {
-        return nodeDetails;
+    @JsonProperty("network_field")
+    public String getNetworkField() {
+        return networkField;
     }
 
-    @JsonProperty("nodes")
-    public void setNodes(List<NodeDetail> nodeDetails) {
-        this.nodeDetails = nodeDetails;
+    @JsonProperty("network_field")
+    public void setNetworkField(String networkField) {
+        this.networkField = networkField;
+    }
+
+    @JsonProperty("address_field")
+    public String getAddressField() {
+        return addressField;
+    }
+
+    @JsonProperty("address_field")
+    public void setAddressField(String addressField) {
+        this.addressField = addressField;
     }
 
     @JsonAnyGetter

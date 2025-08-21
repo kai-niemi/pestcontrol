@@ -25,10 +25,10 @@ import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.ApplicationSettings;
+import io.cockroachdb.pest.model.ClusterSettings;
 import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.model.NodeProperties;
+import io.cockroachdb.pest.model.NodeSettings;
 import io.cockroachdb.pest.model.Root;
 
 @ShellComponent
@@ -87,7 +87,7 @@ public class ConfigCommands {
         Assert.state(internalIPs.size() == externalIPs.size(), "size of internal ips != size of external ips");
         Assert.state(regions.size() == internalIPs.size(), "size of regions != size of ips");
 
-        ApplicationProperties applicationProperties = new ApplicationProperties();
+        ApplicationSettings applicationSettings = new ApplicationSettings();
 
         AddressCallback callback = new AddressCallback() {
             @Override
@@ -148,20 +148,20 @@ public class ConfigCommands {
             }
         };
 
-        ClusterProperties insecureCluster
+        ClusterSettings insecureCluster
                 = generateClusterProperties(name, regions, zones, false, callback);
-        ClusterProperties secureCluster
+        ClusterSettings secureCluster
                 = generateClusterProperties(name, regions, zones, true, callback);
-        applicationProperties.setDefaultClusterId(insecureCluster.getClusterId());
-        applicationProperties.getClusters().add(insecureCluster);
-        applicationProperties.getClusters().add(secureCluster);
+        applicationSettings.setDefaultClusterId(insecureCluster.getClusterId());
+        applicationSettings.getClusters().add(insecureCluster);
+        applicationSettings.getClusters().add(secureCluster);
 
         try {
             StringWriter sw = new StringWriter();
 
             yamlObjectMapper
                     .writerFor(Root.class)
-                    .writeValue(sw, new Root(applicationProperties));
+                    .writeValue(sw, new Root(applicationSettings));
 
             System.out.println();
             System.out.println(sw);
@@ -175,7 +175,7 @@ public class ConfigCommands {
         }
     }
 
-    private ClusterProperties generateClusterProperties(
+    private ClusterSettings generateClusterProperties(
             String name,
             List<String> regions,
             List<String> zones,
@@ -183,14 +183,14 @@ public class ConfigCommands {
             AddressCallback addressCallback
     ) {
 
-        ClusterProperties clusterProperties = new ClusterProperties();
+        ClusterSettings clusterSettings = new ClusterSettings();
         {
-            clusterProperties.setClusterId("%s-%s".formatted(name, secure ? "secure" : "insecure"));
-            clusterProperties.setClusterName("Generated");
-            clusterProperties.setClusterType(secure ? ClusterType.hosted_insecure : ClusterType.hosted_secure);
-            clusterProperties.setAdminUrl(addressCallback.adminURL(1));
-            clusterProperties.setVersion("v25.2.2.linux-amd64");
-            clusterProperties.setSecure(secure);
+            clusterSettings.setClusterId("%s-%s".formatted(name, secure ? "secure" : "insecure"));
+            clusterSettings.setClusterName("Generated");
+            clusterSettings.setClusterType(secure ? ClusterType.hosted_insecure : ClusterType.hosted_secure);
+            clusterSettings.setAdminUrl(addressCallback.adminURL(1));
+            clusterSettings.setVersion("v25.2.2.linux-amd64");
+            clusterSettings.setSecure(secure);
         }
 
         final String firstNodeIP = addressCallback.firstNodeIP();
@@ -208,31 +208,31 @@ public class ConfigCommands {
                 dataSourceProperties.setUsername("root");
                 dataSourceProperties.setPassword("");
             }
-            clusterProperties.setDataSourceProperties(dataSourceProperties);
+            clusterSettings.setDataSourceProperties(dataSourceProperties);
         }
 
         IntStream.rangeClosed(1, regions.size()).forEach(nodeId -> {
-            NodeProperties nodeProperties = new NodeProperties();
-            nodeProperties.setLocality("region=%s,zone=%s".formatted(
+            NodeSettings nodeSettings = new NodeSettings();
+            nodeSettings.setLocality("region=%s,zone=%s".formatted(
                     regions.get(nodeId - 1),
                     zones.get(nodeId - 1))
             );
-            nodeProperties.setId(nodeId);
-            nodeProperties.setName("n%d".formatted(nodeId));
-            nodeProperties.setUrl(addressCallback.adminURL(nodeId));
-            nodeProperties.setAdvertiseAddr(addressCallback.advertiseAddr(nodeId));
-            nodeProperties.setAdvertiseProxyAddr(addressCallback.advertiseProxyAddr(nodeId));
-            nodeProperties.setListenAddr(addressCallback.listenAddr(nodeId));
-            nodeProperties.setSqlAddr(addressCallback.sqlAddr(nodeId));
-            nodeProperties.setHttpAddr(addressCallback.httpAddr(nodeId));
+            nodeSettings.setId(nodeId);
+            nodeSettings.setName("n%d".formatted(nodeId));
+            nodeSettings.setUrl(addressCallback.adminURL(nodeId));
+            nodeSettings.setAdvertiseAddr(addressCallback.advertiseAddr(nodeId));
+            nodeSettings.setAdvertiseProxyAddr(addressCallback.advertiseProxyAddr(nodeId));
+            nodeSettings.setListenAddr(addressCallback.listenAddr(nodeId));
+            nodeSettings.setSqlAddr(addressCallback.sqlAddr(nodeId));
+            nodeSettings.setHttpAddr(addressCallback.httpAddr(nodeId));
 
             if (secure) {
-                nodeProperties.setCertHosts(List.of("localhost", firstNodeIP, "localhost", "127.0.0.1"));
+                nodeSettings.setCertHosts(List.of("localhost", firstNodeIP, "localhost", "127.0.0.1"));
             }
 
-            clusterProperties.getNodes().add(nodeProperties);
+            clusterSettings.getNodes().add(nodeSettings);
         });
 
-        return clusterProperties;
+        return clusterSettings;
     }
 }

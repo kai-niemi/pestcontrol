@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ApplicationEventMulticaster;
@@ -23,7 +22,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.context.request.async.CallableProcessingInterceptor;
 import org.springframework.web.context.request.async.TimeoutCallableProcessingInterceptor;
 
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ApplicationSettings;
 
 @Configuration
 @EnableAsync
@@ -32,7 +31,7 @@ public class AsyncConfiguration implements AsyncConfigurer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private ApplicationProperties applicationProperties;
+    private ApplicationSettings applicationSettings;
 
     @Override
     public AsyncTaskExecutor getAsyncExecutor() {
@@ -41,8 +40,8 @@ public class AsyncConfiguration implements AsyncConfigurer {
         // Pool threads are also reclaimed when they are idle for 10 seconds.
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(applicationProperties.getThreadPoolMaxSize() <= 0
-                ? Runtime.getRuntime().availableProcessors() : applicationProperties.getThreadPoolMaxSize());
+        executor.setMaxPoolSize(applicationSettings.getThreadPoolMaxSize() <= 0
+                ? Runtime.getRuntime().availableProcessors() : applicationSettings.getThreadPoolMaxSize());
         executor.setQueueCapacity(32);
         executor.setKeepAliveSeconds(10);
         executor.setThreadNamePrefix("async-");

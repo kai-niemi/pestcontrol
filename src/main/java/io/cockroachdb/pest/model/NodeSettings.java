@@ -8,6 +8,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -19,11 +20,12 @@ import io.cockroachdb.pest.util.Networking;
  * Node properties describing a local or remote network node.
  */
 @Validated
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "id", "name", "url", "locality",
         "listenAddr", "advertiseAddr", "advertiseProxyAddr",
         "sqlAddr", "httpAddr", "certHosts"})
-public class NodeProperties {
+public class NodeSettings {
     private Integer id;
 
     @NotNull
@@ -144,7 +146,7 @@ public class NodeProperties {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        NodeProperties that = (NodeProperties) o;
+        NodeSettings that = (NodeSettings) o;
         return Objects.equals(id, that.id) && Objects.equals(url, that.url) && Objects.equals(name, that.name)
                && Objects.equals(locality, that.locality) && Objects.equals(listenAddr, that.listenAddr)
                && Objects.equals(advertiseAddr, that.advertiseAddr) && Objects.equals(sqlAddr,

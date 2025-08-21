@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.cockroachdb.pest.cluster.ClusterManager;
-import io.cockroachdb.pest.schema.NodeDetail;
-import io.cockroachdb.pest.schema.NodeStatus;
+import io.cockroachdb.pest.model.schema.NodeDetail;
+import io.cockroachdb.pest.model.schema.NodeStatus;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 

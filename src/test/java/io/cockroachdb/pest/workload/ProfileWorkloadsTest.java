@@ -24,7 +24,7 @@ public class ProfileWorkloadsTest extends AbstractIntegrationTest {
 
     @BeforeAll
     public void setupTestOnce() {
-        this.dataSource = applicationProperties.getDataSource("integration-test");
+        this.dataSource = applicationSettings.getDataSource("integration-test");
 
         logger.info("Connected to: %s".formatted(
                 new JdbcTemplate(dataSource)

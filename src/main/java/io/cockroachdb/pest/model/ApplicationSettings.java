@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
@@ -27,10 +28,11 @@ import io.cockroachdb.pest.config.ClosableDataSource;
 
 @Component
 @Validated
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @ConfigurationProperties(prefix = "application", ignoreUnknownFields = false)
-public class ApplicationProperties {
+public class ApplicationSettings {
     @NotEmpty
-    private List<@Valid ClusterProperties> clusters = new ArrayList<>();
+    private List<@Valid ClusterSettings> clusters = new ArrayList<>();
 
     @Autowired
     private Function<DataSourceProperties, ClosableDataSource> dataSourceFactory;
@@ -39,11 +41,11 @@ public class ApplicationProperties {
     private ObjectProvider<ClusterOperator> clusterOperators;
 
     @Valid
-    private ProxyProperties toxiproxy;
+    private ProxySettings toxiproxy;
 
     @Valid
     @NotNull
-    private HttpProperties http;
+    private HttpSettings http;
 
     private Integer threadPoolMaxSize;
 
@@ -57,7 +59,7 @@ public class ApplicationProperties {
 
     @PostConstruct
     public void init() {
-        clusters.forEach(ClusterProperties::init);
+        clusters.forEach(ClusterSettings::init);
     }
 
     public ClusterOperator clusterOperator(String clusterId) {
@@ -77,45 +79,45 @@ public class ApplicationProperties {
         return dataSourceFactory.apply(getClusterPropertiesById(clusterId).getDataSourceProperties());
     }
 
-    public ClusterProperties getClusterPropertiesById(String clusterId) {
+    public ClusterSettings getClusterPropertiesById(String clusterId) {
         return getClusterPropertiesById(clusterId, EnumSet.allOf(ClusterType.class));
     }
 
-    public ClusterProperties getClusterPropertiesById(String clusterId, EnumSet<ClusterType> requiredTypes) {
-        ClusterProperties clusterProperties = getClusters()
+    public ClusterSettings getClusterPropertiesById(String clusterId, EnumSet<ClusterType> requiredTypes) {
+        ClusterSettings clusterSettings = getClusters()
                 .stream()
                 .filter(x -> x.getClusterId().equals(clusterId))
                 .findFirst()
                 .orElseThrow(() ->
                         new IllegalArgumentException("No cluster configuration with id: " + clusterId));
-        if (!requiredTypes.contains(clusterProperties.getClusterType())) {
+        if (!requiredTypes.contains(clusterSettings.getClusterType())) {
             throw new IllegalArgumentException("Cluster configuration is not of expected types '%s' but '%s'"
-                    .formatted(requiredTypes, clusterProperties.getClusterType()));
+                    .formatted(requiredTypes, clusterSettings.getClusterType()));
         }
-        return clusterProperties;
+        return clusterSettings;
     }
 
     @JsonIgnore
     public List<String> getClusterIds() {
         return getClusters()
                 .stream()
-                .map(ClusterProperties::getClusterId)
+                .map(ClusterSettings::getClusterId)
                 .toList();
     }
 
-    public List<ClusterProperties> getClusters() {
+    public List<ClusterSettings> getClusters() {
         return clusters;
     }
 
-    public void setClusters(List<ClusterProperties> clusters) {
+    public void setClusters(List<ClusterSettings> clusters) {
         this.clusters = clusters;
     }
 
-    public ProxyProperties getToxiproxy() {
+    public ProxySettings getToxiproxy() {
         return toxiproxy;
     }
 
-    public void setToxiproxy(ProxyProperties toxiproxy) {
+    public void setToxiproxy(ProxySettings toxiproxy) {
         this.toxiproxy = toxiproxy;
     }
 
@@ -161,11 +163,11 @@ public class ApplicationProperties {
         this.threadPoolMaxSize = threadPoolMaxSize;
     }
 
-    public HttpProperties getHttp() {
+    public HttpSettings getHttp() {
         return http;
     }
 
-    public void setHttp(HttpProperties http) {
+    public void setHttp(HttpSettings http) {
         this.http = http;
     }
 

@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.test.context.ActiveProfiles;
 
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ApplicationSettings;
 
 @SpringBootTest(classes = {Application.class}, useMainMethod = SpringBootTest.UseMainMethod.NEVER)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -26,7 +26,7 @@ public abstract class AbstractIntegrationTest {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    protected ApplicationProperties applicationProperties;
+    protected ApplicationSettings applicationSettings;
 
     protected String getTagValue() {
         Cluster tag = AnnotationUtils.findAnnotation(getClass(), Cluster.class);

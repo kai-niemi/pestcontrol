@@ -6,17 +6,17 @@ import org.springframework.context.annotation.Configuration;
 
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ApplicationSettings;
 
 @Configuration
 public class ToxiproxyConfiguration {
     @Autowired
-    private ApplicationProperties applicationProperties;
+    private ApplicationSettings applicationSettings;
 
     @Bean
     public ToxiproxyClient toxiproxyClient() {
         return new ToxiproxyClient(
-                applicationProperties.getToxiproxy().getHost(),
-                applicationProperties.getToxiproxy().getPort());
+                applicationSettings.getToxiproxy().getHost(),
+                applicationSettings.getToxiproxy().getPort());
     }
 }

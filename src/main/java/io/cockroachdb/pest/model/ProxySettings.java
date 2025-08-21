@@ -1,6 +1,9 @@
 package io.cockroachdb.pest.model;
 
-public class ProxyProperties {
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ProxySettings {
     private String host;
 
     private int port;

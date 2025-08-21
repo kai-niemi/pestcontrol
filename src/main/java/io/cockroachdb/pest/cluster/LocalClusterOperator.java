@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.ApplicationSettings;
+import io.cockroachdb.pest.model.ClusterSettings;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.model.Locality;
-import io.cockroachdb.pest.model.NodeProperties;
+import io.cockroachdb.pest.model.NodeSettings;
 import io.cockroachdb.pest.util.Networking;
 import static io.cockroachdb.pest.util.ProcessUtils.executeCommand;
 
@@ -27,66 +27,66 @@ public class LocalClusterOperator implements ClusterOperator {
     private static final String OPERATOR_SCRIPT = "./pop";
 
     @Autowired
-    private ApplicationProperties applicationProperties;
+    private ApplicationSettings applicationSettings;
 
     @Override
     public boolean supports(ClusterType clusterType) {
         return false;
     }
 
-    private void addNetworkingFlags(ClusterProperties clusterProperties,
-                                    NodeProperties nodeProperties,
+    private void addNetworkingFlags(ClusterSettings clusterSettings,
+                                    NodeSettings nodeSettings,
                                     List<String> args) {
-        if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
-            args.add("--listen-addr=" + nodeProperties.getListenAddr());
+        if (StringUtils.hasLength(nodeSettings.getListenAddr())) {
+            args.add("--listen-addr=" + nodeSettings.getListenAddr());
         }
 
-        if (applicationProperties.getToxiproxy().isEnabled()) {
+        if (applicationSettings.getToxiproxy().isEnabled()) {
             args.add("--advertise-addr=" +
-                     Objects.requireNonNull(nodeProperties.getAdvertiseProxyAddr()));
+                     Objects.requireNonNull(nodeSettings.getAdvertiseProxyAddr()));
         } else {
-            if (StringUtils.hasLength(nodeProperties.getAdvertiseAddr())) {
-                args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());
+            if (StringUtils.hasLength(nodeSettings.getAdvertiseAddr())) {
+                args.add("--advertise-addr=" + nodeSettings.getAdvertiseAddr());
             } else {
-                if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
-                    args.add("--advertise-addr=" + nodeProperties.getListenAddr());
+                if (StringUtils.hasLength(nodeSettings.getListenAddr())) {
+                    args.add("--advertise-addr=" + nodeSettings.getListenAddr());
                 } else {
                     args.add("--advertise-addr=" + Networking.getCanonicalHostName() + ":26257");
                 }
             }
         }
 
-        if (StringUtils.hasLength(nodeProperties.getSqlAddr())) {
-            args.add("--sql-addr=" + nodeProperties.getSqlAddr());
+        if (StringUtils.hasLength(nodeSettings.getSqlAddr())) {
+            args.add("--sql-addr=" + nodeSettings.getSqlAddr());
         }
 
-        if (StringUtils.hasLength(nodeProperties.getHttpAddr())) {
-            args.add("--http-addr=" + nodeProperties.getHttpAddr());
+        if (StringUtils.hasLength(nodeSettings.getHttpAddr())) {
+            args.add("--http-addr=" + nodeSettings.getHttpAddr());
         }
 
-        if (clusterProperties.isSecure()) {
+        if (clusterSettings.isSecure()) {
             args.add("--secure");
         }
     }
 
     @Override
-    public String certs(ClusterProperties clusterProperties, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
+    public String certs(ClusterSettings clusterSettings, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
         // First create CA cert and key pairs
-        executeCommand(applicationProperties.getBaseDirPath(), List.of(OPERATOR_SCRIPT, "cert"));
+        executeCommand(applicationSettings.getBaseDirPath(), List.of(OPERATOR_SCRIPT, "cert"));
 
         // Then create node cert and key pairs
-        clusterProperties.getNodes().forEach(nodeProperties -> {
+        clusterSettings.getNodes().forEach(nodeProperties -> {
             List<Path> expectedFiles = new ArrayList<>();
-            expectedFiles.add(applicationProperties.getCertsDirPath()
+            expectedFiles.add(applicationSettings.getCertsDirPath()
                     .resolve(nodeProperties.getName()).resolve("node.crt"));
-            expectedFiles.add(applicationProperties.getCertsDirPath()
+            expectedFiles.add(applicationSettings.getCertsDirPath()
                     .resolve(nodeProperties.getName()).resolve("node.key"));
 
             List<String> command = new ArrayList<>(List.of(OPERATOR_SCRIPT, "node-cert"));
             command.add("--name=" + nodeProperties.getName());
             command.addAll(nodeProperties.getCertHosts());
 
-            executeCommand(applicationProperties.getBaseDirPath(), command);
+            executeCommand(applicationSettings.getBaseDirPath(), command);
 
             expectedFiles.forEach(path -> {
                 if (!Files.isReadable(path)) {
@@ -102,36 +102,36 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String install(ClusterProperties clusterProperties, Integer nodeId) {
+    public String install(ClusterSettings clusterSettings, Integer nodeId) {
         List<String> args = List.of(OPERATOR_SCRIPT, "install",
-                "--version=" + clusterProperties.getVersion()
+                "--version=" + clusterSettings.getVersion()
         );
-        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+        return executeCommand(applicationSettings.getBaseDirPath(), args).getFirst();
     }
 
     @Override
-    public String init(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+    public String init(ClusterSettings clusterSettings, Integer nodeId) {
+        NodeSettings nodeSettings = clusterSettings.findNodePropertiesById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "init"));
-        addNetworkingFlags(clusterProperties, nodeProperties, args);
+        addNetworkingFlags(clusterSettings, nodeSettings, args);
 
-        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+        return executeCommand(applicationSettings.getBaseDirPath(), args).getFirst();
     }
 
     @Override
-    public String wipe(ClusterProperties clusterProperties, Integer nodeId) {
+    public String wipe(ClusterSettings clusterSettings, Integer nodeId) {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "wipe"));
-        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+        return executeCommand(applicationSettings.getBaseDirPath(), args).getFirst();
     }
 
     @Override
-    public String startNode(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+    public String startNode(ClusterSettings clusterSettings, Integer nodeId) {
+        NodeSettings nodeSettings = clusterSettings.findNodePropertiesById(nodeId);
 
         Map<Locality, List<String>> hosts = new TreeMap<>();
 
-        clusterProperties.getNodes()
+        clusterSettings.getNodes()
                 .forEach(np -> {
                     Locality locality = Locality.fromTiers(np.getLocality());
                     hosts.computeIfAbsent(locality, x -> new ArrayList<>())
@@ -140,109 +140,109 @@ public class LocalClusterOperator implements ClusterOperator {
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start"));
         args.add("--name=n" + nodeId);
-        args.add("--locality=" + nodeProperties.getLocality());
+        args.add("--locality=" + nodeSettings.getLocality());
 
-        addNetworkingFlags(clusterProperties, nodeProperties, args);
+        addNetworkingFlags(clusterSettings, nodeSettings, args);
 
         args.add("--join=" + String.join(",", Locality.distributeJoinHosts(hosts)));
 
-        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+        return executeCommand(applicationSettings.getBaseDirPath(), args).getFirst();
     }
 
     @Override
-    public String stopNode(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+    public String stopNode(ClusterSettings clusterSettings, Integer nodeId) {
+        NodeSettings nodeSettings = clusterSettings.findNodePropertiesById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop"));
-        addNetworkingFlags(clusterProperties, nodeProperties, args);
+        addNetworkingFlags(clusterSettings, nodeSettings, args);
 
-        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+        return executeCommand(applicationSettings.getBaseDirPath(), args).getFirst();
     }
 
     @Override
-    public String killNode(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+    public String killNode(ClusterSettings clusterSettings, Integer nodeId) {
+        NodeSettings nodeSettings = clusterSettings.findNodePropertiesById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "kill"));
-        addNetworkingFlags(clusterProperties, nodeProperties, args);
+        addNetworkingFlags(clusterSettings, nodeSettings, args);
 
-        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+        return executeCommand(applicationSettings.getBaseDirPath(), args).getFirst();
     }
 
     @Override
-    public String sqlNode(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+    public String sqlNode(ClusterSettings clusterSettings, Integer nodeId) {
+        NodeSettings nodeSettings = clusterSettings.findNodePropertiesById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "sql"));
-        addNetworkingFlags(clusterProperties, nodeProperties, args);
+        addNetworkingFlags(clusterSettings, nodeSettings, args);
 
-        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+        return executeCommand(applicationSettings.getBaseDirPath(), args).getFirst();
     }
 
     @Override
-    public String disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
-        return killNode(clusterProperties, nodeId);
+    public String disruptNode(ClusterSettings clusterSettings, Integer nodeId) {
+        return killNode(clusterSettings, nodeId);
     }
 
     @Override
-    public String recoverNode(ClusterProperties clusterProperties, Integer nodeId) {
-        return startNode(clusterProperties, nodeId);
+    public String recoverNode(ClusterSettings clusterSettings, Integer nodeId) {
+        return startNode(clusterSettings, nodeId);
     }
 
     @Override
-    public String disruptLocality(ClusterProperties cluster, String locality) {
+    public String disruptLocality(ClusterSettings cluster, String locality) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String recoverLocality(ClusterProperties cluster, String locality) {
+    public String recoverLocality(ClusterSettings cluster, String locality) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String startProxyServer(ClusterProperties cluster) {
+    public String startProxyServer(ClusterSettings cluster) {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-proxy"));
-        args.add("--toxiproxy-host=" + applicationProperties.getToxiproxy().getHost());
-        args.add("--toxiproxy-port=" + applicationProperties.getToxiproxy().getPort());
-        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+        args.add("--toxiproxy-host=" + applicationSettings.getToxiproxy().getHost());
+        args.add("--toxiproxy-port=" + applicationSettings.getToxiproxy().getPort());
+        return executeCommand(applicationSettings.getBaseDirPath(), args).getFirst();
     }
 
     @Override
-    public String startProxyClient(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+    public String startProxyClient(ClusterSettings clusterSettings, Integer nodeId) {
+        NodeSettings nodeSettings = clusterSettings.findNodePropertiesById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-proxy-cli"));
-        args.add("--toxiproxy-host=" + applicationProperties.getToxiproxy().getHost());
-        args.add("--toxiproxy-port=" + applicationProperties.getToxiproxy().getPort());
-        args.add("--listen_addr=" + nodeProperties.getAdvertiseAddr());
-        args.add("--upstream_addr=" + nodeProperties.getListenAddr());
-        args.add("--name=" + nodeProperties.getName());
+        args.add("--toxiproxy-host=" + applicationSettings.getToxiproxy().getHost());
+        args.add("--toxiproxy-port=" + applicationSettings.getToxiproxy().getPort());
+        args.add("--listen_addr=" + nodeSettings.getAdvertiseAddr());
+        args.add("--upstream_addr=" + nodeSettings.getListenAddr());
+        args.add("--name=" + nodeSettings.getName());
 
-        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+        return executeCommand(applicationSettings.getBaseDirPath(), args).getFirst();
     }
 
     @Override
-    public String stopProxyServer(ClusterProperties cluster) {
+    public String stopProxyServer(ClusterSettings cluster) {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop-proxy"));
-        args.add("--toxiproxy-host=" + applicationProperties.getToxiproxy().getHost());
-        args.add("--toxiproxy-port=" + applicationProperties.getToxiproxy().getPort());
-        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+        args.add("--toxiproxy-host=" + applicationSettings.getToxiproxy().getHost());
+        args.add("--toxiproxy-port=" + applicationSettings.getToxiproxy().getPort());
+        return executeCommand(applicationSettings.getBaseDirPath(), args).getFirst();
     }
 
     @Override
-    public String startLoadBalancer(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+    public String startLoadBalancer(ClusterSettings clusterSettings, Integer nodeId) {
+        NodeSettings nodeSettings = clusterSettings.findNodePropertiesById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-lb"));
-        args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());
+        args.add("--advertise-addr=" + nodeSettings.getAdvertiseAddr());
 
-        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+        return executeCommand(applicationSettings.getBaseDirPath(), args).getFirst();
     }
 
     @Override
-    public String stopLoadBalancer(ClusterProperties cluster) {
+    public String stopLoadBalancer(ClusterSettings cluster) {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop-lb"));
 
-        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+        return executeCommand(applicationSettings.getBaseDirPath(), args).getFirst();
     }
 }

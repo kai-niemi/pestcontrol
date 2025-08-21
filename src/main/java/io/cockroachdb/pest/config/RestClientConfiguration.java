@@ -1,7 +1,6 @@
 package io.cockroachdb.pest.config;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.EnumSet;
 
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -11,7 +10,6 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuil
 import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.pool.PoolConcurrencyPolicy;
 import org.apache.hc.core5.pool.PoolReusePolicy;
-import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +30,7 @@ import org.springframework.web.client.RestTemplate;
 
 import io.cockroachdb.pest.cluster.ClientErrorException;
 import io.cockroachdb.pest.cluster.ServerErrorException;
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ApplicationSettings;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.shell.client.HypermediaClient;
 
@@ -41,12 +39,12 @@ public class RestClientConfiguration implements RestTemplateCustomizer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private ApplicationProperties applicationProperties;
+    private ApplicationSettings applicationSettings;
 
     @Override
     public void customize(RestTemplate restTemplate) {
-        int maxTotal = applicationProperties.getHttp().getMaxTotal();
-        int maxConnPerRoute = applicationProperties.getHttp().getMaxConnPerRoute();
+        int maxTotal = applicationSettings.getHttp().getMaxTotal();
+        int maxConnPerRoute = applicationSettings.getHttp().getMaxConnPerRoute();
 
         if (maxConnPerRoute <= 0 || maxTotal <= 0) {
             maxConnPerRoute = Runtime.getRuntime().availableProcessors() * 8;

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 
 import io.cockroachdb.pest.api.LinkRelations;
 import io.cockroachdb.pest.api.MessageModel;
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ApplicationSettings;
 import io.cockroachdb.pest.web.AbstractSessionController;
 import io.cockroachdb.pest.web.ClusterModel;
 import io.cockroachdb.pest.workload.WorkloadManager;
@@ -36,11 +36,11 @@ public class WorkloadChartController extends AbstractSessionController {
     private WorkloadManager workloadManager;
 
     @Autowired
-    private ApplicationProperties applicationProperties;
+    private ApplicationSettings applicationSettings;
 
     @Scheduled(fixedRate = 5, initialDelay = 5, timeUnit = TimeUnit.SECONDS)
     public void takeDataPointSnapshots() {
-        workloadManager.takeSnapshot(Duration.ofSeconds(applicationProperties.getSamplePeriodSeconds()));
+        workloadManager.takeSnapshot(Duration.ofSeconds(applicationSettings.getSamplePeriodSeconds()));
     }
 
     @GetMapping

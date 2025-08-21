@@ -3,7 +3,6 @@ package io.cockroachdb.pest.cluster;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +19,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.cockroachdb.pest.config.ClosableDataSource;
 import io.cockroachdb.pest.config.RestClientProvider;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.ClusterSettings;
 import io.cockroachdb.pest.repository.ClusterRepository;
 import io.cockroachdb.pest.repository.JdbcClusterRepository;
-import io.cockroachdb.pest.schema.NodeDetail;
-import io.cockroachdb.pest.schema.NodeDetails;
-import io.cockroachdb.pest.schema.NodeStatus;
+import io.cockroachdb.pest.model.schema.NodeDetail;
+import io.cockroachdb.pest.model.schema.NodeDetails;
+import io.cockroachdb.pest.model.schema.NodeStatus;
 
 @Component
 public class ClusterQuery {
@@ -38,9 +37,9 @@ public class ClusterQuery {
     @Autowired
     private Function<DataSourceProperties, ClosableDataSource> dataSourceFactory;
 
-    public String queryClusterVersion(ClusterProperties clusterProperties) {
+    public String queryClusterVersion(ClusterSettings clusterSettings) {
         try (ClosableDataSource dataSource
-                     = dataSourceFactory.apply(clusterProperties.getDataSourceProperties())) {
+                     = dataSourceFactory.apply(clusterSettings.getDataSourceProperties())) {
             JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
             return jdbcTemplate.queryForObject("select version()", String.class);
         } catch (DataAccessException e) {
@@ -48,20 +47,20 @@ public class ClusterQuery {
         }
     }
 
-    public Optional<NodeDetail> queryNodeDetailById(ClusterProperties clusterProperties, String sessionToken,
+    public Optional<NodeDetail> queryNodeDetailById(ClusterSettings clusterSettings, String sessionToken,
                                                     Integer nodeId) {
-        return queryNodeDetails(clusterProperties, sessionToken)
+        return queryNodeDetails(clusterSettings, sessionToken)
                 .stream()
                 .filter(nodeStatus -> nodeStatus.getNodeId().equals(nodeId))
                 .findFirst();
     }
 
-    public List<NodeDetail> queryNodeDetails(ClusterProperties clusterProperties, String sessionToken) {
+    public List<NodeDetail> queryNodeDetails(ClusterSettings clusterSettings, String sessionToken) {
         Assert.notNull(sessionToken, "sessionToken is null");
         // There's no way to narrow this down other than by pagination
-        ResponseEntity<NodeDetails> responseEntity = restClientProvider.matches(clusterProperties)
+        ResponseEntity<NodeDetails> responseEntity = restClientProvider.matches(clusterSettings)
                 .get()
-                .uri(clusterProperties.getAdminUrl() + "/api/v2/nodes/")
+                .uri(clusterSettings.getAdminUrl() + "/api/v2/nodes/")
                 .header("X-Cockroach-API-Session", sessionToken)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
@@ -69,8 +68,8 @@ public class ClusterQuery {
         return Objects.requireNonNull(responseEntity.getBody()).getNodes();
     }
 
-    public List<NodeStatus> queryNodeStatus(ClusterProperties clusterProperties) {
-        try (ClosableDataSource dataSource = dataSourceFactory.apply(clusterProperties
+    public List<NodeStatus> queryNodeStatus(ClusterSettings clusterSettings) {
+        try (ClosableDataSource dataSource = dataSourceFactory.apply(clusterSettings
                 .getDataSourceProperties())) {
             ClusterRepository clusterRepository = new JdbcClusterRepository(dataSource);
             String json = clusterRepository.queryNodeStatus();
@@ -84,8 +83,8 @@ public class ClusterQuery {
         }
     }
 
-    public Optional<NodeStatus> queryNodeStatusById(ClusterProperties clusterProperties, Integer nodeId) {
-        try ( ClosableDataSource dataSource = dataSourceFactory.apply(clusterProperties.getDataSourceProperties())) {
+    public Optional<NodeStatus> queryNodeStatusById(ClusterSettings clusterSettings, Integer nodeId) {
+        try ( ClosableDataSource dataSource = dataSourceFactory.apply(clusterSettings.getDataSourceProperties())) {
             ClusterRepository clusterRepository = new JdbcClusterRepository(dataSource);
             String json = clusterRepository.queryNodeStatusById(nodeId);
 

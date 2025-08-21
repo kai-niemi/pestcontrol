@@ -20,6 +20,10 @@ import io.cockroachdb.pest.util.TreeNode;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Locality implements Comparable<Locality> {
+    public static final String REGION = "region";
+
+    public static final String CLUSTER = "cluster";
+
     /**
      * Round-robin pick host name/IPs mapped to localities.
      *
@@ -29,7 +33,7 @@ public class Locality implements Comparable<Locality> {
     public static Collection<String> distributeJoinHosts(Map<Locality, List<String>> localities) {
         List<String> joinHosts = new ArrayList<>();
 
-        TreeNode<Tier> root = TreeNode.of(Tier.of("cluster", ""));
+        TreeNode<Tier> root = TreeNode.of(Tier.of(CLUSTER, ""));
 
         for (Locality locality : localities.keySet()) {
             TreeNode<Tier> next = root;
@@ -85,7 +89,7 @@ public class Locality implements Comparable<Locality> {
 
     public Optional<String> findRegionTier() {
         return getTiers().stream()
-                .filter(tier -> tier.getKey().equals("region"))
+                .filter(tier -> tier.getKey().equals(REGION))
                 .findFirst()
                 .map(Tier::getValue);
     }

@@ -25,7 +25,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import io.cockroachdb.pest.api.LinkRelations;
 import io.cockroachdb.pest.api.cluster.WorkloadController;
 import io.cockroachdb.pest.api.cluster.WorkloadForm;
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ApplicationSettings;
 import io.cockroachdb.pest.web.simp.SimpMessagePublisher;
 import io.cockroachdb.pest.web.simp.TopicName;
 import io.cockroachdb.pest.workload.WorkloadManager;
@@ -58,7 +58,7 @@ public class WorkloadDashboardController extends AbstractSessionController {
     private WorkloadManager workloadManager;
 
     @Autowired
-    private ApplicationProperties applicationProperties;
+    private ApplicationSettings applicationSettings;
 
     @Autowired
     private SimpMessagePublisher messagePublisher;
@@ -101,7 +101,7 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
         final LocalTime time = LocalTime.parse(form.getDuration(), DateTimeFormatter.ofPattern("HH:mm"));
         final Duration duration = Duration.ofHours(time.getHour()).plusMinutes(time.getMinute());
-        final DataSource dataSource = applicationProperties.getDataSource(clusterModel.getClusterId());
+        final DataSource dataSource = applicationSettings.getDataSource(clusterModel.getClusterId());
 
         IntStream.rangeClosed(1, form.getCount())
                 .forEach(value -> {

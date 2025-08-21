@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.validation.Valid;
@@ -22,10 +23,11 @@ import io.cockroachdb.pest.util.Networking;
  * Connection properties for connecting to a CockroachDB cluster.
  */
 @Validated
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "clusterId", "clusterName", "clusterType", "version",
         "adminUrl", "apiKey", "secure", "dataSourceProperties", "nodes"})
-public class ClusterProperties {
+public class ClusterSettings {
     @NotNull
     @NotBlank
     private String clusterId;
@@ -52,14 +54,14 @@ public class ClusterProperties {
     @JsonIgnoreProperties({"xa", "generateUniqueName"})
     private DataSourceProperties dataSourceProperties;
 
-    private List<@Valid NodeProperties> nodes = new ArrayList<>();
+    private List<@Valid NodeSettings> nodes = new ArrayList<>();
 
     public void init() {
         AtomicInteger id = new AtomicInteger();
         nodes.forEach(properties -> properties.setId(id.incrementAndGet()));
     }
 
-    public NodeProperties findNodePropertiesById(int nodeId) {
+    public NodeSettings findNodePropertiesById(int nodeId) {
         return nodes.stream()
                 .filter(x -> Objects.equals(nodeId, x.getId()))
                 .findFirst()
@@ -82,11 +84,11 @@ public class ClusterProperties {
         this.version = version;
     }
 
-    public List<NodeProperties> getNodes() {
+    public List<NodeSettings> getNodes() {
         return nodes;
     }
 
-    public void setNodes(List<NodeProperties> nodes) {
+    public void setNodes(List<NodeSettings> nodes) {
         this.nodes = nodes;
     }
 
