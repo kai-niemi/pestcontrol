@@ -18,7 +18,7 @@ application:
   #
   #  cluster-id: Either a CockroachDB cloud cluster ID any unique ID for other cluster types
   #  cluster-name: Cluster display name
-  #  cluster-type: cloud_dedicated|remote_secure|remote_insecure|hosted_secure|hosted_insecure
+  #  cluster-type: cloud_dedicated|hosted_secure|hosted_insecure
   #  data-source-properties:
   #    url: The JDBC connection url
   #    username: The SQL user name with ADMIN role (optional)
@@ -47,7 +47,7 @@ application:
 
     - cluster-id: "remote-insecure"
       cluster-name: "Remote Cluster (insecure)"
-      cluster-type: remote_insecure
+      cluster-type: hosted_insecure
       admin-url: "http://localhost:8080"
       data-source-properties:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
@@ -56,7 +56,7 @@ application:
 
     - cluster-id: "remote-secure"
       cluster-name: "Remote Cluster (secure)"
-      cluster-type: remote_secure
+      cluster-type: hosted_secure
       admin-url: "https://localhost:8080"
       data-source-properties:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"

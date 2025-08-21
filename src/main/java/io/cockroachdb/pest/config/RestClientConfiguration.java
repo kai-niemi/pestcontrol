@@ -81,7 +81,7 @@ public class RestClientConfiguration implements RestTemplateCustomizer {
     @Bean
     public RestClientProvider restClientProvider(SslBundles sslBundles, RestClientSsl ssl) {
         return clusterProperties ->
-                EnumSet.of(ClusterType.hosted_secure, ClusterType.remote_secure)
+                EnumSet.of(ClusterType.hosted_secure)
                         .contains(clusterProperties.getClusterType())
                         ? sslRestClient(sslBundles, ssl) : defaultRestClient();
     }

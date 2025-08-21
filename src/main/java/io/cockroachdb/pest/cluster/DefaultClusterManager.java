@@ -74,7 +74,7 @@ public class DefaultClusterManager implements ClusterManager {
     public String login(String clusterId, String userName, String password) {
         ClusterSettings clusterSettings = getClusterProperties(clusterId);
 
-        if (EnumSet.of(ClusterType.remote_insecure, ClusterType.hosted_insecure)
+        if (EnumSet.of(ClusterType.hosted_insecure)
                 .contains(clusterSettings.getClusterType())) {
             logger.info("Implicit login for cluster type: %s"
                     .formatted(clusterSettings.getClusterType()));

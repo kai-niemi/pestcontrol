@@ -31,20 +31,22 @@
 
 <img  align="left" src=".github/logo.png" alt="" width="64"/> 
 
-[Pest Control](https://github.com/kai-niemi/pestcontrol) is both a graphical and command-line 
-tool for controlling and visualizing CockroachDB cluster failures and it's impact on application 
-workloads. It supports CockroachDB Cloud and self-hosted clusters for which it provides 
-easy-to-use control scripts.
+[Pest Control](https://github.com/kai-niemi/pestcontrol) is a sandbox tool for managing and chaos testing 
+CockroachDB clusters. It provides both a graphical and command-line 
+interface for controlling and visualizing CockroachDB node failure
+and recovery and it's impact on application workloads. It supports 
+CockroachDB Cloud and self-hosted clusters, for which it also provides 
+easy-to-use operator scripts.
 
 ## Main features
 
 The main features include:
 
-- Install and bootstrap self-hosted CockroachDB clusters.
-- Visualize cluster layout and node health.
-- CockroachDB Cloud disruption API controls.
-- Integrate with [Toxiproxy](https://github.com/Shopify/toxiproxy) for chaos testing.
-- Run client workloads and visualize impact during steady state and adverse events.
+- Install and bootstrap self-hosted CockroachDB clusters locally or in a network environment.
+- Visualize cluster topologies and node health.
+- Run synthetic client workloads and visualize impact during steady state and adverse events.
+- Provide CockroachDB Cloud disruption API controls for chaos testing.
+- Integrate with [Toxiproxy](https://github.com/Shopify/toxiproxy) for self-hosted chaos testing.
 
 Dashboard showing cluster layout and node status:
 
@@ -68,10 +70,31 @@ This tool supports the following platforms and versions:
 
 ## How it works
 
-Pest Control consists of two parts:
+Pest Control consists of these parts:
 
-- A web app for visuals with a REST API for automation.
-- A spring shell script for managing clusters via bash scripts.
+- A single spring boot app with:
+  - A Web UI API for visualizing cluster layouts, workload graphs and metrics.
+  - A REST API for installing and managing self-hosted CockroachDB clusters.
+  - A shell for managing and chaos testing clusters using bash scripts, cloud API or toxiproxy.
+- Bash scripts for installing and managing self-hosetd clusters.
+
+All these parts are bundled into a single `tar.gz` assembly at build time. Depending on
+the target cluster type, there are a few different usage modes.
+
+### CockroachDB Cloud
+
+In this mode, you simply start the app and connect to it with a web browser. Then you
+can login to a pre-configured set of existing cloud clusters. To chaos test a cloud cluster, 
+you can use shell commands to distrupt and recover either zones or entire regions. Notice that
+it requires special steps in your cluster deployment to enable this opt-in feature.
+
+### Self-hosted Locally
+
+tba
+
+### Self-hosted Remotely
+
+tba
 
 # Terms of Use
 
@@ -90,11 +113,10 @@ Things you need to run Pest Control locally.
 - Toxiproxy (optional)
   - https://github.com/Shopify/toxiproxy
 - Depending on cluster configuration, you can either use:
-  - A single-host, local environment
-  - A CockroachDB cloud cluster
-  - A provisioned self-hosted environment with one machine for each node.
-  
-See [deploy](deploy) for `roachprod` deployments (mainly targeting CRL internal use).
+  - A CockroachDB cloud cluster.
+  - A local environment with one machine/instance for all nodes.
+  - A network environment with one machine/instance per node. 
+    - See [deploy](deploy) for `roachprod` deployments (mainly targeting CRL internal use).
 
 ## Install the JDK
 
@@ -184,7 +206,7 @@ Collection of cluster definitions.
 | Field Name             | Optional | Default         | Description                                                                                                                                    |
 |------------------------|----------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------|
 | cluster-id             | No       | -               | Either a CockroachDB Cloud cluster ID or a unique string for a local cluster                                                                   |
-| cluster-type           | Yes      | hosted_insecure | `cloud_serverless,cloud_standard,cloud_dedicated,remote_insecure,remote_secure,hosted_insecure,hosted_secure`                                  |
+| cluster-type           | Yes      | hosted_insecure | `cloud_serverless,cloud_standard,cloud_dedicated,hosted_insecure,hosted_secure`                                  |
 | api-key                | Yes      | -               | Only required for `cloud_dedicated`, see [Create API Keys](https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys). |
 | admin-url              | No       | -               | Base URL for the Cluster API which is typically the regional/local cluster load balancer endpoint.                                             |
 | data-source-properties | No       | -               | Data source connection parameters.                                                                                                             |
