@@ -45,8 +45,7 @@
             <directory>${project.basedir}</directory>
             <outputDirectory>.</outputDirectory>
             <includes>
-                <include>pest-control</include>
-                <include>pest-operator</include>
+                <include>pop</include>
             </includes>
             <fileMode>0755</fileMode>
         </fileSet>

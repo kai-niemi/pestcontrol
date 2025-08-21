@@ -62,7 +62,6 @@ public class NodeProperties {
         this.certHosts = certHosts;
     }
 
-    @JsonIgnore
     public Integer getId() {
         return id;
     }

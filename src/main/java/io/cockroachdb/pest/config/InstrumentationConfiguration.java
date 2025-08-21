@@ -10,7 +10,7 @@ import io.cockroachdb.pest.workload.model.TimeSeries;
 import io.micrometer.core.instrument.MeterRegistry;
 
 @Configuration
-public class InstrumentationConfig {
+public class InstrumentationConfiguration {
     @SuppressWarnings("DataFlowIssue")
     @Bean
     public TimeSeries storageTimeSeries(@Autowired MeterRegistry registry) {

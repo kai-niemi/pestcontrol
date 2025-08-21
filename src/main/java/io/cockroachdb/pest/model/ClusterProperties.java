@@ -61,9 +61,9 @@ public class ClusterProperties {
 
     public NodeProperties findNodePropertiesById(int nodeId) {
         return nodes.stream()
-                .filter(agent -> Objects.equals(nodeId, agent.getId()))
+                .filter(x -> Objects.equals(nodeId, x.getId()))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow( () -> new IllegalArgumentException("Node id not found: " + nodeId));
     }
 
     public boolean isSecure() {

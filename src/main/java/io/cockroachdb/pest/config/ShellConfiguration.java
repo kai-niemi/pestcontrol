@@ -7,7 +7,7 @@ import io.cockroachdb.pest.shell.support.ClusterProvider;
 import io.cockroachdb.pest.shell.support.NodeProvider;
 
 @Configuration
-public class ShellConfig {
+public class ShellConfiguration {
     @Bean
     public NodeProvider agentProvider() {
         return new NodeProvider();

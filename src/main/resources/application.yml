@@ -120,8 +120,6 @@ server:
     include-binding-errors: always
 
 #############################
-# Base application settings
-#############################
 application:
   # -1 denotes use of unbounded virtual threads
   threadPoolMaxSize: -1
@@ -134,7 +132,7 @@ application:
   # Base directory for shell scripts
   baseDir: "."
   # Directory for TLS certificates
-  certsDir: ".certs"
+  certsDir: .certs
   # Host settings for toxiproxy
   toxiproxy:
     host: localhost
