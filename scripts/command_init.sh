@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ./pest-operator init --advertise-addr=localhost:26257
+# ./pop init --advertise-addr=localhost:26257
 
 commandaction="Initialize cluster"
 

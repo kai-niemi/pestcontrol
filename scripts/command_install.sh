@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ./pest-operator install --version=v25.2.2.darwin-11.0-arm64
+# ./pop install --version=v25.2.2.darwin-11.0-arm64
 
 commandaction="Install binaries"
 

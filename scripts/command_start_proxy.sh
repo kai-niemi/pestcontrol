@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ./pest-operator start-proxy
+# ./pop start-proxy
 
 commandaction="Start toxiproxy server"
 

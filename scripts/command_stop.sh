@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ./pest-operator stop --listen-addr=localhost:26257
+# ./pop stop --listen-addr=localhost:26257
 
 commandaction="Stop node"
 

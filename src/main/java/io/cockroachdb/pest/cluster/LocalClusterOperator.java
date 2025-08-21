@@ -24,7 +24,7 @@ import static io.cockroachdb.pest.util.ProcessUtils.executeCommand;
 
 @Component
 public class LocalClusterOperator implements ClusterOperator {
-    private static final String OPERATOR_SCRIPT = "./pest-operator";
+    private static final String OPERATOR_SCRIPT = "./pop";
 
     @Autowired
     private ApplicationProperties applicationProperties;
