@@ -1,11 +1,10 @@
 package io.cockroachdb.pest.model;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.hateoas.Link;
+import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.constraints.NotNull;
 
 import io.cockroachdb.pest.util.Networking;
+import static io.cockroachdb.pest.util.Networking.incrementPort;
 
 /**
  * Node properties describing a local or remote network node.
@@ -24,7 +24,7 @@ import io.cockroachdb.pest.util.Networking;
         "locality", "id", "name", "url",
         "serviceUrl", "listenAddr", "advertiseAddr", "advertiseProxyAddr",
         "sqlAddr", "httpAddr", "certHosts"})
-public class NodeSettings {
+public class NodeProperties {
     @NotNull
     private String locality;
 
@@ -46,51 +46,62 @@ public class NodeSettings {
 
     private List<String> certHosts = List.of();
 
-    public void init(BaselineSettings baseline, int id) {
-        if (getCertHosts().isEmpty()) {
+    public void init(BaselineProperties baseline) {
+        if (certHosts.isEmpty()) {
             setCertHosts(baseline.getCertHosts());
         }
-        if (Objects.isNull(getServiceAddr())) {
-            setServiceAddr(BaselineSettings.incrementPort(baseline.getServiceAddr(), id));
+        if (Objects.isNull(serviceAddr)) {
+            setServiceAddr(incrementPort(baseline.getServiceAddr(), baseline.getCurrentId()));
         }
-        if (Objects.isNull(getSqlAddr())) {
-            setSqlAddr(BaselineSettings.incrementPort(baseline.getSqlAddr(), id));
+        if (Objects.isNull(sqlAddr)) {
+            setSqlAddr(incrementPort(baseline.getSqlAddr(), baseline.getCurrentId()));
         }
-        if (Objects.isNull(getHttpAddr())) {
-            setHttpAddr(BaselineSettings.incrementPort(baseline.getHttpAddr(), id));
+        if (Objects.isNull(httpAddr)) {
+            setHttpAddr(incrementPort(baseline.getHttpAddr(), baseline.getCurrentId()));
         }
-        if (Objects.isNull(getListenAddr())) {
-            setListenAddr(BaselineSettings.incrementPort(baseline.getListenAddr(), id));
+        if (Objects.isNull(listenAddr)) {
+            setListenAddr(incrementPort(baseline.getListenAddr(), baseline.getCurrentId()));
         }
-        if (Objects.isNull(getAdvertiseAddr())) {
-            setAdvertiseAddr(BaselineSettings.incrementPort(baseline.getAdvertiseAddr(), id));
+        if (Objects.isNull(advertiseAddr)) {
+            setAdvertiseAddr(incrementPort(baseline.getAdvertiseAddr(), baseline.getCurrentId()));
         }
-        if (Objects.isNull(getAdvertiseProxyAddr())) {
-            setAdvertiseProxyAddr(BaselineSettings.incrementPort(baseline.getAdvertiseProxyAddr(), id));
+        if (Objects.isNull(advertiseProxyAddr)) {
+            setAdvertiseProxyAddr(incrementPort(baseline.getAdvertiseProxyAddr(), baseline.getCurrentId()));
         }
-    }
+        if (Objects.isNull(id)) {
+            setId(baseline.getCurrentId());
+        }
+        if (Objects.isNull(name)) {
+            setName("n%d".formatted(baseline.getCurrentId()));
+        }
 
-    public void resolvePlaceholders() {
-        serviceAddr = Networking.resolve(serviceAddr);
-        listenAddr = Networking.resolve(listenAddr);
-        advertiseAddr = Networking.resolve(advertiseAddr);
-        advertiseProxyAddr = Networking.resolve(advertiseProxyAddr);
-        sqlAddr = Networking.resolve(sqlAddr);
-        httpAddr = Networking.resolve(httpAddr);
+        // Resolve any placeholders
 
-        List<String> hosts = certHosts.stream().map(Networking::resolve).toList();
-        certHosts.clear();
-        certHosts.addAll(hosts);
+        this.serviceAddr = Networking.resolve(serviceAddr);
+        this.listenAddr = Networking.resolve(listenAddr);
+        this.advertiseAddr = Networking.resolve(advertiseAddr);
+        this.advertiseProxyAddr = Networking.resolve(advertiseProxyAddr);
+        this.sqlAddr = Networking.resolve(sqlAddr);
+        this.httpAddr = Networking.resolve(httpAddr);
+        this.certHosts = this.certHosts.stream().map(Networking::resolve).toList();
+
+        Assert.notNull(this.id, "id is required");
+        Assert.notNull(this.name, "name is required");
+        Assert.notNull(this.serviceAddr, "service-addr is required");
+        Assert.notNull(this.listenAddr, "listen-addr is required");
+        Assert.notNull(this.advertiseAddr, "advertise-addr is required");
+        Assert.notNull(this.advertiseProxyAddr, "advertise-proxy-addr is required");
+        Assert.notNull(this.sqlAddr, "sql-addr is required");
+        Assert.notNull(this.httpAddr, "http-addr is required");
     }
 
     public Link getAdminLink(boolean secure) {
-        return Link.of("%s://%s".formatted(secure ? "https" : "http",
-                Objects.requireNonNull(getHttpAddr())));
+        String path = Objects.requireNonNull(httpAddr);
+        return Link.of("%s://%s".formatted(secure ? "https" : "http", path));
     }
 
     public Link getServiceLink(boolean secure) {
-        String path = getServiceAddr();
-        path = path.endsWith("/api") ? path : path + "/api";
+        String path = Objects.requireNonNull(serviceAddr).endsWith("/api") ? serviceAddr : serviceAddr + "/api";
         return Link.of("%s://%s".formatted(secure ? "https" : "http", path));
     }
 
@@ -134,7 +145,6 @@ public class NodeSettings {
         this.locality = locality;
     }
 
-    //    @JsonProperty("listen-addr")
     public String getListenAddr() {
         return listenAddr;
     }
@@ -143,7 +153,6 @@ public class NodeSettings {
         this.listenAddr = listenAddr;
     }
 
-    //    @JsonProperty("advertise-addr")
     public String getAdvertiseAddr() {
         return advertiseAddr;
     }
@@ -152,7 +161,6 @@ public class NodeSettings {
         this.advertiseAddr = advertiseAddr;
     }
 
-    //    @JsonProperty("advertise-proxy-addr")
     public String getAdvertiseProxyAddr() {
         return advertiseProxyAddr;
     }
@@ -161,7 +169,6 @@ public class NodeSettings {
         this.advertiseProxyAddr = advertiseProxyAddr;
     }
 
-    //    @JsonProperty("http-addr")
     public String getHttpAddr() {
         return httpAddr;
     }
@@ -170,7 +177,6 @@ public class NodeSettings {
         this.httpAddr = httpAddr;
     }
 
-    //    @JsonProperty("sql-addr")
     public String getSqlAddr() {
         return sqlAddr;
     }

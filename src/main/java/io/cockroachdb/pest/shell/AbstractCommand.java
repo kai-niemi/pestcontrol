@@ -9,12 +9,12 @@ import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 
 import io.cockroachdb.pest.cluster.ClusterManager;
-import io.cockroachdb.pest.model.ApplicationSettings;
-import io.cockroachdb.pest.model.ClusterSettings;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ClusterProperties;
 
 @ShellComponent
 public abstract class AbstractCommand {
-    protected static final ThreadLocal<ClusterSettings> CLUSTER_ID_SELECTION = ThreadLocal.withInitial(() -> null);
+    protected static final ThreadLocal<ClusterProperties> CLUSTER_ID_SELECTION = ThreadLocal.withInitial(() -> null);
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -22,7 +22,7 @@ public abstract class AbstractCommand {
     protected ClusterManager clusterManager;
 
     @Autowired
-    protected ApplicationSettings applicationSettings;
+    protected ApplicationProperties applicationProperties;
 
     public Availability ifClusterSelected() {
         return Objects.isNull(CLUSTER_ID_SELECTION.get())
@@ -30,7 +30,7 @@ public abstract class AbstractCommand {
                 : Availability.available();
     }
 
-    public ClusterSettings getClusterSettings() {
+    public ClusterProperties getClusterSettings() {
         if (Objects.isNull(CLUSTER_ID_SELECTION.get())) {
             throw new IllegalStateException("Cluster ID not specified");
         }

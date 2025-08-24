@@ -22,8 +22,8 @@ import eu.rekawek.toxiproxy.model.ToxicType;
 
 import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.cluster.ResourceNotFoundException;
-import io.cockroachdb.pest.model.ClusterSettings;
-import io.cockroachdb.pest.model.NodeSettings;
+import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.NodeProperties;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
 import io.cockroachdb.pest.util.PatternUtils;
@@ -50,17 +50,17 @@ public class ProxyCommands extends AbstractCommand {
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Start toxiproxy server on this host", key = {"start-proxy"})
     public void startProxy() {
-        ClusterSettings clusterSettings = getClusterSettings();
-        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterSettings.getClusterId());
-        clusterOperator.startProxyServer(clusterSettings);
+        ClusterProperties clusterProperties = getClusterSettings();
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        clusterOperator.startProxyServer(clusterProperties);
     }
 
     @ShellMethodAvailability("ifToxiProxyRunning")
     @ShellMethod(value = "Stop toxiproxy server on this host", key = {"stop-proxy"})
     public void stopProxy() {
-        ClusterSettings clusterSettings = getClusterSettings();
-        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterSettings.getClusterId());
-        clusterOperator.stopProxyServer(clusterSettings);
+        ClusterProperties clusterProperties = getClusterSettings();
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        clusterOperator.stopProxyServer(clusterProperties);
     }
 
 //    @ShellMethodAvailability("ifToxiProxyRunning")
@@ -116,15 +116,15 @@ public class ProxyCommands extends AbstractCommand {
     @ShellMethod(value = "Add proxy for specified nodes(s)", key = {"add-proxy"})
     public void addProxy(
             @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
-        ClusterSettings clusterSettings = getClusterSettings();
+        ClusterProperties clusterProperties = getClusterSettings();
 
         PatternUtils.parseIntRange(nodes).forEach(nodeId -> {
-            NodeSettings nodeSettings = clusterSettings.findNodePropertiesById(nodeId);
+            NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
             try {
-                Proxy proxy = toxiproxyClient.createProxy(nodeSettings.getName(),
-                        nodeSettings.getAdvertiseProxyAddr(),
-                        nodeSettings.getListenAddr());
+                Proxy proxy = toxiproxyClient.createProxy(nodeProperties.getName(),
+                        nodeProperties.getAdvertiseProxyAddr(),
+                        nodeProperties.getListenAddr());
                 logger.info("Added %s with listen addr %s upstream addr %s"
                         .formatted(proxy.getName(), proxy.getListen(), proxy.getUpstream()));
             } catch (IOException e) {
@@ -137,13 +137,13 @@ public class ProxyCommands extends AbstractCommand {
     @ShellMethod(value = "Disable proxy for specified nodes(s)", key = {"disable-proxy"})
     public void disableProxy(
             @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
-        ClusterSettings clusterSettings = getClusterSettings();
+        ClusterProperties clusterProperties = getClusterSettings();
 
         PatternUtils.parseIntRange(nodes).forEach(nodeId -> {
-            NodeSettings nodeSettings = clusterSettings.findNodePropertiesById(nodeId);
+            NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
             try {
-                Proxy proxy = findProxyByName(nodeSettings.getName());
+                Proxy proxy = findProxyByName(nodeProperties.getName());
                 proxy.disable();
                 logger.info("Disabled %s".formatted(proxy.getName()));
             } catch (IOException e) {
@@ -156,13 +156,13 @@ public class ProxyCommands extends AbstractCommand {
     @ShellMethod(value = "Enable proxy for specified nodes(s)", key = {"enable-proxy"})
     public void enableProxy(
             @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
-        ClusterSettings clusterSettings = getClusterSettings();
+        ClusterProperties clusterProperties = getClusterSettings();
 
         PatternUtils.parseIntRange(nodes).forEach(nodeId -> {
-            NodeSettings nodeSettings = clusterSettings.findNodePropertiesById(nodeId);
+            NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
             try {
-                Proxy proxy = findProxyByName(nodeSettings.getName());
+                Proxy proxy = findProxyByName(nodeProperties.getName());
                 proxy.enable();
                 logger.info("Disabled %s".formatted(proxy.getName()));
             } catch (IOException e) {
@@ -175,13 +175,13 @@ public class ProxyCommands extends AbstractCommand {
     @ShellMethod(value = "List proxy toxics", key = {"list-toxics"})
     public void listToxics(
             @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String node) {
-        ClusterSettings clusterSettings = getClusterSettings();
-        NodeSettings nodeSettings = clusterSettings.findNodePropertiesById(Integer.parseInt(node));
+        ClusterProperties clusterProperties = getClusterSettings();
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(Integer.parseInt(node));
 
         try {
             List<List<?>> tuples = new ArrayList<>();
 
-            Proxy proxy = findProxyByName(nodeSettings.getName());
+            Proxy proxy = findProxyByName(nodeProperties.getName());
             proxy.toxics().getAll().forEach(toxic -> {
                 tuples.add(List.of(
                         toxic.getName(),
@@ -231,11 +231,11 @@ public class ProxyCommands extends AbstractCommand {
             @ShellOption(help = "Number of bytes it should transmit before connection is closed (limit_data toxic)", defaultValue = "8192")
             long bytes
     ) {
-        ClusterSettings clusterSettings = getClusterSettings();
-        NodeSettings nodeSettings = clusterSettings.findNodePropertiesById(Integer.parseInt(node));
+        ClusterProperties clusterProperties = getClusterSettings();
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(Integer.parseInt(node));
 
         try {
-            Proxy proxy = findProxyByName(nodeSettings.getName());
+            Proxy proxy = findProxyByName(nodeProperties.getName());
             Toxic toxic = switch (toxicType) {
                 case LATENCY -> proxy.toxics().latency(name, direction, latency);
                 case BANDWIDTH -> proxy.toxics().bandwidth(name, direction, rate);

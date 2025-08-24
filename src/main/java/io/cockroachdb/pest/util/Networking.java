@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Objects;
 
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.StringUtils;
@@ -64,5 +65,16 @@ public abstract class Networking {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public static String incrementPort(String address, int offset) {
+        if (Objects.isNull(address)) {
+            return address;
+        }
+        String[] parts = address.split(":");
+        if (parts.length == 2) {
+            return parts[0] + ":" + (Integer.parseInt(parts[1]) + offset);
+        }
+        throw new IllegalArgumentException("Expected ip:port or :port" + address);
     }
 }

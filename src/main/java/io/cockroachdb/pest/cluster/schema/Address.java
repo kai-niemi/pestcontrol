@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.model.schema;
+package io.cockroachdb.pest.cluster.schema;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SqlAddress {
+public class Address {
     @JsonProperty("network_field")
     private String networkField;
 
@@ -49,4 +49,5 @@ public class SqlAddress {
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
     }
+
 }

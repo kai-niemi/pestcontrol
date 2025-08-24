@@ -6,8 +6,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pest.cluster.ClusterManager;
-import io.cockroachdb.pest.model.ApplicationSettings;
-import io.cockroachdb.pest.model.ClusterSettings;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ClusterProperties;
 
 @Component
 public class ApiAuthenticationService {
@@ -15,16 +15,16 @@ public class ApiAuthenticationService {
     private ClusterManager clusterManager;
 
     @Autowired
-    private ApplicationSettings applicationSettings;
+    private ApplicationProperties applicationProperties;
 
     public Authentication getAuthentication(String clusterId) {
 //            throw new BadCredentialsException("Missing API key header: " + AUTH_TOKEN_HEADER_NAME);
         if (!clusterManager.hasSessionToken(clusterId)) {
-            ClusterSettings clusterSettings
-                    = applicationSettings.getClusterPropertiesById(clusterId);
-            clusterManager.login(clusterSettings.getClusterId(),
-                    clusterSettings.getDataSourceProperties().getUsername(),
-                    clusterSettings.getDataSourceProperties().getPassword()
+            ClusterProperties clusterProperties
+                    = applicationProperties.getClusterPropertiesById(clusterId);
+            clusterManager.login(clusterProperties.getClusterId(),
+                    clusterProperties.getDataSourceProperties().getUsername(),
+                    clusterProperties.getDataSourceProperties().getPassword()
             );
         }
         return new ApiAuthenticationToken(clusterId, AuthorityUtils.NO_AUTHORITIES);

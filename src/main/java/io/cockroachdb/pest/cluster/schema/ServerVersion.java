@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.model.schema;
+package io.cockroachdb.pest.cluster.schema;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

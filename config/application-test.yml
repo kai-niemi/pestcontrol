@@ -15,6 +15,7 @@ application:
       baseline:
           service-addr: ${local-ip}:9090
           advertise-addr: ${local-ip}:25257
+          advertise-proxy-addr: ${local-ip}:35257
           listen-addr: ${local-ip}:25257
           sql-addr: ${local-ip}:26257
           http-addr: ${local-ip}:8080
@@ -40,11 +41,12 @@ application:
       version: "v25.3.0.darwin-11.0-arm64"
       secure: true
       baseline:
-        service-addr: :9090
-        advertise-addr: :25257
-        listen-addr: :25257
-        sql-addr: :26257
-        http-addr: :8080
+        service-addr: ${local-ip}:9090
+        advertise-addr: ${local-ip}:25257
+        advertise-proxy-addr: ${local-ip}:35257
+        listen-addr: ${local-ip}:25257
+        sql-addr: ${local-ip}:26257
+        http-addr: ${local-ip}:8080
         cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
       nodes:
         - locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"

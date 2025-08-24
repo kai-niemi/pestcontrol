@@ -25,25 +25,25 @@ import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.cockroachdb.pest.model.ApplicationSettings;
-import io.cockroachdb.pest.model.ClusterSettings;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.model.NodeSettings;
+import io.cockroachdb.pest.model.NodeProperties;
 import io.cockroachdb.pest.model.Root;
 
 @ShellComponent
-@ShellCommandGroup(Constants.SETUP_COMMANDS)
+@ShellCommandGroup(Constants.CLUSTER_COMMANDS)
 public class ConfigCommands {
+    private static final char[] ALPHA = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     @Qualifier("yamlObjectMapper")
     private ObjectMapper yamlObjectMapper;
 
-    private static final char[] ALPHA = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-
-    @ShellMethod(value = "Generate application YAML", key = {"gen-yml"})
-    public void generateYaml(
+    @ShellMethod(value = "Generate application YAML for localhost", key = {"gen-local"})
+    public void generateLocalYaml(
             @ShellOption(help = "Name prefix", defaultValue = "cloud") String name,
             @ShellOption(help = "Output file path", defaultValue = "test.yml") String output,
             @ShellOption(help = "Regions without number suffix (like 'eu-central,eu-west,..')", defaultValue = "eu-central")
@@ -69,11 +69,11 @@ public class ConfigCommands {
             });
         });
 
-        createYaml(name, output, tiers, zones, internalIPs, internalIPs);
+        generateYaml(name, output, tiers, zones, internalIPs, internalIPs);
     }
 
-    @ShellMethod(value = "Create application YAML", key = {"create-yml"})
-    public void createYaml(
+    @ShellMethod(value = "Generate application YAML", key = {"gen"})
+    public void generateYaml(
             @ShellOption(help = "Name prefix", defaultValue = "cloud") String name,
             @ShellOption(help = "Output file path", defaultValue = "test.yml") String output,
             @ShellOption(help = "Region list") List<String> regions,
@@ -87,7 +87,7 @@ public class ConfigCommands {
         Assert.state(internalIPs.size() == externalIPs.size(), "size of internal ips != size of external ips");
         Assert.state(regions.size() == internalIPs.size(), "size of regions != size of ips");
 
-        ApplicationSettings applicationSettings = new ApplicationSettings();
+        ApplicationProperties applicationProperties = new ApplicationProperties();
 
         AddressCallback callback = new AddressCallback() {
             @Override
@@ -148,20 +148,20 @@ public class ConfigCommands {
             }
         };
 
-        ClusterSettings insecureCluster
+        ClusterProperties insecureCluster
                 = generateClusterProperties(name, regions, zones, false, callback);
-        ClusterSettings secureCluster
+        ClusterProperties secureCluster
                 = generateClusterProperties(name, regions, zones, true, callback);
-        applicationSettings.setDefaultClusterId(insecureCluster.getClusterId());
-        applicationSettings.getClusters().add(insecureCluster);
-        applicationSettings.getClusters().add(secureCluster);
+        applicationProperties.setDefaultClusterId(insecureCluster.getClusterId());
+        applicationProperties.getClusters().add(insecureCluster);
+        applicationProperties.getClusters().add(secureCluster);
 
         try {
             StringWriter sw = new StringWriter();
 
             yamlObjectMapper
                     .writerFor(Root.class)
-                    .writeValue(sw, new Root(applicationSettings));
+                    .writeValue(sw, new Root(applicationProperties));
 
             System.out.println();
             System.out.println(sw);
@@ -175,7 +175,7 @@ public class ConfigCommands {
         }
     }
 
-    private ClusterSettings generateClusterProperties(
+    private ClusterProperties generateClusterProperties(
             String name,
             List<String> regions,
             List<String> zones,
@@ -183,14 +183,14 @@ public class ConfigCommands {
             AddressCallback addressCallback
     ) {
 
-        ClusterSettings clusterSettings = new ClusterSettings();
+        ClusterProperties clusterProperties = new ClusterProperties();
         {
-            clusterSettings.setClusterId("%s-%s".formatted(name, secure ? "secure" : "insecure"));
-            clusterSettings.setClusterName("Generated");
-            clusterSettings.setClusterType(secure ? ClusterType.hosted_insecure : ClusterType.hosted_secure);
-            clusterSettings.setAdminUrl(addressCallback.adminURL(1));
-            clusterSettings.setVersion("v25.3.0.linux-amd64");
-            clusterSettings.setSecure(secure);
+            clusterProperties.setClusterId("%s-%s".formatted(name, secure ? "secure" : "insecure"));
+            clusterProperties.setClusterName("Generated");
+            clusterProperties.setClusterType(secure ? ClusterType.hosted_insecure : ClusterType.hosted_secure);
+            clusterProperties.setAdminUrl(addressCallback.adminURL(1));
+            clusterProperties.setVersion("v25.3.0.linux-amd64");
+            clusterProperties.setSecure(secure);
         }
 
         final String firstNodeIP = addressCallback.firstNodeIP();
@@ -208,31 +208,31 @@ public class ConfigCommands {
                 dataSourceProperties.setUsername("root");
                 dataSourceProperties.setPassword("");
             }
-            clusterSettings.setDataSourceProperties(dataSourceProperties);
+            clusterProperties.setDataSourceProperties(dataSourceProperties);
         }
 
         IntStream.rangeClosed(1, regions.size()).forEach(nodeId -> {
-            NodeSettings nodeSettings = new NodeSettings();
-            nodeSettings.setLocality("region=%s,zone=%s".formatted(
+            NodeProperties nodeProperties = new NodeProperties();
+            nodeProperties.setLocality("region=%s,zone=%s".formatted(
                     regions.get(nodeId - 1),
                     zones.get(nodeId - 1))
             );
-            nodeSettings.setId(nodeId);
-            nodeSettings.setName("n%d".formatted(nodeId));
-            nodeSettings.setServiceAddr(addressCallback.adminURL(nodeId));
-            nodeSettings.setAdvertiseAddr(addressCallback.advertiseAddr(nodeId));
-            nodeSettings.setAdvertiseProxyAddr(addressCallback.advertiseProxyAddr(nodeId));
-            nodeSettings.setListenAddr(addressCallback.listenAddr(nodeId));
-            nodeSettings.setSqlAddr(addressCallback.sqlAddr(nodeId));
-            nodeSettings.setHttpAddr(addressCallback.httpAddr(nodeId));
+            nodeProperties.setId(nodeId);
+            nodeProperties.setName("n%d".formatted(nodeId));
+            nodeProperties.setServiceAddr(addressCallback.adminURL(nodeId));
+            nodeProperties.setAdvertiseAddr(addressCallback.advertiseAddr(nodeId));
+            nodeProperties.setAdvertiseProxyAddr(addressCallback.advertiseProxyAddr(nodeId));
+            nodeProperties.setListenAddr(addressCallback.listenAddr(nodeId));
+            nodeProperties.setSqlAddr(addressCallback.sqlAddr(nodeId));
+            nodeProperties.setHttpAddr(addressCallback.httpAddr(nodeId));
 
             if (secure) {
-                nodeSettings.setCertHosts(List.of("localhost", firstNodeIP, "localhost", "127.0.0.1"));
+                nodeProperties.setCertHosts(List.of("localhost", firstNodeIP, "localhost", "127.0.0.1"));
             }
 
-            clusterSettings.getNodes().add(nodeSettings);
+            clusterProperties.getNodes().add(nodeProperties);
         });
 
-        return clusterSettings;
+        return clusterProperties;
     }
 }

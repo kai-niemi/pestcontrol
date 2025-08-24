@@ -1,6 +1,7 @@
 package io.cockroachdb.pest.model;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.validation.annotation.Validated;
 
@@ -10,18 +11,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Validated
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BaselineSettings {
-    public static String incrementPort(String base, int offset) {
-        String[] parts = base.split(":");
-        if (parts.length == 2) {
-            return parts[0] + ":" + Integer.parseInt(parts[1]) + offset;
-        }
-        if (parts.length == 1) {
-            return ":" + Integer.parseInt(parts[0]) + offset;
-        }
-        throw new IllegalArgumentException("Expected ip:port or :port" + base);
-    }
-
+public class BaselineProperties {
     @NotNull
     private String serviceAddr;
 
@@ -41,6 +31,17 @@ public class BaselineSettings {
     private String httpAddr;
 
     private List<String> certHosts = List.of();
+
+    private final AtomicInteger id = new AtomicInteger();
+
+    public BaselineProperties nextId() {
+        id.incrementAndGet();
+        return this;
+    }
+
+    public Integer getCurrentId() {
+        return id.get();
+    }
 
     public List<String> getCertHosts() {
         return certHosts;

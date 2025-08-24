@@ -2,9 +2,9 @@ package io.cockroachdb.pest.config;
 
 import org.springframework.web.client.RestClient;
 
-import io.cockroachdb.pest.model.ClusterSettings;
+import io.cockroachdb.pest.model.ClusterProperties;
 
 @FunctionalInterface
 public interface RestClientProvider {
-    RestClient matches(ClusterSettings clusterSettings);
+    RestClient matches(ClusterProperties clusterProperties);
 }

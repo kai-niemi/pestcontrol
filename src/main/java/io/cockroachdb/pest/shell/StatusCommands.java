@@ -15,7 +15,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.web.client.ResourceAccessException;
 
-import io.cockroachdb.pest.model.ClusterSettings;
+import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.shell.client.HypermediaClient;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
@@ -25,7 +25,7 @@ import static io.cockroachdb.pest.api.LinkRelations.CURIE_NAMESPACE;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @ShellComponent
-@ShellCommandGroup(Constants.STATUS_COMMANDS)
+@ShellCommandGroup(Constants.CLUSTER_COMMANDS)
 public class StatusCommands extends AbstractCommand {
     @Autowired
     private HypermediaClient hypermediaClient;
@@ -47,15 +47,15 @@ public class StatusCommands extends AbstractCommand {
 
         List<List<?>> tuples = new ArrayList<>();
 
-        ClusterSettings clusterSettings = getClusterSettings();
+        ClusterProperties clusterProperties = getClusterSettings();
 
-        clusterSettings
+        clusterProperties
                 .getNodes().forEach(nodeProperties ->
                         tuples.add(
                                 List.of(Objects.requireNonNull(nodeProperties.getId()),
-                                nodeProperties.getServiceLink(clusterSettings.isSecure()).getHref(),
-                                nodeProperties.getAdminLink(clusterSettings.isSecure()),
-                                Objects.requireNonNullElse(nodeProperties.getSqlAddr(), "n/a"))
+                                        nodeProperties.getServiceLink(clusterProperties.isSecure()).getHref(),
+                                        nodeProperties.getAdminLink(clusterProperties.isSecure()),
+                                        Objects.requireNonNullElse(nodeProperties.getSqlAddr(), "n/a"))
                         ));
 
         String table = TableUtils.prettyPrint(
@@ -73,11 +73,11 @@ public class StatusCommands extends AbstractCommand {
     }
 
     @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Print cluster configuration(s)", key = {"config"})
-    public void printConfig() {
+    @ShellMethod(value = "Print cluster information", key = {"cluster-info"})
+    public void printClusterInfo() {
         List<List<?>> tuples = new ArrayList<>();
 
-        applicationSettings.getClusters()
+        applicationProperties.getClusters()
                 .forEach(clusterProperties -> {
                     tuples.add(List.of(
                             clusterProperties.getClusterId(),
@@ -106,12 +106,12 @@ public class StatusCommands extends AbstractCommand {
     public void ping() {
         List<List<?>> tuples = new ArrayList<>();
 
-        ClusterSettings clusterSettings = getClusterSettings();
+        ClusterProperties clusterProperties = getClusterSettings();
 
-        clusterSettings.getNodes().forEach(nodeProperties -> {
+        clusterProperties.getNodes().forEach(nodeProperties -> {
             try {
                 Map<String, Object> build = hypermediaClient.from(nodeProperties
-                                .getServiceLink(clusterSettings.isSecure()))
+                                .getServiceLink(clusterProperties.isSecure()))
                         .follow(curied(CURIE_NAMESPACE, ACTUATORS_REL).value())
                         .follow(HalLinkRelation.uncuried("info").value())
                         .toObject("$.build");
@@ -122,13 +122,13 @@ public class StatusCommands extends AbstractCommand {
                 tuples.add(List.of(
                         nodeProperties.getId(),
                         nodeProperties.getName(),
-                        nodeProperties.getServiceLink(clusterSettings.isSecure()).getHref(),
+                        nodeProperties.getServiceLink(clusterProperties.isSecure()).getHref(),
                         name,
                         version,
                         version.equals(buildProperties.getVersion()) ? "" : "Version divergence!"));
             } catch (ResourceAccessException e) {
                 tuples.add(List.of(nodeProperties.getServiceLink(
-                        clusterSettings.isSecure()).getHref(), "??", "??", e.getMessage()));
+                        clusterProperties.isSecure()).getHref(), "??", "??", e.getMessage()));
             }
         });
 

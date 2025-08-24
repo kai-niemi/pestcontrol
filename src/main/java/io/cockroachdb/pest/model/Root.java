@@ -6,17 +6,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Root {
     @JsonProperty("application")
-    private ApplicationSettings applicationSettings;
+    private ApplicationProperties applicationProperties;
 
-    public Root(ApplicationSettings applicationSettings) {
-        this.applicationSettings = applicationSettings;
+    public Root(ApplicationProperties applicationProperties) {
+        this.applicationProperties = applicationProperties;
     }
 
-    public ApplicationSettings getApplicationProperties() {
-        return applicationSettings;
+    public ApplicationProperties getApplicationProperties() {
+        return applicationProperties;
     }
 
-    public void setApplicationProperties(ApplicationSettings applicationSettings) {
-        this.applicationSettings = applicationSettings;
+    public void setApplicationProperties(ApplicationProperties applicationProperties) {
+        this.applicationProperties = applicationProperties;
     }
 }

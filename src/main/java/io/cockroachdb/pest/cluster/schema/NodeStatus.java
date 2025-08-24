@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.model.schema;
+package io.cockroachdb.pest.cluster.schema;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -17,15 +17,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.cockroachdb.pest.model.NodeSettings;
+import io.cockroachdb.pest.model.NodeProperties;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeStatus {
-    public static NodeStatus from(NodeSettings nodeSettings) {
+    public static NodeStatus from(NodeProperties nodeProperties) {
         NodeStatus nodeStatus = new NodeStatus();
-        nodeStatus.setId(nodeSettings.getId());
-        nodeStatus.setLocality(nodeSettings.getLocality());
-        nodeStatus.setAddress(nodeSettings.getListenAddr());
+        nodeStatus.setId(nodeProperties.getId());
+        nodeStatus.setLocality(nodeProperties.getLocality());
+        nodeStatus.setAddress(nodeProperties.getListenAddr());
         nodeStatus.setIsLive("false");
         nodeStatus.setIsAvailable("false");
         return nodeStatus;

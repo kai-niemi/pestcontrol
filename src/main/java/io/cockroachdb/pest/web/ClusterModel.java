@@ -10,24 +10,24 @@ import java.util.Set;
 import org.springframework.hateoas.Link;
 
 import io.cockroachdb.pest.api.cluster.NodeModel;
-import io.cockroachdb.pest.model.ClusterSettings;
+import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.Locality;
 import io.cockroachdb.pest.model.Tier;
-import io.cockroachdb.pest.model.schema.NodeStatus;
+import io.cockroachdb.pest.cluster.schema.NodeStatus;
 
 public class ClusterModel {
-    private final ClusterSettings clusterSettings;
+    private final ClusterProperties clusterProperties;
 
     private boolean available;
 
     private Collection<NodeModel> nodeModels = List.of();
 
-    public ClusterModel(ClusterSettings clusterSettings) {
-        this.clusterSettings = clusterSettings;
+    public ClusterModel(ClusterProperties clusterProperties) {
+        this.clusterProperties = clusterProperties;
     }
 
     public String getClusterId() {
-        return clusterSettings.getClusterId();
+        return clusterProperties.getClusterId();
     }
 
     public void setNodeModels(Collection<NodeModel> nodeModels) {
@@ -47,7 +47,7 @@ public class ClusterModel {
     }
 
     public Link getAdminLink() {
-        return Link.of(clusterSettings.getAdminUrl());
+        return Link.of(clusterProperties.getAdminUrl());
     }
 
     /**

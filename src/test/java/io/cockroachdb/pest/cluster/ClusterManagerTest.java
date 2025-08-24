@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.cockroachdb.pest.AbstractIntegrationTest;
-import io.cockroachdb.pest.model.ApplicationSettings;
-import io.cockroachdb.pest.model.ClusterSettings;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.api.cluster.NodeModel;
-import io.cockroachdb.pest.model.schema.NodeDetail;
-import io.cockroachdb.pest.model.schema.NodeStatus;
+import io.cockroachdb.pest.cluster.schema.NodeDetail;
+import io.cockroachdb.pest.cluster.schema.NodeStatus;
 import io.cockroachdb.pest.util.CalendarVersion;
 
 public class ClusterManagerTest extends AbstractIntegrationTest {
@@ -22,17 +22,17 @@ public class ClusterManagerTest extends AbstractIntegrationTest {
     private ClusterManager clusterManager;
 
     @Autowired
-    private ApplicationSettings applicationSettings;
+    private ApplicationProperties applicationProperties;
 
     private Optional<String> sessionToken = Optional.empty();
 
     private void assertSessionToken() {
-        ClusterSettings clusterSettings = applicationSettings.getClusterPropertiesById(getTagValue());
+        ClusterProperties clusterProperties = applicationProperties.getClusterPropertiesById(getTagValue());
 
         String token = this.sessionToken.orElseGet(() -> clusterManager
-                .login(clusterSettings.getClusterId(),
-                        clusterSettings.getDataSourceProperties().getUsername(),
-                        clusterSettings.getDataSourceProperties().getPassword()
+                .login(clusterProperties.getClusterId(),
+                        clusterProperties.getDataSourceProperties().getUsername(),
+                        clusterProperties.getDataSourceProperties().getPassword()
                 )
         );
 

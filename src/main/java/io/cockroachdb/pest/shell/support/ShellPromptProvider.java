@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.shell;
+package io.cockroachdb.pest.shell.support;
 
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
@@ -7,28 +7,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.jline.PromptProvider;
 import org.springframework.stereotype.Component;
 
-import io.cockroachdb.pest.model.ClusterSettings;
+import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.shell.ClusterCommands;
 
 @Component
 public class ShellPromptProvider implements PromptProvider {
     @Autowired
-    private SetupCommands setupCommands;
+    private ClusterCommands clusterCommands;
 
     @Override
     public AttributedString getPrompt() {
         AttributedStringBuilder sb = new AttributedStringBuilder();
-        sb.append("pest", AttributedStyle.DEFAULT
+        sb.append("pestcontrol", AttributedStyle.DEFAULT
                 .foreground(AttributedStyle.GREEN | AttributedStyle.BRIGHT));
 
-        if (!setupCommands.ifClusterSelected().isAvailable()) {
+        if (!clusterCommands.ifClusterSelected().isAvailable()) {
             sb.append(" $ ", AttributedStyle.DEFAULT
                     .foreground(AttributedStyle.BLUE | AttributedStyle.BRIGHT));
         } else {
-            ClusterSettings clusterSettings = setupCommands.getClusterSettings();
+            ClusterProperties clusterProperties = clusterCommands.getClusterSettings();
             sb.append(" cluster:(", AttributedStyle.DEFAULT
                     .foreground(AttributedStyle.BLUE | AttributedStyle.BRIGHT));
-            sb.append(clusterSettings.getClusterId(), AttributedStyle.DEFAULT
-                    .foreground(AttributedStyle.RED | AttributedStyle.BRIGHT)
+            sb.append(clusterProperties.getClusterId(), AttributedStyle.DEFAULT
+                    .background(AttributedStyle.BLUE)
+                    .foreground(AttributedStyle.WHITE)
                     .faintOff());
             sb.append(") $ ", AttributedStyle.DEFAULT
                     .foreground(AttributedStyle.BLUE | AttributedStyle.BRIGHT));

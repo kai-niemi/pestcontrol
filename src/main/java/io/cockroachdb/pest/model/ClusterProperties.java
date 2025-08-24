@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -27,7 +28,7 @@ import io.cockroachdb.pest.util.Networking;
 @JsonPropertyOrder({
         "clusterId", "clusterName", "clusterType", "version",
         "adminUrl", "apiKey", "secure", "dataSourceProperties", "nodes"})
-public class ClusterSettings {
+public class ClusterProperties implements InitializingBean {
     @NotNull
     @NotBlank
     private String clusterId;
@@ -45,9 +46,9 @@ public class ClusterSettings {
     private DataSourceProperties dataSourceProperties;
 
     @Valid
-    private BaselineSettings baseline;
+    private BaselineProperties baselineProperties;
 
-    private List<@Valid NodeSettings> nodes = new ArrayList<>();
+    private List<@Valid NodeProperties> nodes = new ArrayList<>();
 
     private String version;
 
@@ -59,44 +60,27 @@ public class ClusterSettings {
 
     private boolean secure;
 
-    public void init() {
-        AtomicInteger id = new AtomicInteger();
+    @Override
+    public void afterPropertiesSet() {
+        this.nodes.forEach(nodeProperties ->
+                nodeProperties.init(baselineProperties.nextId()));
 
-        nodes.forEach(nodeSettings -> {
-            id.incrementAndGet();
-
-            if (Objects.isNull(nodeSettings.getId())) {
-                nodeSettings.setId(id.get());
-            }
-            if (Objects.isNull(nodeSettings.getName())) {
-                nodeSettings.setName("n%d".formatted(id.get()));
-            }
-
-            nodeSettings.init(baseline, id.get());
-
-            if (!Objects.isNull(baseline)) {
-                nodeSettings.init(baseline, id.get());
-            }
-
-            nodeSettings.resolvePlaceholders();
-        });
-
-        adminUrl = Networking.resolve(adminUrl);
+        this.adminUrl = Networking.resolve(adminUrl);
     }
 
-    public NodeSettings findNodePropertiesById(int nodeId) {
+    public NodeProperties findNodePropertiesById(int nodeId) {
         return nodes.stream()
                 .filter(x -> Objects.equals(nodeId, x.getId()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Node id not found: " + nodeId));
     }
 
-    public BaselineSettings getBaseline() {
-        return baseline;
+    public BaselineProperties getBaseline() {
+        return baselineProperties;
     }
 
-    public void setBaseline(BaselineSettings baseline) {
-        this.baseline = baseline;
+    public void setBaseline(BaselineProperties baseline) {
+        this.baselineProperties = baseline;
     }
 
     public boolean isSecure() {
@@ -115,11 +99,11 @@ public class ClusterSettings {
         this.version = version;
     }
 
-    public List<NodeSettings> getNodes() {
+    public List<NodeProperties> getNodes() {
         return nodes;
     }
 
-    public void setNodes(List<NodeSettings> nodes) {
+    public void setNodes(List<NodeProperties> nodes) {
         this.nodes = nodes;
     }
 

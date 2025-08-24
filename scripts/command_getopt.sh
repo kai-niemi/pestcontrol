@@ -7,9 +7,9 @@ fn_print_help() {
     echo -e "${green}Usage: $0 [command]${default}"
     echo -e "${default}Pest Control :: Operator Commands${default}"
     echo -e ""
-    echo -e "${yellow}Note: This script is mainly intended to be called programmatically via RPC.${default}"
+    echo -e "${yellow}Internal commands are intended to be called programmatically via RPC from the built-in shell.${default}"
     echo -e ""
-    echo -e "${lightgreen}[Commands]${default}"
+    echo -e "${lightgreen}[Internal Commands]${default}"
     {
         echo -e "${yellow}start\t${default}      | Start node"
         echo -e "${yellow}stop\t${default}      | Stop node"
@@ -24,9 +24,14 @@ fn_print_help() {
         echo -e "${cyan}stop-proxy\t${default}      | Stop ToxiProxy server"
         echo -e "${cyan}start-lb\t${default}      | Start HAProxy load balancer"
         echo -e "${cyan}stop-lb\t${default}      | Stop HAProxy load balancer"
-        echo -e "${cyan}start-service\t${default}      | Start PestControl service"
-        echo -e "${cyan}stop-service\t${default}      | Stop PestControl service"
-        echo -e "${cyan}run-service\t${default}      | Run PestControl service"
+    } | column -s $'\t' -t
+
+    echo -e ""
+    echo -e "${lightgreen}[Service Commands]${default}"
+    {
+        echo -e "${cyan}start-service\t${default}    | Start PestControl service in background"
+        echo -e "${cyan}stop-service\t${default}    | Stop PestControl service"
+        echo -e "${cyan}run-service\t${default}    | Run PestControl service"
     } | column -s $'\t' -t
 }
 

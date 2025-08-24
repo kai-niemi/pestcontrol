@@ -8,29 +8,29 @@ import org.springframework.shell.CompletionContext;
 import org.springframework.shell.CompletionProposal;
 import org.springframework.shell.standard.ValueProvider;
 
-import io.cockroachdb.pest.model.ApplicationSettings;
-import io.cockroachdb.pest.model.ClusterSettings;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterTypes;
 
 public class ClusterProvider implements ValueProvider {
     @Autowired
-    private ApplicationSettings applicationSettings;
+    private ApplicationProperties applicationProperties;
 
     @Override
     public List<CompletionProposal> complete(CompletionContext completionContext) {
         List<CompletionProposal> result = new ArrayList<>();
 
-        for (ClusterSettings clusterSettings : applicationSettings.getClusters()) {
+        for (ClusterProperties clusterProperties : applicationProperties.getClusters()) {
             String prefix = completionContext.currentWordUpToCursor();
             if (prefix == null) {
                 prefix = "";
             }
-            if ((clusterSettings.getClusterName().startsWith(prefix)
-                 || clusterSettings.getClusterId().startsWith(prefix))
-                && ClusterTypes.isHosted(clusterSettings.getClusterType())) {
-                result.add(new CompletionProposal(clusterSettings.getClusterId())
-                        .displayText(clusterSettings.getClusterId())
-                        .description(clusterSettings.getClusterName()));
+            if ((clusterProperties.getClusterName().startsWith(prefix)
+                 || clusterProperties.getClusterId().startsWith(prefix))
+                && ClusterTypes.isHosted(clusterProperties.getClusterType())) {
+                result.add(new CompletionProposal(clusterProperties.getClusterId())
+                        .displayText(clusterProperties.getClusterId())
+                        .description(clusterProperties.getClusterName()));
             }
         }
 

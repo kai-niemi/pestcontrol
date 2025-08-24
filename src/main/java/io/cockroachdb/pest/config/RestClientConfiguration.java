@@ -30,7 +30,7 @@ import org.springframework.web.client.RestTemplate;
 
 import io.cockroachdb.pest.cluster.ClientErrorException;
 import io.cockroachdb.pest.cluster.ServerErrorException;
-import io.cockroachdb.pest.model.ApplicationSettings;
+import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.shell.client.HypermediaClient;
 
@@ -39,12 +39,12 @@ public class RestClientConfiguration implements RestTemplateCustomizer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private ApplicationSettings applicationSettings;
+    private ApplicationProperties applicationProperties;
 
     @Override
     public void customize(RestTemplate restTemplate) {
-        int maxTotal = applicationSettings.getHttp().getMaxTotal();
-        int maxConnPerRoute = applicationSettings.getHttp().getMaxConnPerRoute();
+        int maxTotal = applicationProperties.getHttp().getMaxTotal();
+        int maxConnPerRoute = applicationProperties.getHttp().getMaxConnPerRoute();
 
         if (maxConnPerRoute <= 0 || maxTotal <= 0) {
             maxConnPerRoute = Runtime.getRuntime().availableProcessors() * 8;

@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -18,7 +19,6 @@ import org.springframework.validation.annotation.Validated;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -30,9 +30,9 @@ import io.cockroachdb.pest.config.ClosableDataSource;
 @Validated
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ConfigurationProperties(prefix = "application", ignoreUnknownFields = false)
-public class ApplicationSettings {
+public class ApplicationProperties implements InitializingBean {
     @NotEmpty
-    private List<@Valid ClusterSettings> clusters = new ArrayList<>();
+    private List<@Valid ClusterProperties> clusters = new ArrayList<>();
 
     @Autowired
     private Function<DataSourceProperties, ClosableDataSource> dataSourceFactory;
@@ -41,11 +41,11 @@ public class ApplicationSettings {
     private ObjectProvider<ClusterOperator> clusterOperators;
 
     @Valid
-    private ProxySettings toxiproxy;
+    private ToxiProxyProperties toxiProxyProperties;
 
     @Valid
     @NotNull
-    private HttpSettings http;
+    private HttpProperties http;
 
     private Integer threadPoolMaxSize;
 
@@ -57,9 +57,9 @@ public class ApplicationSettings {
 
     private String defaultClusterId;
 
-    @PostConstruct
-    public void init() {
-        clusters.forEach(ClusterSettings::init);
+    @Override
+    public void afterPropertiesSet() {
+        this.clusters.forEach(ClusterProperties::afterPropertiesSet);
     }
 
     public ClusterOperator clusterOperator(String clusterId) {
@@ -79,46 +79,46 @@ public class ApplicationSettings {
         return dataSourceFactory.apply(getClusterPropertiesById(clusterId).getDataSourceProperties());
     }
 
-    public ClusterSettings getClusterPropertiesById(String clusterId) {
+    public ClusterProperties getClusterPropertiesById(String clusterId) {
         return getClusterPropertiesById(clusterId, EnumSet.allOf(ClusterType.class));
     }
 
-    public ClusterSettings getClusterPropertiesById(String clusterId, EnumSet<ClusterType> requiredTypes) {
-        ClusterSettings clusterSettings = getClusters()
+    public ClusterProperties getClusterPropertiesById(String clusterId, EnumSet<ClusterType> requiredTypes) {
+        ClusterProperties clusterProperties = getClusters()
                 .stream()
                 .filter(x -> x.getClusterId().equals(clusterId))
                 .findFirst()
                 .orElseThrow(() ->
                         new IllegalArgumentException("No cluster configuration with id: " + clusterId));
-        if (!requiredTypes.contains(clusterSettings.getClusterType())) {
+        if (!requiredTypes.contains(clusterProperties.getClusterType())) {
             throw new IllegalArgumentException("Cluster configuration is not of expected types '%s' but '%s'"
-                    .formatted(requiredTypes, clusterSettings.getClusterType()));
+                    .formatted(requiredTypes, clusterProperties.getClusterType()));
         }
-        return clusterSettings;
+        return clusterProperties;
     }
 
     @JsonIgnore
     public List<String> getClusterIds() {
         return getClusters()
                 .stream()
-                .map(ClusterSettings::getClusterId)
+                .map(ClusterProperties::getClusterId)
                 .toList();
     }
 
-    public List<ClusterSettings> getClusters() {
+    public List<ClusterProperties> getClusters() {
         return clusters;
     }
 
-    public void setClusters(List<ClusterSettings> clusters) {
+    public void setClusters(List<ClusterProperties> clusters) {
         this.clusters = clusters;
     }
 
-    public ProxySettings getToxiproxy() {
-        return toxiproxy;
+    public ToxiProxyProperties getToxiProxy() {
+        return toxiProxyProperties;
     }
 
-    public void setToxiproxy(ProxySettings toxiproxy) {
-        this.toxiproxy = toxiproxy;
+    public void setToxiProxy(ToxiProxyProperties toxiProxyProperties) {
+        this.toxiProxyProperties = toxiProxyProperties;
     }
 
     public Integer getSamplePeriodSeconds() {
@@ -163,11 +163,11 @@ public class ApplicationSettings {
         this.threadPoolMaxSize = threadPoolMaxSize;
     }
 
-    public HttpSettings getHttp() {
+    public HttpProperties getHttp() {
         return http;
     }
 
-    public void setHttp(HttpSettings http) {
+    public void setHttp(HttpProperties http) {
         this.http = http;
     }
 

@@ -3,8 +3,6 @@ package io.cockroachdb.pest.util;
 
 import org.junit.jupiter.api.Test;
 
-import io.cockroachdb.pest.util.TreeNode;
-
 public class TreeNodeTest {
     @Test
     public void whenBasicTree_expectDAG() {

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.cockroachdb.pest.api.LinkRelations;
 import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.cluster.ClusterOperator;
-import io.cockroachdb.pest.model.ClusterSettings;
+import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -27,11 +27,11 @@ public class CloudController {
     private ClusterManager clusterManager;
 
     @GetMapping("/{clusterId}")
-    public ResponseEntity<EntityModel<ClusterSettings>> index(
+    public ResponseEntity<EntityModel<ClusterProperties>> index(
             @PathVariable("clusterId") String clusterId) {
-        ClusterSettings clusterSettings = clusterManager.getClusterProperties(clusterId);
+        ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
 
-        EntityModel<ClusterSettings> resource = EntityModel.of(clusterSettings);
+        EntityModel<ClusterProperties> resource = EntityModel.of(clusterProperties);
         resource.add(WebMvcLinkBuilder.linkTo(methodOn(CloudController.class)
                         .index(clusterId))
                 .withSelfRel());
@@ -39,7 +39,7 @@ public class CloudController {
         if (EnumSet.of(ClusterType.cloud_dedicated,
                         ClusterType.cloud_serverless,
                         ClusterType.cloud_standard)
-                .contains(clusterSettings.getClusterType())) {
+                .contains(clusterProperties.getClusterType())) {
             resource.add(linkTo(methodOn(CloudController.class)
                     .disruptLocality(clusterId, null))
                     .withRel(LinkRelations.LOCALITY_DISRUPT_REL)
@@ -126,18 +126,18 @@ public class CloudController {
     @PostMapping("/{clusterId}/node/{nodeId}/disrupt")
     public ResponseEntity<Void> disruptNode(@PathVariable("clusterId") String clusterId,
                                             @PathVariable("nodeId") Integer id) {
-        ClusterSettings clusterSettings = clusterManager.getClusterProperties(clusterId);
+        ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-        clusterOperator.disruptNode(clusterSettings, id);
+        clusterOperator.disruptNode(clusterProperties, id);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{clusterId}/node/{nodeId}/recover")
     public ResponseEntity<Void> recoverNode(@PathVariable("clusterId") String clusterId,
                                             @PathVariable("nodeId") Integer id) {
-        ClusterSettings clusterSettings = clusterManager.getClusterProperties(clusterId);
+        ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-        clusterOperator.recoverNode(clusterSettings, id);
+        clusterOperator.recoverNode(clusterProperties, id);
         return ResponseEntity.ok().build();
     }
 }

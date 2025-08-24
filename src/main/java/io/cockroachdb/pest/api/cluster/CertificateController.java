@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.cockroachdb.pest.model.ApplicationSettings;
+import io.cockroachdb.pest.model.ApplicationProperties;
 
 @RestController
 @RequestMapping("/api/cluster/certs")
@@ -33,7 +33,7 @@ public class CertificateController {
             "application/octet-stream");
 
     @Autowired
-    private ApplicationSettings applicationSettings;
+    private ApplicationProperties applicationProperties;
 
     @PostMapping
     public ResponseEntity<String> uploadCerts(@RequestParam("files") MultipartFile[] files)
@@ -67,7 +67,7 @@ public class CertificateController {
     }
 
     private boolean uploadFile(MultipartFile file) throws UncheckedIOException {
-        Path targetPath = applicationSettings.getCertsDirPath()
+        Path targetPath = applicationProperties.getCertsDirPath()
                 .resolve(Objects.requireNonNull(file.getOriginalFilename()));
         try {
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);

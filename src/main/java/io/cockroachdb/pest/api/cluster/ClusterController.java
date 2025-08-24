@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import io.cockroachdb.pest.api.LinkRelations;
 import io.cockroachdb.pest.api.MessageModel;
 import io.cockroachdb.pest.cluster.ClusterManager;
-import io.cockroachdb.pest.model.ApplicationSettings;
-import io.cockroachdb.pest.model.ClusterSettings;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterTypes;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -24,7 +24,7 @@ public class ClusterController {
     private ClusterManager clusterManager;
 
     @Autowired
-    private ApplicationSettings applicationSettings;
+    private ApplicationProperties applicationProperties;
 
     @GetMapping
     public ResponseEntity<MessageModel> index() {
@@ -33,7 +33,7 @@ public class ClusterController {
                 .index())
                 .withSelfRel());
 
-        applicationSettings.getClusterIds()
+        applicationProperties.getClusterIds()
                 .forEach(clusterId -> resource.add(linkTo(methodOn(ClusterController.class)
                         .getCluster(clusterId))
                         .withRel(LinkRelations.CLUSTER_REL)));
@@ -50,10 +50,10 @@ public class ClusterController {
     }
 
     @GetMapping("/{clusterId}")
-    public ResponseEntity<EntityModel<ClusterSettings>> getCluster(@PathVariable("clusterId") String clusterId) {
-        ClusterSettings clusterSettings = applicationSettings.getClusterPropertiesById(clusterId);
+    public ResponseEntity<EntityModel<ClusterProperties>> getCluster(@PathVariable("clusterId") String clusterId) {
+        ClusterProperties clusterProperties = applicationProperties.getClusterPropertiesById(clusterId);
 
-        EntityModel<ClusterSettings> model = EntityModel.of(clusterSettings);
+        EntityModel<ClusterProperties> model = EntityModel.of(clusterProperties);
         model.add(linkTo(methodOn(getClass())
                 .getCluster(clusterId))
                 .withSelfRel());
@@ -67,11 +67,11 @@ public class ClusterController {
                 .index(clusterId))
                 .withRel(LinkRelations.WORKLOADS_REL));
 
-        if (ClusterTypes.isHosted(clusterSettings.getClusterType())) {
+        if (ClusterTypes.isHosted(clusterProperties.getClusterType())) {
             model.add(linkTo(methodOn(LocalController.class)
                     .index())
                     .withRel(LinkRelations.OPERATOR_REL));
-        } else if (ClusterTypes.isCloud(clusterSettings.getClusterType())) {
+        } else if (ClusterTypes.isCloud(clusterProperties.getClusterType())) {
             model.add(linkTo(methodOn(CloudController.class)
                     .index(clusterId))
                     .withRel(LinkRelations.OPERATOR_REL));

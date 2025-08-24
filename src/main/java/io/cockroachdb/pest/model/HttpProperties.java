@@ -3,7 +3,7 @@ package io.cockroachdb.pest.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class HttpSettings {
+public class HttpProperties {
     private Integer maxTotal;
 
     private Integer maxConnPerRoute;
