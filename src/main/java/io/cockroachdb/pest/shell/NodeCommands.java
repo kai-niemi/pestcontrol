@@ -1,6 +1,7 @@
 package io.cockroachdb.pest.shell;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
@@ -15,80 +16,87 @@ import io.cockroachdb.pest.util.PatternUtils;
 @ShellComponent
 @ShellCommandGroup(Constants.NODE_COMMANDS)
 public class NodeCommands extends AbstractCommand {
+    private List<Integer> range(String nodes) {
+        ClusterProperties clusterProperties = getClusterSettings();
+        if (nodes.startsWith("all")) {
+            return List.of(1, clusterProperties.getNodes().size());
+        }
+        return PatternUtils.parseIntRange(nodes);
+    }
+
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Create and distribute node certificates and key pairs", key = {"certs"})
     public void createCerts(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range",
-                    defaultValue = "1") String nodes) {
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range or 'all'",
+                    defaultValue = "all") String nodes) {
         ClusterProperties clusterProperties = getClusterSettings();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
-        clusterOperator.certs(clusterProperties, PatternUtils.parseIntRange(nodes), new HashMap<>());
+        clusterOperator.certs(clusterProperties, range(nodes), new HashMap<>());
     }
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'install' command on specified node(s)", key = {"install"})
     public void installNode(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range",
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range or 'all'",
                     defaultValue = "1") String nodes) {
         ClusterProperties clusterProperties = getClusterSettings();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
-        PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.install(clusterProperties, id));
+        range(nodes).forEach(id -> clusterOperator.install(clusterProperties, id));
     }
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'init' command on specified node(s)", key = {"init"})
     public void initNode(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range",
-                    defaultValue = "1") String nodes) {
+            @ShellOption(help = "Node ID (1-based int)") String node) {
         ClusterProperties clusterProperties = getClusterSettings();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
-        PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.init(clusterProperties, id));
+        clusterOperator.init(clusterProperties, Integer.parseInt(node));
     }
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'wipe' command on specified node(s)", key = {"wipe"})
     public void wipeNode(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range",
-                    defaultValue = "1") String nodes) {
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range or 'all'",
+                    defaultValue = "all") String nodes) {
         ClusterProperties clusterProperties = getClusterSettings();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
-        PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.wipe(clusterProperties, id));
+        range(nodes).forEach(id -> clusterOperator.wipe(clusterProperties, id));
     }
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'start' command on specified node(s)", key = {"start"})
     public void startNode(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range",
-                    defaultValue = "1") String nodes) {
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range or 'all'",
+                    defaultValue = "all") String nodes) {
         ClusterProperties clusterProperties = getClusterSettings();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
-        PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.startNode(clusterProperties, id));
+        range(nodes).forEach(id -> clusterOperator.startNode(clusterProperties, id));
     }
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'stop' command on specified node(s)", key = {"stop"})
     public void stopNode(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range",
-                    defaultValue = "1") String nodes) {
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range or 'all'",
+                    defaultValue = "all") String nodes) {
         ClusterProperties clusterProperties = getClusterSettings();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
-        PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.stopNode(clusterProperties, id));
+        range(nodes).forEach(id -> clusterOperator.stopNode(clusterProperties, id));
     }
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'kill' command on specified node(s)", key = {"kill"})
     public void killNode(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range",
-                    defaultValue = "1") String nodes) {
+            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range or 'all'",
+                    defaultValue = "all") String nodes) {
         ClusterProperties clusterProperties = getClusterSettings();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
-        PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.killNode(clusterProperties, id));
+        range(nodes).forEach(id -> clusterOperator.killNode(clusterProperties, id));
     }
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'sql' command on this host and connect to a specified node", key = {"sql"})
     public void sqlNode(
-            @ShellOption(help = "Node ID (1-based)", defaultValue = "1") String node) {
+            @ShellOption(help = "Node ID (1-based)") String node) {
         ClusterProperties clusterProperties = getClusterSettings();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         clusterOperator.sqlNode(clusterProperties, Integer.parseInt(node));

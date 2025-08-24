@@ -54,6 +54,7 @@ application:
         - url: http://localhost:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
+          service-addr: localhost:9090
           advertise-addr: localhost:25257
           advertise-proxy-addr: localhost:35257
           listen-addr: localhost:25257
@@ -62,6 +63,7 @@ application:
         - url: http://localhost:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
+          service-addr: localhost:9090
           advertise-addr: localhost:25258
           advertise-proxy-addr: localhost:35258
           listen-addr: localhost:25258
@@ -70,6 +72,7 @@ application:
         - url: http://localhost:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
+          service-addr: localhost:9090
           advertise-addr: localhost:25259
           advertise-proxy-addr: localhost:35259
           listen-addr: localhost:25259
@@ -89,7 +92,9 @@ application:
         - url: http://localhost:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
+          service-addr: localhost:9090
           advertise-addr: localhost:25257
+          advertise-proxy-addr: localhost:35257
           listen-addr: localhost:25257
           sql-addr: localhost:26257
           http-addr: localhost:8080
@@ -97,7 +102,9 @@ application:
         - url: http://localhost:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
+          service-addr: localhost:9090
           advertise-addr: localhost:25258
+          advertise-proxy-addr: localhost:35258
           listen-addr: localhost:25258
           sql-addr: localhost:26258
           http-addr: localhost:8081
@@ -105,7 +112,9 @@ application:
         - url: http://localhost:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
+          service-addr: localhost:9090
           advertise-addr: localhost:25259
+          advertise-proxy-addr: localhost:35259
           listen-addr: localhost:25259
           sql-addr: localhost:26259
           http-addr: localhost:8082

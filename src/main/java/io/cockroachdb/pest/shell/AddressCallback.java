@@ -3,7 +3,7 @@ package io.cockroachdb.pest.shell;
 public interface AddressCallback {
     String firstNodeIP();
 
-    String adminURL(int id);
+    String serviceAddr(int id);
 
     String advertiseAddr(int id);
 

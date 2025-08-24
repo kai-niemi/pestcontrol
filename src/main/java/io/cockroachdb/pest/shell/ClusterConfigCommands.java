@@ -46,10 +46,10 @@ public class ClusterConfigCommands {
     @Qualifier("yamlObjectMapper")
     private ObjectMapper yamlObjectMapper;
 
-    @ShellMethod(value = "Generate application YAML for localhost", key = {"cfg-local-gen"})
+    @ShellMethod(value = "Generate application YAML for localhost", key = {"gen-local-cfg"})
     public void generateLocalConfig(
             @ShellOption(help = "Name prefix", defaultValue = "cloud") String name,
-            @ShellOption(help = "Output file path", defaultValue = "test.yml") String output,
+            @ShellOption(help = "Output file path", defaultValue = "application-gen.yml") String output,
             @ShellOption(help = "Regions without number suffix (like 'eu-central,eu-west,..')", defaultValue = "eu-central")
             List<String> regions,
             @ShellOption(help = "Number of zones per region (min 1)", defaultValue = "3") int numZones,
@@ -76,10 +76,10 @@ public class ClusterConfigCommands {
         generateConfig(name, output, tiers, zones, internalIPs, internalIPs);
     }
 
-    @ShellMethod(value = "Generate application YAML", key = {"cfg-gen"})
+    @ShellMethod(value = "Generate application YAML", key = {"gen-cfg"})
     public void generateConfig(
             @ShellOption(help = "Name prefix", defaultValue = "cloud") String name,
-            @ShellOption(help = "Output file path", defaultValue = "test.yml") String output,
+            @ShellOption(help = "Output file path", defaultValue = "application-gen.yml") String output,
             @ShellOption(help = "Region list") List<String> regions,
             @ShellOption(help = "Zone list") List<String> zones,
             @ShellOption(help = "Internal IP list") List<String> internalIPs,
@@ -104,7 +104,7 @@ public class ClusterConfigCommands {
             }
 
             @Override
-            public String adminURL(int id) {
+            public String serviceAddr(int id) {
                 Assert.state(id > 0, "node id must be > 0");
                 String ip = internalIPs.get(id - 1);
                 id = isLocalIP(ip) ? 1 : id;
@@ -174,7 +174,7 @@ public class ClusterConfigCommands {
         });
     }
 
-    @ShellMethod(value = "Print effective application YAML", key = {"cfg-print"})
+    @ShellMethod(value = "Print effective application YAML", key = {"print-cfg"})
     public void printConfig(@ShellOption(help = "Output file path", defaultValue = ShellOption.NULL) String output) {
         writeApplicationProperties(applicationProperties, yaml -> {
             System.out.println(yaml);
@@ -211,13 +211,12 @@ public class ClusterConfigCommands {
             boolean secure,
             AddressCallback addressCallback
     ) {
-
         ClusterProperties clusterProperties = new ClusterProperties();
         {
             clusterProperties.setClusterId("%s-%s".formatted(name, secure ? "secure" : "insecure"));
             clusterProperties.setClusterName("Generated");
             clusterProperties.setClusterType(secure ? ClusterType.hosted_insecure : ClusterType.hosted_secure);
-            clusterProperties.setAdminUrl(addressCallback.adminURL(1));
+            clusterProperties.setAdminUrl(addressCallback.serviceAddr(1));
             clusterProperties.setVersion("v25.3.0.linux-amd64");
             clusterProperties.setSecure(secure);
         }
@@ -248,7 +247,7 @@ public class ClusterConfigCommands {
             );
             nodeProperties.setId(nodeId);
             nodeProperties.setName("n%d".formatted(nodeId));
-            nodeProperties.setServiceAddr(addressCallback.adminURL(nodeId));
+            nodeProperties.setServiceAddr(addressCallback.serviceAddr(nodeId));
             nodeProperties.setAdvertiseAddr(addressCallback.advertiseAddr(nodeId));
             nodeProperties.setAdvertiseProxyAddr(addressCallback.advertiseProxyAddr(nodeId));
             nodeProperties.setListenAddr(addressCallback.listenAddr(nodeId));
