@@ -236,6 +236,10 @@ public class LocalClusterOperator implements ClusterOperator {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-lb"));
         args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());
 
+        if (clusterProperties.isSecure()) {
+            args.add("--secure");
+        }
+
         return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 

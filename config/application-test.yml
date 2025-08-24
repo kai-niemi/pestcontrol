@@ -1,5 +1,5 @@
 application:
-  defaultClusterId: "local-insecure"
+  defaultClusterId: "local-secure"
 
   clusters:
     - cluster-id: "local-insecure"
@@ -14,21 +14,21 @@ application:
       secure: false
       baseline:
           service-addr: ${local-ip}:9090
-          advertise-addr: ${local-ip}:25257
-          advertise-proxy-addr: ${local-ip}:35257
-          listen-addr: ${local-ip}:25257
-          sql-addr: ${local-ip}:26257
-          http-addr: ${local-ip}:8080
+          advertise-addr: ${local-ip}:+25257
+          advertise-proxy-addr: ${local-ip}:+35257
+          listen-addr: ${local-ip}:+25257
+          sql-addr: ${local-ip}:+26257
+          http-addr: ${local-ip}:+8080
       nodes:
         - locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
         - locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
         - locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1a"
-        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1b"
-        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1c"
-        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2a"
-        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2b"
-        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2c"
+#        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1a"
+#        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1b"
+#        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1c"
+#        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2a"
+#        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2b"
+#        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2c"
 
     - cluster-id: "local-secure"
       cluster-name: "Hosted Cluster (secure)"
@@ -42,19 +42,19 @@ application:
       secure: true
       baseline:
         service-addr: ${local-ip}:9090
-        advertise-addr: ${local-ip}:25257
-        advertise-proxy-addr: ${local-ip}:35257
-        listen-addr: ${local-ip}:25257
-        sql-addr: ${local-ip}:26257
-        http-addr: ${local-ip}:8080
+        advertise-addr: ${local-ip}:+25257
+        advertise-proxy-addr: ${local-ip}:+35257
+        listen-addr: ${local-ip}:+25257
+        sql-addr: ${local-ip}:+26257
+        http-addr: ${local-ip}:+8080
         cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
       nodes:
         - locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
         - locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
         - locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1a"
-        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1b"
-        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1c"
-        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2a"
-        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2b"
-        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2c"
+#        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1a"
+#        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1b"
+#        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1c"
+#        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2a"
+#        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2b"
+#        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2c"

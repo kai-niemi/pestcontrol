@@ -73,7 +73,12 @@ public abstract class Networking {
         }
         String[] parts = address.split(":");
         if (parts.length == 2) {
-            return parts[0] + ":" + (Integer.parseInt(parts[1]) + offset);
+            String host = parts[0];
+            String port = parts[1];
+            if (port.startsWith("+")) {
+                return host + ":" + (Integer.parseInt(port.substring(1)) + offset);
+            }
+            return host + ":" + (Integer.parseInt(port));
         }
         throw new IllegalArgumentException("Expected ip:port or :port" + address);
     }

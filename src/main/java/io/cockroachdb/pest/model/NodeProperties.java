@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotNull;
 
 import io.cockroachdb.pest.util.Networking;
 import static io.cockroachdb.pest.util.Networking.incrementPort;
+import static io.cockroachdb.pest.util.Networking.resolve;
 
 /**
  * Node properties describing a local or remote network node.
@@ -69,23 +70,24 @@ public class NodeProperties {
             setAdvertiseProxyAddr(incrementPort(baseline.getAdvertiseProxyAddr(), baseline.getCurrentId()));
         }
         if (Objects.isNull(id)) {
-            setId(baseline.getCurrentId());
+            setId(baseline.getCurrentId() + 1);
         }
         if (Objects.isNull(name)) {
-            setName("n%d".formatted(baseline.getCurrentId()));
+            setName("n%d".formatted(id));
         }
 
         // Resolve any placeholders
 
-        this.serviceAddr = Networking.resolve(serviceAddr);
-        this.listenAddr = Networking.resolve(listenAddr);
-        this.advertiseAddr = Networking.resolve(advertiseAddr);
-        this.advertiseProxyAddr = Networking.resolve(advertiseProxyAddr);
-        this.sqlAddr = Networking.resolve(sqlAddr);
-        this.httpAddr = Networking.resolve(httpAddr);
+        this.serviceAddr = resolve(serviceAddr);
+        this.listenAddr = resolve(listenAddr);
+        this.advertiseAddr = resolve(advertiseAddr);
+        this.advertiseProxyAddr = resolve(advertiseProxyAddr);
+        this.sqlAddr = resolve(sqlAddr);
+        this.httpAddr = resolve(httpAddr);
         this.certHosts = this.certHosts.stream().map(Networking::resolve).toList();
 
         Assert.notNull(this.id, "id is required");
+        Assert.state(this.id>0, "id must be > 0");
         Assert.notNull(this.name, "name is required");
         Assert.notNull(this.serviceAddr, "service-addr is required");
         Assert.notNull(this.listenAddr, "listen-addr is required");
@@ -102,7 +104,7 @@ public class NodeProperties {
 
     public Link getServiceLink(boolean secure) {
         String path = Objects.requireNonNull(serviceAddr).endsWith("/api") ? serviceAddr : serviceAddr + "/api";
-        return Link.of("%s://%s".formatted(secure ? "https" : "http", path));
+        return Link.of("%s://%s".formatted("http", path));
     }
 
     public List<String> getCertHosts() {

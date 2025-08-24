@@ -200,16 +200,16 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public ClusterProperties getClusterProperties(String clusterId) {
-        return applicationProperties.getClusterPropertiesById(clusterId, EnumSet.allOf(ClusterType.class));
+        return applicationProperties.getClusterPropertiesByIdAndType(clusterId, EnumSet.allOf(ClusterType.class));
     }
 
     @Override
     public ClusterProperties getClusterProperties(String clusterId, EnumSet<ClusterType> clusterTypes) {
-        return applicationProperties.getClusterPropertiesById(clusterId, clusterTypes);
+        return applicationProperties.getClusterPropertiesByIdAndType(clusterId, clusterTypes);
     }
 
     @Override
     public ClusterOperator getClusterOperator(String clusterId) {
-        return applicationProperties.clusterOperator(clusterId);
+        return applicationProperties.getClusterOperatorById(clusterId);
     }
 }

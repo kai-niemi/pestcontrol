@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
@@ -33,17 +34,20 @@ import io.cockroachdb.pest.model.Root;
 
 @ShellComponent
 @ShellCommandGroup(Constants.CLUSTER_COMMANDS)
-public class ConfigCommands {
+public class ClusterConfigCommands {
     private static final char[] ALPHA = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
+    private ApplicationProperties applicationProperties;
+
+    @Autowired
     @Qualifier("yamlObjectMapper")
     private ObjectMapper yamlObjectMapper;
 
-    @ShellMethod(value = "Generate application YAML for localhost", key = {"gen-local"})
-    public void generateLocalYaml(
+    @ShellMethod(value = "Generate application YAML for localhost", key = {"cfg-local-gen"})
+    public void generateLocalConfig(
             @ShellOption(help = "Name prefix", defaultValue = "cloud") String name,
             @ShellOption(help = "Output file path", defaultValue = "test.yml") String output,
             @ShellOption(help = "Regions without number suffix (like 'eu-central,eu-west,..')", defaultValue = "eu-central")
@@ -69,11 +73,11 @@ public class ConfigCommands {
             });
         });
 
-        generateYaml(name, output, tiers, zones, internalIPs, internalIPs);
+        generateConfig(name, output, tiers, zones, internalIPs, internalIPs);
     }
 
-    @ShellMethod(value = "Generate application YAML", key = {"gen"})
-    public void generateYaml(
+    @ShellMethod(value = "Generate application YAML", key = {"cfg-gen"})
+    public void generateConfig(
             @ShellOption(help = "Name prefix", defaultValue = "cloud") String name,
             @ShellOption(help = "Output file path", defaultValue = "test.yml") String output,
             @ShellOption(help = "Region list") List<String> regions,
@@ -156,20 +160,45 @@ public class ConfigCommands {
         applicationProperties.getClusters().add(insecureCluster);
         applicationProperties.getClusters().add(secureCluster);
 
+        writeApplicationProperties(applicationProperties, yaml -> {
+            System.out.println();
+            System.out.println(yaml);
+
+            try {
+                logger.info("Writing generated YAML to '%s'".formatted(output));
+                Files.writeString(Path.of(output), yaml, StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        });
+    }
+
+    @ShellMethod(value = "Print effective application YAML", key = {"cfg-print"})
+    public void printConfig(@ShellOption(help = "Output file path", defaultValue = ShellOption.NULL) String output) {
+        writeApplicationProperties(applicationProperties, yaml -> {
+            System.out.println(yaml);
+
+            if (output != null) {
+                try {
+                    logger.info("Writing YAML to '%s'".formatted(output));
+                    Files.writeString(Path.of(output), yaml, StandardOpenOption.CREATE,
+                            StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }
+        });
+    }
+
+    private void writeApplicationProperties(ApplicationProperties applicationProperties,
+                                            Consumer<String> yaml) {
         try {
             StringWriter sw = new StringWriter();
-
             yamlObjectMapper
                     .writerFor(Root.class)
                     .writeValue(sw, new Root(applicationProperties));
-
-            System.out.println();
-            System.out.println(sw);
-
-            logger.info("Writing generated YAML to '%s'".formatted(output));
-
-            Files.writeString(Path.of(output), sw.toString(),
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+            yaml.accept(sw.toString());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

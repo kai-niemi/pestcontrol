@@ -62,11 +62,15 @@ public class ApplicationProperties implements InitializingBean {
         this.clusters.forEach(ClusterProperties::afterPropertiesSet);
     }
 
-    public ClusterOperator clusterOperator(String clusterId) {
-        return clusterOperator(getClusterPropertiesById(clusterId).getClusterType());
+    public ClosableDataSource getDataSource(String clusterId) {
+        return dataSourceFactory.apply(getClusterPropertiesById(clusterId).getDataSourceProperties());
     }
 
-    public ClusterOperator clusterOperator(ClusterType clusterType) {
+    public ClusterOperator getClusterOperatorById(String clusterId) {
+        return getClusterOperatorByType(getClusterPropertiesById(clusterId).getClusterType());
+    }
+
+    public ClusterOperator getClusterOperatorByType(ClusterType clusterType) {
         return clusterOperators
                 .stream()
                 .filter(x -> x.supports(clusterType))
@@ -75,15 +79,11 @@ public class ApplicationProperties implements InitializingBean {
                         "No operator found for cluster type: " + clusterType));
     }
 
-    public ClosableDataSource getDataSource(String clusterId) {
-        return dataSourceFactory.apply(getClusterPropertiesById(clusterId).getDataSourceProperties());
-    }
-
     public ClusterProperties getClusterPropertiesById(String clusterId) {
-        return getClusterPropertiesById(clusterId, EnumSet.allOf(ClusterType.class));
+        return getClusterPropertiesByIdAndType(clusterId, EnumSet.allOf(ClusterType.class));
     }
 
-    public ClusterProperties getClusterPropertiesById(String clusterId, EnumSet<ClusterType> requiredTypes) {
+    public ClusterProperties getClusterPropertiesByIdAndType(String clusterId, EnumSet<ClusterType> requiredTypes) {
         ClusterProperties clusterProperties = getClusters()
                 .stream()
                 .filter(x -> x.getClusterId().equals(clusterId))

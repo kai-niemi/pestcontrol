@@ -62,8 +62,14 @@ public class ClusterProperties implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        this.nodes.forEach(nodeProperties ->
-                nodeProperties.init(baselineProperties.nextId()));
+        if (baselineProperties==null) {
+            baselineProperties = new BaselineProperties();
+        }
+
+        this.nodes.forEach(nodeProperties -> {
+            nodeProperties.init(baselineProperties);
+            baselineProperties.nextId();
+        });
 
         this.adminUrl = Networking.resolve(adminUrl);
     }

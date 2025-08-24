@@ -91,6 +91,7 @@ public class HostedClusterOperator implements ClusterOperator {
     @Override
     public String install(ClusterProperties clusterProperties, Integer nodeId) {
         Link operatorLink = nodeOperatorLink(clusterProperties, nodeId);
+
         Link actionLink = hypermediaClient.from(operatorLink)
                 .follow(curied(CURIE_NAMESPACE, NODE_INSTALL_REL).value())
                 .asTemplatedLink()
