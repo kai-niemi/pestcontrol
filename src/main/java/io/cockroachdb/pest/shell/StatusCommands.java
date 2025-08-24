@@ -15,6 +15,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.web.client.ResourceAccessException;
 
+import io.cockroachdb.pest.model.ClusterSettings;
 import io.cockroachdb.pest.shell.client.HypermediaClient;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
@@ -46,20 +47,20 @@ public class StatusCommands extends AbstractCommand {
 
         List<List<?>> tuples = new ArrayList<>();
 
-        String protocol = "http%s".formatted(getClusterProperties().isSecure() ? "s" : "");
+        ClusterSettings clusterSettings = getClusterSettings();
 
-        getClusterProperties()
+        clusterSettings
                 .getNodes().forEach(nodeProperties ->
-                        tuples.add(List.of(Objects.requireNonNull(nodeProperties.getId()),
-                                nodeProperties.getBaseUrl().getHref(),
-                                "%s://%s".formatted(protocol,
-                                        Objects.requireNonNull(nodeProperties.getHttpAddr())),
+                        tuples.add(
+                                List.of(Objects.requireNonNull(nodeProperties.getId()),
+                                nodeProperties.getServiceLink(clusterSettings.isSecure()).getHref(),
+                                nodeProperties.getAdminLink(clusterSettings.isSecure()),
                                 Objects.requireNonNullElse(nodeProperties.getSqlAddr(), "n/a"))
                         ));
 
         String table = TableUtils.prettyPrint(
                 new ListTableModel<>(tuples,
-                        List.of("Id", "API URL", "Admin URL", "SQL Addr"),
+                        List.of("Id", "Service URL", "Admin URL", "SQL Addr"),
                         (object, column) -> switch (column) {
                             case 0 -> object.get(0);
                             case 1 -> object.get(1);
@@ -105,9 +106,12 @@ public class StatusCommands extends AbstractCommand {
     public void ping() {
         List<List<?>> tuples = new ArrayList<>();
 
-        getClusterProperties().getNodes().forEach(nodeProperties -> {
+        ClusterSettings clusterSettings = getClusterSettings();
+
+        clusterSettings.getNodes().forEach(nodeProperties -> {
             try {
-                Map<String, Object> build = hypermediaClient.from(nodeProperties.getBaseUrl())
+                Map<String, Object> build = hypermediaClient.from(nodeProperties
+                                .getServiceLink(clusterSettings.isSecure()))
                         .follow(curied(CURIE_NAMESPACE, ACTUATORS_REL).value())
                         .follow(HalLinkRelation.uncuried("info").value())
                         .toObject("$.build");
@@ -118,12 +122,13 @@ public class StatusCommands extends AbstractCommand {
                 tuples.add(List.of(
                         nodeProperties.getId(),
                         nodeProperties.getName(),
-                        nodeProperties.getUrl(),
+                        nodeProperties.getServiceLink(clusterSettings.isSecure()).getHref(),
                         name,
                         version,
                         version.equals(buildProperties.getVersion()) ? "" : "Version divergence!"));
             } catch (ResourceAccessException e) {
-                tuples.add(List.of(nodeProperties.getUrl(), "??", "??", e.getMessage()));
+                tuples.add(List.of(nodeProperties.getServiceLink(
+                        clusterSettings.isSecure()).getHref(), "??", "??", e.getMessage()));
             }
         });
 

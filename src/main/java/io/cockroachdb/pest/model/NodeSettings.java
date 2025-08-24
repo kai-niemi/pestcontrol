@@ -1,5 +1,6 @@
 package io.cockroachdb.pest.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -7,9 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.hateoas.Link;
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.validation.constraints.NotNull;
@@ -22,20 +21,18 @@ import io.cockroachdb.pest.util.Networking;
 @Validated
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "id", "name", "url", "locality",
-        "listenAddr", "advertiseAddr", "advertiseProxyAddr",
+        "locality", "id", "name", "url",
+        "serviceUrl", "listenAddr", "advertiseAddr", "advertiseProxyAddr",
         "sqlAddr", "httpAddr", "certHosts"})
 public class NodeSettings {
-    private Integer id;
-
-    @NotNull
-    private String name;
-
-    @NotNull
-    private String url;
-
     @NotNull
     private String locality;
+
+    private Integer id;
+
+    private String name;
+
+    private String serviceAddr;
 
     private String listenAddr;
 
@@ -49,15 +46,56 @@ public class NodeSettings {
 
     private List<String> certHosts = List.of();
 
-    @JsonIgnore
-    public Link getBaseUrl() {
-        String path = (url.endsWith("/") ? "api" : "/api");
-        return Link.of(Networking.resolve(url) + path);
+    public void init(BaselineSettings baseline, int id) {
+        if (getCertHosts().isEmpty()) {
+            setCertHosts(baseline.getCertHosts());
+        }
+        if (Objects.isNull(getServiceAddr())) {
+            setServiceAddr(BaselineSettings.incrementPort(baseline.getServiceAddr(), id));
+        }
+        if (Objects.isNull(getSqlAddr())) {
+            setSqlAddr(BaselineSettings.incrementPort(baseline.getSqlAddr(), id));
+        }
+        if (Objects.isNull(getHttpAddr())) {
+            setHttpAddr(BaselineSettings.incrementPort(baseline.getHttpAddr(), id));
+        }
+        if (Objects.isNull(getListenAddr())) {
+            setListenAddr(BaselineSettings.incrementPort(baseline.getListenAddr(), id));
+        }
+        if (Objects.isNull(getAdvertiseAddr())) {
+            setAdvertiseAddr(BaselineSettings.incrementPort(baseline.getAdvertiseAddr(), id));
+        }
+        if (Objects.isNull(getAdvertiseProxyAddr())) {
+            setAdvertiseProxyAddr(BaselineSettings.incrementPort(baseline.getAdvertiseProxyAddr(), id));
+        }
+    }
+
+    public void resolvePlaceholders() {
+        serviceAddr = Networking.resolve(serviceAddr);
+        listenAddr = Networking.resolve(listenAddr);
+        advertiseAddr = Networking.resolve(advertiseAddr);
+        advertiseProxyAddr = Networking.resolve(advertiseProxyAddr);
+        sqlAddr = Networking.resolve(sqlAddr);
+        httpAddr = Networking.resolve(httpAddr);
+
+        List<String> hosts = certHosts.stream().map(Networking::resolve).toList();
+        certHosts.clear();
+        certHosts.addAll(hosts);
+    }
+
+    public Link getAdminLink(boolean secure) {
+        return Link.of("%s://%s".formatted(secure ? "https" : "http",
+                Objects.requireNonNull(getHttpAddr())));
+    }
+
+    public Link getServiceLink(boolean secure) {
+        String path = getServiceAddr();
+        path = path.endsWith("/api") ? path : path + "/api";
+        return Link.of("%s://%s".formatted(secure ? "https" : "http", path));
     }
 
     public List<String> getCertHosts() {
-        return certHosts.stream().map(Networking::resolve)
-                .collect(Collectors.toList());
+        return certHosts;
     }
 
     public void setCertHosts(List<String> certHosts) {
@@ -80,12 +118,12 @@ public class NodeSettings {
         this.name = name;
     }
 
-    public String getUrl() {
-        return Networking.resolve(url);
+    public String getServiceAddr() {
+        return serviceAddr;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setServiceAddr(String serviceAddr) {
+        this.serviceAddr = serviceAddr;
     }
 
     public String getLocality() {
@@ -96,25 +134,25 @@ public class NodeSettings {
         this.locality = locality;
     }
 
-    @JsonProperty("listen-addr")
+    //    @JsonProperty("listen-addr")
     public String getListenAddr() {
-        return Networking.resolve(listenAddr);
+        return listenAddr;
     }
 
     public void setListenAddr(String listenAddr) {
         this.listenAddr = listenAddr;
     }
 
-    @JsonProperty("advertise-addr")
+    //    @JsonProperty("advertise-addr")
     public String getAdvertiseAddr() {
-        return Networking.resolve(advertiseAddr);
+        return advertiseAddr;
     }
 
     public void setAdvertiseAddr(String advertiseAddr) {
         this.advertiseAddr = advertiseAddr;
     }
 
-    @JsonProperty("advertise-proxy-addr")
+    //    @JsonProperty("advertise-proxy-addr")
     public String getAdvertiseProxyAddr() {
         return advertiseProxyAddr;
     }
@@ -123,52 +161,21 @@ public class NodeSettings {
         this.advertiseProxyAddr = advertiseProxyAddr;
     }
 
-    @JsonProperty("http-addr")
+    //    @JsonProperty("http-addr")
     public String getHttpAddr() {
-        return Networking.resolve(httpAddr);
+        return httpAddr;
     }
 
     public void setHttpAddr(String httpAddr) {
         this.httpAddr = httpAddr;
     }
 
-    @JsonProperty("sql-addr")
+    //    @JsonProperty("sql-addr")
     public String getSqlAddr() {
-        return Networking.resolve(sqlAddr);
+        return sqlAddr;
     }
 
     public void setSqlAddr(String sqlAddr) {
         this.sqlAddr = sqlAddr;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        NodeSettings that = (NodeSettings) o;
-        return Objects.equals(id, that.id) && Objects.equals(url, that.url) && Objects.equals(name, that.name)
-               && Objects.equals(locality, that.locality) && Objects.equals(listenAddr, that.listenAddr)
-               && Objects.equals(advertiseAddr, that.advertiseAddr) && Objects.equals(sqlAddr,
-                that.sqlAddr) && Objects.equals(httpAddr, that.httpAddr);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, url, name, locality, listenAddr, advertiseAddr, sqlAddr, httpAddr);
-    }
-
-    @Override
-    public String toString() {
-        return "NodeProperties{" +
-               "advertiseAddr='" + advertiseAddr + '\'' +
-               ", id=" + id +
-               ", url='" + url + '\'' +
-               ", name='" + name + '\'' +
-               ", locality='" + locality + '\'' +
-               ", listenAddr='" + listenAddr + '\'' +
-               ", sqlAddr='" + sqlAddr + '\'' +
-               ", httpAddr='" + httpAddr + '\'' +
-               '}';
     }
 }

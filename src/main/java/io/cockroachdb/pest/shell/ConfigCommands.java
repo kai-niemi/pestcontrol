@@ -189,7 +189,7 @@ public class ConfigCommands {
             clusterSettings.setClusterName("Generated");
             clusterSettings.setClusterType(secure ? ClusterType.hosted_insecure : ClusterType.hosted_secure);
             clusterSettings.setAdminUrl(addressCallback.adminURL(1));
-            clusterSettings.setVersion("v25.2.2.linux-amd64");
+            clusterSettings.setVersion("v25.3.0.linux-amd64");
             clusterSettings.setSecure(secure);
         }
 
@@ -219,7 +219,7 @@ public class ConfigCommands {
             );
             nodeSettings.setId(nodeId);
             nodeSettings.setName("n%d".formatted(nodeId));
-            nodeSettings.setUrl(addressCallback.adminURL(nodeId));
+            nodeSettings.setServiceAddr(addressCallback.adminURL(nodeId));
             nodeSettings.setAdvertiseAddr(addressCallback.advertiseAddr(nodeId));
             nodeSettings.setAdvertiseProxyAddr(addressCallback.advertiseProxyAddr(nodeId));
             nodeSettings.setListenAddr(addressCallback.listenAddr(nodeId));

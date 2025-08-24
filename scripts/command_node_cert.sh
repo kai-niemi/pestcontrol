@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ./pest-control node-cert --name=n1 192.168.1.149,22
+# ./pop node-cert --name=n1 192.168.1.149,22
 
 commandaction="Generate node certificates"
 

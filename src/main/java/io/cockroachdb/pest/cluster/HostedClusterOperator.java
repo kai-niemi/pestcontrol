@@ -49,14 +49,14 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     private Link clusterLink(ClusterSettings clusterSettings, int nodeId) {
-        Link baseUrl = clusterSettings.findNodePropertiesById(nodeId).getBaseUrl();
+        Link baseUrl = clusterSettings.findNodePropertiesById(nodeId).getServiceLink(clusterSettings.isSecure());
         return hypermediaClient.from(baseUrl)
                 .follow(curied(CURIE_NAMESPACE, CLUSTERS_REL).value())
                 .asTemplatedLink();
     }
 
     private Link nodeOperatorLink(ClusterSettings clusterSettings, int nodeId) {
-        Link baseUrl = clusterSettings.findNodePropertiesById(nodeId).getBaseUrl();
+        Link baseUrl = clusterSettings.findNodePropertiesById(nodeId).getServiceLink(clusterSettings.isSecure());
         return hypermediaClient.from(baseUrl)
                 .follow(curied(CURIE_NAMESPACE, CLUSTERS_REL).value())
                 .follow(Hop.rel(curied(CURIE_NAMESPACE, CLUSTER_TEMPLATE_REL).value())

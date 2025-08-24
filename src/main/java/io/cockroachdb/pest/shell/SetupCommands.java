@@ -45,7 +45,7 @@ public class SetupCommands extends AbstractCommand {
     @ShellMethod(value = "Create and distribute node certificates and key pairs", key = {"certs"})
     public void createCerts(
             @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
-        ClusterSettings clusterSettings = getClusterProperties();
+        ClusterSettings clusterSettings = getClusterSettings();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterSettings.getClusterId());
         clusterOperator.certs(clusterSettings, PatternUtils.parseIntRange(nodes), new HashMap<>());
     }
@@ -53,7 +53,7 @@ public class SetupCommands extends AbstractCommand {
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Start load balancer on this host", key = {"start-lb"})
     public void startLB(@ShellOption(help = "Node ID (1-based)") String node) {
-        ClusterSettings clusterSettings = getClusterProperties();
+        ClusterSettings clusterSettings = getClusterSettings();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterSettings.getClusterId());
         clusterOperator.startLoadBalancer(clusterSettings, Integer.parseInt(node));
     }
@@ -61,7 +61,7 @@ public class SetupCommands extends AbstractCommand {
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Stop load balancer on this host", key = {"stop-lb"})
     public void stopLB() {
-        ClusterSettings clusterSettings = getClusterProperties();
+        ClusterSettings clusterSettings = getClusterSettings();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterSettings.getClusterId());
         clusterOperator.stopLoadBalancer(clusterSettings);
     }

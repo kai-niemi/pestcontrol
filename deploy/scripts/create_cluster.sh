@@ -57,9 +57,9 @@ fn_start_agents() {
   for c in $crdbnodes_arr
   do
     if [ "${insecure}" == "on" ]; then
-      fn_failcheck roachprod run --insecure ${CLUSTER}:$c "cd pestcontrol && ./pest-control start-service --profiles cloud --cluster-id=cloud-insecure"
+      fn_failcheck roachprod run --insecure ${CLUSTER}:$c "cd pestcontrol && ./pop start-service --profiles cloud --cluster-id=cloud-insecure"
     else
-      fn_failcheck roachprod run ${CLUSTER}:$c "cd pestcontrol && ./pest-control start-service --profiles cloud --cluster-id=cloud-secure"
+      fn_failcheck roachprod run ${CLUSTER}:$c "cd pestcontrol && ./pop start-service --profiles cloud --cluster-id=cloud-secure"
     fi
   done
 }

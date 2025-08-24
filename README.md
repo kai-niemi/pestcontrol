@@ -234,7 +234,7 @@ The JDBC datasource configuration for querying node status and running workloads
 
 Start the app in the background:
     
-    ./pest-control start-service
+    ./pop start-service
 
 Now you can access the application via http://localhost:9090 and login to the cluster of choice.
 
@@ -242,7 +242,7 @@ Now you can access the application via http://localhost:9090 and login to the cl
 
 Start the app in the foreground:
     
-    ./pest-control run-service <args>
+    ./pop run-service <args>
 
 Equivalent to:
 
@@ -255,7 +255,7 @@ Equivalent to:
 
 Start the interactive shell with:
 
-    ./pest-control
+    ./pop
 
 This will download and install the CockroachDB binaries, start a 3-node cluster and initialize it.
 
@@ -267,7 +267,7 @@ This will download and install the CockroachDB binaries, start a 3-node cluster 
 
 Start the interactive shell with:
 
-    ./pest-control
+    ./pop
 
 This will download and install the CockroachDB binaries, start a 3-node cluster and initialize it.
 
@@ -279,7 +279,7 @@ This will download and install the CockroachDB binaries, start a 3-node cluster 
 
 Restart the interactive shell in secure mode:
 
-    ./pest-control --secure
+    ./pop --secure
 
 The secure mode will use self-signed CA certificates and keys in `.certs` including 
 the PKCS12 truststore used by the web app.

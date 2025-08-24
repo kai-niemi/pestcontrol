@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# ./pest-control agent-kill --listen-addr=localhost:26258
-# ./pest-control agent-kill --listen-addr=localhost:26259
-# ./pest-control agent-kill --listen-addr=localhost:26260
+# ./pop agent-kill --listen-addr=localhost:26258
+# ./pop agent-kill --listen-addr=localhost:26259
+# ./pop agent-kill --listen-addr=localhost:26260
 
 commandaction="Kill node "
 

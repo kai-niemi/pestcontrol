@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ./pest-control agent-cert
+# ./pop agent-cert
 
 commandaction="Generate CA certificate and key pairs"
 

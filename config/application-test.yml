@@ -1,0 +1,58 @@
+application:
+  defaultClusterId: "local-insecure"
+
+  clusters:
+    - cluster-id: "local-insecure"
+      cluster-name: "Hosted Cluster (insecure)"
+      cluster-type: hosted_insecure
+      admin-url: "http://${local-ip}:8080"
+      data-source-properties:
+        url: "jdbc:postgresql://${local-ip}:26257/defaultdb?sslmode=disable"
+        username: "craig"
+        password: ""
+      version: "v25.3.0.darwin-11.0-arm64"
+      secure: false
+      baseline:
+          service-addr: ${local-ip}:9090
+          advertise-addr: ${local-ip}:25257
+          listen-addr: ${local-ip}:25257
+          sql-addr: ${local-ip}:26257
+          http-addr: ${local-ip}:8080
+      nodes:
+        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
+        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
+        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
+        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1a"
+        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1b"
+        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1c"
+        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2a"
+        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2b"
+        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2c"
+
+    - cluster-id: "local-secure"
+      cluster-name: "Hosted Cluster (secure)"
+      cluster-type: hosted_secure
+      admin-url: "https://${local-ip}:8080"
+      data-source-properties:
+        url: "jdbc:postgresql://${local-ip}:26257/defaultdb?sslmode=require"
+        username: "craig"
+        password: "cockroach"
+      version: "v25.3.0.darwin-11.0-arm64"
+      secure: true
+      baseline:
+        service-addr: :9090
+        advertise-addr: :25257
+        listen-addr: :25257
+        sql-addr: :26257
+        http-addr: :8080
+        cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
+      nodes:
+        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
+        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
+        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
+        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1a"
+        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1b"
+        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1c"
+        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2a"
+        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2b"
+        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2c"

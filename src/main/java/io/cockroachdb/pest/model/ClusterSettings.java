@@ -40,6 +40,15 @@ public class ClusterSettings {
     @NotNull
     private ClusterType clusterType;
 
+    @Valid
+    @JsonIgnoreProperties({"xa", "generateUniqueName"})
+    private DataSourceProperties dataSourceProperties;
+
+    @Valid
+    private BaselineSettings baseline;
+
+    private List<@Valid NodeSettings> nodes = new ArrayList<>();
+
     private String version;
 
     private String adminUrl;
@@ -50,22 +59,44 @@ public class ClusterSettings {
 
     private boolean secure;
 
-    @Valid
-    @JsonIgnoreProperties({"xa", "generateUniqueName"})
-    private DataSourceProperties dataSourceProperties;
-
-    private List<@Valid NodeSettings> nodes = new ArrayList<>();
-
     public void init() {
         AtomicInteger id = new AtomicInteger();
-        nodes.forEach(properties -> properties.setId(id.incrementAndGet()));
+
+        nodes.forEach(nodeSettings -> {
+            id.incrementAndGet();
+
+            if (Objects.isNull(nodeSettings.getId())) {
+                nodeSettings.setId(id.get());
+            }
+            if (Objects.isNull(nodeSettings.getName())) {
+                nodeSettings.setName("n%d".formatted(id.get()));
+            }
+
+            nodeSettings.init(baseline, id.get());
+
+            if (!Objects.isNull(baseline)) {
+                nodeSettings.init(baseline, id.get());
+            }
+
+            nodeSettings.resolvePlaceholders();
+        });
+
+        adminUrl = Networking.resolve(adminUrl);
     }
 
     public NodeSettings findNodePropertiesById(int nodeId) {
         return nodes.stream()
                 .filter(x -> Objects.equals(nodeId, x.getId()))
                 .findFirst()
-                .orElseThrow( () -> new IllegalArgumentException("Node id not found: " + nodeId));
+                .orElseThrow(() -> new IllegalArgumentException("Node id not found: " + nodeId));
+    }
+
+    public BaselineSettings getBaseline() {
+        return baseline;
+    }
+
+    public void setBaseline(BaselineSettings baseline) {
+        this.baseline = baseline;
     }
 
     public boolean isSecure() {
@@ -133,7 +164,7 @@ public class ClusterSettings {
     }
 
     public String getAdminUrl() {
-        return Networking.resolve(adminUrl);
+        return adminUrl;
     }
 
     public void setAdminUrl(String adminUrl) {
