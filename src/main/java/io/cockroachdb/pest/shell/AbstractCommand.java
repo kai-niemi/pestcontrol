@@ -30,7 +30,7 @@ public abstract class AbstractCommand {
                 : Availability.available();
     }
 
-    public ClusterProperties getClusterSettings() {
+    public ClusterProperties getClusterProperties() {
         if (Objects.isNull(CLUSTER_ID_SELECTION.get())) {
             throw new IllegalStateException("Cluster ID not specified");
         }

@@ -1,4 +1,4 @@
---
+-
 -- Baseline cluster settings applied to local cluster types (optional).
 --
 

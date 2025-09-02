@@ -42,7 +42,7 @@ public class ClusterCommands extends AbstractCommand {
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Start load balancer on this host", key = {"start-lb"})
     public void startLB(@ShellOption(help = "Node ID (1-based)") String node) {
-        ClusterProperties clusterProperties = getClusterSettings();
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         clusterOperator.startLoadBalancer(clusterProperties, Integer.parseInt(node));
     }
@@ -50,7 +50,7 @@ public class ClusterCommands extends AbstractCommand {
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Stop load balancer on this host", key = {"stop-lb"})
     public void stopLB() {
-        ClusterProperties clusterProperties = getClusterSettings();
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         clusterOperator.stopLoadBalancer(clusterProperties);
     }

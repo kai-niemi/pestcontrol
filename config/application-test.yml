@@ -1,9 +1,9 @@
 application:
-  defaultClusterId: "local-secure"
+  defaultClusterId: "local-insecure"
 
   clusters:
     - cluster-id: "local-insecure"
-      cluster-name: "Hosted Cluster (insecure)"
+      cluster-name: "Local Cluster (insecure)"
       cluster-type: hosted_insecure
       admin-url: "http://${local-ip}:8080"
       data-source-properties:
@@ -31,7 +31,7 @@ application:
 #        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2c"
 
     - cluster-id: "local-secure"
-      cluster-name: "Hosted Cluster (secure)"
+      cluster-name: "Local Cluster (secure)"
       cluster-type: hosted_secure
       admin-url: "https://${local-ip}:8080"
       data-source-properties:

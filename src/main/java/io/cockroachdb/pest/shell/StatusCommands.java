@@ -47,7 +47,7 @@ public class StatusCommands extends AbstractCommand {
 
         List<List<?>> tuples = new ArrayList<>();
 
-        ClusterProperties clusterProperties = getClusterSettings();
+        ClusterProperties clusterProperties = getClusterProperties();
 
         clusterProperties
                 .getNodes().forEach(nodeProperties ->
@@ -106,7 +106,7 @@ public class StatusCommands extends AbstractCommand {
     public void ping() {
         List<List<?>> tuples = new ArrayList<>();
 
-        ClusterProperties clusterProperties = getClusterSettings();
+        ClusterProperties clusterProperties = getClusterProperties();
 
         clusterProperties.getNodes().forEach(nodeProperties -> {
             try {

@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -17,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 
 import io.cockroachdb.pest.util.Networking;
 
@@ -62,7 +62,7 @@ public class ClusterProperties implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        if (baselineProperties==null) {
+        if (baselineProperties == null) {
             baselineProperties = new BaselineProperties();
         }
 

@@ -26,7 +26,7 @@ public class ChaosCommands extends AbstractCommand {
     @ShellMethod(value = "Disrupt specified node(s)", key = {"disrupt"})
     public void disruptNode(
             @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
-        ClusterProperties clusterProperties = getClusterSettings();
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.disruptNode(clusterProperties, id));
     }
@@ -35,7 +35,7 @@ public class ChaosCommands extends AbstractCommand {
     @ShellMethod(value = "Recover specified node(s)", key = {"recover"})
     public void recoverNode(
             @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
-        ClusterProperties clusterProperties = getClusterSettings();
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.recoverNode(clusterProperties, id));
     }
@@ -44,7 +44,7 @@ public class ChaosCommands extends AbstractCommand {
     @ShellMethod(value = "Disrupt nodes in a specified locality", key = {"disrupt-locality"})
     public void disruptLocality(
             @ShellOption(help = "The locality tier(s) to disrupt") String locality) {
-        ClusterProperties clusterProperties = getClusterSettings();
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         clusterOperator.disruptLocality(clusterProperties, locality);
     }
@@ -53,7 +53,7 @@ public class ChaosCommands extends AbstractCommand {
     @ShellMethod(value = "Recover nodes in a specified locality", key = {"recover-locality"})
     public void recoverLocality(
             @ShellOption(help = "The locality tier(s) to disrupt") String locality) {
-        ClusterProperties clusterProperties = getClusterSettings();
+        ClusterProperties clusterProperties = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         clusterOperator.recoverLocality(clusterProperties, locality);
     }
