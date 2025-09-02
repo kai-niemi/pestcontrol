@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,18 +24,22 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.annotation.PostConstruct;
 
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.model.NodeProperties;
 import io.cockroachdb.pest.model.Root;
+import io.cockroachdb.pest.shell.support.ClusterProvider;
 
 @ShellComponent
-@ShellCommandGroup(Constants.CLUSTER_COMMANDS)
-public class ClusterConfigCommands {
+@ShellCommandGroup(Constants.CONFIG_COMMANDS)
+public class ConfigCommands extends AbstractCommand {
     private static final char[] ALPHA = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -45,6 +50,25 @@ public class ClusterConfigCommands {
     @Autowired
     @Qualifier("yamlObjectMapper")
     private ObjectMapper yamlObjectMapper;
+
+    @PostConstruct
+    public void init() {
+        if (StringUtils.hasLength(applicationProperties.getDefaultClusterId())) {
+            selectClusterID(applicationProperties.getDefaultClusterId());
+        }
+    }
+
+    @ShellMethod(value = "Select default cluster ID to use in commands", key = {"select-cluster", "sc"})
+    public void selectClusterID(
+            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
+                    valueProvider = ClusterProvider.class) String clusterId) {
+        if (!Objects.equals("none", clusterId)) {
+            CLUSTER_ID_SELECTION.set(clusterManager.getClusterProperties(clusterId,
+                    EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure)));
+        } else {
+            CLUSTER_ID_SELECTION.remove();
+        }
+    }
 
     @ShellMethod(value = "Generate application YAML for localhost", key = {"gen-local-cfg"})
     public void generateLocalConfig(
@@ -174,7 +198,7 @@ public class ClusterConfigCommands {
         });
     }
 
-    @ShellMethod(value = "Print effective application YAML", key = {"print-cfg"})
+    @ShellMethod(value = "Print application YAML", key = {"print-cfg"})
     public void printConfig(@ShellOption(help = "Output file path", defaultValue = ShellOption.NULL) String output) {
         writeApplicationProperties(applicationProperties, yaml -> {
             System.out.println(yaml);

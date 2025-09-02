@@ -39,7 +39,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             ex = ((UndeclaredThrowableException) ex).getUndeclaredThrowable();
         }
 
-        logger.error("Server error processing request", ex);
+        logger.error("Server error processing request: %s".formatted(ex.getMessage()));
 
         ResponseStatus responseStatus = AnnotationUtils.findAnnotation(ex.getClass(), ResponseStatus.class);
 

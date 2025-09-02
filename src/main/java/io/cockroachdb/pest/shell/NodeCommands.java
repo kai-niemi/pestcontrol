@@ -95,4 +95,27 @@ public class NodeCommands extends AbstractCommand {
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
         clusterOperator.sqlNode(clusterProperties, Integer.parseInt(node));
     }
+
+    @ShellMethodAvailability("ifClusterSelected")
+    @ShellMethod(value = "Generate haproxy.cfg on specified host", key = {"gen-haproxy"})
+    public void genHAProxy(@ShellOption(help = "Node ID (1-based)") String node) {
+        ClusterProperties clusterProperties = getClusterProperties();
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        clusterOperator.genHAProxyCfg(clusterProperties, Integer.parseInt(node));
+    }
+    @ShellMethodAvailability("ifClusterSelected")
+    @ShellMethod(value = "Start load balancer on specified host", key = {"start-haproxy"})
+    public void startHaProxy(@ShellOption(help = "Node ID (1-based)") String node) {
+        ClusterProperties clusterProperties = getClusterProperties();
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        clusterOperator.startHAProxy(clusterProperties, Integer.parseInt(node));
+    }
+
+    @ShellMethodAvailability("ifClusterSelected")
+    @ShellMethod(value = "Stop load balancer on specified host", key = {"stop-haproxy"})
+    public void stopHAProxy() {
+        ClusterProperties clusterProperties = getClusterProperties();
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        clusterOperator.stopHAProxy(clusterProperties);
+    }
 }

@@ -25,7 +25,7 @@ import static io.cockroachdb.pest.api.LinkRelations.CURIE_NAMESPACE;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @ShellComponent
-@ShellCommandGroup(Constants.CLUSTER_COMMANDS)
+@ShellCommandGroup(Constants.STATUS_COMMANDS)
 public class StatusCommands extends AbstractCommand {
     @Autowired
     private HypermediaClient hypermediaClient;
@@ -102,7 +102,7 @@ public class StatusCommands extends AbstractCommand {
     }
 
     @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Ping cluster endpoints and report version", key = {"ping"})
+    @ShellMethod(value = "Ping cluster endpoints", key = {"ping"})
     public void ping() {
         List<List<?>> tuples = new ArrayList<>();
 

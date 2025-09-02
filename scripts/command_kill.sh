@@ -46,7 +46,6 @@ fn_print_info "http_addr      = ${http_addr}"
 #
 
 if [ -z $pid ]; then
-    fn_local_pids
     fn_print_error "No cockroachdb process found"
     exit 1
 fi

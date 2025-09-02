@@ -40,7 +40,9 @@ public interface ClusterOperator {
 
     String startProxyClient(ClusterProperties cluster, Integer nodeId);
 
-    String startLoadBalancer(ClusterProperties cluster, Integer nodeId);
+    String genHAProxyCfg(ClusterProperties cluster, Integer nodeId);
 
-    String stopLoadBalancer(ClusterProperties cluster);
+    String startHAProxy(ClusterProperties cluster, Integer nodeId);
+
+    String stopHAProxy(ClusterProperties cluster);
 }

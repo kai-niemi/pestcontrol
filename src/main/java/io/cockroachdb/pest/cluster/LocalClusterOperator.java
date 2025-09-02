@@ -230,10 +230,10 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String startLoadBalancer(ClusterProperties clusterProperties, Integer nodeId) {
+    public String genHAProxyCfg(ClusterProperties clusterProperties, Integer nodeId) {
         NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
 
-        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-lb"));
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "gen-haproxy"));
         args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());
 
         if (clusterProperties.isSecure()) {
@@ -244,9 +244,14 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String stopLoadBalancer(ClusterProperties cluster) {
-        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop-lb"));
+    public String startHAProxy(ClusterProperties clusterProperties, Integer nodeId) {
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-haproxy"));
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+    }
 
+    @Override
+    public String stopHAProxy(ClusterProperties cluster) {
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop-haproxy"));
         return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
     }
 }

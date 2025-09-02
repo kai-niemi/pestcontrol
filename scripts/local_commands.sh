@@ -1,12 +1,17 @@
 #!/bin/bash
 # Commands used from spring shell or agents
 
-command_start_lb.sh(){
+command_gen_haproxy.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }
 
-command_stop_lb.sh(){
+command_start_haproxy.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
+command_stop_haproxy.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }

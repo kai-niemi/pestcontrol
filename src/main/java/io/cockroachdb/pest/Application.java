@@ -2,6 +2,7 @@ package io.cockroachdb.pest;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -41,11 +42,10 @@ public class Application {
             {
                 console.cyan("--cluster-id [id]         set default cluster id to use in shell commands").nl();
                 console.cyan("--profiles [profile,..]   override spring profiles to activate").nl();
-                console.cyan("--secure                  enables the 'ssl' profile for secure clusters").nl();
-                console.cyan("--verbose                 enables the 'verbose' profile for extensive logging").nl();
-                console.cyan("--verbose-http            enables the 'verbose-http' profile for HTTP trace logging")
-                        .nl();
-                console.cyan("--verbose-sql             enables the 'verbose-sql' profile for SQL trace logging").nl();
+                console.cyan("--secure | --ssl          enable the 'ssl' profile for secure clusters").nl();
+                console.cyan("--verbose                 enable the 'verbose' profile for extensive logging").nl();
+                console.cyan("--verbose-http            enable the 'verbose-http' profile for HTTP trace logging").nl();
+                console.cyan("--verbose-sql             enable the 'verbose-sql' profile for SQL trace logging").nl();
                 console.cyan("--help                    this help").nl();
             }
             console.nl();
@@ -60,8 +60,8 @@ public class Application {
         LinkedList<String> argsList = new LinkedList<>(Arrays.asList(args));
         LinkedList<String> passThroughArgs = new LinkedList<>();
 
-        Set<String> profiles =
-                StringUtils.commaDelimitedListToSet(System.getProperty("spring.profiles.active"));
+        Set<String> profiles = new HashSet<>();
+        profiles.add("default");
 
         while (!argsList.isEmpty()) {
             String arg = argsList.pop();

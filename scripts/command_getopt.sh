@@ -22,8 +22,8 @@ fn_print_help() {
         echo -e "${green}wipe\t${default}      | Wipe local directories (certs, data and binaries)"
         echo -e "${cyan}start-proxy\t${default}      | Start ToxiProxy server"
         echo -e "${cyan}stop-proxy\t${default}      | Stop ToxiProxy server"
-        echo -e "${cyan}start-lb\t${default}      | Start HAProxy load balancer"
-        echo -e "${cyan}stop-lb\t${default}      | Stop HAProxy load balancer"
+        echo -e "${cyan}start-haproxy\t${default}      | Start HAProxy load balancer"
+        echo -e "${cyan}stop-haproxy\t${default}      | Stop HAProxy load balancer"
     } | column -s $'\t' -t
 
     echo -e ""
@@ -69,11 +69,14 @@ case "${getopt}" in
     stop-proxy)
         command_stop_proxy.sh $*
         ;;
-    start-lb)
-        command_start_lb.sh $*
+    gen-haproxy)
+        command_gen_haproxy.sh $*
         ;;
-    stop-lb)
-        command_stop_lb.sh $*
+    start-haproxy)
+        command_start_haproxy.sh $*
+        ;;
+    stop-haproxy)
+        command_stop_haproxy.sh $*
         ;;
     run-service)
         command_run_service.sh $*

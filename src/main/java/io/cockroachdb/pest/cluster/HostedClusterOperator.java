@@ -266,12 +266,17 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String startLoadBalancer(ClusterProperties cluster, Integer nodeId) {
-        return localClusterOperator.startLoadBalancer(cluster, nodeId);
+    public String genHAProxyCfg(ClusterProperties cluster, Integer nodeId) {
+        return localClusterOperator.genHAProxyCfg(cluster, nodeId);
     }
 
     @Override
-    public String stopLoadBalancer(ClusterProperties cluster) {
-        return localClusterOperator.stopLoadBalancer(cluster);
+    public String startHAProxy(ClusterProperties cluster, Integer nodeId) {
+        return localClusterOperator.startHAProxy(cluster, nodeId);
+    }
+
+    @Override
+    public String stopHAProxy(ClusterProperties cluster) {
+        return localClusterOperator.stopHAProxy(cluster);
     }
 }

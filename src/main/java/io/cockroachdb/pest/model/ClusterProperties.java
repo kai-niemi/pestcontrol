@@ -45,8 +45,7 @@ public class ClusterProperties implements InitializingBean {
     @JsonIgnoreProperties({"xa", "generateUniqueName"})
     private DataSourceProperties dataSourceProperties;
 
-    @Valid
-    private BaselineProperties baselineProperties;
+    private BaselineProperties baselineProperties = new BaselineProperties();
 
     private List<@Valid NodeProperties> nodes = new ArrayList<>();
 
@@ -62,10 +61,6 @@ public class ClusterProperties implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        if (baselineProperties == null) {
-            baselineProperties = new BaselineProperties();
-        }
-
         this.nodes.forEach(nodeProperties -> {
             nodeProperties.init(baselineProperties);
             baselineProperties.nextId();

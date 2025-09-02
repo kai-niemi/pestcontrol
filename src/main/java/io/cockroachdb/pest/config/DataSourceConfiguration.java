@@ -94,24 +94,15 @@ public class DataSourceConfiguration {
                 .build();
     }
 
-    @Deprecated // prob dont need it
-    private DataSource lazyProxy(DataSource target) {
-        LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy();
-        proxy.setTargetDataSource(target);
-        proxy.setDefaultAutoCommit(true);
-        proxy.setDefaultTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-        return proxy;
-    }
-
     @Bean
     @ConfigurationProperties("spring.datasource.hikari")
     public HikariConfig hikariConfig() {
         return new HikariConfig();
     }
 
-    @Bean
-    public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
-        return new PersistenceExceptionTranslationPostProcessor();
-    }
+//    @Bean
+//    public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
+//        return new PersistenceExceptionTranslationPostProcessor();
+//    }
 }
 

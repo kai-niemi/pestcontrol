@@ -206,12 +206,17 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String startLoadBalancer(ClusterProperties cluster, Integer nodeId) {
+    public String genHAProxyCfg(ClusterProperties cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String stopLoadBalancer(ClusterProperties cluster) {
+    public String startHAProxy(ClusterProperties cluster, Integer nodeId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String stopHAProxy(ClusterProperties cluster) {
         throw new UnsupportedOperationException();
     }
 }
