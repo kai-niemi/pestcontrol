@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ./pop install --version=v25.3.0.darwin-11.0-arm64
+# ./pop install --version=v25.3.1.darwin-11.0-arm64
 
 commandaction="Install binaries"
 

@@ -1,6 +1,4 @@
--
 -- Baseline cluster settings applied to local cluster types (optional).
---
 
 SET CLUSTER SETTING diagnostics.reporting.enabled = false;
 SET CLUSTER SETTING server.shutdown.initial_wait = '8s';

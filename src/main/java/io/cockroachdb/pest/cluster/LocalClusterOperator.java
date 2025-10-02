@@ -180,6 +180,28 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
+    public String statusNode(ClusterProperties clusterProperties, Integer nodeId) {
+        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+
+        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "status"));
+
+        String url;
+        if (StringUtils.hasLength(nodeProperties.getSqlAddr())) {
+            url = "%s".formatted(nodeProperties.getSqlAddr());
+        } else {
+            url = "%s:%s".formatted(Networking.getCanonicalHostName(), "26257");
+        }
+        args.add("--url=postgres://%s".formatted(url));
+
+        if (clusterProperties.isSecure()) {
+            args.add("--secure");
+        }
+        args.add("--format=records");
+
+        return executeCommand(applicationProperties.getBaseDirPath(), args).getFirst();
+    }
+
+    @Override
     public String disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
         return killNode(clusterProperties, nodeId);
     }

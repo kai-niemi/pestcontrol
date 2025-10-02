@@ -76,6 +76,11 @@ command_sql.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
+command_status.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
 command_wipe.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"

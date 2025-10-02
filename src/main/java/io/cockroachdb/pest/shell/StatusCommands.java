@@ -8,11 +8,13 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mediatype.hal.HalLinkRelation;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
+import org.springframework.shell.standard.ShellOption;
 import org.springframework.web.client.ResourceAccessException;
 
 import io.cockroachdb.pest.model.ClusterProperties;
@@ -38,12 +40,24 @@ public class StatusCommands extends AbstractCommand {
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Print cluster IP addresses and admin URLs", key = {"ip"})
-    public void clusterIP() {
+    public void clusterIP(@ShellOption(help = "Open URLs", defaultValue = "false") boolean open) {
         logger.info("Local IP: %s".formatted(Networking.getLocalIP()));
         logger.info("External IP: %s".formatted(Networking.getExternalIP()));
         logger.info("Hostname: %s".formatted(Networking.getHostname()));
         logger.info("Local admin URL: http://%s:%d".formatted(Networking.getLocalIP(), serverPort));
         logger.info("External admin URL: http://%s:%d".formatted(Networking.getExternalIP(), serverPort));
+
+
+//        if (open) {
+//            Link serviceURL= nodeProperties.getServiceLink(clusterProperties.isSecure()).getHref(),
+//                    nodeProperties.getAdminLink(clusterProperties.isSecure()).getHref(),
+//
+//            Process process = new ProcessBuilder()
+//                    .command(commands)
+//                    .directory(directory.toFile())
+//                    .inheritIO()
+//                    .start();
+//        }
 
         List<List<?>> tuples = new ArrayList<>();
 
@@ -54,7 +68,7 @@ public class StatusCommands extends AbstractCommand {
                         tuples.add(
                                 List.of(Objects.requireNonNull(nodeProperties.getId()),
                                         nodeProperties.getServiceLink(clusterProperties.isSecure()).getHref(),
-                                        nodeProperties.getAdminLink(clusterProperties.isSecure()),
+                                        nodeProperties.getAdminLink(clusterProperties.isSecure()).getHref(),
                                         Objects.requireNonNullElse(nodeProperties.getSqlAddr(), "n/a"))
                         ));
 

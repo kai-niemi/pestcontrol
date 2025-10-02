@@ -46,6 +46,9 @@ public class LocalController {
                         .stopNode(null, null))
                         .withRel(LinkRelations.NODE_STOP_REL))
                 .add(linkTo(methodOn(getClass())
+                        .statusNode(null, null))
+                        .withRel(LinkRelations.NODE_STATUS_REL))
+                .add(linkTo(methodOn(getClass())
                         .killNode(null, null))
                         .withRel(LinkRelations.NODE_KILL_REL))
                 .add(linkTo(methodOn(getClass())
@@ -87,6 +90,21 @@ public class LocalController {
         logger.info("Stop cluster '%s' node %d".formatted(clusterProperties.getClusterId(), nodeId));
 
         String responseString = clusterOperator.stopNode(clusterProperties, nodeId);
+
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .body(responseString);
+    }
+
+    @PostMapping("/{nodeId}/status")
+    public HttpEntity<String> statusNode(
+            @PathVariable("nodeId") Integer nodeId,
+            @RequestBody @Valid ClusterProperties clusterProperties) {
+        Assert.isTrue(nodeId > 0, "nodeId must be > 0");
+
+        logger.info("Query cluster '%s' node %d status".formatted(clusterProperties.getClusterId(), nodeId));
+
+        String responseString = clusterOperator.statusNode(clusterProperties, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)

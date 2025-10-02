@@ -16,6 +16,7 @@ fn_print_help() {
         echo -e "${yellow}kill\t${default}      | Kill node"
         echo -e "${yellow}init\t${default}      | Init node"
         echo -e "${yellow}sql\t${default}      | Start SQL client"
+        echo -e "${yellow}status\t${default}      | Query node status"
         echo -e "${green}cert\t${default}      | Generate CA cert and key pairs"
         echo -e "${green}node-cert\t${default}      | Generate node cert and key pairs"
         echo -e "${green}install\t${default}      | Install cockroachdb binaries"
@@ -29,9 +30,9 @@ fn_print_help() {
     echo -e ""
     echo -e "${lightgreen}[Service Commands]${default}"
     {
-        echo -e "${cyan}start-service\t${default}    | Start PestControl service in background"
-        echo -e "${cyan}stop-service\t${default}    | Stop PestControl service"
-        echo -e "${cyan}run-service\t${default}    | Run PestControl service"
+        echo -e "${cyan}start-service|st\t${default}   | Start PestControl service in background"
+        echo -e "${cyan}stop-service|sp\t${default}   | Stop PestControl service"
+        echo -e "${cyan}run-service|run\t${default}   | Run PestControl service"
     } | column -s $'\t' -t
 }
 
@@ -50,6 +51,9 @@ case "${getopt}" in
         ;;
     sql)
         command_sql.sh $*
+        ;;
+    status)
+        command_status.sh $*
         ;;
     cert)
         command_cert.sh $*
@@ -78,13 +82,13 @@ case "${getopt}" in
     stop-haproxy)
         command_stop_haproxy.sh $*
         ;;
-    run-service)
+    run-service|run)
         command_run_service.sh $*
         ;;
-    start-service)
+    start-service|st)
         command_start_service.sh $*
         ;;
-    stop-service)
+    stop-service|sp)
         command_stop_service.sh $*
         ;;
     help|--help)

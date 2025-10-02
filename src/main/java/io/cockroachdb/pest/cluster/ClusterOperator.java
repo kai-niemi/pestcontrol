@@ -26,6 +26,8 @@ public interface ClusterOperator {
 
     String sqlNode(ClusterProperties cluster, Integer nodeId);
 
+    String statusNode(ClusterProperties cluster, Integer nodeId);
+
     String disruptNode(ClusterProperties cluster, Integer nodeId);
 
     String recoverNode(ClusterProperties cluster, Integer nodeId);

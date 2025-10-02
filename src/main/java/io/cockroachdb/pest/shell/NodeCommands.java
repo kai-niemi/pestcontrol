@@ -97,6 +97,15 @@ public class NodeCommands extends AbstractCommand {
     }
 
     @ShellMethodAvailability("ifClusterSelected")
+    @ShellMethod(value = "Run 'status' command on this host and connect to a specified node", key = {"status"})
+    public void statusNode(
+            @ShellOption(help = "Node ID (1-based)") String node) {
+        ClusterProperties clusterProperties = getClusterProperties();
+        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        clusterOperator.statusNode(clusterProperties, Integer.parseInt(node));
+    }
+
+    @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Generate haproxy.cfg on specified host", key = {"gen-haproxy"})
     public void genHAProxy(@ShellOption(help = "Node ID (1-based)") String node) {
         ClusterProperties clusterProperties = getClusterProperties();

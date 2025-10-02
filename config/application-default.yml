@@ -2,10 +2,6 @@
 # Pest Control Application Configuration
 #
 # This file overrides the default application configuration properties (src/main/resources/application.yml).
-# Mainly by providing a list of available CockroachDB cluster settings for users to pick from.
-# Cluster credentials are used to retrieve Cluster API session tokens and bearer tokens in case
-# of using CockroachDB cloud (via Cloud API).
-#
 # See https://docs.spring.io/spring-boot/appendix/application-properties/index.html for all spring boot
 # properties and src/main/resources/application.yml for application defaults.
 ###############################################################################################################
@@ -21,104 +17,122 @@ application:
   #  cluster-type: cloud_dedicated|hosted_secure|hosted_insecure
   #  data-source-properties:
   #    url: The JDBC connection url
-  #    username: The SQL user name with ADMIN role (optional)
-  #    password: The SQL user password (optional)
+  #    username: The SQL user name with ADMIN role
+  #    password: The SQL user password
   #  admin-url: Base URL for the Cluster API, typically the regional/local cluster load balancer endpoint (optional).
   #
   # For cloud_dedicated type only:
   #  api-key: Required, see https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys
   #
   # For hosted_insecure and hosted_secure types only:
-  #  version: (see below)
-  #  nodes: (see below)
+  #  version: optional, see below for examples.
+  #  nodes: optional, see below for examples.
 
   clusters:
     - cluster-id: "local-insecure"
-      cluster-name: "Local 3-node Cluster (insecure)"
+      cluster-name: "Local Cluster (insecure)"
+      cluster-type: hosted_insecure
+      admin-url: "http://${local-ip}:8080"
+      data-source-properties:
+        url: "jdbc:postgresql://${local-ip}:26257/defaultdb?sslmode=disable"
+        username: "craig"
+        password: ""
+      version: "v25.3.1.darwin-11.0-arm64"
+      #      version: "v25.3.1.darwin-11.0-amd64"
+      #      version: "v25.3.1.linux-amd64"
+      #      version: "v25.3.1.linux-arm64"
+      secure: false
+      baseline:
+        service-addr: ${local-ip}:9090
+        advertise-addr: ${local-ip}:+25257
+        advertise-proxy-addr: ${local-ip}:+35257
+        listen-addr: ${local-ip}:+25257
+        sql-addr: ${local-ip}:+26257
+        http-addr: ${local-ip}:+8080
+      nodes:
+        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
+        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
+        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
+        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1a"
+        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1b"
+        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1c"
+        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2a"
+        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2b"
+        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2c"
+
+    - cluster-id: "local-secure"
+      cluster-name: "Local Cluster (secure)"
+      cluster-type: hosted_secure
+      admin-url: "https://${local-ip}:8080"
+      data-source-properties:
+        url: "jdbc:postgresql://${local-ip}:26257/defaultdb?sslmode=require"
+        username: "craig"
+        password: "cockroach"
+      version: "v25.3.1.darwin-11.0-arm64"
+      secure: true
+      baseline:
+        service-addr: ${local-ip}:9090
+        advertise-addr: ${local-ip}:+25257
+        advertise-proxy-addr: ${local-ip}:+35257
+        listen-addr: ${local-ip}:+25257
+        sql-addr: ${local-ip}:+26257
+        http-addr: ${local-ip}:+8080
+        cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
+      nodes:
+        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
+        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
+        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
+        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1a"
+        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1b"
+        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1c"
+        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2a"
+        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2b"
+        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2c"
+
+    #################################################################################
+
+    - cluster-id: "remote-insecure"
+      cluster-name: "Remote 3-node Cluster (insecure)"
       cluster-type: hosted_insecure
       admin-url: "http://localhost:8080"
       data-source-properties:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "root"
         password: ""
-      # CockroachDB binary version for remote/hosted
-      version: "v25.3.0.darwin-11.0-arm64"
-      #      version: "v25.3.0.darwin-11.0-amd64"
-      #      version: "v25.3.0.linux-amd64"
-      #      version: "v25.3.0.linux-arm64"
+      version: "v25.3.1.darwin-11.0-arm64"
+      secure: false
       ## List of machines/VM nodes for hosted cluster types.
       # Used to manage a cluster through pest control, potentially spanning multiple hosts as
       # opposed to many instances on local host on different ports.
       # See: https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
       nodes:
-        - url: http://localhost:9090
+        - url: http://192.168.1.10:9090
           name: n1
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-          service-addr: localhost:9090
-          advertise-addr: localhost:25257
-          advertise-proxy-addr: localhost:35257
-          listen-addr: localhost:25257
-          sql-addr: localhost:26257
-          http-addr: localhost:8080
-        - url: http://localhost:9090
+          service-addr: 192.168.1.10:9090
+          advertise-addr: 192.168.1.10:25257
+          advertise-proxy-addr: 192.168.1.10:35257
+          listen-addr: 192.168.1.10:25257
+          sql-addr: 192.168.1.10:26257
+          http-addr: 192.168.1.10:8080
+        - url: http://192.168.1.11:9090
           name: n2
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          service-addr: localhost:9090
-          advertise-addr: localhost:25258
-          advertise-proxy-addr: localhost:35258
-          listen-addr: localhost:25258
-          sql-addr: localhost:26258
-          http-addr: localhost:8081
-        - url: http://localhost:9090
+          service-addr: 192.168.1.11:9090
+          advertise-addr: 192.168.1.11:25257
+          advertise-proxy-addr: 192.168.1.11:35257
+          listen-addr: 192.168.1.11:25257
+          sql-addr: 192.168.1.11:26257
+          http-addr: 192.168.1.11:8080
+        - url: http://192.168.1.11:9090
           name: n3
           locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          service-addr: localhost:9090
-          advertise-addr: localhost:25259
-          advertise-proxy-addr: localhost:35259
-          listen-addr: localhost:25259
-          sql-addr: localhost:26259
-          http-addr: localhost:8082
-
-    - cluster-id: "local-secure"
-      cluster-name: "Local 3-node Cluster (secure)"
-      cluster-type: hosted_secure
-      admin-url: "https://localhost:8080"
-      data-source-properties:
-        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
-        username: "craig"
-        password: "cockroach"
-      version: "v25.3.0.darwin-11.0-arm64"
-      nodes:
-        - url: http://localhost:9090
-          name: n1
-          locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-          service-addr: localhost:9090
-          advertise-addr: localhost:25257
-          advertise-proxy-addr: localhost:35257
-          listen-addr: localhost:25257
-          sql-addr: localhost:26257
-          http-addr: localhost:8080
-          cert-hosts: localhost,${external-ip},${hostname},localhost,127.0.0.1
-        - url: http://localhost:9090
-          name: n2
-          locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          service-addr: localhost:9090
-          advertise-addr: localhost:25258
-          advertise-proxy-addr: localhost:35258
-          listen-addr: localhost:25258
-          sql-addr: localhost:26258
-          http-addr: localhost:8081
-          cert-hosts: localhost,${external-ip},${hostname},localhost,127.0.0.1
-        - url: http://localhost:9090
-          name: n3
-          locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          service-addr: localhost:9090
-          advertise-addr: localhost:25259
-          advertise-proxy-addr: localhost:35259
-          listen-addr: localhost:25259
-          sql-addr: localhost:26259
-          http-addr: localhost:8082
-          cert-hosts: localhost,${external-ip},${hostname},localhost,127.0.0.1
+          service-addr: 192.168.1.12:9090
+          advertise-addr: 192.168.1.12:25257
+          advertise-proxy-addr: 192.168.1.12:35257
+          listen-addr: 192.168.1.12:25257
+          sql-addr: 192.168.1.12:26257
+          http-addr: 192.168.1.12:8080
 
     #################################################################################
 
@@ -131,23 +145,3 @@ application:
         username: "craig"
         password: "cockroach"
       api-key: "<private-key>"
-
-    #################################################################################
-
-    - cluster-id: "remote-insecure"
-      cluster-name: "Remote Cluster (insecure)"
-      cluster-type: hosted_insecure
-      admin-url: "http://localhost:8080"
-      data-source-properties:
-        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
-        username: "craig"
-        password: ""
-
-    - cluster-id: "remote-secure"
-      cluster-name: "Remote Cluster (secure)"
-      cluster-type: hosted_secure
-      admin-url: "https://localhost:8080"
-      data-source-properties:
-        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
-        username: "craig"
-        password: "cockroach"

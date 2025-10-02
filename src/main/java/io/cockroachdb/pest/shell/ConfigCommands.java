@@ -241,7 +241,7 @@ public class ConfigCommands extends AbstractCommand {
             clusterProperties.setClusterName("Generated");
             clusterProperties.setClusterType(secure ? ClusterType.hosted_insecure : ClusterType.hosted_secure);
             clusterProperties.setAdminUrl(addressCallback.serviceAddr(1));
-            clusterProperties.setVersion("v25.3.0.linux-amd64");
+            clusterProperties.setVersion("v25.3.1.linux-amd64");
             clusterProperties.setSecure(secure);
         }
 

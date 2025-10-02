@@ -35,18 +35,19 @@
 CockroachDB clusters. It provides both a graphical and command-line 
 interface for controlling and visualizing CockroachDB node failure
 and recovery and it's impact on application workloads. It supports 
-CockroachDB Cloud and self-hosted clusters, for which it also provides 
-easy-to-use operator scripts.
+CockroachDB Cloud and local or remote self-hosted clusters.
 
 ## Main features
 
 The main features include:
 
-- Install and bootstrap self-hosted CockroachDB clusters locally or in a network environment.
 - Visualize cluster topologies and node health.
 - Run synthetic client workloads and visualize impact during steady state and adverse events.
-- Provide CockroachDB Cloud disruption API controls for chaos testing.
-- Integrate with [Toxiproxy](https://github.com/Shopify/toxiproxy) for self-hosted chaos testing.
+- CockroachDB Cloud:
+  - Disruption API controls for chaos testing.
+- Self-hosted:
+  - Install and bootstrap self-hosted clusters locally or in a network environment. 
+  - Integrate with [Toxiproxy](https://github.com/Shopify/toxiproxy) for network level chaos testing.
 
 Dashboard showing cluster layout and node status:
 
@@ -61,7 +62,7 @@ Workload page with some activity:
 This tool supports the following platforms and versions:
 
 - CockroachDB Cloud v22.2+
-  - Requires a feature flag enabled for the organization (file a support request) 
+  - Requires a feature flag enabled for the organization (submit a support request) 
 - CockroachDB Local Self-Hosted v22.2+
   - Secure or insecure mode
   - No license key needed
@@ -70,31 +71,8 @@ This tool supports the following platforms and versions:
 
 ## How it works
 
-Pest Control consists of these parts:
-
-- A single spring boot app with:
-  - A Web UI API for visualizing cluster layouts, workload graphs and metrics.
-  - A REST API for installing and managing self-hosted CockroachDB clusters.
-  - A shell for managing and chaos testing clusters using bash scripts, cloud API or toxiproxy.
-- Bash scripts for installing and managing self-hosetd clusters.
-
-All these parts are bundled into a single `tar.gz` assembly at build time. Depending on
-the target cluster type, there are a few different usage modes.
-
-### CockroachDB Cloud
-
-In this mode, you simply start the app and connect to it with a web browser. Then you
-can login to a pre-configured set of existing cloud clusters. To chaos test a cloud cluster, 
-you can use shell commands to distrupt and recover either zones or entire regions. Notice that
-it requires special steps in your cluster deployment to enable this opt-in feature.
-
-### Self-hosted Locally
-
-tba
-
-### Self-hosted Remotely
-
-tba
+Pest Control provides a single spring boot web and shell app used
+to launch local shell scripts and invoke API calls on Cockroach cluster.
 
 # Terms of Use
 
@@ -116,8 +94,7 @@ Things you need to run Pest Control locally.
   - A CockroachDB cloud cluster.
   - A local environment with one machine/instance for all nodes.
   - A network environment with one machine/instance per node. 
-    - See [deploy](deploy) for `roachprod` deployments (mainly targeting CRL internal use).
-
+    
 ## Install the JDK
 
 MacOS (using sdkman):
@@ -132,14 +109,11 @@ Ubuntu:
 
 ## Install Toxiproxy (optional)
 
-Toxiproxy is a TCP/IP interceptor based chaos testing tool. It can optionally be used
-by pestcontrol to intercepting CockroachDB inter-nnode gRPC traffic and apply "toxics"
+Toxiproxy is a TCP/IP interceptor chaos testing tool. It can be used by 
+pestcontrol to intercepting CockroachDB inter-node gRPC traffic and apply "toxics"
 like slowing down responses, limiting bandwidth etc.
 
 See [Installing Toxiproxy](https://github.com/Shopify/toxiproxy?tab=readme-ov-file#1-installing-toxiproxy)
-
-> Toxiproxy is disabled by default. See configuration section on how
-> to enable it to intercept and trash the gRPC traffic between nodes.
 
 # Building
 
@@ -251,11 +225,11 @@ Equivalent to:
 
 # Tutorials
 
-## Insecure 3-node self-hosted cluster (default)
+## Local 3-node self-hosted cluster (insecure)
 
 Start the interactive shell with:
 
-    ./pop
+    ./pop run-service
 
 This will download and install the CockroachDB binaries, start a 3-node cluster and initialize it.
 
@@ -263,42 +237,53 @@ This will download and install the CockroachDB binaries, start a 3-node cluster 
      start 1-3
      init 1
 
-## Secure 3-node self-hosted cluster 
+## Local 3-node self-hosted cluster (secure)
 
 Start the interactive shell with:
 
-    ./pop
+    ./pop run-service
 
 This will download and install the CockroachDB binaries, start a 3-node cluster and initialize it.
 
+     select-cluster --clusterId local-secure
      install 1-3
-     certs 1-3
+     certs 1
      start 1-3
      init 1
      quit
 
 Restart the interactive shell in secure mode:
 
-    ./pop --secure
+    ./pop --secure run-service
 
 The secure mode will use self-signed CA certificates and keys in `.certs` including 
 the PKCS12 truststore used by the web app.
 
+## Remote 3-node self-hosted cluster (insecure)
+
+To manage a cluster on dedicated machines, you first need to deploy and run pestcontrol on each host. 
+These instances will then act as gateways to run local bash scripts to start, stop, kill nodes, etc. 
+One instance will act as the control plane and sends HTTP requests to the other instances when running shell commands.
+
+Assuming you have 3 pestcontrol instances on 3 separate machines and a cluster configuration
+named `remote-insecure` with the IP/host names setup accordingly.
+
+On the control host, start the interactive shell with:
+
+    ./pop run-service
+
+This will download and install the CockroachDB binaries, start a 3-node cluster and initialize it.
+
+     select-cluster --clusterId remote-insecure     
+     install 1-3
+     start 1-3
+     init 1
+     quit
+
 ## Remarks
 
-- To manage `hosted` cluster types on dedicated machines, you also need to deploy 
-pestcontrol on each host. These instances will act as gateways to run local bash scripts to 
-start, stop, kill nodes etc. One instance then acts as control plan and sends HTTP requests
-to the other instances when running such shell commands.
 - If you switch between the `secure` and `insecure` modes, re-run the `init` command to 
 set proper SQL user roles and secrets.
-
-# Appendix: Configuration Files
-
-Pest Control can be configured through the files available in the `config` directory:
-
-1. [init.sql](config/init.sql) - Init SQL statements (optional).
-1. [application-default.yml](config/application-default.yml) - Cluster connection settings.
 
 ---
 
