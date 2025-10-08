@@ -43,7 +43,6 @@ public class LocalClusterOperator implements ClusterOperator {
     private ToxiproxyCommands toxiproxyCommands;
 
     private String executeCommand(Path directory, List<String> commands) {
-
         try {
             Instant start = Instant.now();
 
@@ -323,14 +322,14 @@ public class LocalClusterOperator implements ClusterOperator {
                             .replacePlaceholders(Files.readString(templateFile),
                                     placeholderName -> switch (placeholderName.toLowerCase()) {
                                         case "bind-stats" ->
-                                                "    bind %s".formatted(cluster.getLoadBalancer().getStatsAddr());
+                                                "bind %s".formatted(cluster.getLoadBalancer().getStatsAddr());
                                         case "bind-rpc" ->
-                                                "    bind %s".formatted(cluster.getLoadBalancer().getRpcAddr());
+                                                "bind %s".formatted(cluster.getLoadBalancer().getRpcAddr());
                                         case "servers-rpc" -> {
                                             List<String> servers = new ArrayList<>();
 
                                             cluster.getNodes().forEach(np -> {
-                                                servers.add("    server cockroach%d %s check port %s\n"
+                                                servers.add("server cockroach%d %s check port %s\n"
                                                         .formatted(np.getId(),
                                                                 np.getRpcAddr(),
                                                                 Networking.getPort(np.getHttpAddr())
@@ -340,12 +339,12 @@ public class LocalClusterOperator implements ClusterOperator {
                                             yield String.join("", servers);
                                         }
                                         case "bind-http" ->
-                                                "    bind %s".formatted(cluster.getLoadBalancer().getHttpAddr());
+                                                "bind %s".formatted(cluster.getLoadBalancer().getHttpAddr());
                                         case "servers-http" -> {
                                             List<String> servers = new ArrayList<>();
 
                                             cluster.getNodes().forEach(np -> {
-                                                servers.add("    server cockroach%d %s check port %s\n"
+                                                servers.add("server cockroach%d %s check port %s\n"
                                                         .formatted(np.getId(),
                                                                 np.getHttpAddr(),
                                                                 Networking.getPort(np.getHttpAddr())
@@ -358,7 +357,10 @@ public class LocalClusterOperator implements ClusterOperator {
                                     });
 
             Path configFile = applicationProperties.getDirectories().getDataDirPath().resolve("haproxy.cfg");
-            Files.writeString(configFile, templateContents, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.writeString(configFile, templateContents,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.WRITE);
 
             logger.info("Created " + configFile + " from " + templateFile);
 

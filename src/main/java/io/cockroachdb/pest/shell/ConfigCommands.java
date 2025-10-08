@@ -190,8 +190,10 @@ public class ConfigCommands extends AbstractCommand {
 
             try {
                 logger.info("Writing generated YAML to '%s'".formatted(output));
-                Files.writeString(Path.of(output), yaml, StandardOpenOption.CREATE,
-                        StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+                Files.writeString(Path.of(output), yaml,
+                        StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING,
+                        StandardOpenOption.WRITE);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }

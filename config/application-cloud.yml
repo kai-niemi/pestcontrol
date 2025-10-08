@@ -1,13 +1,11 @@
 application:
-  # Preset cluster ID (can also be set with --cluster-id XX)
-  defaultClusterId: "97a73235-fa45-4b4d-a229-f5efd52168ba"
   clusters:
     - cluster-id: "97a73235-fa45-4b4d-a229-f5efd52168ba"
       cluster-name: "Cloud Dedicated"
       cluster-type: cloud_dedicated
       admin-url: "https://admin-odin-qzx.cockroachlabs.cloud:8080"
+      api-key: "<cc-private-key>"
       data-source-properties:
         url: "jdbc:postgresql://odin-qzx.aws-eu-north-1.cockroachlabs.cloud:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"
-      api-key: "<private-key>"

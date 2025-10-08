@@ -20,8 +20,7 @@ public class ApiAuthenticationService {
     public Authentication getAuthentication(String clusterId) {
 //            throw new BadCredentialsException("Missing API key header: " + AUTH_TOKEN_HEADER_NAME);
         if (!clusterManager.hasSessionToken(clusterId)) {
-            Cluster cluster
-                    = applicationProperties.getClusterById(clusterId);
+            Cluster cluster = applicationProperties.getClusterById(clusterId);
             clusterManager.login(cluster.getClusterId(),
                     cluster.getDataSourceProperties().getUsername(),
                     cluster.getDataSourceProperties().getPassword()

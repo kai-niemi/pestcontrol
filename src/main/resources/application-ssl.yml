@@ -2,9 +2,6 @@
 # Activate this profile if you intend to sign in to a secure, self-hosted CockroachDB cluster.
 # The truststore is created with the 'cluster-admin certs' command.
 spring:
-#  config:
-#    activate:
-#      on-profile: ssl
   ssl:
     bundle:
       jks:

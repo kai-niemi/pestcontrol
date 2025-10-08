@@ -57,8 +57,9 @@ public class ClusterQuery {
 
     public List<NodeDetail> queryNodeDetails(Cluster cluster, String sessionToken) {
         Assert.notNull(sessionToken, "sessionToken is null");
+
         // There's no way to narrow this down other than by pagination
-        ResponseEntity<NodeDetails> responseEntity = restClientProvider.matches(cluster)
+        ResponseEntity<NodeDetails> responseEntity = restClientProvider.apply(cluster.getClusterType())
                 .get()
                 .uri(cluster.getAdminUrl() + "/api/v2/nodes/")
                 .header("X-Cockroach-API-Session", sessionToken)

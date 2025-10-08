@@ -32,7 +32,7 @@ import io.cockroachdb.pest.cluster.ClientErrorException;
 import io.cockroachdb.pest.cluster.ServerErrorException;
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.shell.client.HypermediaClient;
+import io.cockroachdb.pest.util.HypermediaClient;
 
 @Configuration
 public class RestClientConfiguration implements RestTemplateCustomizer {
@@ -80,15 +80,16 @@ public class RestClientConfiguration implements RestTemplateCustomizer {
 
     @Bean
     public RestClientProvider restClientProvider(SslBundles sslBundles, RestClientSsl ssl) {
-        return clusterProperties ->
-                EnumSet.of(ClusterType.hosted_secure)
-                        .contains(clusterProperties.getClusterType())
-                        ? sslRestClient(sslBundles, ssl) : defaultRestClient();
+        return clusterType ->
+                EnumSet.of(ClusterType.hosted_secure).contains(clusterType)
+                        ? sslRestClient(sslBundles, ssl)
+                        : defaultRestClient();
     }
 
     @Bean
     public RestClient sslRestClient(SslBundles sslBundles, RestClientSsl ssl) {
         final SslBundle sslBundle;
+
         try {
             sslBundle = sslBundles.getBundle("pestcontrol");
         } catch (NoSuchSslBundleException e) {
@@ -117,7 +118,8 @@ public class RestClientConfiguration implements RestTemplateCustomizer {
     @Bean
     public RestClient defaultRestClient() {
         ClientHttpRequestFactory requestFactory
-                = ClientHttpRequestFactoryBuilder.httpComponents().build();
+                = ClientHttpRequestFactoryBuilder.httpComponents()
+                .build();
 
         return RestClient
                 .builder()

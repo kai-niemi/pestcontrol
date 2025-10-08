@@ -1,5 +1,8 @@
 package io.cockroachdb.pest.model;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -37,6 +40,14 @@ public class ApplicationProperties implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         this.clusters.forEach(Cluster::validatePostCreation);
+
+        try {
+            Files.createDirectories(directories.getBinDirPath());
+            Files.createDirectories(directories.getCertsDirPath());
+            Files.createDirectories(directories.getDataDirPath());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     public DataSourceProperties getDataSourceProperties(String clusterId) {

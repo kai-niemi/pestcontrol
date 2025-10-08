@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.shell.client.HypermediaClient;
+import io.cockroachdb.pest.util.HypermediaClient;
 import static io.cockroachdb.pest.web.LinkRelations.CERTS_REL;
 import static io.cockroachdb.pest.web.LinkRelations.CLUSTERS_REL;
 import static io.cockroachdb.pest.web.LinkRelations.CLUSTER_TEMPLATE_REL;

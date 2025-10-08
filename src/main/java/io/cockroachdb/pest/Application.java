@@ -40,7 +40,7 @@ public class Application {
             console.green("Usage: java -jar pestcontrol.jar [options] [profile...]").nl().nl();
             console.yellow("Options include:").nl();
             {
-                console.cyan("--cluster-id [id]         set default cluster id to use in shell commands").nl();
+                console.cyan("--cluster [id]            set default cluster id to use in shell commands").nl();
                 console.cyan("--profiles [profile,..]   override spring profiles to activate").nl();
                 console.cyan("--secure | --ssl          enable the 'ssl' profile for secure clusters").nl();
                 console.cyan("--verbose                 enable the 'verbose' profile for extensive logging").nl();
@@ -83,7 +83,7 @@ public class Application {
                 }
                 profiles.clear();
                 profiles.addAll(StringUtils.commaDelimitedListToSet(argsList.pop()));
-            } else if (arg.equals("--cluster-id")) {
+            } else if (arg.equals("--cluster")) {
                 if (argsList.isEmpty()) {
                     printHelpAndExit(ansiConsole -> {
                         ansiConsole.red("Expected cluster ID");
@@ -95,9 +95,6 @@ public class Application {
                     passThroughArgs.add(arg);
                 } else {
                     profiles.add(arg);
-//                    printHelpAndExit(ansiConsole -> {
-//                        ansiConsole.red("Unknown argument: " + arg).nl().nl();
-//                    });
                 }
             }
         }

@@ -18,17 +18,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClient;
 
 import com.jayway.jsonpath.JsonPath;
 
+import io.cockroachdb.pest.cluster.model.NodeDetail;
 import io.cockroachdb.pest.cluster.model.NodeModel;
+import io.cockroachdb.pest.cluster.model.NodeStatus;
 import io.cockroachdb.pest.config.RestClientProvider;
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.cluster.model.NodeDetail;
-import io.cockroachdb.pest.cluster.model.NodeStatus;
 
 @Component
 public class DefaultClusterManager implements ClusterManager {
@@ -53,10 +52,6 @@ public class DefaultClusterManager implements ClusterManager {
     @Autowired
     private ObjectProvider<ClusterOperator> clusterOperators;
 
-    private RestClient restClient(Cluster cluster) {
-        return restClientProvider.matches(cluster);
-    }
-
     @Override
     public void setCredentialsHandler(CredentialsHandler credentialsHandler) {
         this.credentialsHandler = credentialsHandler;
@@ -79,10 +74,8 @@ public class DefaultClusterManager implements ClusterManager {
     public String login(String clusterId, String userName, String password) {
         Cluster cluster = getClusterProperties(clusterId);
 
-        if (EnumSet.of(ClusterType.hosted_insecure)
-                .contains(cluster.getClusterType())) {
-            logger.info("Implicit login for cluster type: %s"
-                    .formatted(cluster.getClusterType()));
+        if (EnumSet.of(ClusterType.hosted_insecure).contains(cluster.getClusterType())) {
+            logger.info("Implicit login for cluster type: %s".formatted(cluster.getClusterType()));
             sessionTokens.put(clusterId, "");
             return "";
         }
@@ -91,7 +84,7 @@ public class DefaultClusterManager implements ClusterManager {
         map.add("username", userName);
         map.add("password", password);
 
-        ResponseEntity<String> responseEntity = restClient(cluster)
+        ResponseEntity<String> responseEntity = restClientProvider.apply(cluster.getClusterType())
                 .post()
                 .uri(cluster.getAdminUrl() + "/api/v2/login/")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -99,12 +92,15 @@ public class DefaultClusterManager implements ClusterManager {
                 .retrieve()
                 .toEntity(String.class);
 
-        String token = JsonPath.parse(responseEntity.getBody())
-                .read("$.session", String.class);
-
-        sessionTokens.put(clusterId, token);
-
-        logger.debug("Login successful - received session token: " + token);
+        String token;
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            token = JsonPath.parse(responseEntity.getBody()).read("$.session", String.class);
+            sessionTokens.put(clusterId, token);
+            logger.debug("Login successful: " + token);
+        } else {
+            token = null;
+            logger.warn("Login failed: " + responseEntity.getStatusCode());
+        }
 
         return token;
     }
@@ -115,7 +111,7 @@ public class DefaultClusterManager implements ClusterManager {
 
         String sessionToken = findSessionToken(clusterId);
 
-        ResponseEntity<String> responseEntity = restClient(cluster)
+        ResponseEntity<String> responseEntity = restClientProvider.apply(cluster.getClusterType())
                 .post()
                 .uri(cluster.getAdminUrl() + "/api/v2/logout/")
                 .header("X-Cockroach-API-Session", sessionToken)

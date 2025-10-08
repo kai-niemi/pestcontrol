@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.shell.support;
+package io.cockroachdb.pest.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -6,8 +6,6 @@ import java.util.regex.PatternSyntaxException;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
-import io.cockroachdb.pest.util.EnumPattern;
 
 public class EnumPatternValidator implements ConstraintValidator<EnumPattern, Enum<?>> {
     private Pattern pattern;

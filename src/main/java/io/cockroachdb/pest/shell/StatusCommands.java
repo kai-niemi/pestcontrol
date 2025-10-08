@@ -14,7 +14,7 @@ import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.web.client.ResourceAccessException;
 
 import io.cockroachdb.pest.model.Cluster;
-import io.cockroachdb.pest.shell.client.HypermediaClient;
+import io.cockroachdb.pest.util.HypermediaClient;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
 import io.cockroachdb.pest.util.Networking;

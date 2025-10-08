@@ -6,27 +6,9 @@
 # properties and src/main/resources/application.yml for application defaults.
 ###############################################################################################################
 application:
-  # Preset cluster ID (can also be set with --cluster-id XX)
+  # Preset cluster ID
   defaultClusterId: "local-insecure"
-
   ## List of pre-configured CockroachDB clusters
-  #
-  #  cluster-id: Either a CockroachDB cloud cluster ID any unique ID for other cluster types
-  #  cluster-name: Cluster display name
-  #  cluster-type: cloud_dedicated|hosted_secure|hosted_insecure
-  #  data-source-properties:
-  #    url: The JDBC connection url
-  #    username: The SQL user name with ADMIN role
-  #    password: The SQL user password
-  #  admin-url: Base URL for the Cluster API, typically the regional/local cluster load balancer endpoint (optional).
-  #
-  # For cloud_dedicated type only:
-  #  api-key: Required, see https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys
-  #
-  # For hosted_insecure and hosted_secure types only:
-  #  version: optional, see below for examples.
-  #  nodes: optional, see below for examples.
-
   clusters:
     - cluster-id: "local-insecure"
       cluster-name: "Local Cluster (insecure)"
@@ -40,7 +22,6 @@ application:
       #      version: "v25.3.1.darwin-11.0-amd64"
       #      version: "v25.3.1.linux-amd64"
       #      version: "v25.3.1.linux-arm64"
-      secure: false
       baseline:
         service-addr: localhost:9090
         advertise-addr: localhost:+25257
@@ -93,25 +74,3 @@ application:
         - locality: "region=eu-north-1,zone=eu-north-1a"
         - locality: "region=eu-north-1,zone=eu-north-1b"
         - locality: "region=eu-north-1,zone=eu-north-1c"
-
-    - cluster-id: "test"
-      cluster-name: "Test (insecure)"
-      cluster-type: hosted_insecure
-      admin-url: "http://localhost:8080"
-      data-source-properties:
-        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
-        username: "craig"
-        password: ""
-      version: "v25.3.1.darwin-11.0-arm64"
-      secure: false
-      baseline:
-        service-addr: localhost:9090
-#        advertise-addr: localhost:+25257
-#        advertise-proxy-addr: localhost:+35257
-        listen-addr: localhost:+26257
-#        sql-addr: localhost:+26257
-        http-addr: localhost:+8080
-      nodes:
-        - locality: "region=eu-central-1,zone=eu-central-1a"
-        - locality: "region=eu-central-1,zone=eu-central-1b"
-        - locality: "region=eu-central-1,zone=eu-central-1c"
