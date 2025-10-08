@@ -9,8 +9,8 @@ configfile=${datadir}/haproxy.cfg
 
 for i in "$@"; do
   case $i in
-    --advertise-addr=*)
-      advertise_addr="${i#*=}"
+    --rpc-addr=*)
+      rpc_addr="${i#*=}"
       shift
       ;;
     --secure)
@@ -25,36 +25,36 @@ for i in "$@"; do
   esac
 done
 
-if [ -z "${advertise_addr}" ]; then
-  fn_print_warn "Missing advertise_addr parameter - using default!"
-  advertise_addr="localhost:25257"
+if [ -z "${rpc_addr}" ]; then
+  fn_print_warn "Missing rpc_addr parameter!"
+  exit 0
 fi
 
-fn_print_info "advertise_addr = ${advertise_addr}"
+fn_print_info "rpc_addr       = ${rpc_addr}"
 fn_print_info "security_mode  = ${security_mode}"
 
 fn_assert_binaries
 
 case "$security_mode" in
   secure)
-    fn_fail_check ${installdir}/cockroach gen haproxy --certs-dir=${certsdir} --host=${advertise_addr}
+    fn_fail_check ${installdir}/cockroach gen haproxy --certs-dir=${certsdir} --host=${rpc_addr} --out=${configfile}
     ;;
   insecure)
-    fn_fail_check ${installdir}/cockroach gen haproxy --insecure --host=${advertise_addr}
+    fn_fail_check ${installdir}/cockroach gen haproxy --insecure --host=${rpc_addr} --out=${configfile}
     ;;
   *)
     echo "Bad security mode: $security_mode"
     exit 1
 esac
 
-echo "listen stats" >> ${rootdir}/haproxy.cfg
-echo "    bind :7070" >> ${rootdir}/haproxy.cfg
-echo "    mode http" >> ${rootdir}/haproxy.cfg
-echo "    stats enable" >> ${rootdir}/haproxy.cfg
-echo "    stats hide-version" >> ${rootdir}/haproxy.cfg
-echo "    stats realm Haproxy\ Statistics" >> ${rootdir}/haproxy.cfg
-echo "    stats uri /" >> ${rootdir}/haproxy.cfg
+echo "listen stats" >> ${configfile}
+echo "    bind :7070" >> ${configfile}
+echo "    mode http" >> ${configfile}
+echo "    stats enable" >> ${configfile}
+echo "    stats hide-version" >> ${configfile}
+echo "    stats realm Haproxy\ Statistics" >> ${configfile}
+echo "    stats uri /" >> ${configfile}
 
-mv ${rootdir}/haproxy.cfg ${configfile}
+cat ${configfile}
 
-fn_print_info "Generated '${configfile}'"
+exit 0

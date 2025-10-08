@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -16,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 
 import io.cockroachdb.pest.util.Networking;
 
@@ -24,11 +22,10 @@ import io.cockroachdb.pest.util.Networking;
  * Connection properties for connecting to a CockroachDB cluster.
  */
 @Validated
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "clusterId", "clusterName", "clusterType", "version",
         "adminUrl", "apiKey", "secure", "dataSourceProperties", "nodes"})
-public class ClusterProperties implements InitializingBean {
+public class ClusterProperties {
     @NotNull
     @NotBlank
     private String clusterId;
@@ -59,7 +56,6 @@ public class ClusterProperties implements InitializingBean {
 
     private boolean secure;
 
-    @Override
     public void afterPropertiesSet() {
         this.nodes.forEach(nodeProperties -> {
             nodeProperties.init(baselineProperties);

@@ -20,7 +20,7 @@ public class ClusterProvider implements ValueProvider {
     public List<CompletionProposal> complete(CompletionContext completionContext) {
         List<CompletionProposal> result = new ArrayList<>();
 
-        for (ClusterProperties clusterProperties : applicationProperties.getClusters()) {
+        for (ClusterProperties clusterProperties : applicationProperties.getClusterProperties()) {
             String prefix = completionContext.currentWordUpToCursor();
             if (prefix == null) {
                 prefix = "";

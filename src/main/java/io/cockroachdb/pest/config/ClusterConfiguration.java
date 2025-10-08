@@ -23,11 +23,9 @@ public class ClusterConfiguration {
         clusterManager.setCredentialsHandler(new CredentialsHandler() {
             @Override
             public Pair<String, String> getAuthenticationCredentials(String clusterId) {
-                String username = applicationProperties.getClusterPropertiesById(clusterId)
-                        .getDataSourceProperties()
+                String username = applicationProperties.getDataSourceProperties(clusterId)
                         .getUsername();
-                String password = applicationProperties.getClusterPropertiesById(clusterId)
-                        .getDataSourceProperties()
+                String password = applicationProperties.getDataSourceProperties(clusterId)
                         .getPassword();
                 return Pair.of(username, password);
             }

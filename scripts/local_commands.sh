@@ -16,12 +16,12 @@ command_stop_haproxy.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
-command_start_proxy.sh(){
+command_start_toxiproxy.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }
 
-command_stop_proxy.sh(){
+command_stop_toxiproxy.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }
@@ -56,7 +56,7 @@ command_stop.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
-command_start_proxy.sh(){
+command_start_toxiproxy.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }
@@ -77,11 +77,6 @@ command_sql.sh(){
 }
 
 command_status.sh(){
-  modulefile="${FUNCNAME[0]}"
-	source "${scriptsdir}/${modulefile}"
-}
-
-command_wipe.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"
 }

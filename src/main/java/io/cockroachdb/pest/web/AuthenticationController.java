@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpServletRequest;
 
 import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.web.security.AuthenticationRequest;
 
 @WebController
 public class AuthenticationController {

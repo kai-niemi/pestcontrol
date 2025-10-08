@@ -5,11 +5,13 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -22,10 +24,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.view.RedirectView;
 
-import io.cockroachdb.pest.api.LinkRelations;
-import io.cockroachdb.pest.api.cluster.WorkloadController;
-import io.cockroachdb.pest.api.cluster.WorkloadForm;
+import io.cockroachdb.pest.config.ClosableDataSource;
 import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.web.api.ClusterModel;
+import io.cockroachdb.pest.web.api.cluster.WorkloadController;
+import io.cockroachdb.pest.web.api.cluster.WorkloadForm;
 import io.cockroachdb.pest.web.simp.SimpMessagePublisher;
 import io.cockroachdb.pest.web.simp.TopicName;
 import io.cockroachdb.pest.workload.WorkloadManager;
@@ -62,6 +65,9 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
     @Autowired
     private SimpMessagePublisher messagePublisher;
+
+    @Autowired
+    private Function<DataSourceProperties, ClosableDataSource> dataSourceFactory;
 
     @Scheduled(fixedRate = 5, initialDelay = 5, timeUnit = TimeUnit.SECONDS)
     public void modelUpdate() {
@@ -101,7 +107,8 @@ public class WorkloadDashboardController extends AbstractSessionController {
 
         final LocalTime time = LocalTime.parse(form.getDuration(), DateTimeFormatter.ofPattern("HH:mm"));
         final Duration duration = Duration.ofHours(time.getHour()).plusMinutes(time.getMinute());
-        final DataSource dataSource = applicationProperties.getDataSource(clusterModel.getClusterId());
+        final DataSource dataSource = dataSourceFactory.apply(
+                applicationProperties.getDataSourceProperties(clusterModel.getClusterId()));
 
         IntStream.rangeClosed(1, form.getCount())
                 .forEach(value -> {

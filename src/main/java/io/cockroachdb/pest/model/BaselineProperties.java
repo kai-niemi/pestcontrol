@@ -15,19 +15,14 @@ public class BaselineProperties {
     @NotNull
     private String serviceAddr;
 
-    @NotNull
     private String listenAddr;
 
-    @NotNull
     private String advertiseAddr;
 
-    @NotNull
     private String advertiseProxyAddr;
 
-    @NotNull
     private String sqlAddr;
 
-    @NotNull
     private String httpAddr;
 
     private List<String> certHosts = List.of();

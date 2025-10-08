@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 
-import io.cockroachdb.pest.api.toxiproxy.ToxiproxyAccessException;
+import io.cockroachdb.pest.web.api.toxiproxy.ToxiproxyAccessException;
 
 @ControllerAdvice(annotations = WebController.class)
 public class WebExceptionHandler extends ResponseEntityExceptionHandler {

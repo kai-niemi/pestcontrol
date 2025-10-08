@@ -5,7 +5,6 @@
 # See https://docs.spring.io/spring-boot/appendix/application-properties/index.html for all spring boot
 # properties and src/main/resources/application.yml for application defaults.
 ###############################################################################################################
-
 application:
   # Preset cluster ID (can also be set with --cluster-id XX)
   defaultClusterId: "local-insecure"
@@ -32,9 +31,9 @@ application:
     - cluster-id: "local-insecure"
       cluster-name: "Local Cluster (insecure)"
       cluster-type: hosted_insecure
-      admin-url: "http://${local-ip}:8080"
+      admin-url: "http://localhost:8080"
       data-source-properties:
-        url: "jdbc:postgresql://${local-ip}:26257/defaultdb?sslmode=disable"
+        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
       version: "v25.3.1.darwin-11.0-arm64"
@@ -43,105 +42,76 @@ application:
       #      version: "v25.3.1.linux-arm64"
       secure: false
       baseline:
-        service-addr: ${local-ip}:9090
-        advertise-addr: ${local-ip}:+25257
-        advertise-proxy-addr: ${local-ip}:+35257
-        listen-addr: ${local-ip}:+25257
-        sql-addr: ${local-ip}:+26257
-        http-addr: ${local-ip}:+8080
+        service-addr: localhost:9090
+        advertise-addr: localhost:+25257
+        advertise-proxy-addr: localhost:+35257
+        listen-addr: localhost:+25257
+        sql-addr: localhost:+26257
+        http-addr: localhost:+8080
       nodes:
-        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1a"
-        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1b"
-        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1c"
-        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2a"
-        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2b"
-        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2c"
+        - locality: "region=eu-central-1,zone=eu-central-1a"
+        - locality: "region=eu-central-1,zone=eu-central-1b"
+        - locality: "region=eu-central-1,zone=eu-central-1c"
+        - locality: "region=eu-west-1,zone=eu-west-1a"
+        - locality: "region=eu-west-1,zone=eu-west-1b"
+        - locality: "region=eu-west-1,zone=eu-west-1c"
+        - locality: "region=eu-west-2,zone=eu-west-2a"
+        - locality: "region=eu-west-2,zone=eu-west-2b"
+        - locality: "region=eu-west-2,zone=eu-west-2c"
+        - locality: "region=eu-north-1,zone=eu-north-1a"
+        - locality: "region=eu-north-1,zone=eu-north-1b"
+        - locality: "region=eu-north-1,zone=eu-north-1c"
 
     - cluster-id: "local-secure"
       cluster-name: "Local Cluster (secure)"
       cluster-type: hosted_secure
-      admin-url: "https://${local-ip}:8080"
+      admin-url: "https://localhost:8080"
       data-source-properties:
-        url: "jdbc:postgresql://${local-ip}:26257/defaultdb?sslmode=require"
+        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"
       version: "v25.3.1.darwin-11.0-arm64"
       secure: true
       baseline:
-        service-addr: ${local-ip}:9090
-        advertise-addr: ${local-ip}:+25257
-        advertise-proxy-addr: ${local-ip}:+35257
-        listen-addr: ${local-ip}:+25257
-        sql-addr: ${local-ip}:+26257
-        http-addr: ${local-ip}:+8080
+        service-addr: localhost:9090
+        advertise-addr: localhost:+25257
+        advertise-proxy-addr: localhost:+35257
+        listen-addr: localhost:+25257
+        sql-addr: localhost:+26257
+        http-addr: localhost:+8080
         cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
       nodes:
-        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-        - locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1a"
-        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1b"
-        - locality: "region=aws-eu-west-1,zone=aws-eu-west-1c"
-        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2a"
-        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2b"
-        - locality: "region=aws-eu-west-2,zone=aws-eu-west-2c"
+        - locality: "region=eu-central-1,zone=eu-central-1a"
+        - locality: "region=eu-central-1,zone=eu-central-1b"
+        - locality: "region=eu-central-1,zone=eu-central-1c"
+        - locality: "region=eu-west-1,zone=eu-west-1a"
+        - locality: "region=eu-west-1,zone=eu-west-1b"
+        - locality: "region=eu-west-1,zone=eu-west-1c"
+        - locality: "region=eu-west-2,zone=eu-west-2a"
+        - locality: "region=eu-west-2,zone=eu-west-2b"
+        - locality: "region=eu-west-2,zone=eu-west-2c"
+        - locality: "region=eu-north-1,zone=eu-north-1a"
+        - locality: "region=eu-north-1,zone=eu-north-1b"
+        - locality: "region=eu-north-1,zone=eu-north-1c"
 
-    #################################################################################
-
-    - cluster-id: "remote-insecure"
-      cluster-name: "Remote 3-node Cluster (insecure)"
+    - cluster-id: "test"
+      cluster-name: "Test (insecure)"
       cluster-type: hosted_insecure
       admin-url: "http://localhost:8080"
       data-source-properties:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
-        username: "root"
+        username: "craig"
         password: ""
       version: "v25.3.1.darwin-11.0-arm64"
       secure: false
-      ## List of machines/VM nodes for hosted cluster types.
-      # Used to manage a cluster through pest control, potentially spanning multiple hosts as
-      # opposed to many instances on local host on different ports.
-      # See: https://www.cockroachlabs.com/docs/stable/cockroach-start#flags
+      baseline:
+        service-addr: localhost:9090
+#        advertise-addr: localhost:+25257
+#        advertise-proxy-addr: localhost:+35257
+        listen-addr: localhost:+26257
+#        sql-addr: localhost:+26257
+        http-addr: localhost:+8080
       nodes:
-        - url: http://192.168.1.10:9090
-          name: n1
-          locality: "region=aws-eu-central-1,zone=aws-eu-central-1a"
-          service-addr: 192.168.1.10:9090
-          advertise-addr: 192.168.1.10:25257
-          advertise-proxy-addr: 192.168.1.10:35257
-          listen-addr: 192.168.1.10:25257
-          sql-addr: 192.168.1.10:26257
-          http-addr: 192.168.1.10:8080
-        - url: http://192.168.1.11:9090
-          name: n2
-          locality: "region=aws-eu-central-1,zone=aws-eu-central-1b"
-          service-addr: 192.168.1.11:9090
-          advertise-addr: 192.168.1.11:25257
-          advertise-proxy-addr: 192.168.1.11:35257
-          listen-addr: 192.168.1.11:25257
-          sql-addr: 192.168.1.11:26257
-          http-addr: 192.168.1.11:8080
-        - url: http://192.168.1.11:9090
-          name: n3
-          locality: "region=aws-eu-central-1,zone=aws-eu-central-1c"
-          service-addr: 192.168.1.12:9090
-          advertise-addr: 192.168.1.12:25257
-          advertise-proxy-addr: 192.168.1.12:35257
-          listen-addr: 192.168.1.12:25257
-          sql-addr: 192.168.1.12:26257
-          http-addr: 192.168.1.12:8080
-
-    #################################################################################
-
-    - cluster-id: "97a73235-fa45-4b4d-a229-f5efd52168ba"
-      cluster-name: "Cloud Dedicated"
-      cluster-type: cloud_dedicated
-      admin-url: "https://admin-odin-qzx.cockroachlabs.cloud:8080"
-      data-source-properties:
-        url: "jdbc:postgresql://odin-qzx.aws-eu-north-1.cockroachlabs.cloud:26257/defaultdb?sslmode=require"
-        username: "craig"
-        password: "cockroach"
-      api-key: "<private-key>"
+        - locality: "region=eu-central-1,zone=eu-central-1a"
+        - locality: "region=eu-central-1,zone=eu-central-1b"
+        - locality: "region=eu-central-1,zone=eu-central-1c"

@@ -82,4 +82,8 @@ public abstract class Networking {
         }
         throw new IllegalArgumentException("Expected ip:port or :port" + address);
     }
+
+    public static String getPort(String addr) {
+        return Objects.requireNonNull(addr).split(":")[1];
+    }
 }

@@ -38,6 +38,7 @@ fn_print_info "listen_addr    = ${listen_addr}"
 fn_print_info "advertise_addr = ${advertise_addr}"
 fn_print_info "sql_addr       = ${sql_addr}"
 fn_print_info "http_addr      = ${http_addr}"
+fn_print_info "pid            = ${pid}"
 
 #
 # Begin script
@@ -52,4 +53,4 @@ fn_print_dots "Stopping node with pid ${pid}"
 
 fn_local_stop "$pid"
 
-fn_print_ok "Stopped node successfully"
+exit 0

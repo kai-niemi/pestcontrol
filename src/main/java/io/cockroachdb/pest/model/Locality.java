@@ -87,11 +87,10 @@ public class Locality implements Comparable<Locality> {
                        .count() == required.size();
     }
 
-    public Optional<String> findRegionTier() {
+    public Optional<Tier> findRegionTier() {
         return getTiers().stream()
                 .filter(tier -> tier.getKey().equals(REGION))
-                .findFirst()
-                .map(Tier::getValue);
+                .findFirst();
     }
 
     @JsonProperty("tiers")

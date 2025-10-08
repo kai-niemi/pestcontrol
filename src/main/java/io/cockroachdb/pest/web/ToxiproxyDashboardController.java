@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
 
-import io.cockroachdb.pest.api.toxiproxy.ProxyForm;
-import io.cockroachdb.pest.api.toxiproxy.ToxicForm;
-import io.cockroachdb.pest.api.toxiproxy.ToxiproxyAccessException;
-import io.cockroachdb.pest.api.toxiproxy.ToxiproxyController;
+import io.cockroachdb.pest.web.api.toxiproxy.ProxyForm;
+import io.cockroachdb.pest.web.api.toxiproxy.ToxicForm;
+import io.cockroachdb.pest.web.api.toxiproxy.ToxiproxyAccessException;
+import io.cockroachdb.pest.web.api.toxiproxy.ToxiproxyController;
 
 @WebController
 @RequestMapping("/proxy")

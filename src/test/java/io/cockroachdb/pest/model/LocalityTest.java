@@ -9,17 +9,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.cockroachdb.pest.model.Locality;
 
 @Tags(value = {
         @Tag("unit-test")
 })
 public class LocalityTest {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Test
     public void whenSingleZoneLocalities_expectEvenHostDistribution() {
         Map<Locality, List<String>> localities = new TreeMap<>();

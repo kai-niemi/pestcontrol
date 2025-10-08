@@ -5,7 +5,7 @@ shift
 
 fn_print_help() {
     echo -e "${green}Usage: $0 [command]${default}"
-    echo -e "${default}Pest Control :: Operator Commands${default}"
+    echo -e "${default}Pest Control Operator Commands${default}"
     echo -e ""
     echo -e "${yellow}Internal commands are intended to be called programmatically via RPC from the built-in shell.${default}"
     echo -e ""
@@ -20,9 +20,8 @@ fn_print_help() {
         echo -e "${green}cert\t${default}      | Generate CA cert and key pairs"
         echo -e "${green}node-cert\t${default}      | Generate node cert and key pairs"
         echo -e "${green}install\t${default}      | Install cockroachdb binaries"
-        echo -e "${green}wipe\t${default}      | Wipe local directories (certs, data and binaries)"
-        echo -e "${cyan}start-proxy\t${default}      | Start ToxiProxy server"
-        echo -e "${cyan}stop-proxy\t${default}      | Stop ToxiProxy server"
+        echo -e "${cyan}start-toxiproxy\t${default}      | Start Toxiproxy server"
+        echo -e "${cyan}stop-toxiproxy\t${default}      | Stop Toxiproxy server"
         echo -e "${cyan}start-haproxy\t${default}      | Start HAProxy load balancer"
         echo -e "${cyan}stop-haproxy\t${default}      | Stop HAProxy load balancer"
     } | column -s $'\t' -t
@@ -67,11 +66,11 @@ case "${getopt}" in
     wipe)
         command_wipe.sh $*
         ;;
-    start-proxy)
-        command_start_proxy.sh $*
+    start-toxiproxy)
+        command_start_toxiproxy.sh $*
         ;;
-    stop-proxy)
-        command_stop_proxy.sh $*
+    stop-toxiproxy)
+        command_stop_toxiproxy.sh $*
         ;;
     gen-haproxy)
         command_gen_haproxy.sh $*

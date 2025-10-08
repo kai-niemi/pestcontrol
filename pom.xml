@@ -9,10 +9,14 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>io.cockroachdb.pest</groupId>
+    <groupId>io.cockroachdb.pestcontrol</groupId>
     <artifactId>pestcontrol</artifactId>
     <version>1.3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+
+    <description>
+        A tool for managing and chaos testing CockroachDB.
+    </description>
 
     <properties>
         <groups>unit-test</groups>
@@ -183,7 +187,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.5</version>
+            <version>42.7.7</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -265,6 +269,17 @@
                     <target>21</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <failOnError>true</failOnError>
+                    <filesets>
+                        <fileset>
+                            <directory>${basedir}/.log</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -317,6 +332,9 @@
                                 </fileset>
                                 <fileset>
                                     <directory>${basedir}/.datafiles</directory>
+                                </fileset>
+                                <fileset>
+                                    <directory>${basedir}/.log</directory>
                                 </fileset>
                                 <fileset>
                                     <directory>${basedir}</directory>

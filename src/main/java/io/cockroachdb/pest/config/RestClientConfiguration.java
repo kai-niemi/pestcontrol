@@ -43,8 +43,8 @@ public class RestClientConfiguration implements RestTemplateCustomizer {
 
     @Override
     public void customize(RestTemplate restTemplate) {
-        int maxTotal = applicationProperties.getHttp().getMaxTotal();
-        int maxConnPerRoute = applicationProperties.getHttp().getMaxConnPerRoute();
+        int maxTotal = applicationProperties.getPoolProperties().getMaxTotal();
+        int maxConnPerRoute = applicationProperties.getPoolProperties().getMaxConnPerRoute();
 
         if (maxConnPerRoute <= 0 || maxTotal <= 0) {
             maxConnPerRoute = Runtime.getRuntime().availableProcessors() * 8;

@@ -17,19 +17,18 @@ import org.springframework.stereotype.Component;
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.shell.client.HypermediaClient;
-import static io.cockroachdb.pest.api.LinkRelations.CERTS_REL;
-import static io.cockroachdb.pest.api.LinkRelations.CLUSTERS_REL;
-import static io.cockroachdb.pest.api.LinkRelations.CLUSTER_TEMPLATE_REL;
-import static io.cockroachdb.pest.api.LinkRelations.CURIE_NAMESPACE;
-import static io.cockroachdb.pest.api.LinkRelations.NODE_INIT_REL;
-import static io.cockroachdb.pest.api.LinkRelations.NODE_INSTALL_REL;
-import static io.cockroachdb.pest.api.LinkRelations.NODE_KILL_REL;
-import static io.cockroachdb.pest.api.LinkRelations.NODE_START_PROXY_REL;
-import static io.cockroachdb.pest.api.LinkRelations.NODE_START_REL;
-import static io.cockroachdb.pest.api.LinkRelations.NODE_STATUS_REL;
-import static io.cockroachdb.pest.api.LinkRelations.NODE_STOP_REL;
-import static io.cockroachdb.pest.api.LinkRelations.NODE_WIPE_REL;
-import static io.cockroachdb.pest.api.LinkRelations.OPERATOR_REL;
+import static io.cockroachdb.pest.web.LinkRelations.CERTS_REL;
+import static io.cockroachdb.pest.web.LinkRelations.CLUSTERS_REL;
+import static io.cockroachdb.pest.web.LinkRelations.CLUSTER_TEMPLATE_REL;
+import static io.cockroachdb.pest.web.LinkRelations.CURIE_NAMESPACE;
+import static io.cockroachdb.pest.web.LinkRelations.NODE_INIT_REL;
+import static io.cockroachdb.pest.web.LinkRelations.NODE_INSTALL_REL;
+import static io.cockroachdb.pest.web.LinkRelations.NODE_KILL_REL;
+import static io.cockroachdb.pest.web.LinkRelations.NODE_START_REL;
+import static io.cockroachdb.pest.web.LinkRelations.NODE_STATUS_REL;
+import static io.cockroachdb.pest.web.LinkRelations.NODE_STOP_REL;
+import static io.cockroachdb.pest.web.LinkRelations.NODE_WIPE_REL;
+import static io.cockroachdb.pest.web.LinkRelations.OPERATOR_REL;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @Component
@@ -50,14 +49,14 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     private Link clusterLink(ClusterProperties clusterProperties, int nodeId) {
-        Link baseUrl = clusterProperties.findNodePropertiesById(nodeId).getServiceLink(clusterProperties.isSecure());
+        Link baseUrl = clusterProperties.findNodePropertiesById(nodeId).getServiceLink();
         return hypermediaClient.from(baseUrl)
                 .follow(curied(CURIE_NAMESPACE, CLUSTERS_REL).value())
                 .asTemplatedLink();
     }
 
     private Link nodeOperatorLink(ClusterProperties clusterProperties, int nodeId) {
-        Link baseUrl = clusterProperties.findNodePropertiesById(nodeId).getServiceLink(clusterProperties.isSecure());
+        Link baseUrl = clusterProperties.findNodePropertiesById(nodeId).getServiceLink();
         return hypermediaClient.from(baseUrl)
                 .follow(curied(CURIE_NAMESPACE, CLUSTERS_REL).value())
                 .follow(Hop.rel(curied(CURIE_NAMESPACE, CLUSTER_TEMPLATE_REL).value())
@@ -79,9 +78,7 @@ public class HostedClusterOperator implements ClusterOperator {
                     .expand(Map.of());
 
             ResponseEntity<String> response = hypermediaClient.upload(actionLink, keyFiles.get(nodeId));
-            if (response.getStatusCode().is2xxSuccessful()) {
-                logger.info("HTTP status: {}", response);
-            } else {
+            if (!response.getStatusCode().is2xxSuccessful()) {
                 logger.warn("Unexpected HTTP status: {}", response);
             }
         });
@@ -101,9 +98,7 @@ public class HostedClusterOperator implements ClusterOperator {
                         "nodeId", nodeId));
 
         ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("HTTP status: {}", response);
-        } else {
+        if (!response.getStatusCode().is2xxSuccessful()) {
             logger.warn("Unexpected HTTP status: {}", response);
         }
 
@@ -122,9 +117,7 @@ public class HostedClusterOperator implements ClusterOperator {
                         "nodeId", nodeId));
 
         ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("HTTP status: {}", response);
-        } else {
+        if (!response.getStatusCode().is2xxSuccessful()) {
             logger.warn("Unexpected HTTP status: {}", response);
         }
 
@@ -143,9 +136,7 @@ public class HostedClusterOperator implements ClusterOperator {
                         "nodeId", nodeId));
 
         ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("HTTP status: {}", response);
-        } else {
+        if (!response.getStatusCode().is2xxSuccessful()) {
             logger.warn("Unexpected HTTP status: {}", response);
         }
 
@@ -164,9 +155,7 @@ public class HostedClusterOperator implements ClusterOperator {
                         "nodeId", nodeId));
 
         ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("HTTP status: {}", response);
-        } else {
+        if (!response.getStatusCode().is2xxSuccessful()) {
             logger.warn("Unexpected HTTP status: {}", response);
         }
 
@@ -185,9 +174,7 @@ public class HostedClusterOperator implements ClusterOperator {
                         "nodeId", nodeId));
 
         ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("HTTP status: {}", response);
-        } else {
+        if (!response.getStatusCode().is2xxSuccessful()) {
             logger.warn("Unexpected HTTP status: {}", response);
         }
 
@@ -206,30 +193,7 @@ public class HostedClusterOperator implements ClusterOperator {
                         "nodeId", nodeId));
 
         ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("HTTP status: {}", response);
-        } else {
-            logger.warn("Unexpected HTTP status: {}", response);
-        }
-
-        return response.getBody();
-    }
-
-    @Override
-    public String startProxyClient(ClusterProperties clusterProperties, Integer nodeId) {
-        Link operatorLink = nodeOperatorLink(clusterProperties, nodeId);
-
-        Link actionLink = hypermediaClient.from(operatorLink)
-                .follow(curied(CURIE_NAMESPACE, NODE_START_PROXY_REL).value())
-                .asTemplatedLink()
-                .expand(Map.of(
-                        "clusterId", clusterProperties.getClusterId(),
-                        "nodeId", nodeId));
-
-        ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("HTTP status: {}", response);
-        } else {
+        if (!response.getStatusCode().is2xxSuccessful()) {
             logger.warn("Unexpected HTTP status: {}", response);
         }
 
@@ -253,9 +217,7 @@ public class HostedClusterOperator implements ClusterOperator {
                         "nodeId", nodeId));
 
         ResponseEntity<String> response = hypermediaClient.post(actionLink, clusterProperties, String.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("HTTP status: {}", response);
-        } else {
+        if (!response.getStatusCode().is2xxSuccessful()) {
             logger.warn("Unexpected HTTP status: {}", response);
         }
 
@@ -283,13 +245,13 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String startProxyServer(ClusterProperties cluster) {
-        return localClusterOperator.startProxyServer(cluster);
+    public String startToxiproxyServer() {
+        return localClusterOperator.startToxiproxyServer();
     }
 
     @Override
-    public String stopProxyServer(ClusterProperties cluster) {
-        return localClusterOperator.stopProxyServer(cluster);
+    public String stopToxiproxyServer() {
+        return localClusterOperator.stopToxiproxyServer();
     }
 
     @Override
@@ -303,7 +265,7 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String stopHAProxy(ClusterProperties cluster) {
-        return localClusterOperator.stopHAProxy(cluster);
+    public String stopHAProxy(ClusterProperties cluster, Integer nodeId) {
+        return localClusterOperator.stopHAProxy(cluster, nodeId);
     }
 }

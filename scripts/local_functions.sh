@@ -11,7 +11,7 @@ fn_local_node_status() {
   listen_addr=$1
 
   if [ $# -eq 0 ]; then
-      echo -e "Expected address"
+      echo -e "Expected listen_addr"
       exit 1
   fi
 

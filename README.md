@@ -245,7 +245,7 @@ Start the interactive shell with:
 
 This will download and install the CockroachDB binaries, start a 3-node cluster and initialize it.
 
-     select-cluster --clusterId local-secure
+     use-cluster --clusterId local-secure
      install 1-3
      certs 1
      start 1-3
@@ -274,7 +274,7 @@ On the control host, start the interactive shell with:
 
 This will download and install the CockroachDB binaries, start a 3-node cluster and initialize it.
 
-     select-cluster --clusterId remote-insecure     
+     use-cluster --clusterId remote-insecure     
      install 1-3
      start 1-3
      init 1

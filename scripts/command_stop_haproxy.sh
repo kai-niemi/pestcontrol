@@ -10,4 +10,7 @@ RETVAL=$?
 
 fn_print_ok "Stopped haproxy (pid: $(<.haproxy.pid))"
 
-[ $RETVAL -eq 0 ] && rm -f .haproxy.pid
+#[ $RETVAL -eq 0 ] && rm -f .haproxy.pid
+rm -f .haproxy.pid
+
+exit 0

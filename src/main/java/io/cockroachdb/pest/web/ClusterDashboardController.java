@@ -18,11 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
-import io.cockroachdb.pest.api.MessageModel;
-import io.cockroachdb.pest.api.MessageType;
-import io.cockroachdb.pest.api.cluster.NodeController;
-import io.cockroachdb.pest.api.cluster.NodeModel;
+import io.cockroachdb.pest.web.api.MessageModel;
+import io.cockroachdb.pest.web.api.MessageType;
+import io.cockroachdb.pest.web.api.cluster.NodeController;
+import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.web.api.ClusterModel;
 import io.cockroachdb.pest.web.simp.SimpMessagePublisher;
 import io.cockroachdb.pest.web.simp.TopicName;
 

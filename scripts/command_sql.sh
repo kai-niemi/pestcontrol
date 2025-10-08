@@ -58,4 +58,4 @@ case "$security_mode" in
     exit 1
 esac
 
-fn_print_ok "SQL shell started"
+exit 0

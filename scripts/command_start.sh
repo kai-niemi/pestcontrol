@@ -82,10 +82,9 @@ fn_assert_binaries
 
 mempool="10%"
 
-fn_local_node_status $advertise_addr
-
+fn_local_node_status $listen_addr
 if [ "${status}" != "0" ]; then
-  fn_print_warn "Node with advertise address ${advertise_addr} is already running!"
+  fn_print_warn "Node with --listen-addr ${listen_addr} is already running!"
   exit 0
 fi
 
@@ -126,4 +125,4 @@ case "$security_mode" in
     exit 1
 esac
 
-fn_print_ok "Started node successfully"
+exit 0

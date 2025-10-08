@@ -17,7 +17,7 @@ import io.cockroachdb.pest.util.PatternUtils;
 public class ChaosCommands extends AbstractCommand {
     public Availability ifCockroachCloudCluster() {
         return ifClusterSelected().isAvailable()
-               && ClusterTypes.isCloud(CLUSTER_ID_SELECTION.get().getClusterType())
+               && ClusterTypes.isCloud(CLUSTER_PROPERTIES.getClusterType())
                 ? Availability.available()
                 : Availability.unavailable("cluster type is not cockroach cloud!");
     }

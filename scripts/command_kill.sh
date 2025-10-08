@@ -54,4 +54,4 @@ fn_print_dots "Killing node with pid ${pid}"
 
 fn_local_kill "$pid"
 
-fn_print_ok "Killed node successfully"
+exit 0

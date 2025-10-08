@@ -22,9 +22,9 @@ import io.cockroachdb.pest.config.RestClientProvider;
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.repository.ClusterRepository;
 import io.cockroachdb.pest.repository.JdbcClusterRepository;
-import io.cockroachdb.pest.cluster.schema.NodeDetail;
-import io.cockroachdb.pest.cluster.schema.NodeDetails;
-import io.cockroachdb.pest.cluster.schema.NodeStatus;
+import io.cockroachdb.pest.cluster.model.NodeDetail;
+import io.cockroachdb.pest.cluster.model.NodeDetails;
+import io.cockroachdb.pest.cluster.model.NodeStatus;
 
 @Component
 public class ClusterQuery {

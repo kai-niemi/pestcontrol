@@ -1,6 +1,7 @@
 package io.cockroachdb.pest.workload;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import javax.sql.DataSource;
@@ -9,9 +10,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import io.cockroachdb.pest.AbstractIntegrationTest;
+import io.cockroachdb.pest.config.ClosableDataSource;
 import io.cockroachdb.pest.workload.repository.JdbcSampleRepository;
 import io.cockroachdb.pest.workload.repository.SampleEntity;
 import io.cockroachdb.pest.workload.repository.SampleRepository;
@@ -22,9 +26,13 @@ public class ProfileWorkloadsTest extends AbstractIntegrationTest {
 
     private DataSource dataSource;
 
+    @Autowired
+    private Function<DataSourceProperties, ClosableDataSource> dataSourceFactory;
+
     @BeforeAll
     public void setupTestOnce() {
-        this.dataSource = applicationProperties.getDataSource("integration-test");
+        this.dataSource = dataSourceFactory.apply(
+                applicationProperties.getDataSourceProperties("integration-test"));
 
         logger.info("Connected to: %s".formatted(
                 new JdbcTemplate(dataSource)

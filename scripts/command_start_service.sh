@@ -19,3 +19,5 @@ fi
 nohup java -jar ${APP_JARFILE} ${app_params} $* > pestcontrol-stdout.log 2>&1 &
 
 fn_print_ok "Started service - check 'pestcontrol-stdout.log' for status"
+
+exit 0

@@ -16,12 +16,12 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ServerErrorException;
 
+import io.cockroachdb.pest.cluster.model.DisruptorSpecifications;
+import io.cockroachdb.pest.cluster.model.RegionalDisruptorSpecification;
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.model.Locality;
 import io.cockroachdb.pest.model.NodeProperties;
-import io.cockroachdb.pest.cluster.schema.DisruptorSpecifications;
-import io.cockroachdb.pest.cluster.schema.RegionalDisruptorSpecification;
 
 @Component
 public class CloudClusterOperator implements ClusterOperator {
@@ -51,11 +51,6 @@ public class CloudClusterOperator implements ClusterOperator {
 
     @Override
     public String wipe(ClusterProperties cluster, Integer nodeId) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String startProxyClient(ClusterProperties cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
@@ -155,7 +150,8 @@ public class CloudClusterOperator implements ClusterOperator {
             regionalDisruptorSpecification.setIsWholeRegion(true);
             regionalDisruptorSpecification.setRegionCode(locality
                     .findRegionTier().orElseThrow(
-                            () -> new UnsupportedOperationException("No region tier found in locality: " + locality)));
+                            () -> new UnsupportedOperationException("No region tier found in locality: " + locality))
+                    .getKey());
         }
 
         final DisruptorSpecifications disruptorSpecifications = new DisruptorSpecifications();
@@ -201,12 +197,12 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String startProxyServer(ClusterProperties cluster) {
+    public String startToxiproxyServer() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String stopProxyServer(ClusterProperties cluster) {
+    public String stopToxiproxyServer() {
         throw new UnsupportedOperationException();
     }
 
@@ -221,7 +217,7 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String stopHAProxy(ClusterProperties cluster) {
+    public String stopHAProxy(ClusterProperties cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 }

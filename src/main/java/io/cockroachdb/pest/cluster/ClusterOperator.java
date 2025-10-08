@@ -36,15 +36,13 @@ public interface ClusterOperator {
 
     String recoverLocality(ClusterProperties cluster, String locality);
 
-    String startProxyServer(ClusterProperties cluster);
+    String startToxiproxyServer();
 
-    String stopProxyServer(ClusterProperties cluster);
-
-    String startProxyClient(ClusterProperties cluster, Integer nodeId);
+    String stopToxiproxyServer();
 
     String genHAProxyCfg(ClusterProperties cluster, Integer nodeId);
 
     String startHAProxy(ClusterProperties cluster, Integer nodeId);
 
-    String stopHAProxy(ClusterProperties cluster);
+    String stopHAProxy(ClusterProperties cluster, Integer nodeId);
 }

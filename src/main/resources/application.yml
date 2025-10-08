@@ -121,20 +121,18 @@ server:
 
 #############################
 application:
-  # -1 denotes use of unbounded virtual threads
-  threadPoolMaxSize: -1
-  # Sample period for time-series data points in graphs
-  samplePeriodSeconds: 300
-  ## Other service parameters
-  http:
-    maxConnPerRoute: 0
-    maxTotal: 0
-  # Base directory for shell scripts
-  baseDir: "."
-  # Directory for TLS certificates
-  certsDir: .certs
+  # Base directories for binaries and shell scripts
+  directories:
+    baseDir: .
+    binDir: .binaries
+    certsDir: .certs
+    dataDir: .datafiles
   # Host settings for toxiproxy
   toxiproxy:
     host: localhost
     port: 8474
-    enabled: false
+  # Various resource pool settings
+  pool:
+    threadPoolMaxSize: -1
+    maxConnPerRoute: 0
+    maxTotal: 0

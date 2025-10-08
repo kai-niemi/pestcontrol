@@ -37,7 +37,7 @@ public class Application {
     private static void printHelpAndExit(Consumer<AnsiConsole> message) {
         try (Terminal terminal = TerminalBuilder.terminal()) {
             AnsiConsole console = new AnsiConsole(terminal);
-            console.green("Usage: java -jar pestcontrol.jar [options] [args...]").nl().nl();
+            console.green("Usage: java -jar pestcontrol.jar [options] [profile...]").nl().nl();
             console.yellow("Options include:").nl();
             {
                 console.cyan("--cluster-id [id]         set default cluster id to use in shell commands").nl();
@@ -61,7 +61,6 @@ public class Application {
         LinkedList<String> passThroughArgs = new LinkedList<>();
 
         Set<String> profiles = new HashSet<>();
-        profiles.add("default");
 
         while (!argsList.isEmpty()) {
             String arg = argsList.pop();
@@ -95,16 +94,19 @@ public class Application {
                 if (arg.startsWith("--") || arg.startsWith("@")) {
                     passThroughArgs.add(arg);
                 } else {
-                    printHelpAndExit(ansiConsole -> {
-                        ansiConsole.red("Unknown argument: " + arg).nl().nl();
-                    });
+                    profiles.add(arg);
+//                    printHelpAndExit(ansiConsole -> {
+//                        ansiConsole.red("Unknown argument: " + arg).nl().nl();
+//                    });
                 }
             }
         }
 
-        if (!profiles.isEmpty()) {
-            System.setProperty("spring.profiles.active", String.join(",", profiles));
+        if (profiles.isEmpty()) {
+            profiles.add("default");
         }
+
+        System.setProperty("spring.profiles.active", String.join(",", profiles));
 
         new SpringApplicationBuilder(Application.class)
                 .web(WebApplicationType.SERVLET)

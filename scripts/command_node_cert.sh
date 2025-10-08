@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# ./pop node-cert --name=n1 192.168.1.149,22
-
 commandaction="Generate node certificates"
 
 for i in "$@"; do
@@ -45,4 +43,4 @@ cp ${certsdir}/node.key ${certsdir}/${name}
 fn_fail_check ${installdir}/cockroach cert list --certs-dir=${certsdir}
 fn_fail_check ${installdir}/cockroach cert list --certs-dir=${certsdir}/${name}
 
-fn_print_ok "Done"
+exit 0

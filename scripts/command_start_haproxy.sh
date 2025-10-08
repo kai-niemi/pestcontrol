@@ -24,3 +24,5 @@ fn_fail_check haproxy -D -f ${configfile} -p .haproxy.pid
 fn_print_ok "Started haproxy (pid: $(<.haproxy.pid))"
 
 open "http://localhost:7070"
+
+exit 0

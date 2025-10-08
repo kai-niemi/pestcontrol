@@ -54,19 +54,20 @@ public class ConfigCommands extends AbstractCommand {
     @PostConstruct
     public void init() {
         if (StringUtils.hasLength(applicationProperties.getDefaultClusterId())) {
-            selectClusterID(applicationProperties.getDefaultClusterId());
+            useCluster(applicationProperties.getDefaultClusterId());
+        } else {
+            useCluster(applicationProperties.getClusterIds().stream().findFirst().orElseThrow());
         }
     }
 
-    @ShellMethod(value = "Select default cluster ID to use in commands", key = {"select-cluster", "sc"})
-    public void selectClusterID(
-            @ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-                    valueProvider = ClusterProvider.class) String clusterId) {
+    @ShellMethod(value = "Select default cluster ID to use in commands", key = {"use-cluster", "use"})
+    public void useCluster(@ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
+            valueProvider = ClusterProvider.class) String clusterId) {
         if (!Objects.equals("none", clusterId)) {
-            CLUSTER_ID_SELECTION.set(clusterManager.getClusterProperties(clusterId,
-                    EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure)));
+            CLUSTER_PROPERTIES = clusterManager.getClusterProperties(clusterId,
+                    EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure));
         } else {
-            CLUSTER_ID_SELECTION.remove();
+            CLUSTER_PROPERTIES = null;
         }
     }
 
@@ -181,8 +182,8 @@ public class ConfigCommands extends AbstractCommand {
         ClusterProperties secureCluster
                 = generateClusterProperties(name, regions, zones, true, callback);
         applicationProperties.setDefaultClusterId(insecureCluster.getClusterId());
-        applicationProperties.getClusters().add(insecureCluster);
-        applicationProperties.getClusters().add(secureCluster);
+        applicationProperties.getClusterProperties().add(insecureCluster);
+        applicationProperties.getClusterProperties().add(secureCluster);
 
         writeApplicationProperties(applicationProperties, yaml -> {
             System.out.println();

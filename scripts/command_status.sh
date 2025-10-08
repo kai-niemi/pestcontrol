@@ -62,3 +62,5 @@ case "$security_mode" in
     echo "Bad security mode: $security_mode"
     exit 1
 esac
+
+exit 0

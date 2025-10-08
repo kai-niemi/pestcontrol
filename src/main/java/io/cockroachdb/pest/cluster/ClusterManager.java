@@ -4,10 +4,10 @@ import java.util.EnumSet;
 import java.util.List;
 
 import io.cockroachdb.pest.model.ClusterProperties;
-import io.cockroachdb.pest.api.cluster.NodeModel;
+import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.cluster.schema.NodeDetail;
-import io.cockroachdb.pest.cluster.schema.NodeStatus;
+import io.cockroachdb.pest.cluster.model.NodeDetail;
+import io.cockroachdb.pest.cluster.model.NodeStatus;
 
 public interface ClusterManager {
     List<String> getClusterIds();

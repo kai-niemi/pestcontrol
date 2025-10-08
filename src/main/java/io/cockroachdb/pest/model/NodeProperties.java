@@ -13,8 +13,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.constraints.NotNull;
 
 import io.cockroachdb.pest.util.Networking;
-import static io.cockroachdb.pest.util.Networking.incrementPort;
-import static io.cockroachdb.pest.util.Networking.resolve;
 
 /**
  * Node properties describing a local or remote network node.
@@ -52,22 +50,22 @@ public class NodeProperties {
             setCertHosts(baseline.getCertHosts());
         }
         if (Objects.isNull(serviceAddr)) {
-            setServiceAddr(incrementPort(baseline.getServiceAddr(), baseline.getCurrentId()));
+            setServiceAddr(Networking.incrementPort(baseline.getServiceAddr(), baseline.getCurrentId()));
         }
         if (Objects.isNull(sqlAddr)) {
-            setSqlAddr(incrementPort(baseline.getSqlAddr(), baseline.getCurrentId()));
+            setSqlAddr(Networking.incrementPort(baseline.getSqlAddr(), baseline.getCurrentId()));
         }
         if (Objects.isNull(httpAddr)) {
-            setHttpAddr(incrementPort(baseline.getHttpAddr(), baseline.getCurrentId()));
+            setHttpAddr(Networking.incrementPort(baseline.getHttpAddr(), baseline.getCurrentId()));
         }
         if (Objects.isNull(listenAddr)) {
-            setListenAddr(incrementPort(baseline.getListenAddr(), baseline.getCurrentId()));
+            setListenAddr(Networking.incrementPort(baseline.getListenAddr(), baseline.getCurrentId()));
         }
         if (Objects.isNull(advertiseAddr)) {
-            setAdvertiseAddr(incrementPort(baseline.getAdvertiseAddr(), baseline.getCurrentId()));
+            setAdvertiseAddr(Networking.incrementPort(baseline.getAdvertiseAddr(), baseline.getCurrentId()));
         }
         if (Objects.isNull(advertiseProxyAddr)) {
-            setAdvertiseProxyAddr(incrementPort(baseline.getAdvertiseProxyAddr(), baseline.getCurrentId()));
+            setAdvertiseProxyAddr(Networking.incrementPort(baseline.getAdvertiseProxyAddr(), baseline.getCurrentId()));
         }
         if (Objects.isNull(id)) {
             setId(baseline.getCurrentId() + 1);
@@ -76,33 +74,23 @@ public class NodeProperties {
             setName("n%d".formatted(id));
         }
 
+        Assert.notNull(this.sqlAddr, "sql-addr is required for node " + this.id);
+        Assert.notNull(this.serviceAddr, "service-addr is required for node " + this.id);
+        Assert.state(this.listenAddr == null && this.advertiseAddr == null,
+                "Both listen-addr and advertise-addr missing for node " + this.id);
+        Assert.state(this.id > 0, "id must be > 0");
+
         // Resolve any placeholders
-
-        this.serviceAddr = resolve(serviceAddr);
-        this.listenAddr = resolve(listenAddr);
-        this.advertiseAddr = resolve(advertiseAddr);
-        this.advertiseProxyAddr = resolve(advertiseProxyAddr);
-        this.sqlAddr = resolve(sqlAddr);
-        this.httpAddr = resolve(httpAddr);
+        this.serviceAddr = Networking.resolve(serviceAddr);
+        this.listenAddr = Networking.resolve(listenAddr);
+        this.advertiseAddr = Networking.resolve(advertiseAddr);
+        this.advertiseProxyAddr = Networking.resolve(advertiseProxyAddr);
+        this.sqlAddr = Networking.resolve(sqlAddr);
+        this.httpAddr = Networking.resolve(httpAddr);
         this.certHosts = this.certHosts.stream().map(Networking::resolve).toList();
-
-        Assert.notNull(this.id, "id is required");
-        Assert.state(this.id>0, "id must be > 0");
-        Assert.notNull(this.name, "name is required");
-        Assert.notNull(this.serviceAddr, "service-addr is required");
-        Assert.notNull(this.listenAddr, "listen-addr is required");
-        Assert.notNull(this.advertiseAddr, "advertise-addr is required");
-        Assert.notNull(this.advertiseProxyAddr, "advertise-proxy-addr is required");
-        Assert.notNull(this.sqlAddr, "sql-addr is required");
-        Assert.notNull(this.httpAddr, "http-addr is required");
     }
 
-    public Link getAdminLink(boolean secure) {
-        String path = Objects.requireNonNull(httpAddr);
-        return Link.of("%s://%s".formatted(secure ? "https" : "http", path));
-    }
-
-    public Link getServiceLink(boolean secure) {
+    public Link getServiceLink() {
         String path = Objects.requireNonNull(serviceAddr).endsWith("/api") ? serviceAddr : serviceAddr + "/api";
         return Link.of("%s://%s".formatted("http", path));
     }
@@ -151,6 +139,17 @@ public class NodeProperties {
         return listenAddr;
     }
 
+    public String getRpcAddr() {
+        String addr = this.listenAddr;
+        if (Objects.isNull(addr)) {
+            addr = this.advertiseAddr;
+        }
+        if (addr.startsWith(":")) {
+            addr = "%s:%s".formatted(Networking.getCanonicalHostName(), addr.substring(1));
+        }
+        return addr;
+    }
+
     public void setListenAddr(String listenAddr) {
         this.listenAddr = listenAddr;
     }
@@ -180,7 +179,11 @@ public class NodeProperties {
     }
 
     public String getSqlAddr() {
-        return sqlAddr;
+        String addr = sqlAddr;
+        if (addr.startsWith(":")) {
+            addr = "%s:%s".formatted(Networking.getCanonicalHostName(), addr.substring(1));
+        }
+        return addr;
     }
 
     public void setSqlAddr(String sqlAddr) {

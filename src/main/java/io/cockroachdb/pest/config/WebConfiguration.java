@@ -33,9 +33,9 @@ import org.springframework.web.util.pattern.PathPatternParser;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import eu.rekawek.toxiproxy.model.ToxicType;
 
-import io.cockroachdb.pest.api.LinkRelations;
-import io.cockroachdb.pest.api.toxiproxy.ToxicForm;
-import io.cockroachdb.pest.api.cluster.WorkloadForm;
+import io.cockroachdb.pest.web.LinkRelations;
+import io.cockroachdb.pest.web.api.toxiproxy.ToxicForm;
+import io.cockroachdb.pest.web.api.cluster.WorkloadForm;
 import io.cockroachdb.pest.workload.repository.WorkloadType;
 
 @EnableWebMvc

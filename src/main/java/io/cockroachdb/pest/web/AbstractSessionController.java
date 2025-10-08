@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.web.api.ClusterModel;
 
 @SessionAttributes("model")
 public abstract class AbstractSessionController {

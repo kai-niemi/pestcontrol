@@ -11,3 +11,5 @@ kill -TERM $pid
 RETVAL=$?
 
 fn_print_ok "Stopped service (pid: $pid) $RETVAL"
+
+exit 0

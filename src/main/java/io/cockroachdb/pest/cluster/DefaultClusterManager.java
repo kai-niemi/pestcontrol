@@ -9,7 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +22,13 @@ import org.springframework.web.client.RestClient;
 
 import com.jayway.jsonpath.JsonPath;
 
-import io.cockroachdb.pest.api.cluster.NodeModel;
+import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.config.RestClientProvider;
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.ClusterProperties;
 import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.cluster.schema.NodeDetail;
-import io.cockroachdb.pest.cluster.schema.NodeStatus;
+import io.cockroachdb.pest.cluster.model.NodeDetail;
+import io.cockroachdb.pest.cluster.model.NodeStatus;
 
 @Component
 public class DefaultClusterManager implements ClusterManager {
@@ -48,6 +50,9 @@ public class DefaultClusterManager implements ClusterManager {
     @Autowired
     private ClusterQuery clusterQuery;
 
+    @Autowired
+    private ObjectProvider<ClusterOperator> clusterOperators;
+
     private RestClient restClient(ClusterProperties clusterProperties) {
         return restClientProvider.matches(clusterProperties);
     }
@@ -59,7 +64,7 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public List<String> getClusterIds() {
-        return applicationProperties.getClusters()
+        return applicationProperties.getClusterProperties()
                 .stream()
                 .map(ClusterProperties::getClusterId)
                 .toList();
@@ -210,6 +215,15 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public ClusterOperator getClusterOperator(String clusterId) {
-        return applicationProperties.getClusterOperatorById(clusterId);
+        return getClusterOperatorByType(getClusterProperties(clusterId).getClusterType());
+    }
+
+    public ClusterOperator getClusterOperatorByType(ClusterType clusterType) {
+        return clusterOperators
+                .stream()
+                .filter(x -> x.supports(clusterType))
+                .min(new AnnotationAwareOrderComparator())
+                .orElseThrow(() -> new UnsupportedOperationException(
+                        "No operator found for cluster type: " + clusterType));
     }
 }
