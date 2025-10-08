@@ -1,4 +1,3 @@
-
 create table if not exists test_table
 (
     id        uuid                 default gen_random_uuid(),

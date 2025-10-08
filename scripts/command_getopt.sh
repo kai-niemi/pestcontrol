@@ -9,7 +9,7 @@ fn_print_help() {
     echo -e ""
     echo -e "${yellow}Internal commands are intended to be called programmatically via RPC from the built-in shell.${default}"
     echo -e ""
-    echo -e "${lightgreen}[Internal Commands]${default}"
+    echo -e "${lightyellow}[Internal Commands]${default}"
     {
         echo -e "${yellow}start\t${default}      | Start node"
         echo -e "${yellow}stop\t${default}      | Stop node"
@@ -17,21 +17,21 @@ fn_print_help() {
         echo -e "${yellow}init\t${default}      | Init node"
         echo -e "${yellow}sql\t${default}      | Start SQL client"
         echo -e "${yellow}status\t${default}      | Query node status"
-        echo -e "${green}cert\t${default}      | Generate CA cert and key pairs"
-        echo -e "${green}node-cert\t${default}      | Generate node cert and key pairs"
-        echo -e "${green}install\t${default}      | Install cockroachdb binaries"
-        echo -e "${cyan}start-toxiproxy\t${default}      | Start Toxiproxy server"
-        echo -e "${cyan}stop-toxiproxy\t${default}      | Stop Toxiproxy server"
-        echo -e "${cyan}start-haproxy\t${default}      | Start HAProxy load balancer"
-        echo -e "${cyan}stop-haproxy\t${default}      | Stop HAProxy load balancer"
+        echo -e "${yellow}cert\t${default}      | Generate CA cert and key pairs"
+        echo -e "${yellow}node-cert\t${default}      | Generate node cert and key pairs"
+        echo -e "${yellow}install\t${default}      | Install cockroachdb binaries"
+        echo -e "${yellow}start-toxiproxy\t${default}      | Start Toxiproxy server"
+        echo -e "${yellow}stop-toxiproxy\t${default}      | Stop Toxiproxy server"
+        echo -e "${yellow}start-haproxy\t${default}      | Start HAProxy load balancer"
+        echo -e "${yellow}stop-haproxy\t${default}      | Stop HAProxy load balancer"
     } | column -s $'\t' -t
 
     echo -e ""
     echo -e "${lightgreen}[Service Commands]${default}"
     {
-        echo -e "${cyan}start-service|st\t${default}   | Start PestControl service in background"
-        echo -e "${cyan}stop-service|sp\t${default}   | Stop PestControl service"
-        echo -e "${cyan}run-service|run\t${default}   | Run PestControl service"
+        echo -e "${cyan}start-service|st\t${default}   | Start PestControl server in the background"
+        echo -e "${cyan}stop-service|sp\t${default}   | Stop PestControl server"
+        echo -e "${cyan}run-service|run\t${default}   | Run PestControl server"
     } | column -s $'\t' -t
 }
 

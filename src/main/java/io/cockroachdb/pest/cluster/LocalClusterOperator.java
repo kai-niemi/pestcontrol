@@ -43,17 +43,19 @@ public class LocalClusterOperator implements ClusterOperator {
     private ToxiproxyCommands toxiproxyCommands;
 
     private String executeCommand(Path directory, List<String> commands) {
-        Instant start = Instant.now();
 
         try {
+            Instant start = Instant.now();
+
             Process process = new ProcessBuilder()
                     .command(commands)
                     .directory(directory.toFile())
                     .inheritIO()
                     .start();
 
-            logger.info("Process started: %s"
-                    .formatted(process.info().commandLine().orElse("")));
+            logger.info("Process pid %s started: %s"
+                    .formatted(process.pid(),
+                            process.info().commandLine().orElse("")));
 
             while (process.isAlive()) {
                 if (Thread.interrupted()) {
@@ -61,16 +63,19 @@ public class LocalClusterOperator implements ClusterOperator {
                     break;
                 }
                 if (process.waitFor(5, TimeUnit.SECONDS)) {
-                    logger.info("Waiting... %s"
-                            .formatted(process.info().totalCpuDuration().orElse(Duration.ofSeconds(0))));
+                    logger.info("Waiting for process %s (%s)..."
+                            .formatted(process.pid(),
+                                    process.info().totalCpuDuration().orElse(Duration.ofSeconds(0))));
                     break;
                 }
             }
 
             int code = process.exitValue();
 
-            logger.info("Process finished with exit code %d (%s)"
-                    .formatted(code, Duration.between(start, Instant.now())));
+            logger.info("Process pid %s finished with exit code %d (%s)"
+                    .formatted(process.pid(),
+                            code,
+                            Duration.between(start, Instant.now())));
 
             return "Code " + code;
         } catch (InterruptedException e) {
@@ -79,11 +84,6 @@ public class LocalClusterOperator implements ClusterOperator {
         } catch (IOException e) {
             throw new CommandException("Process I/O error", e);
         }
-    }
-
-    @Override
-    public boolean supports(ClusterType clusterType) {
-        return false;
     }
 
     private void addServerNetworkingFlags(Cluster cluster,
@@ -126,6 +126,11 @@ public class LocalClusterOperator implements ClusterOperator {
         if (cluster.isSecure()) {
             args.add("--secure");
         }
+    }
+
+    @Override
+    public boolean supports(ClusterType clusterType) {
+        return false;
     }
 
     @Override
@@ -175,10 +180,8 @@ public class LocalClusterOperator implements ClusterOperator {
 
     @Override
     public String init(Cluster cluster, Integer nodeId) {
-        Cluster.Node node = cluster.getNodeById(nodeId);
-
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "init"));
-        addClientNetworkingFlags(cluster, node, args);
+        addClientNetworkingFlags(cluster, cluster.getNodeById(nodeId), args);
 
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
@@ -228,11 +231,9 @@ public class LocalClusterOperator implements ClusterOperator {
             toxiproxyCommands.deleteProxy("" + nodeId);
         }
 
-        Cluster.Node node = cluster.getNodeById(nodeId);
-
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop"));
 
-        addServerNetworkingFlags(cluster, node, args);
+        addServerNetworkingFlags(cluster, cluster.getNodeById(nodeId), args);
 
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
@@ -243,20 +244,16 @@ public class LocalClusterOperator implements ClusterOperator {
             toxiproxyCommands.deleteProxy("" + nodeId);
         }
 
-        Cluster.Node node = cluster.getNodeById(nodeId);
-
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "kill"));
-        addServerNetworkingFlags(cluster, node, args);
+        addServerNetworkingFlags(cluster, cluster.getNodeById(nodeId), args);
 
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
 
     @Override
     public String sqlNode(Cluster cluster, Integer nodeId) {
-        Cluster.Node node = cluster.getNodeById(nodeId);
-
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "sql"));
-        addClientNetworkingFlags(cluster, node, args);
+        addClientNetworkingFlags(cluster, cluster.getNodeById(nodeId), args);
 
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
@@ -325,9 +322,10 @@ public class LocalClusterOperator implements ClusterOperator {
                     new PropertyPlaceholderHelper("${", "}")
                             .replacePlaceholders(Files.readString(templateFile),
                                     placeholderName -> switch (placeholderName.toLowerCase()) {
-                                        case "bind-rpc" -> {
-                                            yield "    bind :".formatted(cluster.getClusterId());
-                                        }
+                                        case "bind-stats" ->
+                                                "    bind %s".formatted(cluster.getLoadBalancer().getStatsAddr());
+                                        case "bind-rpc" ->
+                                                "    bind %s".formatted(cluster.getLoadBalancer().getRpcAddr());
                                         case "servers-rpc" -> {
                                             List<String> servers = new ArrayList<>();
 
@@ -341,9 +339,8 @@ public class LocalClusterOperator implements ClusterOperator {
 
                                             yield String.join("", servers);
                                         }
-                                        case "bind-http" -> {
-                                            yield "    bind :".formatted(cluster.getClusterId());
-                                        }
+                                        case "bind-http" ->
+                                                "    bind %s".formatted(cluster.getLoadBalancer().getHttpAddr());
                                         case "servers-http" -> {
                                             List<String> servers = new ArrayList<>();
 
