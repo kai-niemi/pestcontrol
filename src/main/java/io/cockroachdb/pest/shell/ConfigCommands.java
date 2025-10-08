@@ -31,9 +31,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 
 import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.model.NodeProperties;
 import io.cockroachdb.pest.model.Root;
 import io.cockroachdb.pest.shell.support.ClusterProvider;
 
@@ -177,13 +176,13 @@ public class ConfigCommands extends AbstractCommand {
             }
         };
 
-        ClusterProperties insecureCluster
+        Cluster insecureCluster
                 = generateClusterProperties(name, regions, zones, false, callback);
-        ClusterProperties secureCluster
+        Cluster secureCluster
                 = generateClusterProperties(name, regions, zones, true, callback);
         applicationProperties.setDefaultClusterId(insecureCluster.getClusterId());
-        applicationProperties.getClusterProperties().add(insecureCluster);
-        applicationProperties.getClusterProperties().add(secureCluster);
+        applicationProperties.getClusters().add(insecureCluster);
+        applicationProperties.getClusters().add(secureCluster);
 
         writeApplicationProperties(applicationProperties, yaml -> {
             System.out.println();
@@ -229,21 +228,20 @@ public class ConfigCommands extends AbstractCommand {
         }
     }
 
-    private ClusterProperties generateClusterProperties(
+    private Cluster generateClusterProperties(
             String name,
             List<String> regions,
             List<String> zones,
             boolean secure,
             AddressCallback addressCallback
     ) {
-        ClusterProperties clusterProperties = new ClusterProperties();
+        Cluster cluster = new Cluster();
         {
-            clusterProperties.setClusterId("%s-%s".formatted(name, secure ? "secure" : "insecure"));
-            clusterProperties.setClusterName("Generated");
-            clusterProperties.setClusterType(secure ? ClusterType.hosted_insecure : ClusterType.hosted_secure);
-            clusterProperties.setAdminUrl(addressCallback.serviceAddr(1));
-            clusterProperties.setVersion("v25.3.1.linux-amd64");
-            clusterProperties.setSecure(secure);
+            cluster.setClusterId("%s-%s".formatted(name, secure ? "secure" : "insecure"));
+            cluster.setClusterName("Generated");
+            cluster.setClusterType(secure ? ClusterType.hosted_insecure : ClusterType.hosted_secure);
+            cluster.setAdminUrl(addressCallback.serviceAddr(1));
+            cluster.setVersion("v25.3.1.linux-amd64");
         }
 
         final String firstNodeIP = addressCallback.firstNodeIP();
@@ -261,31 +259,31 @@ public class ConfigCommands extends AbstractCommand {
                 dataSourceProperties.setUsername("root");
                 dataSourceProperties.setPassword("");
             }
-            clusterProperties.setDataSourceProperties(dataSourceProperties);
+            cluster.setDataSourceProperties(dataSourceProperties);
         }
 
         IntStream.rangeClosed(1, regions.size()).forEach(nodeId -> {
-            NodeProperties nodeProperties = new NodeProperties();
-            nodeProperties.setLocality("region=%s,zone=%s".formatted(
+            Cluster.Node node = new Cluster.Node();
+            node.setLocality("region=%s,zone=%s".formatted(
                     regions.get(nodeId - 1),
                     zones.get(nodeId - 1))
             );
-            nodeProperties.setId(nodeId);
-            nodeProperties.setName("n%d".formatted(nodeId));
-            nodeProperties.setServiceAddr(addressCallback.serviceAddr(nodeId));
-            nodeProperties.setAdvertiseAddr(addressCallback.advertiseAddr(nodeId));
-            nodeProperties.setAdvertiseProxyAddr(addressCallback.advertiseProxyAddr(nodeId));
-            nodeProperties.setListenAddr(addressCallback.listenAddr(nodeId));
-            nodeProperties.setSqlAddr(addressCallback.sqlAddr(nodeId));
-            nodeProperties.setHttpAddr(addressCallback.httpAddr(nodeId));
+            node.setId(nodeId);
+            node.setName("n%d".formatted(nodeId));
+            node.setServiceAddr(addressCallback.serviceAddr(nodeId));
+            node.setAdvertiseAddr(addressCallback.advertiseAddr(nodeId));
+            node.setAdvertiseProxyAddr(addressCallback.advertiseProxyAddr(nodeId));
+            node.setListenAddr(addressCallback.listenAddr(nodeId));
+            node.setSqlAddr(addressCallback.sqlAddr(nodeId));
+            node.setHttpAddr(addressCallback.httpAddr(nodeId));
 
             if (secure) {
-                nodeProperties.setCertHosts(List.of("localhost", firstNodeIP, "localhost", "127.0.0.1"));
+                node.setCertHosts(List.of("localhost", firstNodeIP, "localhost", "127.0.0.1"));
             }
 
-            clusterProperties.getNodes().add(nodeProperties);
+            cluster.getNodes().add(node);
         });
 
-        return clusterProperties;
+        return cluster;
     }
 }

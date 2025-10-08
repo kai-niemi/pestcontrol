@@ -18,10 +18,9 @@ import org.springframework.web.server.ServerErrorException;
 
 import io.cockroachdb.pest.cluster.model.DisruptorSpecifications;
 import io.cockroachdb.pest.cluster.model.RegionalDisruptorSpecification;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.model.Locality;
-import io.cockroachdb.pest.model.NodeProperties;
 
 @Component
 public class CloudClusterOperator implements ClusterOperator {
@@ -35,80 +34,80 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String certs(ClusterProperties clusterProperties, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
+    public String certs(Cluster cluster, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String install(ClusterProperties clusterProperties, Integer nodeId) {
+    public String install(Cluster cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String init(ClusterProperties clusterProperties, Integer nodeId) {
+    public String init(Cluster cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String wipe(ClusterProperties cluster, Integer nodeId) {
+    public String wipe(Cluster cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String killNode(ClusterProperties clusterProperties, Integer nodeId) {
+    public String killNode(Cluster cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String startNode(ClusterProperties clusterProperties, Integer nodeId) {
+    public String startNode(Cluster cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String stopNode(ClusterProperties clusterProperties, Integer nodeId) {
+    public String stopNode(Cluster cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String statusNode(ClusterProperties cluster, Integer nodeId) {
+    public String statusNode(Cluster cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String sqlNode(ClusterProperties cluster, Integer nodeId) {
+    public String sqlNode(Cluster cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+    public String disruptNode(Cluster cluster, Integer nodeId) {
+        Cluster.Node node = cluster.getNodeById(nodeId);
 
-        final Locality locality = Locality.fromTiers(nodeProperties.getLocality());
+        final Locality locality = Locality.fromTiers(node.getLocality());
 
         final String region = locality.getTiers().stream()
                 .filter(tier -> tier.getKey().equals("region"))
                 .findFirst().orElseThrow(() ->
                         new IllegalArgumentException(
-                                "No locality or region key found: " + nodeProperties.getLocality()))
+                                "No locality or region key found: " + node.getLocality()))
                 .getValue();
 
         final RegionalDisruptorSpecification regionalDisruptorSpecification = new RegionalDisruptorSpecification();
         {
             regionalDisruptorSpecification.setIsWholeRegion(false);
             regionalDisruptorSpecification.setRegionCode(region);
-            regionalDisruptorSpecification.getPods().add("cockroachdb-" + nodeProperties.getId());
+            regionalDisruptorSpecification.getPods().add("cockroachdb-" + node.getId());
         }
 
         final DisruptorSpecifications disruptorSpecifications = new DisruptorSpecifications();
         disruptorSpecifications.addRegionalDisruptorSpecification(regionalDisruptorSpecification);
 
-        final String bearerToken = clusterProperties.getApiKey();
+        final String bearerToken = cluster.getApiKey();
 
         try {
             ResponseEntity<String> responseEntity = RestClient.create()
                     .put()
                     .uri(CLOUD_API_BASE + "/clusters/%s/disrupt"
-                            .formatted(clusterProperties.getClusterId()))
+                            .formatted(cluster.getClusterId()))
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerToken)
                     .body(disruptorSpecifications)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -126,13 +125,13 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String recoverNode(ClusterProperties clusterProperties, Integer nodeId) {
-        String bearerToken = clusterProperties.getApiKey();
+    public String recoverNode(Cluster cluster, Integer nodeId) {
+        String bearerToken = cluster.getApiKey();
 
         ResponseEntity<String> responseEntity = RestClient.create()
                 .put()
                 .uri(CLOUD_API_BASE + "/clusters/%s/disrupt"
-                        .formatted(clusterProperties.getClusterId()))
+                        .formatted(cluster.getClusterId()))
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerToken)
                 .retrieve()
                 .toEntity(String.class);
@@ -142,7 +141,7 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String disruptLocality(ClusterProperties clusterProperties, String tiers) {
+    public String disruptLocality(Cluster cluster, String tiers) {
         Locality locality = Locality.fromTiers(tiers);
 
         final RegionalDisruptorSpecification regionalDisruptorSpecification = new RegionalDisruptorSpecification();
@@ -157,13 +156,13 @@ public class CloudClusterOperator implements ClusterOperator {
         final DisruptorSpecifications disruptorSpecifications = new DisruptorSpecifications();
         disruptorSpecifications.addRegionalDisruptorSpecification(regionalDisruptorSpecification);
 
-        final String bearerToken = clusterProperties.getApiKey();
+        final String bearerToken = cluster.getApiKey();
 
         try {
             ResponseEntity<String> responseEntity = RestClient.create()
                     .put()
                     .uri(CLOUD_API_BASE + "/clusters/%s/disrupt"
-                            .formatted(clusterProperties.getClusterId()))
+                            .formatted(cluster.getClusterId()))
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerToken)
                     .body(disruptorSpecifications)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -181,13 +180,13 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String recoverLocality(ClusterProperties clusterProperties, String locality) {
-        String bearerToken = clusterProperties.getApiKey();
+    public String recoverLocality(Cluster cluster, String locality) {
+        String bearerToken = cluster.getApiKey();
 
         ResponseEntity<String> responseEntity = RestClient.create()
                 .put()
                 .uri(CLOUD_API_BASE + "/clusters/%s/disrupt"
-                        .formatted(clusterProperties.getClusterId()))
+                        .formatted(cluster.getClusterId()))
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerToken)
                 .retrieve()
                 .toEntity(String.class);
@@ -207,17 +206,17 @@ public class CloudClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String genHAProxyCfg(ClusterProperties cluster, Integer nodeId) {
+    public String genHAProxyCfg(Cluster cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String startHAProxy(ClusterProperties cluster, Integer nodeId) {
+    public String startHAProxy(Cluster cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String stopHAProxy(ClusterProperties cluster, Integer nodeId) {
+    public String stopHAProxy(Cluster cluster, Integer nodeId) {
         throw new UnsupportedOperationException();
     }
 }

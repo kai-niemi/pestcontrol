@@ -8,19 +8,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.Locality;
-import io.cockroachdb.pest.model.NodeProperties;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeDetail {
-    public static NodeDetail from(NodeProperties nodeProperties) {
+    public static NodeDetail from(Cluster.Node node) {
         NodeDetail nodeDetail = new NodeDetail();
-        nodeDetail.setNodeId(nodeProperties.getId());
-        nodeDetail.setLocality(Locality.fromTiers(nodeProperties.getLocality()));
+        nodeDetail.setNodeId(node.getId());
+        nodeDetail.setLocality(Locality.fromTiers(node.getLocality()));
 
         Address address = new Address();
-        address.setAddressField(nodeProperties.getListenAddr());
-        address.setNetworkField(nodeProperties.getListenAddr());
+        address.setAddressField(node.getListenAddr());
+        address.setNetworkField(node.getListenAddr());
         nodeDetail.setAddress(address);
 
         return nodeDetail;

@@ -25,7 +25,7 @@ import com.jayway.jsonpath.JsonPath;
 import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.config.RestClientProvider;
 import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.cluster.model.NodeDetail;
 import io.cockroachdb.pest.cluster.model.NodeStatus;
@@ -53,8 +53,8 @@ public class DefaultClusterManager implements ClusterManager {
     @Autowired
     private ObjectProvider<ClusterOperator> clusterOperators;
 
-    private RestClient restClient(ClusterProperties clusterProperties) {
-        return restClientProvider.matches(clusterProperties);
+    private RestClient restClient(Cluster cluster) {
+        return restClientProvider.matches(cluster);
     }
 
     @Override
@@ -64,9 +64,9 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public List<String> getClusterIds() {
-        return applicationProperties.getClusterProperties()
+        return applicationProperties.getClusters()
                 .stream()
-                .map(ClusterProperties::getClusterId)
+                .map(Cluster::getClusterId)
                 .toList();
     }
 
@@ -77,12 +77,12 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public String login(String clusterId, String userName, String password) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+        Cluster cluster = getClusterProperties(clusterId);
 
         if (EnumSet.of(ClusterType.hosted_insecure)
-                .contains(clusterProperties.getClusterType())) {
+                .contains(cluster.getClusterType())) {
             logger.info("Implicit login for cluster type: %s"
-                    .formatted(clusterProperties.getClusterType()));
+                    .formatted(cluster.getClusterType()));
             sessionTokens.put(clusterId, "");
             return "";
         }
@@ -91,9 +91,9 @@ public class DefaultClusterManager implements ClusterManager {
         map.add("username", userName);
         map.add("password", password);
 
-        ResponseEntity<String> responseEntity = restClient(clusterProperties)
+        ResponseEntity<String> responseEntity = restClient(cluster)
                 .post()
-                .uri(clusterProperties.getAdminUrl() + "/api/v2/login/")
+                .uri(cluster.getAdminUrl() + "/api/v2/login/")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(map)
                 .retrieve()
@@ -111,13 +111,13 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public boolean logout(String clusterId) {
-        ClusterProperties clusterProperties = getClusterProperties(clusterId);
+        Cluster cluster = getClusterProperties(clusterId);
 
         String sessionToken = findSessionToken(clusterId);
 
-        ResponseEntity<String> responseEntity = restClient(clusterProperties)
+        ResponseEntity<String> responseEntity = restClient(cluster)
                 .post()
-                .uri(clusterProperties.getAdminUrl() + "/api/v2/logout/")
+                .uri(cluster.getAdminUrl() + "/api/v2/logout/")
                 .header("X-Cockroach-API-Session", sessionToken)
                 .retrieve()
                 .toEntity(String.class);
@@ -173,9 +173,9 @@ public class DefaultClusterManager implements ClusterManager {
         final List<NodeModel> nodeModelList = new ArrayList<>();
 
         try {
-            ClusterProperties clusterProperties = getClusterProperties(clusterId);
-            List<NodeStatus> nodeStatusList = clusterQuery.queryNodeStatus(clusterProperties);
-            List<NodeDetail> nodeDetailList = clusterQuery.queryNodeDetails(clusterProperties,
+            Cluster cluster = getClusterProperties(clusterId);
+            List<NodeStatus> nodeStatusList = clusterQuery.queryNodeStatus(cluster);
+            List<NodeDetail> nodeDetailList = clusterQuery.queryNodeDetails(cluster,
                     findSessionToken(clusterId));
 
             nodeDetailList.forEach(nodeDetail -> nodeStatusList.stream()
@@ -204,13 +204,13 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public ClusterProperties getClusterProperties(String clusterId) {
-        return applicationProperties.getClusterPropertiesByIdAndType(clusterId, EnumSet.allOf(ClusterType.class));
+    public Cluster getClusterProperties(String clusterId) {
+        return applicationProperties.getClusterByIdAndType(clusterId, EnumSet.allOf(ClusterType.class));
     }
 
     @Override
-    public ClusterProperties getClusterProperties(String clusterId, EnumSet<ClusterType> clusterTypes) {
-        return applicationProperties.getClusterPropertiesByIdAndType(clusterId, clusterTypes);
+    public Cluster getClusterProperties(String clusterId, EnumSet<ClusterType> clusterTypes) {
+        return applicationProperties.getClusterByIdAndType(clusterId, clusterTypes);
     }
 
     @Override

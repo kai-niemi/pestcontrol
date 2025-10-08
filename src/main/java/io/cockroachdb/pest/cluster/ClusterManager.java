@@ -3,7 +3,7 @@ package io.cockroachdb.pest.cluster;
 import java.util.EnumSet;
 import java.util.List;
 
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.cluster.model.NodeDetail;
@@ -30,9 +30,9 @@ public interface ClusterManager {
 
     List<NodeModel> queryAllNodes(String clusterId);
 
-    ClusterProperties getClusterProperties(String clusterId);
+    Cluster getClusterProperties(String clusterId);
 
-    ClusterProperties getClusterProperties(String clusterId, EnumSet<ClusterType> clusterTypes);
+    Cluster getClusterProperties(String clusterId, EnumSet<ClusterType> clusterTypes);
 
     ClusterOperator getClusterOperator(String clusterId);
 }

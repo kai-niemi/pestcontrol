@@ -11,10 +11,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonSetter;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -24,79 +21,75 @@ import jakarta.validation.constraints.NotNull;
 @ConfigurationProperties(prefix = "application", ignoreUnknownFields = false)
 public class ApplicationProperties implements InitializingBean {
     @Valid
-    @NotNull
-    private Directories directories;
+    private Directories directories = new Directories();
 
     @Valid
-    @NotNull
-    private Pool pool;
+    private Pool pool = new Pool();
 
     @Valid
-    private Toxiproxy toxiproxy;
+    private Toxiproxy toxiproxy = new Toxiproxy();
 
     @NotEmpty
-    private List<@Valid ClusterProperties> clusterProperties = new ArrayList<>();
+    private List<@Valid Cluster> clusters = new ArrayList<>();
 
     private String defaultClusterId;
 
     @Override
     public void afterPropertiesSet() {
-        this.clusterProperties.forEach(ClusterProperties::afterPropertiesSet);
+        this.clusters.forEach(Cluster::validatePostCreation);
     }
 
     public DataSourceProperties getDataSourceProperties(String clusterId) {
-        return getClusterPropertiesById(clusterId).getDataSourceProperties();
+        return getClusterById(clusterId).getDataSourceProperties();
     }
 
-    public ClusterProperties getClusterPropertiesById(String clusterId) {
-        return getClusterPropertiesByIdAndType(clusterId, EnumSet.allOf(ClusterType.class));
+    public Cluster getClusterById(String clusterId) {
+        return getClusterByIdAndType(clusterId, EnumSet.allOf(ClusterType.class));
     }
 
-    public ClusterProperties getClusterPropertiesByIdAndType(String clusterId, EnumSet<ClusterType> requiredTypes) {
-        ClusterProperties clusterProperties = getClusterProperties()
+    public Cluster getClusterByIdAndType(String clusterId, EnumSet<ClusterType> requiredTypes) {
+        Cluster cluster = getClusters()
                 .stream()
                 .filter(x -> x.getClusterId().equals(clusterId))
                 .findFirst()
                 .orElseThrow(() ->
                         new IllegalArgumentException("No cluster configuration with id: " + clusterId));
-        if (!requiredTypes.contains(clusterProperties.getClusterType())) {
+        if (!requiredTypes.contains(cluster.getClusterType())) {
             throw new IllegalArgumentException("Cluster configuration is not of expected types '%s' but '%s'"
-                    .formatted(requiredTypes, clusterProperties.getClusterType()));
+                    .formatted(requiredTypes, cluster.getClusterType()));
         }
-        return clusterProperties;
+        return cluster;
     }
 
     @JsonIgnore
     public List<String> getClusterIds() {
-        return getClusterProperties()
+        return getClusters()
                 .stream()
-                .map(ClusterProperties::getClusterId)
+                .map(Cluster::getClusterId)
                 .toList();
     }
 
-    @JsonGetter("clusters")
-    public List<ClusterProperties> getClusterProperties() {
-        return clusterProperties;
+    public List<Cluster> getClusters() {
+        return clusters;
     }
 
-    @JsonSetter("clusters")
-    public void setClusterProperties(List<ClusterProperties> clusterProperties) {
-        this.clusterProperties = clusterProperties;
+    public void setClusters(List<Cluster> clusters) {
+        this.clusters = clusters;
     }
 
-    public Toxiproxy getToxiproxyProperties() {
+    public Toxiproxy getToxiproxy() {
         return toxiproxy;
     }
 
-    public void setToxiproxyProperties(Toxiproxy toxiProxy) {
+    public void setToxiproxy(Toxiproxy toxiProxy) {
         this.toxiproxy = toxiProxy;
     }
 
-    public Pool getPoolProperties() {
+    public Pool getPool() {
         return pool;
     }
 
-    public void setPoolProperties(Pool pool) {
+    public void setPool(Pool pool) {
         this.pool = pool;
     }
 
@@ -149,7 +142,6 @@ public class ApplicationProperties implements InitializingBean {
     }
 
     @Validated
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Pool {
         @NotNull
         private Integer threadPoolMaxSize;
@@ -186,7 +178,6 @@ public class ApplicationProperties implements InitializingBean {
     }
 
     @Validated
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Directories {
         @NotEmpty
         private String baseDir;
@@ -199,19 +190,6 @@ public class ApplicationProperties implements InitializingBean {
 
         @NotEmpty
         private String dataDir;
-
-        public String getBinDir() {
-            return binDir;
-        }
-
-        @JsonIgnore
-        public Path getBinDirPath() {
-            return Paths.get(binDir);
-        }
-
-        public void setBinDir(String binDir) {
-            this.binDir = binDir;
-        }
 
         public String getBaseDir() {
             return baseDir;
@@ -226,8 +204,30 @@ public class ApplicationProperties implements InitializingBean {
             this.baseDir = baseDir;
         }
 
+        public String getBinDir() {
+            return binDir;
+        }
+
+        @JsonIgnore
+        public Path getBinDirPath() {
+            return getBaseDirPath().resolve(binDir);
+        }
+
+        public void setBinDir(String binDir) {
+            this.binDir = binDir;
+        }
+
         public String getCertsDir() {
             return certsDir;
+        }
+
+        @JsonIgnore
+        public Path getCertsDirPath() {
+            return getBaseDirPath().resolve(certsDir);
+        }
+
+        public void setCertsDir(String certsDir) {
+            this.certsDir = certsDir;
         }
 
         public String getDataDir() {
@@ -236,20 +236,11 @@ public class ApplicationProperties implements InitializingBean {
 
         @JsonIgnore
         public Path getDataDirPath() {
-            return Paths.get(dataDir);
+            return getBaseDirPath().resolve(dataDir);
         }
 
         public void setDataDir(String dataDir) {
             this.dataDir = dataDir;
-        }
-
-        @JsonIgnore
-        public Path getCertsDirPath() {
-            return Paths.get(certsDir);
-        }
-
-        public void setCertsDir(String certsDir) {
-            this.certsDir = certsDir;
         }
     }
 }

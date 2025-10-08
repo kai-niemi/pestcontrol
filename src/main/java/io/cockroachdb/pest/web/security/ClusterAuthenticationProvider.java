@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 
 @Component
 public class ClusterAuthenticationProvider implements AuthenticationProvider {
@@ -46,7 +46,7 @@ public class ClusterAuthenticationProvider implements AuthenticationProvider {
         String clusterId = authenticationDetails.getClusterId();
         Boolean useFileCredentials = authenticationDetails.getUseFileCredentials();
 
-        final ClusterProperties properties = applicationProperties.getClusterPropertiesById(clusterId);
+        final Cluster properties = applicationProperties.getClusterById(clusterId);
         authenticationDetails.setClusterProperties(properties);
 
         // Fallback to static config

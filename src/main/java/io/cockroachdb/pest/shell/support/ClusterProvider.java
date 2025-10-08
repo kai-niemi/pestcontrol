@@ -9,7 +9,7 @@ import org.springframework.shell.CompletionProposal;
 import org.springframework.shell.standard.ValueProvider;
 
 import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterTypes;
 
 public class ClusterProvider implements ValueProvider {
@@ -20,17 +20,17 @@ public class ClusterProvider implements ValueProvider {
     public List<CompletionProposal> complete(CompletionContext completionContext) {
         List<CompletionProposal> result = new ArrayList<>();
 
-        for (ClusterProperties clusterProperties : applicationProperties.getClusterProperties()) {
+        for (Cluster cluster : applicationProperties.getClusters()) {
             String prefix = completionContext.currentWordUpToCursor();
             if (prefix == null) {
                 prefix = "";
             }
-            if ((clusterProperties.getClusterName().startsWith(prefix)
-                 || clusterProperties.getClusterId().startsWith(prefix))
-                && ClusterTypes.isHosted(clusterProperties.getClusterType())) {
-                result.add(new CompletionProposal(clusterProperties.getClusterId())
-                        .displayText(clusterProperties.getClusterId())
-                        .description(clusterProperties.getClusterName()));
+            if ((cluster.getClusterName().startsWith(prefix)
+                 || cluster.getClusterId().startsWith(prefix))
+                && ClusterTypes.isHosted(cluster.getClusterType())) {
+                result.add(new CompletionProposal(cluster.getClusterId())
+                        .displayText(cluster.getClusterId())
+                        .description(cluster.getClusterName()));
             }
         }
 

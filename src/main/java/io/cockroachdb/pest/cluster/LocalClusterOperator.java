@@ -23,10 +23,9 @@ import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.StringUtils;
 
 import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.model.Locality;
-import io.cockroachdb.pest.model.NodeProperties;
 import io.cockroachdb.pest.shell.ToxiproxyCommands;
 import io.cockroachdb.pest.util.CommandException;
 import io.cockroachdb.pest.util.Networking;
@@ -87,72 +86,68 @@ public class LocalClusterOperator implements ClusterOperator {
         return false;
     }
 
-    private void addServerNetworkingFlags(ClusterProperties clusterProperties,
-                                          NodeProperties nodeProperties,
+    private void addServerNetworkingFlags(Cluster cluster,
+                                          Cluster.Node node,
                                           List<String> args) {
 
         if (toxiproxyCommands.ifToxiproxy().isAvailable()) {
             args.add("--advertise-addr=" +
-                     Objects.requireNonNull(nodeProperties.getAdvertiseProxyAddr(),
-                             "advertise-proxy-addr required for node " + nodeProperties.getId()));
+                     Objects.requireNonNull(node.getAdvertiseProxyAddr(),
+                             "advertise-proxy-addr required for node " + node.getId()));
         } else {
-            if (StringUtils.hasLength(nodeProperties.getAdvertiseAddr())) {
-                args.add("--advertise-addr=" + nodeProperties.getAdvertiseAddr());
+            if (StringUtils.hasLength(node.getAdvertiseAddr())) {
+                args.add("--advertise-addr=" + node.getAdvertiseAddr());
             }
         }
 
-        if (StringUtils.hasLength(nodeProperties.getListenAddr())) {
-            args.add("--listen-addr=" + nodeProperties.getListenAddr());
+        if (StringUtils.hasLength(node.getListenAddr())) {
+            args.add("--listen-addr=" + node.getListenAddr());
         }
 
-        if (StringUtils.hasLength(nodeProperties.getSqlAddr())) {
-            args.add("--sql-addr=" + nodeProperties.getSqlAddr());
+        if (StringUtils.hasLength(node.getSqlAddr())) {
+            args.add("--sql-addr=" + node.getSqlAddr());
         }
 
-//        if (StringUtils.hasLength(nodeProperties.getSqlAddr())) {
-//            args.add("--advertise-sql-addr=" + nodeProperties.getSqlAddr());
-//        }
-
-        if (StringUtils.hasLength(nodeProperties.getHttpAddr())) {
-            args.add("--http-addr=" + nodeProperties.getHttpAddr());
+        if (StringUtils.hasLength(node.getHttpAddr())) {
+            args.add("--http-addr=" + node.getHttpAddr());
         }
 
-        if (clusterProperties.isSecure()) {
+        if (cluster.isSecure()) {
             args.add("--secure");
         }
     }
 
-    private void addClientNetworkingFlags(ClusterProperties clusterProperties,
-                                          NodeProperties nodeProperties,
+    private void addClientNetworkingFlags(Cluster cluster,
+                                          Cluster.Node node,
                                           List<String> args) {
-        args.add("--rpc-addr=" + nodeProperties.getRpcAddr());
-        args.add("--sql-addr=" + nodeProperties.getSqlAddr());
+        args.add("--rpc-addr=" + node.getRpcAddr());
+        args.add("--sql-addr=" + node.getSqlAddr());
 
-        if (clusterProperties.isSecure()) {
+        if (cluster.isSecure()) {
             args.add("--secure");
         }
     }
 
     @Override
-    public String certs(ClusterProperties clusterProperties, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
+    public String certs(Cluster cluster, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
         // First create CA cert and key pairs
         executeCommand(applicationProperties.getDirectories().getBaseDirPath(), List.of(OPERATOR_SCRIPT, "cert"));
 
         // Then create node cert and key pairs
-        clusterProperties.getNodes().forEach(nodeProperties -> {
+        cluster.getNodes().forEach(node -> {
             List<Path> expectedFiles = new ArrayList<>();
             expectedFiles.add(applicationProperties.getDirectories().getCertsDirPath()
-                    .resolve(nodeProperties.getName()).resolve("node.crt"));
+                    .resolve(node.getName()).resolve("node.crt"));
             expectedFiles.add(applicationProperties.getDirectories().getCertsDirPath()
-                    .resolve(nodeProperties.getName()).resolve("node.key"));
+                    .resolve(node.getName()).resolve("node.key"));
 
-            List<String> certHosts = nodeProperties.getCertHosts();
+            List<String> certHosts = node.getCertHosts();
             if (certHosts.isEmpty()) {
-                throw new RuntimeException("Missing cert hosts for node: " + nodeProperties.getId());
+                throw new RuntimeException("Missing cert hosts for node: " + node.getId());
             }
 
             List<String> command = new ArrayList<>(List.of(OPERATOR_SCRIPT, "node-cert"));
-            command.add("--name=" + nodeProperties.getName());
+            command.add("--name=" + node.getName());
             command.addAll(certHosts);
 
             executeCommand(applicationProperties.getDirectories().getBaseDirPath(), command);
@@ -164,32 +159,32 @@ public class LocalClusterOperator implements ClusterOperator {
                 }
             });
 
-            keyFiles.put(nodeProperties.getId(), expectedFiles);
+            keyFiles.put(node.getId(), expectedFiles);
         });
 
         return "";
     }
 
     @Override
-    public String install(ClusterProperties clusterProperties, Integer nodeId) {
+    public String install(Cluster cluster, Integer nodeId) {
         List<String> args = List.of(OPERATOR_SCRIPT, "install",
-                "--version=" + clusterProperties.getVersion()
+                "--version=" + cluster.getVersion()
         );
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
 
     @Override
-    public String init(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+    public String init(Cluster cluster, Integer nodeId) {
+        Cluster.Node node = cluster.getNodeById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "init"));
-        addClientNetworkingFlags(clusterProperties, nodeProperties, args);
+        addClientNetworkingFlags(cluster, node, args);
 
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
 
     @Override
-    public String wipe(ClusterProperties clusterProperties, Integer nodeId) {
+    public String wipe(Cluster cluster, Integer nodeId) {
         try {
             ApplicationProperties.Directories directories = applicationProperties.getDirectories();
             FileSystemUtils.deleteRecursively(directories.getBinDirPath());
@@ -198,84 +193,83 @@ public class LocalClusterOperator implements ClusterOperator {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-
         return "";
     }
 
     @Override
-    public String startNode(ClusterProperties clusterProperties, Integer nodeId) {
+    public String startNode(Cluster cluster, Integer nodeId) {
         if (toxiproxyCommands.ifToxiproxy().isAvailable()) {
             toxiproxyCommands.createProxy("" + nodeId);
         }
 
         Map<Locality, List<String>> joinHosts = new TreeMap<>();
 
-        clusterProperties.getNodes()
+        cluster.getNodes()
                 .forEach(np -> {
                     joinHosts.computeIfAbsent(Locality.fromTiers(np.getLocality()),
                             x -> new ArrayList<>()).add(np.getRpcAddr());
                 });
 
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+        Cluster.Node node = cluster.getNodeById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start"));
         args.add("--name=n" + nodeId);
-        args.add("--locality=" + nodeProperties.getLocality());
+        args.add("--locality=" + node.getLocality());
         args.add("--join=" + String.join(",", Locality.distributeJoinHosts(joinHosts)));
 
-        addServerNetworkingFlags(clusterProperties, nodeProperties, args);
+        addServerNetworkingFlags(cluster, node, args);
 
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
 
     @Override
-    public String stopNode(ClusterProperties clusterProperties, Integer nodeId) {
+    public String stopNode(Cluster cluster, Integer nodeId) {
         if (toxiproxyCommands.ifToxiproxy().isAvailable()) {
             toxiproxyCommands.deleteProxy("" + nodeId);
         }
 
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+        Cluster.Node node = cluster.getNodeById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop"));
 
-        addServerNetworkingFlags(clusterProperties, nodeProperties, args);
+        addServerNetworkingFlags(cluster, node, args);
 
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
 
     @Override
-    public String killNode(ClusterProperties clusterProperties, Integer nodeId) {
+    public String killNode(Cluster cluster, Integer nodeId) {
         if (toxiproxyCommands.ifToxiproxy().isAvailable()) {
             toxiproxyCommands.deleteProxy("" + nodeId);
         }
 
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+        Cluster.Node node = cluster.getNodeById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "kill"));
-        addServerNetworkingFlags(clusterProperties, nodeProperties, args);
+        addServerNetworkingFlags(cluster, node, args);
 
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
 
     @Override
-    public String sqlNode(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+    public String sqlNode(Cluster cluster, Integer nodeId) {
+        Cluster.Node node = cluster.getNodeById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "sql"));
-        addClientNetworkingFlags(clusterProperties, nodeProperties, args);
+        addClientNetworkingFlags(cluster, node, args);
 
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
 
     @Override
-    public String statusNode(ClusterProperties clusterProperties, Integer nodeId) {
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+    public String statusNode(Cluster cluster, Integer nodeId) {
+        Cluster.Node node = cluster.getNodeById(nodeId);
 
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "status"));
-        args.add("--url=postgres://%s".formatted(nodeProperties.getSqlAddr()));
+        args.add("--url=postgres://%s".formatted(node.getSqlAddr()));
         args.add("--format=records");
 
-        if (clusterProperties.isSecure()) {
+        if (cluster.isSecure()) {
             args.add("--secure");
         }
 
@@ -283,47 +277,47 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String disruptNode(ClusterProperties clusterProperties, Integer nodeId) {
-        return killNode(clusterProperties, nodeId);
+    public String disruptNode(Cluster cluster, Integer nodeId) {
+        return killNode(cluster, nodeId);
     }
 
     @Override
-    public String recoverNode(ClusterProperties clusterProperties, Integer nodeId) {
-        return startNode(clusterProperties, nodeId);
+    public String recoverNode(Cluster cluster, Integer nodeId) {
+        return startNode(cluster, nodeId);
     }
 
     @Override
-    public String disruptLocality(ClusterProperties cluster, String locality) {
+    public String disruptLocality(Cluster cluster, String locality) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String recoverLocality(ClusterProperties cluster, String locality) {
+    public String recoverLocality(Cluster cluster, String locality) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public String startToxiproxyServer() {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-toxiproxy"));
-        args.add("--toxiproxy-host=" + applicationProperties.getToxiproxyProperties().getHost());
-        args.add("--toxiproxy-port=" + applicationProperties.getToxiproxyProperties().getPort());
+        args.add("--toxiproxy-host=" + applicationProperties.getToxiproxy().getHost());
+        args.add("--toxiproxy-port=" + applicationProperties.getToxiproxy().getPort());
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
 
     @Override
     public String stopToxiproxyServer() {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop-toxiproxy"));
-        args.add("--toxiproxy-host=" + applicationProperties.getToxiproxyProperties().getHost());
-        args.add("--toxiproxy-port=" + applicationProperties.getToxiproxyProperties().getPort());
+        args.add("--toxiproxy-host=" + applicationProperties.getToxiproxy().getHost());
+        args.add("--toxiproxy-port=" + applicationProperties.getToxiproxy().getPort());
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
 
     @Override
-    public String genHAProxyCfg(ClusterProperties clusterProperties, Integer nodeId) {
+    public String genHAProxyCfg(Cluster cluster, Integer nodeId) {
         try {
             Path templateFile = applicationProperties.getDirectories().getBaseDirPath()
                     .resolve("config")
-                    .resolve(clusterProperties.isSecure()
+                    .resolve(cluster.isSecure()
                             ? "haproxy-secure-template.cfg"
                             : "haproxy-insecure-template.cfg");
 
@@ -332,12 +326,12 @@ public class LocalClusterOperator implements ClusterOperator {
                             .replacePlaceholders(Files.readString(templateFile),
                                     placeholderName -> switch (placeholderName.toLowerCase()) {
                                         case "bind-rpc" -> {
-                                            yield "    bind :".formatted(clusterProperties.getClusterId());
+                                            yield "    bind :".formatted(cluster.getClusterId());
                                         }
                                         case "servers-rpc" -> {
                                             List<String> servers = new ArrayList<>();
 
-                                            clusterProperties.getNodes().forEach(np -> {
+                                            cluster.getNodes().forEach(np -> {
                                                 servers.add("    server cockroach%d %s check port %s\n"
                                                         .formatted(np.getId(),
                                                                 np.getRpcAddr(),
@@ -348,12 +342,12 @@ public class LocalClusterOperator implements ClusterOperator {
                                             yield String.join("", servers);
                                         }
                                         case "bind-http" -> {
-                                            yield "    bind :".formatted(clusterProperties.getClusterId());
+                                            yield "    bind :".formatted(cluster.getClusterId());
                                         }
                                         case "servers-http" -> {
                                             List<String> servers = new ArrayList<>();
 
-                                            clusterProperties.getNodes().forEach(np -> {
+                                            cluster.getNodes().forEach(np -> {
                                                 servers.add("    server cockroach%d %s check port %s\n"
                                                         .formatted(np.getId(),
                                                                 np.getHttpAddr(),
@@ -378,13 +372,13 @@ public class LocalClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String startHAProxy(ClusterProperties clusterProperties, Integer nodeId) {
+    public String startHAProxy(Cluster cluster, Integer nodeId) {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start-haproxy"));
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
 
     @Override
-    public String stopHAProxy(ClusterProperties cluster, Integer nodeId) {
+    public String stopHAProxy(Cluster cluster, Integer nodeId) {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "stop-haproxy"));
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }

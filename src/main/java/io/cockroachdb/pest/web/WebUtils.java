@@ -13,7 +13,7 @@ import org.springframework.web.servlet.LocaleResolver;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.web.security.ClusterAuthenticationDetails;
 
 @Component
@@ -39,12 +39,12 @@ public class WebUtils {
         return messageSource.getMessage(code, args, code, localeResolver.resolveLocale(getRequest()));
     }
 
-    public static Optional<ClusterProperties> getAuthenticatedClusterProperties() {
+    public static Optional<Cluster> getAuthenticatedClusterProperties() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getClass().isAssignableFrom(UsernamePasswordAuthenticationToken.class)) {
             ClusterAuthenticationDetails authenticationDetails = (ClusterAuthenticationDetails) auth.getDetails();
-            ClusterProperties clusterProperties = authenticationDetails.getClusterProperties();
-            return Optional.of(clusterProperties);
+            Cluster cluster = authenticationDetails.getClusterProperties();
+            return Optional.of(cluster);
         }
         return Optional.empty();
     }

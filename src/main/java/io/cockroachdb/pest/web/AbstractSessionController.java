@@ -6,7 +6,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.web.api.ClusterModel;
 
 @SessionAttributes("model")
@@ -15,8 +15,8 @@ public abstract class AbstractSessionController {
 
     @ModelAttribute("model")
     public ClusterModel clusterModel() {
-        ClusterProperties clusterProperties = WebUtils.getAuthenticatedClusterProperties()
+        Cluster cluster = WebUtils.getAuthenticatedClusterProperties()
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Expected authentication token"));
-        return new ClusterModel(clusterProperties);
+        return new ClusterModel(cluster);
     }
 }

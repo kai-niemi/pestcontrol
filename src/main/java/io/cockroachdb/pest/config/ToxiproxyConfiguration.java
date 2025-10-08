@@ -16,7 +16,7 @@ public class ToxiproxyConfiguration {
     @Bean
     public ToxiproxyClient toxiproxyClient() {
         return new ToxiproxyClient(
-                applicationProperties.getToxiproxyProperties().getHost(),
-                applicationProperties.getToxiproxyProperties().getPort());
+                applicationProperties.getToxiproxy().getHost(),
+                applicationProperties.getToxiproxy().getPort());
     }
 }

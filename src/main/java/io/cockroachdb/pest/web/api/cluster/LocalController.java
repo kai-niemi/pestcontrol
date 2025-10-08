@@ -20,7 +20,7 @@ import jakarta.validation.Valid;
 import io.cockroachdb.pest.web.LinkRelations;
 import io.cockroachdb.pest.web.api.MessageModel;
 import io.cockroachdb.pest.cluster.ClusterOperator;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -66,12 +66,12 @@ public class LocalController {
     @PostMapping("/{nodeId}/start")
     public HttpEntity<String> startNode(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid Cluster cluster) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Start cluster '%s' node %d".formatted(clusterProperties.getClusterId(), nodeId));
+        logger.info("Start cluster '%s' node %d".formatted(cluster.getClusterId(), nodeId));
 
-        String responseString = clusterOperator.startNode(clusterProperties, nodeId);
+        String responseString = clusterOperator.startNode(cluster, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -81,12 +81,12 @@ public class LocalController {
     @PostMapping("/{nodeId}/stop")
     public HttpEntity<String> stopNode(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid Cluster cluster) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Stop cluster '%s' node %d".formatted(clusterProperties.getClusterId(), nodeId));
+        logger.info("Stop cluster '%s' node %d".formatted(cluster.getClusterId(), nodeId));
 
-        String responseString = clusterOperator.stopNode(clusterProperties, nodeId);
+        String responseString = clusterOperator.stopNode(cluster, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -96,12 +96,12 @@ public class LocalController {
     @PostMapping("/{nodeId}/status")
     public HttpEntity<String> statusNode(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid Cluster cluster) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Query cluster '%s' node %d status".formatted(clusterProperties.getClusterId(), nodeId));
+        logger.info("Query cluster '%s' node %d status".formatted(cluster.getClusterId(), nodeId));
 
-        String responseString = clusterOperator.statusNode(clusterProperties, nodeId);
+        String responseString = clusterOperator.statusNode(cluster, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -111,12 +111,12 @@ public class LocalController {
     @PostMapping("/{nodeId}/kill")
     public HttpEntity<String> killNode(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid Cluster cluster) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Kill cluster '%s' node %d".formatted(clusterProperties.getClusterId(), nodeId));
+        logger.info("Kill cluster '%s' node %d".formatted(cluster.getClusterId(), nodeId));
 
-        String responseString = clusterOperator.killNode(clusterProperties, nodeId);
+        String responseString = clusterOperator.killNode(cluster, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -126,12 +126,12 @@ public class LocalController {
     @PostMapping("/{nodeId}/init")
     public HttpEntity<String> init(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid Cluster cluster) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Init cluster '%s' via node %d".formatted(clusterProperties.getClusterId(), nodeId));
+        logger.info("Init cluster '%s' via node %d".formatted(cluster.getClusterId(), nodeId));
 
-        String responseString = clusterOperator.init(clusterProperties, nodeId);
+        String responseString = clusterOperator.init(cluster, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -141,13 +141,13 @@ public class LocalController {
     @PostMapping("/{nodeId}/install")
     public HttpEntity<String> install(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid Cluster cluster) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         logger.info("Install cluster '%s' node %d version %s"
-                .formatted(clusterProperties.getClusterId(), nodeId, clusterProperties.getVersion()));
+                .formatted(cluster.getClusterId(), nodeId, cluster.getVersion()));
 
-        String responseString = clusterOperator.install(clusterProperties, nodeId);
+        String responseString = clusterOperator.install(cluster, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -157,13 +157,13 @@ public class LocalController {
     @PostMapping("/{nodeId}/wipe")
     public HttpEntity<String> wipe(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid ClusterProperties clusterProperties) {
+            @RequestBody @Valid Cluster cluster) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         logger.info("Wipe cluster '%s' node %d version %s"
-                .formatted(clusterProperties.getClusterId(), nodeId, clusterProperties.getVersion()));
+                .formatted(cluster.getClusterId(), nodeId, cluster.getVersion()));
 
-        String responseString = clusterOperator.wipe(clusterProperties, nodeId);
+        String responseString = clusterOperator.wipe(cluster, nodeId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

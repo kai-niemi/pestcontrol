@@ -24,8 +24,7 @@ import eu.rekawek.toxiproxy.model.ToxicDirection;
 import eu.rekawek.toxiproxy.model.ToxicType;
 
 import io.cockroachdb.pest.cluster.ResourceNotFoundException;
-import io.cockroachdb.pest.model.ClusterProperties;
-import io.cockroachdb.pest.model.NodeProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
 
@@ -97,15 +96,15 @@ public class ToxiproxyCommands extends AbstractCommand {
     @ShellMethodAvailability("ifToxiproxy")
     @ShellMethod(value = "Create toxiproxy proxy for specified nodes(s)", key = {"create-proxy"})
     public void createProxy(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
-        ClusterProperties clusterProperties = getClusterProperties();
+        Cluster cluster = getClusterProperties();
 
         nodeIdRange(nodes).forEach(nodeId -> {
-            NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+            Cluster.Node node = cluster.getNodeById(nodeId);
 
             try {
-                Proxy proxy = toxiproxyClient.createProxy(nodeProperties.getName(),
-                        Objects.requireNonNull(nodeProperties.getAdvertiseProxyAddr()),
-                        Objects.requireNonNull(nodeProperties.getListenAddr()));
+                Proxy proxy = toxiproxyClient.createProxy(node.getName(),
+                        Objects.requireNonNull(node.getAdvertiseProxyAddr()),
+                        Objects.requireNonNull(node.getListenAddr()));
                 logger.info("Added %s with listen addr %s upstream addr %s"
                         .formatted(proxy.getName(), proxy.getListen(), proxy.getUpstream()));
             } catch (IOException e) {
@@ -117,12 +116,12 @@ public class ToxiproxyCommands extends AbstractCommand {
     @ShellMethodAvailability("ifToxiproxy")
     @ShellMethod(value = "Delete toxiproxy proxy for specified nodes(s)", key = {"delete-proxy"})
     public void deleteProxy(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
-        ClusterProperties clusterProperties = getClusterProperties();
+        Cluster cluster = getClusterProperties();
 
         nodeIdRange(nodes).forEach(nodeId -> {
-            NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+            Cluster.Node node = cluster.getNodeById(nodeId);
 
-            proxyByName(nodeProperties.getName())
+            proxyByName(node.getName())
                     .ifPresent(proxy -> {
                         try {
                             proxy.delete();
@@ -137,12 +136,12 @@ public class ToxiproxyCommands extends AbstractCommand {
     @ShellMethodAvailability("ifToxiproxy")
     @ShellMethod(value = "Enable proxy for specified nodes(s)", key = {"enable-proxy"})
     public void enableProxy(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
-        ClusterProperties clusterProperties = getClusterProperties();
+        Cluster cluster = getClusterProperties();
 
         nodeIdRange(nodes).forEach(nodeId -> {
-            NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(nodeId);
+            Cluster.Node node = cluster.getNodeById(nodeId);
 
-            proxyByName(nodeProperties.getName())
+            proxyByName(node.getName())
                     .ifPresent(proxy -> {
                         try {
                             proxy.enable();
@@ -191,7 +190,7 @@ public class ToxiproxyCommands extends AbstractCommand {
     @ShellMethodAvailability("ifToxiproxy")
     @ShellMethod(value = "Add proxy toxic", key = {"add-toxic"})
     public void addToxic(
-            @ShellOption(help = "Node ID (1-based int)") String node,
+            @ShellOption(help = "Node ID (1-based int)") String nodeId,
             @ShellOption(help = "Toxic type", defaultValue = "LATENCY", valueProvider = EnumValueProvider.class)
             ToxicType toxicType,
             @ShellOption(help = "Toxic name", defaultValue = "latency-toxic") String name,
@@ -213,12 +212,12 @@ public class ToxiproxyCommands extends AbstractCommand {
             @ShellOption(help = "Number of bytes it should transmit before connection is closed (limit_data toxic)", defaultValue = "8192")
             long bytes
     ) {
-        ClusterProperties clusterProperties = getClusterProperties();
-        NodeProperties nodeProperties = clusterProperties.findNodePropertiesById(Integer.parseInt(node));
+        Cluster cluster = getClusterProperties();
+        Cluster.Node node = cluster.getNodeById(Integer.parseInt(nodeId));
 
         try {
-            Proxy proxy = proxyByName(nodeProperties.getName())
-                    .orElseThrow(() -> new ResourceNotFoundException("No such proxy: " + nodeProperties.getName()));
+            Proxy proxy = proxyByName(node.getName())
+                    .orElseThrow(() -> new ResourceNotFoundException("No such proxy: " + node.getName()));
 
             Toxic toxic = switch (toxicType) {
                 case LATENCY -> proxy.toxics().latency(name, direction, latency);

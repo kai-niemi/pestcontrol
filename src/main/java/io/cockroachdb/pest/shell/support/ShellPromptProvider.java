@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.jline.PromptProvider;
 import org.springframework.stereotype.Component;
 
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.shell.ConfigCommands;
 
 @Component
@@ -25,10 +25,10 @@ public class ShellPromptProvider implements PromptProvider {
             sb.append(" $ ", AttributedStyle.DEFAULT
                     .foreground(AttributedStyle.BLUE | AttributedStyle.BRIGHT));
         } else {
-            ClusterProperties clusterProperties = configCommands.getClusterProperties();
+            Cluster cluster = configCommands.getClusterProperties();
             sb.append(" (", AttributedStyle.DEFAULT
                     .foreground(AttributedStyle.BLUE | AttributedStyle.BRIGHT));
-            sb.append(clusterProperties.getClusterId(), AttributedStyle.DEFAULT
+            sb.append(cluster.getClusterId(), AttributedStyle.DEFAULT
                     .backgroundDefault()
                     .foreground(AttributedStyle.WHITE)
                     .faintDefault());

@@ -20,4 +20,13 @@ public abstract class ClusterTypes {
                         ClusterType.hosted_secure)
                 .contains(clusterType);
     }
+
+    public static boolean isSecure(ClusterType clusterType) {
+        return EnumSet.of(
+                        ClusterType.hosted_secure,
+                        ClusterType.cloud_dedicated,
+                        ClusterType.cloud_serverless,
+                        ClusterType.cloud_standard)
+                .contains(clusterType);
+    }
 }

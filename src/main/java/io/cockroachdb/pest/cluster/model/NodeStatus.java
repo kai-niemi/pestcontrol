@@ -17,15 +17,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.cockroachdb.pest.model.NodeProperties;
+import io.cockroachdb.pest.model.Cluster;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeStatus {
-    public static NodeStatus from(NodeProperties nodeProperties) {
+    public static NodeStatus from(Cluster.Node node) {
         NodeStatus nodeStatus = new NodeStatus();
-        nodeStatus.setId(nodeProperties.getId());
-        nodeStatus.setLocality(nodeProperties.getLocality());
-        nodeStatus.setAddress(nodeProperties.getListenAddr());
+        nodeStatus.setId(node.getId());
+        nodeStatus.setLocality(node.getLocality());
+        nodeStatus.setAddress(node.getListenAddr());
         nodeStatus.setIsLive("false");
         nodeStatus.setIsAvailable("false");
         return nodeStatus;

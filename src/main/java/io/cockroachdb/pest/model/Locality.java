@@ -9,16 +9,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.springframework.validation.annotation.Validated;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.cockroachdb.pest.util.PatternUtils;
 import io.cockroachdb.pest.util.TreeNode;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@Validated
 public class Locality implements Comparable<Locality> {
     public static final String REGION = "region";
 
@@ -93,12 +93,10 @@ public class Locality implements Comparable<Locality> {
                 .findFirst();
     }
 
-    @JsonProperty("tiers")
     public List<Tier> getTiers() {
         return tiers;
     }
 
-    @JsonProperty("tiers")
     public void setTiers(List<Tier> tiers) {
         this.tiers = tiers;
     }
@@ -138,5 +136,84 @@ public class Locality implements Comparable<Locality> {
     @Override
     public String toString() {
         return Locality.toString(tiers);
+    }
+
+    public static class Tier {
+        public static Tier of(String k, String v) {
+            return new Tier(k, v);
+        }
+
+        private String key;
+
+        private String value;
+
+        private Integer level;
+
+        @JsonIgnore
+        private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+
+        public Tier() {
+        }
+
+        public Tier(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public Integer getLevel() {
+            return level;
+        }
+
+        public void setLevel(Integer level) {
+            this.level = level;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        @JsonAnyGetter
+        public Map<String, Object> getAdditionalProperties() {
+            return this.additionalProperties;
+        }
+
+        @JsonAnySetter
+        public void setAdditionalProperty(String name, Object value) {
+            this.additionalProperties.put(name, value);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            Tier tier = (Tier) o;
+            return Objects.equals(key, tier.key) && Objects.equals(value, tier.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(key, value);
+        }
+
+        @Override
+        public String toString() {
+            return key + "=" + value;
+        }
     }
 }

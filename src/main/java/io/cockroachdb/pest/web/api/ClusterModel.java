@@ -10,24 +10,23 @@ import java.util.Set;
 import org.springframework.hateoas.Link;
 
 import io.cockroachdb.pest.cluster.model.NodeStatus;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.Locality;
 import io.cockroachdb.pest.cluster.model.NodeModel;
-import io.cockroachdb.pest.model.Tier;
 
 public class ClusterModel {
-    private final ClusterProperties clusterProperties;
+    private final Cluster cluster;
 
     private boolean available;
 
     private Collection<NodeModel> nodeModels = List.of();
 
-    public ClusterModel(ClusterProperties clusterProperties) {
-        this.clusterProperties = clusterProperties;
+    public ClusterModel(Cluster cluster) {
+        this.cluster = cluster;
     }
 
     public String getClusterId() {
-        return clusterProperties.getClusterId();
+        return cluster.getClusterId();
     }
 
     public void setNodeModels(Collection<NodeModel> nodeModels) {
@@ -47,7 +46,7 @@ public class ClusterModel {
     }
 
     public Link getAdminLink() {
-        return Link.of(clusterProperties.getAdminUrl());
+        return Link.of(cluster.getAdminUrl());
     }
 
     /**
@@ -83,7 +82,7 @@ public class ClusterModel {
      * @param tiers the locality tiers
      * @return list of matching nodes, sorted by node ID in ascending order
      */
-    public List<NodeModel> getNodes(List<Tier> tiers) {
+    public List<NodeModel> getNodes(List<Locality.Tier> tiers) {
         return nodeModels.stream()
                 .filter(node -> node.getNodeDetail().getLocality().matches(tiers))
                 .sorted(Comparator.comparing(NodeModel::getNodeId))

@@ -12,7 +12,7 @@ import io.cockroachdb.pest.web.LinkRelations;
 import io.cockroachdb.pest.web.api.MessageModel;
 import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterTypes;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -50,10 +50,10 @@ public class ClusterController {
     }
 
     @GetMapping("/{clusterId}")
-    public ResponseEntity<EntityModel<ClusterProperties>> getCluster(@PathVariable("clusterId") String clusterId) {
-        ClusterProperties clusterProperties = applicationProperties.getClusterPropertiesById(clusterId);
+    public ResponseEntity<EntityModel<Cluster>> getCluster(@PathVariable("clusterId") String clusterId) {
+        Cluster cluster = applicationProperties.getClusterById(clusterId);
 
-        EntityModel<ClusterProperties> model = EntityModel.of(clusterProperties);
+        EntityModel<Cluster> model = EntityModel.of(cluster);
         model.add(linkTo(methodOn(getClass())
                 .getCluster(clusterId))
                 .withSelfRel());
@@ -67,11 +67,11 @@ public class ClusterController {
                 .index(clusterId))
                 .withRel(LinkRelations.WORKLOADS_REL));
 
-        if (ClusterTypes.isHosted(clusterProperties.getClusterType())) {
+        if (ClusterTypes.isHosted(cluster.getClusterType())) {
             model.add(linkTo(methodOn(LocalController.class)
                     .index())
                     .withRel(LinkRelations.OPERATOR_REL));
-        } else if (ClusterTypes.isCloud(clusterProperties.getClusterType())) {
+        } else if (ClusterTypes.isCloud(cluster.getClusterType())) {
             model.add(linkTo(methodOn(CloudController.class)
                     .index(clusterId))
                     .withRel(LinkRelations.OPERATOR_REL));

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import io.cockroachdb.pest.AbstractIntegrationTest;
 import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.cluster.model.NodeDetail;
 import io.cockroachdb.pest.cluster.model.NodeStatus;
@@ -27,12 +27,12 @@ public class ClusterManagerTest extends AbstractIntegrationTest {
     private Optional<String> sessionToken = Optional.empty();
 
     private void assertSessionToken() {
-        ClusterProperties clusterProperties = applicationProperties.getClusterPropertiesById(getTagValue());
+        Cluster cluster = applicationProperties.getClusterById(getTagValue());
 
         String token = this.sessionToken.orElseGet(() -> clusterManager
-                .login(clusterProperties.getClusterId(),
-                        clusterProperties.getDataSourceProperties().getUsername(),
-                        clusterProperties.getDataSourceProperties().getPassword()
+                .login(cluster.getClusterId(),
+                        cluster.getDataSourceProperties().getUsername(),
+                        cluster.getDataSourceProperties().getPassword()
                 )
         );
 

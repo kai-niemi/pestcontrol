@@ -4,14 +4,14 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 
 public class ClusterAuthenticationDetails extends WebAuthenticationDetails {
     private final String clusterId;
 
     private final Boolean useFileCredentials;
 
-    private ClusterProperties clusterProperties;
+    private Cluster cluster;
 
     public ClusterAuthenticationDetails(HttpServletRequest request) {
         super(request);
@@ -28,11 +28,11 @@ public class ClusterAuthenticationDetails extends WebAuthenticationDetails {
         return useFileCredentials;
     }
 
-    public ClusterProperties getClusterProperties() {
-        return clusterProperties;
+    public Cluster getClusterProperties() {
+        return cluster;
     }
 
-    public void setClusterProperties(ClusterProperties clusterProperties) {
-        this.clusterProperties = clusterProperties;
+    public void setClusterProperties(Cluster cluster) {
+        this.cluster = cluster;
     }
 }

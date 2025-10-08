@@ -15,7 +15,7 @@ import org.springframework.util.Assert;
 import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.util.PatternUtils;
 
 @ShellComponent
@@ -28,7 +28,7 @@ public abstract class AbstractCommand {
     @Autowired
     protected ApplicationProperties applicationProperties;
 
-    protected static ClusterProperties CLUSTER_PROPERTIES;
+    protected static Cluster CLUSTER_PROPERTIES;
 
     public Availability ifClusterSelected() {
         return Objects.isNull(CLUSTER_PROPERTIES)
@@ -36,7 +36,7 @@ public abstract class AbstractCommand {
                 : Availability.available();
     }
 
-    public ClusterProperties getClusterProperties() {
+    public Cluster getClusterProperties() {
         if (Objects.isNull(CLUSTER_PROPERTIES)) {
             throw new IllegalStateException("Cluster ID not specified");
         }
@@ -44,23 +44,23 @@ public abstract class AbstractCommand {
     }
 
     public ClusterOperator getClusterOperator() {
-        ClusterProperties clusterProperties = getClusterProperties();
-        return clusterManager.getClusterOperator(clusterProperties.getClusterId());
+        Cluster cluster = getClusterProperties();
+        return clusterManager.getClusterOperator(cluster.getClusterId());
     }
 
     protected Integer nodeId(String node) {
-        ClusterProperties clusterProperties = getClusterProperties();
+        Cluster cluster = getClusterProperties();
         int id = Integer.parseInt(node);
         Assert.state(id > 0, "Node id must be > 0");
-        Assert.state(id <= clusterProperties.getNodes().size(),
-                "Node id must be <= " + clusterProperties.getNodes().size());
+        Assert.state(id <= cluster.getNodes().size(),
+                "Node id must be <= " + cluster.getNodes().size());
         return id;
     }
 
     protected List<Integer> nodeIdRange(String nodes) {
         if (nodes.toLowerCase().startsWith("all")) {
-            ClusterProperties clusterProperties = getClusterProperties();
-            return IntStream.rangeClosed(1, clusterProperties.getNodes().size())
+            Cluster cluster = getClusterProperties();
+            return IntStream.rangeClosed(1, cluster.getNodes().size())
                     .boxed().collect(Collectors.toList());
         }
         return PatternUtils.parseIntRange(nodes);

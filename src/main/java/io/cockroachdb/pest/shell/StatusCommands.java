@@ -13,7 +13,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.web.client.ResourceAccessException;
 
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.shell.client.HypermediaClient;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
@@ -56,11 +56,11 @@ public class StatusCommands extends AbstractCommand {
     public void printAgents() {
         List<List<?>> tuples = new ArrayList<>();
 
-        ClusterProperties clusterProperties = getClusterProperties();
+        Cluster cluster = getClusterProperties();
 
-        clusterProperties.getNodes().forEach(nodeProperties -> {
+        cluster.getNodes().forEach(node -> {
             try {
-                Map<String, Object> build = hypermediaClient.from(nodeProperties
+                Map<String, Object> build = hypermediaClient.from(node
                                 .getServiceLink())
                         .follow(curied(CURIE_NAMESPACE, ACTUATORS_REL).value())
                         .follow(HalLinkRelation.uncuried("info").value())
@@ -70,14 +70,14 @@ public class StatusCommands extends AbstractCommand {
                 Object version = build.getOrDefault("version", "n/a");
 
                 tuples.add(List.of(
-                        nodeProperties.getId(),
-                        nodeProperties.getName(),
-                        nodeProperties.getServiceLink().getHref(),
+                        node.getId(),
+                        node.getName(),
+                        node.getServiceLink().getHref(),
                         name,
                         version
                 ));
             } catch (ResourceAccessException e) {
-                tuples.add(List.of(nodeProperties.getServiceLink().getHref(), "??", "??", e.getMessage()));
+                tuples.add(List.of(node.getServiceLink().getHref(), "??", "??", e.getMessage()));
             }
         });
 

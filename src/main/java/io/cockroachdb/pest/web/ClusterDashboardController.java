@@ -22,7 +22,7 @@ import io.cockroachdb.pest.web.api.MessageModel;
 import io.cockroachdb.pest.web.api.MessageType;
 import io.cockroachdb.pest.web.api.cluster.NodeController;
 import io.cockroachdb.pest.cluster.model.NodeModel;
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.web.api.ClusterModel;
 import io.cockroachdb.pest.web.simp.SimpMessagePublisher;
 import io.cockroachdb.pest.web.simp.TopicName;
@@ -42,12 +42,12 @@ public class ClusterDashboardController extends AbstractSessionController {
     }
 
     private Optional<Collection<NodeModel>> newClusterNodes() {
-        ClusterProperties clusterProperties = WebUtils.getAuthenticatedClusterProperties().orElseThrow(() ->
+        Cluster cluster = WebUtils.getAuthenticatedClusterProperties().orElseThrow(() ->
                 new AuthenticationCredentialsNotFoundException("Expected authentication token"));
 
         try {
             CollectionModel<NodeModel> statusModel = nodeController
-                    .index(clusterProperties.getClusterId())
+                    .index(cluster.getClusterId())
                     .getBody();
             return Optional.ofNullable(statusModel.getContent());
         } catch (Exception e) {

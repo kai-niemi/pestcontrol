@@ -40,8 +40,8 @@ public class AsyncConfiguration implements AsyncConfigurer {
         // Pool threads are also reclaimed when they are idle for 10 seconds.
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(applicationProperties.getPoolProperties().getThreadPoolMaxSize() <= 0
-                ? Runtime.getRuntime().availableProcessors() : applicationProperties.getPoolProperties().getThreadPoolMaxSize());
+        executor.setMaxPoolSize(applicationProperties.getPool().getThreadPoolMaxSize() <= 0
+                ? Runtime.getRuntime().availableProcessors() : applicationProperties.getPool().getThreadPoolMaxSize());
         executor.setQueueCapacity(32);
         executor.setKeepAliveSeconds(10);
         executor.setThreadNamePrefix("async-");

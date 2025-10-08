@@ -4,45 +4,45 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-import io.cockroachdb.pest.model.ClusterProperties;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterType;
 
 public interface ClusterOperator {
     boolean supports(ClusterType clusterType);
 
-    String certs(ClusterProperties clusterProperties, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles);
+    String certs(Cluster cluster, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles);
 
-    String install(ClusterProperties cluster, Integer nodeId);
+    String install(Cluster cluster, Integer nodeId);
 
-    String init(ClusterProperties cluster, Integer nodeId);
+    String init(Cluster cluster, Integer nodeId);
 
-    String wipe(ClusterProperties cluster, Integer nodeId);
+    String wipe(Cluster cluster, Integer nodeId);
 
-    String startNode(ClusterProperties cluster, Integer nodeId);
+    String startNode(Cluster cluster, Integer nodeId);
 
-    String stopNode(ClusterProperties cluster, Integer nodeId);
+    String stopNode(Cluster cluster, Integer nodeId);
 
-    String killNode(ClusterProperties cluster, Integer nodeId);
+    String killNode(Cluster cluster, Integer nodeId);
 
-    String sqlNode(ClusterProperties cluster, Integer nodeId);
+    String sqlNode(Cluster cluster, Integer nodeId);
 
-    String statusNode(ClusterProperties cluster, Integer nodeId);
+    String statusNode(Cluster cluster, Integer nodeId);
 
-    String disruptNode(ClusterProperties cluster, Integer nodeId);
+    String disruptNode(Cluster cluster, Integer nodeId);
 
-    String recoverNode(ClusterProperties cluster, Integer nodeId);
+    String recoverNode(Cluster cluster, Integer nodeId);
 
-    String disruptLocality(ClusterProperties cluster, String locality);
+    String disruptLocality(Cluster cluster, String locality);
 
-    String recoverLocality(ClusterProperties cluster, String locality);
+    String recoverLocality(Cluster cluster, String locality);
 
     String startToxiproxyServer();
 
     String stopToxiproxyServer();
 
-    String genHAProxyCfg(ClusterProperties cluster, Integer nodeId);
+    String genHAProxyCfg(Cluster cluster, Integer nodeId);
 
-    String startHAProxy(ClusterProperties cluster, Integer nodeId);
+    String startHAProxy(Cluster cluster, Integer nodeId);
 
-    String stopHAProxy(ClusterProperties cluster, Integer nodeId);
+    String stopHAProxy(Cluster cluster, Integer nodeId);
 }
