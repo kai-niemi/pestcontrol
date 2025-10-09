@@ -28,7 +28,7 @@ application:
     - cluster-id: "test-secure"
       cluster-name: "Test (secure)"
       cluster-type: hosted_secure
-      admin-url: "http://localhost:8080"
+      admin-url: "https://localhost:8080"
       data-source-properties:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"

@@ -8,10 +8,8 @@ import org.springframework.context.annotation.Profile;
 import org.thymeleaf.templateresolver.FileTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
-import io.cockroachdb.pest.ApplicationProfiles;
-
 @Configuration
-@Profile(value = {ApplicationProfiles.DEV})
+@Profile(value = {"dev"})
 public class ThymeleafConfiguration {
     @Autowired
     private ThymeleafProperties properties;

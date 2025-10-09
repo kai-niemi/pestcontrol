@@ -92,15 +92,10 @@ public class DefaultClusterManager implements ClusterManager {
                 .retrieve()
                 .toEntity(String.class);
 
-        String token;
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            token = JsonPath.parse(responseEntity.getBody()).read("$.session", String.class);
-            sessionTokens.put(clusterId, token);
-            logger.debug("Login successful: " + token);
-        } else {
-            token = null;
-            logger.warn("Login failed: " + responseEntity.getStatusCode());
-        }
+        String token = JsonPath.parse(responseEntity.getBody()).read("$.session", String.class);
+        logger.info("Login token: " + token);
+
+        sessionTokens.put(clusterId, token);
 
         return token;
     }

@@ -20,15 +20,15 @@
         <logger name="io.cockroachdb.pest" level="INFO"/>
     </springProfile>
 
-    <springProfile name="verbose-sql">
+    <springProfile name="verbose_sql">
         <logger name="io.cockroachdb.pest.SQL_TRACE" level="TRACE"/>
     </springProfile>
 
-    <springProfile name="!verbose-sql">
+    <springProfile name="!verbose_sql">
         <logger name="io.cockroachdb.pest.SQL_TRACE" level="INFO"/>
     </springProfile>
 
-    <springProfile name="verbose-http">
+    <springProfile name="verbose_http">
         <logger name="org.springframework.web.client.RestTemplate" level="DEBUG"/>
         <logger name="org.apache.hc.client5.http" level="DEBUG"/>
         <logger name="org.apache.hc.client5.http.wire" level="INFO"/>

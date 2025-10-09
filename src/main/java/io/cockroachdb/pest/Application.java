@@ -42,7 +42,7 @@ public class Application {
             {
                 console.cyan("--cluster [id]            set default cluster id to use in shell commands").nl();
                 console.cyan("--profiles [profile,..]   override spring profiles to activate").nl();
-                console.cyan("--secure | --ssl          enable the 'ssl' profile for secure clusters").nl();
+                console.cyan("--secure | --ssl          enable the 'secure' profile for HTTPS traffuc").nl();
                 console.cyan("--verbose                 enable the 'verbose' profile for extensive logging").nl();
                 console.cyan("--verbose-http            enable the 'verbose-http' profile for HTTP trace logging").nl();
                 console.cyan("--verbose-sql             enable the 'verbose-sql' profile for SQL trace logging").nl();
@@ -68,26 +68,23 @@ public class Application {
                 printHelpAndExit(ansiConsole -> {
                 });
             } else if (arg.equals("--secure") | arg.equals("--ssl")) {
-                profiles.add("ssl");
+                profiles.add(ApplicationProfiles.secure.name());
             } else if (arg.equals("--verbose")) {
-                profiles.add("verbose");
+                profiles.add(ApplicationProfiles.verbose.name());
             } else if (arg.equals("--verbose-http")) {
-                profiles.add("verbose-http");
+                profiles.add(ApplicationProfiles.verbose_http.name());
             } else if (arg.equals("--verbose-sql")) {
-                profiles.add("verbose-sql");
+                profiles.add(ApplicationProfiles.verbose_ssl.name());
             } else if (arg.equals("--profiles")) {
                 if (argsList.isEmpty()) {
-                    printHelpAndExit(ansiConsole -> {
-                        ansiConsole.red("Expected list of profile names");
-                    });
+                    printHelpAndExit(ansiConsole -> ansiConsole.red("Expected list of profile names"));
                 }
                 profiles.clear();
-                profiles.addAll(StringUtils.commaDelimitedListToSet(argsList.pop()));
+                StringUtils.commaDelimitedListToSet(argsList.pop())
+                        .forEach(p -> profiles.add(ApplicationProfiles.valueOf(p).name()));
             } else if (arg.equals("--cluster")) {
                 if (argsList.isEmpty()) {
-                    printHelpAndExit(ansiConsole -> {
-                        ansiConsole.red("Expected cluster ID");
-                    });
+                    printHelpAndExit(ansiConsole -> ansiConsole.red("Expected cluster ID"));
                 }
                 System.setProperty("application.defaultClusterId", argsList.pop());
             } else {
