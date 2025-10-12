@@ -5,7 +5,6 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadMXBean;
-import java.time.Duration;
 import java.util.Arrays;
 
 import org.slf4j.Logger;
@@ -13,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.format.annotation.DurationFormat;
-import org.springframework.format.datetime.standard.DurationFormatterUtils;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -37,13 +34,6 @@ public class AdminCommands implements Quit.Command {
         logger.info("Quitting");
         SpringApplication.exit(applicationContext, () -> 0);
         System.exit(0);
-    }
-
-    @ShellMethod(value = "Print application uptime")
-    public void uptime() {
-        long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
-        logger.info("%s".formatted(DurationFormatterUtils.print(
-                Duration.ofMillis(uptime), DurationFormat.Style.SIMPLE)));
     }
 
     @ShellMethod(value = "Toggle SQL trace logging (verbose)", key = {"sql-trace", "t"})

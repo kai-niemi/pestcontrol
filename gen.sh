@@ -8,7 +8,7 @@ eu-central-1"
 zones="\
 eu-central-1a,\
 eu-central-1b,\
-eu-central-1"
+eu-central-1c"
 
 ip_internal="\
 10.6.6.12,\

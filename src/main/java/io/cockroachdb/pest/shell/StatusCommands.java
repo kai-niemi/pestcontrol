@@ -52,7 +52,7 @@ public class StatusCommands extends AbstractCommand {
     }
 
     @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Print cluster agents", key = {"agents", "a"})
+    @ShellMethod(value = "Print pest control agents", key = {"agents", "a"})
     public void printAgents() {
         List<List<?>> tuples = new ArrayList<>();
 

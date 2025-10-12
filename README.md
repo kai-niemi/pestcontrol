@@ -21,39 +21,35 @@
   * [DataSource Properties](#datasource-properties)
 * [Running](#running)
 * [Tutorials](#tutorials)
-  * [Insecure 3-node self-hosted cluster (default)](#insecure-3-node-self-hosted-cluster-default)
-  * [Secure 3-node self-hosted cluster](#secure-3-node-self-hosted-cluster-)
+  * [Local 3-node self-hosted cluster (insecure)](#local-3-node-self-hosted-cluster-insecure)
+  * [Local 3-node self-hosted cluster (secure)](#local-3-node-self-hosted-cluster-secure)
+  * [Remote 3-node self-hosted cluster (insecure)](#remote-3-node-self-hosted-cluster-insecure)
   * [Remarks](#remarks)
-* [Appendix: Configuration Files](#appendix-configuration-files)
 <!-- TOC -->
 
 # About
 
 <img  align="left" src=".github/logo.png" alt="" width="64"/> 
 
-[Pest Control](https://github.com/kai-niemi/pestcontrol) is a sandbox tool for managing and chaos testing 
-CockroachDB clusters. It provides both a graphical and command-line 
-interface for controlling and visualizing CockroachDB node failure
-and recovery and it's impact on application workloads. It supports 
-CockroachDB Cloud and local or remote self-hosted clusters.
+[Pest Control](https://github.com/kai-niemi/pestcontrol) is a tool for managing 
+and chaos testing CockroachDB clusters. It provides a command-line interface for 
+controlling cluster deployments and a web interface for visualizing CockroachDB 
+node failure and recovery modes including impact on synthetic application workloads. 
+It supports CockroachDB Cloud and local or remote self-hosted clusters.
 
 ## Main features
 
-The main features include:
-
-- Visualize cluster topologies and node health.
+- Simple self-hosted cluster deployments with haproxy load balancer.
+- Visualize cluster topology and node health.
 - Run synthetic client workloads and visualize impact during steady state and adverse events.
-- CockroachDB Cloud:
-  - Disruption API controls for chaos testing.
-- Self-hosted:
-  - Install and bootstrap self-hosted clusters locally or in a network environment. 
-  - Integrate with [Toxiproxy](https://github.com/Shopify/toxiproxy) for network level chaos testing.
+- Disruption API controls for chaos testing (cloud only).
+- [Toxiproxy](https://github.com/Shopify/toxiproxy) integration for network level chaos testing (self-hosted only).
 
-Dashboard showing cluster layout and node status:
+The main dashboard showing cluster layout and node health:
 
 ![ui1](.github/ui-1.png)
 
-Workload page with some activity:
+The synthetic workload page with some activity:
 
 ![ui2](.github/ui-2.png)
 
@@ -65,14 +61,14 @@ This tool supports the following platforms and versions:
   - Requires a feature flag enabled for the organization (submit a support request) 
 - CockroachDB Local Self-Hosted v22.2+
   - Secure or insecure mode
-  - No license key needed
 - MacOS (main platform)
 - Linux
 
 ## How it works
 
-Pest Control provides a single spring boot web and shell app used
-to launch local shell scripts and invoke API calls on Cockroach cluster.
+Pest Control is a single spring boot app that use local shell scripts to install 
+and control CockroachDB nodes. In a network environment, it uses itself as an
+agent to invoke local commands on behalf of a controlling instance.
 
 # Terms of Use
 
@@ -83,7 +79,7 @@ See [MIT](LICENSE.txt) for terms and conditions.
 
 # Prerequisites
 
-Things you need to run Pest Control locally.
+Things you need to run Pest Control.
 
 - Java 21+ JDK
   - https://openjdk.org/projects/jdk/21/
@@ -91,10 +87,13 @@ Things you need to run Pest Control locally.
 - Toxiproxy (optional)
   - https://github.com/Shopify/toxiproxy
 - Depending on cluster configuration, you can either use:
-  - A CockroachDB cloud cluster.
+  - An existing CockroachDB cloud cluster.
   - A local environment with one machine/instance for all nodes.
-  - A network environment with one machine/instance per node. 
+  - A network environment with one machine/instance per node. In this mode, pest control 
+  must be running on each node acting as an agent.
     
+Notice that pest control does not interact with any cloud API for cluster provisioning.
+
 ## Install the JDK
 
 MacOS (using sdkman):
@@ -109,9 +108,9 @@ Ubuntu:
 
 ## Install Toxiproxy (optional)
 
-Toxiproxy is a TCP/IP interceptor chaos testing tool. It can be used by 
-pestcontrol to intercepting CockroachDB inter-node gRPC traffic and apply "toxics"
-like slowing down responses, limiting bandwidth etc.
+Toxiproxy is a TCP/IP interceptor chaos testing tool that can be used with pest control 
+to intercepting CockroachDB inter-node gRPC traffic. It can apply different "toxics" like 
+slowing down responses, limiting bandwidth etc.
 
 See [Installing Toxiproxy](https://github.com/Shopify/toxiproxy?tab=readme-ov-file#1-installing-toxiproxy)
 
@@ -128,100 +127,30 @@ Instructions for building the project locally, as an alternative to using the pa
     chmod +x mvnw
     ./mvnw clean install
 
-# Installing
-
-If you prefer to use a packaged artifact (release or snapshot) rather than building, 
-see [GitHub Packages](https://github.com/orgs/cloudneutral/packages?repo_name=pestcontrol). Scroll to the latest `TAR.GZ` file and copy+paste the download URL
-as described:
-
-    curl -o pestcontrol.tar.gz <paste-url-here>
-    tar xvf pestcontrol.tar.gz && cd pestcontrol
-
 # Configuration
 
-Pest Control is configured through [config/application-default.yml](config/application-default.yml) file. You can either 
-edit that file directly or create a new one with a custom name suffix and then pass that name 
-in the `--profiles` argument. 
+Pest Control is configured through YAML profile files like [config/application-default.yml](config/application-default.yml). 
+You can either edit the default profile directly, or create a new one with a custom name suffix 
+and then pass that name in the `--profiles` argument. 
 
 Example:
 
     cp config/application.yml config/application-craig.yml
     java -jar pestcontrol.jar --profiles craig
 
-## Application
-
-Top-level entry in `application<-profile>.yml`.
-
-```yaml
-    application:
-      clusters:
-        ...
- ```
-
-| Field Name  | Optional | Default | Description                         |
-|-------------|----------|---------|-------------------------------------|
-| clusters    | No       | -       | Collection of CockroachDB clusters. |
-
-## Clusters
-
-Collection of cluster definitions.
-
-```yaml
-    application:
-      clusters:
-        - cluster-id: "38e2ce4f-e9b6-43ae-a9ed-64d673e443cb"
-          cluster-type: cloud_dedicated
-          api-key: "..."
-          admin-url: "https://admin-odin-qzx.cockroachlabs.cloud:8080"
-          data-source-properties:
-            ...
-```
-
-| Field Name             | Optional | Default         | Description                                                                                                                                    |
-|------------------------|----------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| cluster-id             | No       | -               | Either a CockroachDB Cloud cluster ID or a unique string for a local cluster                                                                   |
-| cluster-type           | Yes      | hosted_insecure | `cloud_serverless,cloud_standard,cloud_dedicated,hosted_insecure,hosted_secure`                                  |
-| api-key                | Yes      | -               | Only required for `cloud_dedicated`, see [Create API Keys](https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys). |
-| admin-url              | No       | -               | Base URL for the Cluster API which is typically the regional/local cluster load balancer endpoint.                                             |
-| data-source-properties | No       | -               | Data source connection parameters.                                                                                                             |
-
-## DataSource Properties
-
-The JDBC datasource configuration for querying node status and running workloads.
-
-```yaml
-    application:
-      clusters:
-          data-source-properties:
-            url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
-            username: "craig"
-            password: "cockroach"
-```
-
-| Field Name | Optional | Default   | Description                                |
-|------------|----------|-----------|--------------------------------------------|
-| url        | No       | -         | The JDBC connection URL.                   |
-| username   | No       | craig     | The SQL user with ADMIN role.              |
-| password   | Yes      | cockroach | The SQL user password for secure clusters. |
+The active profile(s) will be listed in the startup banner.
 
 # Running
 
-Start the app in the background:
-    
+Start the app in the foreground:
+
+    ./pop run <args>
+
+(Alt) Start the app in the background:
+
     ./pop start-service
 
-Now you can access the application via http://localhost:9090 and login to the cluster of choice.
-
-**Alternative**
-
-Start the app in the foreground:
-    
-    ./pop run-service <args>
-
-Equivalent to:
-
-    ln -sf target/pestcontrol.jar pestcontrol.jar
-    java -jar pestcontrol.jar <args>
+Now you can access the application via http://localhost:9090.
 
 # Tutorials
 
@@ -229,48 +158,56 @@ Equivalent to:
 
 Start the interactive shell with:
 
-    ./pop run-service
+    ./pop run
 
-This will download and install the CockroachDB binaries, start a 3-node cluster and initialize it.
+The commands will download and install the CockroachDB binaries, start a local insecure 
+3-node cluster with haproxy and initialize the cluster.
 
-     install 1-3
+     install
      start 1-3
-     init 1
+     init 
+     gen-haproxy
+     start-haproxy
 
 ## Local 3-node self-hosted cluster (secure)
 
 Start the interactive shell with:
 
-    ./pop run-service
+    ./pop run
 
-This will download and install the CockroachDB binaries, start a 3-node cluster and initialize it.
+The commands will download and install the CockroachDB binaries, start a local secure 
+3-node cluster with haproxy and initialize the cluster.
 
-     use-cluster --clusterId local-secure
-     install 1-3
-     certs 1
+     use --clusterId local-secure
+     install
+     certs
      start 1-3
-     init 1
-     quit
+     init
+     gen-haproxy
+     start-haproxy
 
-Restart the interactive shell in secure mode:
-
-    ./pop --secure run-service
-
-The secure mode will use self-signed CA certificates and keys in `.certs` including 
-the PKCS12 truststore used by the web app.
+The secure mode will use self-signed CA certificates and keys in `.certs` including
+the PKCS12 truststore used by the web app. To login to the cluster, you need to restart 
+the interactive shell for it to pick up the self-signed certificate.
 
 ## Remote 3-node self-hosted cluster (insecure)
 
-To manage a cluster on dedicated machines, you first need to deploy and run pestcontrol on each host. 
-These instances will then act as gateways to run local bash scripts to start, stop, kill nodes, etc. 
-One instance will act as the control plane and sends HTTP requests to the other instances when running shell commands.
+To deploy and manage a cluster on dedicated machines, you first need to deploy and run 
+pestcontrol agents on each host. These agents will act as gateways to run local bash scripts 
+to start, stop, kill nodes and so on. Your local instance will act as the control plane and 
+send HTTP requests to the other instances when running shell commands like `start`.
 
-Assuming you have 3 pestcontrol instances on 3 separate machines and a cluster configuration
-named `remote-insecure` with the IP/host names setup accordingly.
+A quick method is to scp the tar.gz assembly to each host:
+
+    scp target/pestcontrol.tar.gz user@host:/~
+    ssh -t user@host 'tar xvf pestcontrol.tar.gz && cd pestcontrol && ./pop start-service'
+
+Now, assuming you have 3 pest control instances running on 3 separate machines and a 
+cluster configuration named `remote-insecure` with the IP/host names setup accordingly.
 
 On the control host, start the interactive shell with:
 
-    ./pop run-service
+    ./pop run
 
 This will download and install the CockroachDB binaries, start a 3-node cluster and initialize it.
 
@@ -278,7 +215,6 @@ This will download and install the CockroachDB binaries, start a 3-node cluster 
      install 1-3
      start 1-3
      init 1
-     quit
 
 ## Remarks
 

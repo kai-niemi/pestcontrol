@@ -16,7 +16,7 @@ import io.cockroachdb.pest.model.Cluster;
 public class NodeCommands extends AbstractCommand {
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Create and distribute node certificates and key pairs", key = {"certs", "c"})
-    public void createCerts(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
+    public void createCerts(@ShellOption(help = "Node IDs range or 'all'", defaultValue = "1") String nodes) {
         Cluster cluster = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(cluster.getClusterId());
         clusterOperator.certs(cluster, nodeIdRange(nodes), new HashMap<>());
@@ -24,7 +24,7 @@ public class NodeCommands extends AbstractCommand {
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'install' command on specified node(s)", key = {"install", "l"})
-    public void installNode(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
+    public void installNode(@ShellOption(help = "Node IDs range or 'all'", defaultValue = "1") String nodes) {
         Cluster cluster = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(cluster.getClusterId());
         nodeIdRange(nodes).forEach(id -> clusterOperator.install(cluster, id));
@@ -32,7 +32,7 @@ public class NodeCommands extends AbstractCommand {
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'init' command on specified node", key = {"init", "i"})
-    public void initNode(@ShellOption(help = "Node ID (1-based)") String node) {
+    public void initNode(@ShellOption(help = "Node ID (1-based)", defaultValue = "1") String node) {
         Cluster cluster = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(cluster.getClusterId());
         clusterOperator.init(cluster, nodeId(node));
@@ -40,7 +40,7 @@ public class NodeCommands extends AbstractCommand {
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Run 'wipe' command on specified node(s)", key = {"wipe", "w"})
-    public void wipeNode(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
+    public void wipeNode(@ShellOption(help = "Node IDs range or 'all'", defaultValue = "1") String nodes) {
         Cluster cluster = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(cluster.getClusterId());
         nodeIdRange(nodes).forEach(id -> clusterOperator.wipe(cluster, id));
@@ -88,7 +88,7 @@ public class NodeCommands extends AbstractCommand {
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Generate haproxy.cfg on specified hosts", key = {"gen-haproxy", "gha"})
-    public void genHAProxy(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
+    public void genHAProxy(@ShellOption(help = "Node IDs range or 'all'", defaultValue = "1") String nodes) {
         Cluster cluster = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(cluster.getClusterId());
         nodeIdRange(nodes).forEach(id -> clusterOperator.genHAProxyCfg(cluster, id));
@@ -96,7 +96,7 @@ public class NodeCommands extends AbstractCommand {
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Start haproxy load balancer on specified hosts", key = {"start-haproxy", "sha"})
-    public void startHaProxy(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
+    public void startHaProxy(@ShellOption(help = "Node IDs range or 'all'", defaultValue = "1") String nodes) {
         Cluster cluster = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(cluster.getClusterId());
         nodeIdRange(nodes).forEach(id -> clusterOperator.startHAProxy(cluster, id));
@@ -104,21 +104,9 @@ public class NodeCommands extends AbstractCommand {
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Stop haproxy load balancer on specified hosts", key = {"stop-haproxy", "pha"})
-    public void stopHAProxy(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
+    public void stopHAProxy(@ShellOption(help = "Node IDs range or 'all'", defaultValue = "1") String nodes) {
         Cluster cluster = getClusterProperties();
         ClusterOperator clusterOperator = clusterManager.getClusterOperator(cluster.getClusterId());
         nodeIdRange(nodes).forEach(id -> clusterOperator.stopHAProxy(cluster, id));
-    }
-
-    @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Start toxiproxy server on local host", key = {"start-toxiproxy", "sto"})
-    public void startToxiproxyServer() {
-        getClusterOperator().startToxiproxyServer();
-    }
-
-    @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Stop toxiproxy server on local host", key = {"stop-toxiproxy", "pto"})
-    public void stopToxiproxyServer() {
-        getClusterOperator().stopToxiproxyServer();
     }
 }

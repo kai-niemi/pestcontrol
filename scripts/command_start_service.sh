@@ -16,8 +16,8 @@ if [ ! -x ${pid} ]; then
    exit 1
 fi
 
-nohup java -jar ${APP_JARFILE} ${app_params} $* > pestcontrol-stdout.log 2>&1 &
+mkdir -p ${logdir}
 
-fn_print_ok "Started service - check 'pestcontrol-stdout.log' for status"
+nohup java -jar ${APP_JARFILE} ${app_params} $* > ${logdir}/pestcontrol-stdout.log 2>&1 &
 
-exit 0
+fn_print_ok "Started service - check '${logdir}/pestcontrol-stdout.log' for status"

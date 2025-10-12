@@ -41,8 +41,8 @@ if [ ! -x ${pid} ]; then
    exit 0
 fi
 
-fn_fail_check nohup toxiproxy-server -host ${toxiproxy_host} -port ${toxiproxy_port} > toxiproxy-stdout.log 2>&1 &
+mkdir -p ${logdir}
 
-fn_print_ok "Started toxiproxy-server - check toxiproxy-stdout.log"
+fn_fail_check nohup toxiproxy-server -host ${toxiproxy_host} -port ${toxiproxy_port} > ${logdir}/toxiproxy-stdout.log 2>&1 &
 
-exit 0
+fn_print_ok "Started toxiproxy-server - check ${logdir}/toxiproxy-stdout.log"

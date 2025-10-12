@@ -14,12 +14,16 @@ application:
         http-addr: :8070
         stats-addr: :7070
       baseline:
-        service-addr: localhost:9090
+        service-addr: :9090
         listen-addr: :+25257
         advertise-addr: :+25257
         advertise-proxy-addr: :+35257
         sql-addr: :+26257
         http-addr: :+8080
+#        internal-ips:
+#          - 10.6.6.12
+#          - 10.6.28.206
+#          - 10.6.38.225
       nodes:
         - locality: "region=eu-central-1,zone=eu-central-1a"
         - locality: "region=eu-central-1,zone=eu-central-1b"
@@ -46,6 +50,10 @@ application:
         sql-addr: :+26257
         http-addr: :+8080
         cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
+#        internal-ips:
+#          - 10.6.6.12
+#          - 10.6.28.206
+#          - 10.6.38.225
       nodes:
         - locality: "region=eu-central-1,zone=eu-central-1a"
         - locality: "region=eu-central-1,zone=eu-central-1b"

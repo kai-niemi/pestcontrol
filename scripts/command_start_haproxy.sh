@@ -5,6 +5,7 @@
 commandaction="Start haproxy"
 
 configfile=${datadir}/haproxy.cfg
+pidfile=${datadir}/.haproxy.pid
 
 fn_assert_binaries
 
@@ -14,15 +15,11 @@ else
   fn_print_info "Using '${configfile}' file!"
 fi
 
-if [ -f .haproxy.pid ]; then
-   fn_print_warn ".haproxy.pid found - already running?"
+if [ -f ${pidfile} ]; then
+   fn_print_warn "pid found - already running?"
    exit 1
 fi
 
-fn_fail_check haproxy -D -f ${configfile} -p .haproxy.pid
+fn_fail_check haproxy -D -f ${configfile} -p ${pidfile}
 
-fn_print_ok "Started haproxy (pid: $(<.haproxy.pid))"
-
-open "http://localhost:7070"
-
-exit 0
+fn_print_ok "Started haproxy (pid: $(<${pidfile}))"

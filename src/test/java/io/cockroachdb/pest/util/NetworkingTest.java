@@ -13,14 +13,14 @@ public class NetworkingTest {
     }
 
     @Test
-    public void whenIncrementPort_expectSomething() {
-        Assertions.assertNull(Networking.incrementPort(null, 1));
-        Assertions.assertEquals(":12346", Networking.incrementPort(":+12345", 1));
-        Assertions.assertEquals("1.2.3.4:12346", Networking.incrementPort("1.2.3.4:+12345", 1));
-        Assertions.assertEquals(":12345", Networking.incrementPort(":12345", 1));
-        Assertions.assertEquals("1.2.3.4:12345", Networking.incrementPort("1.2.3.4:12345", 1));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> Networking.incrementPort("12345", 1));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> Networking.incrementPort("1.2.3.4", 1));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> Networking.incrementPort("", 1));
+    public void whenOffsetPort_expectSomething() {
+        Assertions.assertNull(Networking.offsetPort(null, 1));
+        Assertions.assertEquals(":12346", Networking.offsetPort(":+12345", 1));
+        Assertions.assertEquals("1.2.3.4:12346", Networking.offsetPort("1.2.3.4:+12345", 1));
+        Assertions.assertEquals(":12345", Networking.offsetPort(":12345", 1));
+        Assertions.assertEquals("1.2.3.4:12345", Networking.offsetPort("1.2.3.4:12345", 1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Networking.offsetPort("12345", 1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Networking.offsetPort("1.2.3.4", 1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Networking.offsetPort("", 1));
     }
 }

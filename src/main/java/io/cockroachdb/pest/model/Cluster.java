@@ -19,6 +19,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import io.cockroachdb.pest.util.Networking;
+import static io.cockroachdb.pest.util.Networking.buildAddress;
 
 @Validated
 @JsonPropertyOrder({
@@ -53,11 +54,17 @@ public class Cluster {
 
     private String apiKey;
 
-    public void validatePostCreation() {
+    public void postConstruct() {
+        if (!baseline.getInternalIps().isEmpty()) {
+            Assert.state(baseline.getInternalIps().size() == nodes.size(),
+                    "internal-ip count differs from node count");
+        }
+
         this.nodes.forEach(x -> {
-            x.validatePostCreation(baseline);
-            baseline.nextId();
+            x.postConstruct(baseline);
+            baseline.incrementId();
         });
+
         this.adminUrl = Networking.resolve(adminUrl);
     }
 
@@ -174,13 +181,23 @@ public class Cluster {
 
         private final AtomicInteger id = new AtomicInteger();
 
-        public Baseline nextId() {
+        private List<String> internalIps = new ArrayList<>();
+
+        public Baseline incrementId() {
             id.incrementAndGet();
             return this;
         }
 
-        public Integer getCurrentId() {
+        public Integer currentId() {
             return id.get();
+        }
+
+        public List<String> getInternalIps() {
+            return internalIps;
+        }
+
+        public void setInternalIps(List<String> internalIps) {
+            this.internalIps = internalIps;
         }
 
         public List<String> getCertHosts() {
@@ -270,41 +287,48 @@ public class Cluster {
 
         private List<String> certHosts = List.of();
 
-        public void validatePostCreation(Baseline baseline) {
+        public void postConstruct(Baseline baseline) {
             if (certHosts.isEmpty()) {
                 setCertHosts(baseline.getCertHosts());
             }
             if (Objects.isNull(serviceAddr)) {
-                setServiceAddr(Networking.incrementPort(baseline.getServiceAddr(), baseline.getCurrentId()));
+                serviceAddr = buildAddress(baseline.getServiceAddr(),
+                        baseline.currentId(), baseline.getInternalIps());
+                serviceAddr = Networking.assertHostName(serviceAddr);
             }
             if (Objects.isNull(sqlAddr)) {
-                setSqlAddr(Networking.incrementPort(baseline.getSqlAddr(), baseline.getCurrentId()));
+                sqlAddr = buildAddress(baseline.getSqlAddr(),
+                        baseline.currentId(), baseline.getInternalIps());
             }
             if (Objects.isNull(httpAddr)) {
-                setHttpAddr(Networking.incrementPort(baseline.getHttpAddr(), baseline.getCurrentId()));
+                httpAddr = buildAddress(baseline.getHttpAddr(),
+                        baseline.currentId(), baseline.getInternalIps());
             }
             if (Objects.isNull(listenAddr)) {
-                setListenAddr(Networking.incrementPort(baseline.getListenAddr(), baseline.getCurrentId()));
+                listenAddr = buildAddress(baseline.getListenAddr(),
+                        baseline.currentId(), baseline.getInternalIps());
             }
             if (Objects.isNull(advertiseAddr)) {
-                setAdvertiseAddr(Networking.incrementPort(baseline.getAdvertiseAddr(), baseline.getCurrentId()));
+                advertiseAddr = buildAddress(baseline.getAdvertiseAddr(),
+                        baseline.currentId(), baseline.getInternalIps());
             }
             if (Objects.isNull(advertiseProxyAddr)) {
-                setAdvertiseProxyAddr(
-                        Networking.incrementPort(baseline.getAdvertiseProxyAddr(), baseline.getCurrentId()));
+                advertiseProxyAddr = buildAddress(baseline.getAdvertiseProxyAddr(),
+                        baseline.currentId(), baseline.getInternalIps());
             }
+
             if (Objects.isNull(id)) {
-                setId(baseline.getCurrentId() + 1);
+                setId(baseline.currentId() + 1);
             }
             if (Objects.isNull(name)) {
                 setName("n%d".formatted(id));
             }
 
+            Assert.state(this.id > 0, "id must be > 0");
             Assert.notNull(this.sqlAddr, "sql-addr is required for node " + this.id);
             Assert.notNull(this.serviceAddr, "service-addr is required for node " + this.id);
             Assert.isTrue(this.listenAddr != null && this.advertiseAddr != null,
                     "Both listen-addr and advertise-addr missing for node " + this.id);
-            Assert.state(this.id > 0, "id must be > 0");
 
             // Resolve any placeholders
             this.serviceAddr = Networking.resolve(serviceAddr);
@@ -319,6 +343,14 @@ public class Cluster {
         public Link getServiceLink() {
             String path = Objects.requireNonNull(serviceAddr).endsWith("/api") ? serviceAddr : serviceAddr + "/api";
             return Link.of("%s://%s".formatted("http", path));
+        }
+
+        public String getRpcAddr() {
+            String addr = this.listenAddr;
+            if (Objects.isNull(addr)) {
+                addr = this.advertiseAddr;
+            }
+            return Networking.assertHostName(addr);
         }
 
         public List<String> getCertHosts() {
@@ -365,17 +397,6 @@ public class Cluster {
             return listenAddr;
         }
 
-        public String getRpcAddr() {
-            String addr = this.listenAddr;
-            if (Objects.isNull(addr)) {
-                addr = this.advertiseAddr;
-            }
-            if (addr.startsWith(":")) {
-                addr = "%s:%s".formatted(Networking.getCanonicalHostName(), addr.substring(1));
-            }
-            return addr;
-        }
-
         public void setListenAddr(String listenAddr) {
             this.listenAddr = listenAddr;
         }
@@ -405,11 +426,7 @@ public class Cluster {
         }
 
         public String getSqlAddr() {
-            String addr = sqlAddr;
-            if (addr.startsWith(":")) {
-                addr = "%s:%s".formatted(Networking.getCanonicalHostName(), addr.substring(1));
-            }
-            return addr;
+            return Networking.assertHostName(sqlAddr);
         }
 
         public void setSqlAddr(String sqlAddr) {

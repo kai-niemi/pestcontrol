@@ -43,6 +43,18 @@ public class ToxiproxyCommands extends AbstractCommand {
         }
     }
 
+    @ShellMethodAvailability("ifClusterSelected")
+    @ShellMethod(value = "Start toxiproxy server on local host", key = {"start-toxiproxy", "sto"})
+    public void startToxiproxyServer() {
+        getClusterOperator().startToxiproxyServer();
+    }
+
+    @ShellMethodAvailability("ifClusterSelected")
+    @ShellMethod(value = "Stop toxiproxy server on local host", key = {"stop-toxiproxy", "pto"})
+    public void stopToxiproxyServer() {
+        getClusterOperator().stopToxiproxyServer();
+    }
+
     @ShellMethodAvailability("ifToxiproxy")
     @ShellMethod(value = "Print toxiproxy server version", key = {"proxy-version"})
     public void proxyVersion() {

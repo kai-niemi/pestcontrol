@@ -39,7 +39,7 @@ public class ApplicationProperties implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        this.clusters.forEach(Cluster::validatePostCreation);
+        this.clusters.forEach(Cluster::postConstruct);
 
         try {
             Files.createDirectories(directories.getBinDirPath());

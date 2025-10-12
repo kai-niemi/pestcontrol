@@ -1,16 +1,15 @@
 #!/bin/bash
 
-if [ ! -f .haproxy.pid ]; then
-   fn_print_error "No .haproxy.pid found - is it running?"
+pidfile=${datadir}/.haproxy.pid
+
+if [ ! -f ${pidfile} ]; then
+   fn_print_error "No pid found - is it running?"
    exit 1
 fi
 
-kill -TERM `cat .haproxy.pid`
+kill -TERM `cat ${pidfile}`
 RETVAL=$?
 
+rm -f ${pidfile}
+
 fn_print_ok "Stopped haproxy (pid: $(<.haproxy.pid))"
-
-#[ $RETVAL -eq 0 ] && rm -f .haproxy.pid
-rm -f .haproxy.pid
-
-exit 0

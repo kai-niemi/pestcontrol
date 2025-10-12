@@ -37,7 +37,7 @@ public class Application {
     private static void printHelpAndExit(Consumer<AnsiConsole> message) {
         try (Terminal terminal = TerminalBuilder.terminal()) {
             AnsiConsole console = new AnsiConsole(terminal);
-            console.green("Usage: java -jar pestcontrol.jar [options] [profile...]").nl().nl();
+            console.green("Usage: java -jar pestcontrol.jar [options] [arg...]").nl().nl();
             console.yellow("Options include:").nl();
             {
                 console.cyan("--cluster [id]            set default cluster id to use in shell commands").nl();
@@ -59,7 +59,6 @@ public class Application {
     public static void main(String[] args) {
         LinkedList<String> argsList = new LinkedList<>(Arrays.asList(args));
         LinkedList<String> passThroughArgs = new LinkedList<>();
-
         Set<String> profiles = new HashSet<>();
 
         while (!argsList.isEmpty()) {
@@ -77,11 +76,9 @@ public class Application {
                 profiles.add(ApplicationProfiles.verbose_ssl.name());
             } else if (arg.equals("--profiles")) {
                 if (argsList.isEmpty()) {
-                    printHelpAndExit(ansiConsole -> ansiConsole.red("Expected list of profile names"));
+                    printHelpAndExit(ansiConsole -> ansiConsole.red("Expected comma-separated list of profile names"));
                 }
-                profiles.clear();
-                StringUtils.commaDelimitedListToSet(argsList.pop())
-                        .forEach(p -> profiles.add(ApplicationProfiles.valueOf(p).name()));
+                profiles.addAll(StringUtils.commaDelimitedListToSet(argsList.pop()));
             } else if (arg.equals("--cluster")) {
                 if (argsList.isEmpty()) {
                     printHelpAndExit(ansiConsole -> ansiConsole.red("Expected cluster ID"));

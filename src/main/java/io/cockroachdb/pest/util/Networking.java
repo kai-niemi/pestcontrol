@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.util.PropertyPlaceholderHelper;
@@ -67,9 +68,24 @@ public abstract class Networking {
         }
     }
 
-    public static String incrementPort(String address, int offset) {
+    public static String assertHostName(String addr) throws UncheckedIOException {
+        if (Objects.nonNull(addr) && addr.startsWith(":")) {
+            addr = "%s:%s".formatted(Networking.getCanonicalHostName(), addr.substring(1));
+        }
+        return addr;
+    }
+
+    public static String buildAddress(String address, int offset, List<String> ips) {
+        if (Objects.nonNull(address) && address.startsWith(":") && !ips.isEmpty()) {
+            String ip = ips.get(offset);
+            address = "%s:%s".formatted(ip, address.substring(1));
+        }
+        return offsetPort(address, offset);
+    }
+
+    public static String offsetPort(String address, int offset) {
         if (Objects.isNull(address)) {
-            return address;
+            return null;
         }
         String[] parts = address.split(":");
         if (parts.length == 2) {

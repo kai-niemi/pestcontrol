@@ -29,6 +29,7 @@ configdir="${rootdir}/config"
 installdir="${rootdir}/.binaries"
 certsdir="${rootdir}/.certs"
 datadir="${rootdir}/.datafiles"
+logdir="${rootdir}/.log"
 
 ## Enable shell ansi colors
 ansi="on"
