@@ -402,7 +402,7 @@ public class Cluster {
         }
 
         public String getAdvertiseAddr() {
-            return advertiseAddr;
+            return Networking.assertHostName(advertiseAddr);
         }
 
         public void setAdvertiseAddr(String advertiseAddr) {

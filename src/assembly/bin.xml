@@ -27,8 +27,10 @@
             </includes>
             <excludes>
                 <exclude>init-dev.sql</exclude>
+                <exclude>application-dev.sql</exclude>
             </excludes>
             <useDefaultExcludes>true</useDefaultExcludes>
+            <lineEnding>unix</lineEnding>
         </fileSet>
 
         <fileSet>
@@ -39,6 +41,7 @@
                 <include>LICENSE.txt</include>
             </includes>
             <useDefaultExcludes>true</useDefaultExcludes>
+            <lineEnding>unix</lineEnding>
         </fileSet>
 
         <fileSet>
@@ -48,6 +51,7 @@
                 <include>pop</include>
             </includes>
             <fileMode>0755</fileMode>
+            <lineEnding>unix</lineEnding>
         </fileSet>
     </fileSets>
 

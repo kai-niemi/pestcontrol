@@ -10,7 +10,6 @@ import org.springframework.shell.standard.ValueProvider;
 
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.Cluster;
-import io.cockroachdb.pest.model.ClusterTypes;
 
 public class ClusterProvider implements ValueProvider {
     @Autowired
@@ -26,8 +25,7 @@ public class ClusterProvider implements ValueProvider {
                 prefix = "";
             }
             if ((cluster.getClusterName().startsWith(prefix)
-                 || cluster.getClusterId().startsWith(prefix))
-                && ClusterTypes.isHosted(cluster.getClusterType())) {
+                 || cluster.getClusterId().startsWith(prefix))) {
                 result.add(new CompletionProposal(cluster.getClusterId())
                         .displayText(cluster.getClusterId())
                         .description(cluster.getClusterName()));

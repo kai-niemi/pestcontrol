@@ -56,7 +56,7 @@ public class StatusCommands extends AbstractCommand {
     public void printAgents() {
         List<List<?>> tuples = new ArrayList<>();
 
-        Cluster cluster = getClusterProperties();
+        Cluster cluster = getSelectedCluster();
 
         cluster.getNodes().forEach(node -> {
             try {

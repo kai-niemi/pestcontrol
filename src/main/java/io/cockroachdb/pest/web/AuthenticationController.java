@@ -37,6 +37,7 @@ public class AuthenticationController {
         } else if (logoutSuccess) {
             model.addAttribute(WebUtils.MSG_INFO, WebUtils.getMessage("authentication.logout.success"));
         }
+
         if (loginError) {
             model.addAttribute(WebUtils.MSG_ERROR, WebUtils.getMessage("authentication.login.error"));
         }

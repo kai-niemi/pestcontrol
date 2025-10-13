@@ -12,44 +12,69 @@ import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.util.Assert;
 
-import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.cluster.ClusterOperator;
+import io.cockroachdb.pest.cluster.ClusterOperators;
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.ClusterTypes;
 import io.cockroachdb.pest.util.PatternUtils;
 
 @ShellComponent
 public abstract class AbstractCommand {
+    private static Cluster SELECTED_CLUSTER;
+
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    protected ClusterManager clusterManager;
+    private ApplicationProperties applicationProperties;
 
     @Autowired
-    protected ApplicationProperties applicationProperties;
+    private ClusterOperators clusterOperators;
 
-    protected static Cluster CLUSTER_PROPERTIES;
+    protected void selectCluster(String clusterId) {
+        if (!Objects.equals("none", clusterId)) {
+            SELECTED_CLUSTER = applicationProperties.getClusterById(clusterId);
+        } else {
+            SELECTED_CLUSTER = null;
+        }
+    }
 
     public Availability ifClusterSelected() {
-        return Objects.isNull(CLUSTER_PROPERTIES)
+        return Objects.isNull(SELECTED_CLUSTER)
                 ? Availability.unavailable("No cluster ID selected")
                 : Availability.available();
     }
 
-    public Cluster getClusterProperties() {
-        if (Objects.isNull(CLUSTER_PROPERTIES)) {
-            throw new IllegalStateException("Cluster ID not specified");
-        }
-        return CLUSTER_PROPERTIES;
+    public Availability ifCockroachCloudCluster() {
+        return ifClusterSelected().isAvailable()
+               && ClusterTypes.isCloud(SELECTED_CLUSTER.getClusterType())
+                ? Availability.available()
+                : Availability.unavailable("cluster type is not cockroach cloud!");
     }
 
-    public ClusterOperator getClusterOperator() {
-        Cluster cluster = getClusterProperties();
-        return clusterManager.getClusterOperator(cluster.getClusterId());
+    public Availability ifHostedCluster() {
+        return ifClusterSelected().isAvailable()
+               && ClusterTypes.isHosted(SELECTED_CLUSTER.getClusterType())
+                ? Availability.available()
+                : Availability.unavailable("cluster type is not hosted!");
+    }
+
+    public ApplicationProperties getApplicationProperties() {
+        return applicationProperties;
+    }
+
+    public ClusterOperator getSelectedClusterOperator() {
+        return clusterOperators.getClusterOperator(
+                getSelectedCluster().getClusterType());
+    }
+
+    public Cluster getSelectedCluster() {
+        Objects.requireNonNull(SELECTED_CLUSTER, "Cluster not selected");
+        return SELECTED_CLUSTER;
     }
 
     protected Integer nodeId(String node) {
-        Cluster cluster = getClusterProperties();
+        Cluster cluster = getSelectedCluster();
         int id = Integer.parseInt(node);
         Assert.state(id > 0, "Node id must be > 0");
         Assert.state(id <= cluster.getNodes().size(),
@@ -59,7 +84,7 @@ public abstract class AbstractCommand {
 
     protected List<Integer> nodeIdRange(String nodes) {
         if (nodes.toLowerCase().startsWith("all")) {
-            Cluster cluster = getClusterProperties();
+            Cluster cluster = getSelectedCluster();
             return IntStream.rangeClosed(1, cluster.getNodes().size())
                     .boxed().collect(Collectors.toList());
         }

@@ -5,23 +5,25 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.jayway.jsonpath.JsonPath;
 
 import io.cockroachdb.pest.cluster.model.NodeDetail;
+import io.cockroachdb.pest.cluster.model.NodeDetails;
 import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.cluster.model.NodeStatus;
 import io.cockroachdb.pest.config.RestClientProvider;
@@ -49,9 +51,6 @@ public class DefaultClusterManager implements ClusterManager {
     @Autowired
     private ClusterQuery clusterQuery;
 
-    @Autowired
-    private ObjectProvider<ClusterOperator> clusterOperators;
-
     @Override
     public void setCredentialsHandler(CredentialsHandler credentialsHandler) {
         this.credentialsHandler = credentialsHandler;
@@ -67,12 +66,12 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public String getClusterVersion(String clusterId) {
-        return clusterQuery.queryClusterVersion(getClusterProperties(clusterId));
+        return clusterQuery.queryClusterVersion(getCluster(clusterId));
     }
 
     @Override
     public String login(String clusterId, String userName, String password) {
-        Cluster cluster = getClusterProperties(clusterId);
+        Cluster cluster = getCluster(clusterId);
 
         if (EnumSet.of(ClusterType.hosted_insecure).contains(cluster.getClusterType())) {
             logger.info("Implicit login for cluster type: %s".formatted(cluster.getClusterType()));
@@ -102,7 +101,7 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public boolean logout(String clusterId) {
-        Cluster cluster = getClusterProperties(clusterId);
+        Cluster cluster = getCluster(clusterId);
 
         String sessionToken = findSessionToken(clusterId);
 
@@ -124,6 +123,20 @@ public class DefaultClusterManager implements ClusterManager {
         return outcome;
     }
 
+    public List<NodeDetail> queryNodeDetails(Cluster cluster, String sessionToken) {
+        Assert.notNull(sessionToken, "sessionToken is null");
+
+        // There's no way to narrow this down other than by pagination
+        ResponseEntity<NodeDetails> responseEntity = restClientProvider.apply(cluster.getClusterType())
+                .get()
+                .uri(cluster.getAdminUrl() + "/api/v2/nodes/")
+                .header("X-Cockroach-API-Session", sessionToken)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .toEntity(NodeDetails.class);
+        return Objects.requireNonNull(responseEntity.getBody()).getNodes();
+    }
+
     private String findSessionToken(String clusterId) {
         if (!sessionTokens.containsKey(clusterId)) {
             Pair<String, String> credentials = credentialsHandler
@@ -133,6 +146,14 @@ public class DefaultClusterManager implements ClusterManager {
         return sessionTokens.get(clusterId);
     }
 
+    public Optional<NodeDetail> queryNodeDetailById(Cluster cluster, String sessionToken,
+                                                    Integer nodeId) {
+        return queryNodeDetails(cluster, sessionToken)
+                .stream()
+                .filter(nodeStatus -> nodeStatus.getNodeId().equals(nodeId))
+                .findFirst();
+    }
+
     @Override
     public boolean hasSessionToken(String clusterId) {
         return sessionTokens.containsKey(clusterId);
@@ -140,13 +161,13 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public NodeDetail queryNodeDetailById(String clusterId, Integer id) {
-        return clusterQuery.queryNodeDetailById(getClusterProperties(clusterId), findSessionToken(clusterId), id)
+        return queryNodeDetailById(getCluster(clusterId), findSessionToken(clusterId), id)
                 .orElseThrow(() -> new ResourceNotFoundException("No such node with ID: " + id));
     }
 
     @Override
     public NodeStatus queryNodeStatusById(String clusterId, Integer id) {
-        return clusterQuery.queryNodeStatusById(getClusterProperties(clusterId), id)
+        return clusterQuery.queryNodeStatusById(getCluster(clusterId), id)
                 .orElseThrow(() -> new ResourceNotFoundException("No such node with ID: " + id));
     }
 
@@ -164,10 +185,9 @@ public class DefaultClusterManager implements ClusterManager {
         final List<NodeModel> nodeModelList = new ArrayList<>();
 
         try {
-            Cluster cluster = getClusterProperties(clusterId);
+            Cluster cluster = getCluster(clusterId);
             List<NodeStatus> nodeStatusList = clusterQuery.queryNodeStatus(cluster);
-            List<NodeDetail> nodeDetailList = clusterQuery.queryNodeDetails(cluster,
-                    findSessionToken(clusterId));
+            List<NodeDetail> nodeDetailList = queryNodeDetails(cluster, findSessionToken(clusterId));
 
             nodeDetailList.forEach(nodeDetail -> nodeStatusList.stream()
                     .filter(nodeStatus -> nodeStatus.getId().equals(nodeDetail.getNodeId()))
@@ -191,30 +211,10 @@ public class DefaultClusterManager implements ClusterManager {
             }
         }
         return nodeModelList;
-
     }
 
     @Override
-    public Cluster getClusterProperties(String clusterId) {
-        return applicationProperties.getClusterByIdAndType(clusterId, EnumSet.allOf(ClusterType.class));
-    }
-
-    @Override
-    public Cluster getClusterProperties(String clusterId, EnumSet<ClusterType> clusterTypes) {
-        return applicationProperties.getClusterByIdAndType(clusterId, clusterTypes);
-    }
-
-    @Override
-    public ClusterOperator getClusterOperator(String clusterId) {
-        return getClusterOperatorByType(getClusterProperties(clusterId).getClusterType());
-    }
-
-    public ClusterOperator getClusterOperatorByType(ClusterType clusterType) {
-        return clusterOperators
-                .stream()
-                .filter(x -> x.supports(clusterType))
-                .min(new AnnotationAwareOrderComparator())
-                .orElseThrow(() -> new UnsupportedOperationException(
-                        "No operator found for cluster type: " + clusterType));
+    public Cluster getCluster(String clusterId) {
+        return applicationProperties.getClusterById(clusterId);
     }
 }

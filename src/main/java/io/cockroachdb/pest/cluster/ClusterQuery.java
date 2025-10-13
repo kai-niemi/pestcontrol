@@ -8,31 +8,22 @@ import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.cockroachdb.pest.cluster.model.NodeStatus;
 import io.cockroachdb.pest.config.ClosableDataSource;
-import io.cockroachdb.pest.config.RestClientProvider;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.repository.ClusterRepository;
 import io.cockroachdb.pest.repository.JdbcClusterRepository;
-import io.cockroachdb.pest.cluster.model.NodeDetail;
-import io.cockroachdb.pest.cluster.model.NodeDetails;
-import io.cockroachdb.pest.cluster.model.NodeStatus;
 
 @Component
 public class ClusterQuery {
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private RestClientProvider restClientProvider;
 
     @Autowired
     private Function<DataSourceProperties, ClosableDataSource> dataSourceFactory;
@@ -45,28 +36,6 @@ public class ClusterQuery {
         } catch (DataAccessException e) {
             throw new ServerErrorException("Unable to query cluster version", e);
         }
-    }
-
-    public Optional<NodeDetail> queryNodeDetailById(Cluster cluster, String sessionToken,
-                                                    Integer nodeId) {
-        return queryNodeDetails(cluster, sessionToken)
-                .stream()
-                .filter(nodeStatus -> nodeStatus.getNodeId().equals(nodeId))
-                .findFirst();
-    }
-
-    public List<NodeDetail> queryNodeDetails(Cluster cluster, String sessionToken) {
-        Assert.notNull(sessionToken, "sessionToken is null");
-
-        // There's no way to narrow this down other than by pagination
-        ResponseEntity<NodeDetails> responseEntity = restClientProvider.apply(cluster.getClusterType())
-                .get()
-                .uri(cluster.getAdminUrl() + "/api/v2/nodes/")
-                .header("X-Cockroach-API-Session", sessionToken)
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .toEntity(NodeDetails.class);
-        return Objects.requireNonNull(responseEntity.getBody()).getNodes();
     }
 
     public List<NodeStatus> queryNodeStatus(Cluster cluster) {
@@ -85,7 +54,7 @@ public class ClusterQuery {
     }
 
     public Optional<NodeStatus> queryNodeStatusById(Cluster cluster, Integer nodeId) {
-        try ( ClosableDataSource dataSource = dataSourceFactory.apply(cluster.getDataSourceProperties())) {
+        try (ClosableDataSource dataSource = dataSourceFactory.apply(cluster.getDataSourceProperties())) {
             ClusterRepository clusterRepository = new JdbcClusterRepository(dataSource);
             String json = clusterRepository.queryNodeStatusById(nodeId);
 

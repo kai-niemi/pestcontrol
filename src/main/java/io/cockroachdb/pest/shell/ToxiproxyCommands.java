@@ -46,13 +46,13 @@ public class ToxiproxyCommands extends AbstractCommand {
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Start toxiproxy server on local host", key = {"start-toxiproxy", "sto"})
     public void startToxiproxyServer() {
-        getClusterOperator().startToxiproxyServer();
+        getSelectedClusterOperator().startToxiproxyServer();
     }
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Stop toxiproxy server on local host", key = {"stop-toxiproxy", "pto"})
     public void stopToxiproxyServer() {
-        getClusterOperator().stopToxiproxyServer();
+        getSelectedClusterOperator().stopToxiproxyServer();
     }
 
     @ShellMethodAvailability("ifToxiproxy")
@@ -108,7 +108,7 @@ public class ToxiproxyCommands extends AbstractCommand {
     @ShellMethodAvailability("ifToxiproxy")
     @ShellMethod(value = "Create toxiproxy proxy for specified nodes(s)", key = {"create-proxy"})
     public void createProxy(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
-        Cluster cluster = getClusterProperties();
+        Cluster cluster = getSelectedCluster();
 
         nodeIdRange(nodes).forEach(nodeId -> {
             Cluster.Node node = cluster.getNodeById(nodeId);
@@ -128,7 +128,7 @@ public class ToxiproxyCommands extends AbstractCommand {
     @ShellMethodAvailability("ifToxiproxy")
     @ShellMethod(value = "Delete toxiproxy proxy for specified nodes(s)", key = {"delete-proxy"})
     public void deleteProxy(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
-        Cluster cluster = getClusterProperties();
+        Cluster cluster = getSelectedCluster();
 
         nodeIdRange(nodes).forEach(nodeId -> {
             Cluster.Node node = cluster.getNodeById(nodeId);
@@ -148,7 +148,7 @@ public class ToxiproxyCommands extends AbstractCommand {
     @ShellMethodAvailability("ifToxiproxy")
     @ShellMethod(value = "Enable proxy for specified nodes(s)", key = {"enable-proxy"})
     public void enableProxy(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
-        Cluster cluster = getClusterProperties();
+        Cluster cluster = getSelectedCluster();
 
         nodeIdRange(nodes).forEach(nodeId -> {
             Cluster.Node node = cluster.getNodeById(nodeId);
@@ -224,7 +224,7 @@ public class ToxiproxyCommands extends AbstractCommand {
             @ShellOption(help = "Number of bytes it should transmit before connection is closed (limit_data toxic)", defaultValue = "8192")
             long bytes
     ) {
-        Cluster cluster = getClusterProperties();
+        Cluster cluster = getSelectedCluster();
         Cluster.Node node = cluster.getNodeById(Integer.parseInt(nodeId));
 
         try {

@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -55,21 +54,12 @@ public class ApplicationProperties implements InitializingBean {
     }
 
     public Cluster getClusterById(String clusterId) {
-        return getClusterByIdAndType(clusterId, EnumSet.allOf(ClusterType.class));
-    }
-
-    public Cluster getClusterByIdAndType(String clusterId, EnumSet<ClusterType> requiredTypes) {
-        Cluster cluster = getClusters()
+        return getClusters()
                 .stream()
                 .filter(x -> x.getClusterId().equals(clusterId))
                 .findFirst()
                 .orElseThrow(() ->
                         new IllegalArgumentException("No cluster configuration with id: " + clusterId));
-        if (!requiredTypes.contains(cluster.getClusterType())) {
-            throw new IllegalArgumentException("Cluster configuration is not of expected types '%s' but '%s'"
-                    .formatted(requiredTypes, cluster.getClusterType()));
-        }
-        return cluster;
     }
 
     @JsonIgnore

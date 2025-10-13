@@ -1,6 +1,8 @@
 package io.cockroachdb.pest;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -95,6 +97,11 @@ public class Application {
 
         if (profiles.isEmpty()) {
             profiles.add("default");
+        }
+
+        if (Files.exists(Path.of(".certs", "pestcontrol.p12"))) {
+            System.out.println("Found certificate truststore - adding ssl profile");
+            profiles.add("ssl");
         }
 
         System.setProperty("spring.profiles.active", String.join(",", profiles));

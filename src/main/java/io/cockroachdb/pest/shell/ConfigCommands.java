@@ -7,15 +7,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -41,33 +38,23 @@ import io.cockroachdb.pest.shell.support.ClusterProvider;
 public class ConfigCommands extends AbstractCommand {
     private static final char[] ALPHA = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Autowired
-    private ApplicationProperties applicationProperties;
-
     @Autowired
     @Qualifier("yamlObjectMapper")
     private ObjectMapper yamlObjectMapper;
 
     @PostConstruct
     public void init() {
-        if (StringUtils.hasLength(applicationProperties.getDefaultClusterId())) {
-            useCluster(applicationProperties.getDefaultClusterId());
+        if (StringUtils.hasLength(getApplicationProperties().getDefaultClusterId())) {
+            useCluster(getApplicationProperties().getDefaultClusterId());
         } else {
-            useCluster(applicationProperties.getClusterIds().stream().findFirst().orElseThrow());
+            useCluster(getApplicationProperties().getClusterIds().stream().findFirst().orElseThrow());
         }
     }
 
     @ShellMethod(value = "Select default cluster ID to use in commands", key = {"use-cluster", "use"})
     public void useCluster(@ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
             valueProvider = ClusterProvider.class) String clusterId) {
-        if (!Objects.equals("none", clusterId)) {
-            CLUSTER_PROPERTIES = clusterManager.getClusterProperties(clusterId,
-                    EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure));
-        } else {
-            CLUSTER_PROPERTIES = null;
-        }
+        selectCluster(clusterId);
     }
 
     @ShellMethod(value = "Generate application YAML for localhost", key = {"gen-local-cfg"})
@@ -202,7 +189,7 @@ public class ConfigCommands extends AbstractCommand {
 
     @ShellMethod(value = "Print application YAML", key = {"print-cfg"})
     public void printConfig(@ShellOption(help = "Output file path", defaultValue = ShellOption.NULL) String output) {
-        writeApplicationProperties(applicationProperties, yaml -> {
+        writeApplicationProperties(getApplicationProperties(), yaml -> {
             System.out.println(yaml);
 
             if (output != null) {

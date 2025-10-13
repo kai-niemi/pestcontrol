@@ -127,14 +127,14 @@ public class RestClientConfiguration implements RestTemplateCustomizer {
                 .defaultStatusHandler(HttpStatusCode::is4xxClientError, (request, response) -> {
                     String body = new String(response.getBody().readAllBytes(), StandardCharsets.UTF_8);
                     throw new ClientErrorException(
-                            "Request failed due to client error with status " + response.getStatusCode()
-                            + ": " + body);
+                            "Request [%s] failed due to client error with status %s: %s"
+                                    .formatted(request.getURI(), response.getStatusCode(), body));
                 })
                 .defaultStatusHandler(HttpStatusCode::is5xxServerError, (request, response) -> {
                     String body = new String(response.getBody().readAllBytes(), StandardCharsets.UTF_8);
                     throw new ServerErrorException(
-                            "Request failed due to CockroachDB server error with status " + response.getStatusCode()
-                            + ": " + body);
+                            "Request [%s] failed due to CockroachDB server error with status %s: %s"
+                                    .formatted(request.getURI(), response.getStatusCode(), body));
                 })
                 .build();
     }

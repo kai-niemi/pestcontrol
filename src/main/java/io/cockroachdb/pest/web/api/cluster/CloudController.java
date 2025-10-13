@@ -12,11 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.cockroachdb.pest.web.LinkRelations;
 import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.cluster.ClusterOperator;
+import io.cockroachdb.pest.cluster.ClusterOperators;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterType;
+import io.cockroachdb.pest.web.LinkRelations;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -26,10 +27,13 @@ public class CloudController {
     @Autowired
     private ClusterManager clusterManager;
 
+    @Autowired
+    private ClusterOperators clusterOperators;
+
     @GetMapping("/{clusterId}")
     public ResponseEntity<EntityModel<Cluster>> index(
             @PathVariable("clusterId") String clusterId) {
-        Cluster cluster = clusterManager.getClusterProperties(clusterId);
+        Cluster cluster = clusterManager.getCluster(clusterId);
 
         EntityModel<Cluster> resource = EntityModel.of(cluster);
         resource.add(WebMvcLinkBuilder.linkTo(methodOn(CloudController.class)
@@ -61,73 +65,29 @@ public class CloudController {
         return ResponseEntity.ok(resource);
     }
 
-//    @PostMapping("/{clusterId}/node/{nodeId}/start")
-//    public ResponseEntity<Void> startNode(@PathVariable("clusterId") String clusterId,
-//                                          @PathVariable("nodeId") Integer id) {
-//        ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
-//        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-//        clusterOperator.startNode(clusterProperties, id);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @PostMapping("/{clusterId}/node/{nodeId}/stop")
-//    public ResponseEntity<Void> stopNode(@PathVariable("clusterId") String clusterId,
-//                                         @PathVariable("nodeId") Integer id) {
-//        ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
-//        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-//        clusterOperator.stopNode(clusterProperties, id);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @PostMapping("/{clusterId}/node/{nodeId}/kill")
-//    public ResponseEntity<Void> killNode(@PathVariable("clusterId") String clusterId,
-//                                         @PathVariable("nodeId") Integer id) {
-//        ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
-//        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-//        clusterOperator.killNode(clusterProperties, id);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @PostMapping("/{clusterId}/node/{nodeId}/install")
-//    public ResponseEntity<Void> installNode(@PathVariable("clusterId") String clusterId,
-//                                            @PathVariable("nodeId") Integer id) {
-//        ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
-//        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-//        clusterOperator.install(clusterProperties, id);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @PostMapping("/{clusterId}/node/{nodeId}/init")
-//    public ResponseEntity<Void> initNode(@PathVariable("clusterId") String clusterId,
-//                                         @PathVariable("nodeId") Integer id) {
-//        ClusterProperties clusterProperties = clusterManager.getClusterProperties(clusterId);
-//        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-//        clusterOperator.init(clusterProperties, id);
-//        return ResponseEntity.ok().build();
-//    }
-//
-
     @PostMapping("/{clusterId}/locality/{tiers}/disrupt")
     public ResponseEntity<Void> disruptLocality(@PathVariable("clusterId") String clusterId,
                                                 @PathVariable("tiers") String tiers) {
-        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-        clusterOperator.disruptLocality(clusterManager.getClusterProperties(clusterId), tiers);
+        Cluster cluster = clusterManager.getCluster(clusterId);
+        ClusterOperator clusterOperator = clusterOperators.getClusterOperator(cluster.getClusterType());
+        clusterOperator.disruptLocality(cluster, tiers);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{clusterId}/locality/{tiers}/recover")
     public ResponseEntity<Void> recoverLocality(@PathVariable("clusterId") String clusterId,
                                                 @PathVariable("tiers") String tiers) {
-        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
-        clusterOperator.recoverLocality(clusterManager.getClusterProperties(clusterId), tiers);
+        Cluster cluster = clusterManager.getCluster(clusterId);
+        ClusterOperator clusterOperator = clusterOperators.getClusterOperator(cluster.getClusterType());
+        clusterOperator.recoverLocality(cluster, tiers);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{clusterId}/node/{nodeId}/disrupt")
     public ResponseEntity<Void> disruptNode(@PathVariable("clusterId") String clusterId,
                                             @PathVariable("nodeId") Integer id) {
-        Cluster cluster = clusterManager.getClusterProperties(clusterId);
-        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
+        Cluster cluster = clusterManager.getCluster(clusterId);
+        ClusterOperator clusterOperator = clusterOperators.getClusterOperator(cluster.getClusterType());
         clusterOperator.disruptNode(cluster, id);
         return ResponseEntity.ok().build();
     }
@@ -135,8 +95,8 @@ public class CloudController {
     @PostMapping("/{clusterId}/node/{nodeId}/recover")
     public ResponseEntity<Void> recoverNode(@PathVariable("clusterId") String clusterId,
                                             @PathVariable("nodeId") Integer id) {
-        Cluster cluster = clusterManager.getClusterProperties(clusterId);
-        ClusterOperator clusterOperator = clusterManager.getClusterOperator(clusterId);
+        Cluster cluster = clusterManager.getCluster(clusterId);
+        ClusterOperator clusterOperator = clusterOperators.getClusterOperator(cluster.getClusterType());
         clusterOperator.recoverNode(cluster, id);
         return ResponseEntity.ok().build();
     }
