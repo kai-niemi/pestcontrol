@@ -336,7 +336,7 @@ public class LocalClusterOperator implements ClusterOperator {
                                                         ));
                                             });
 
-                                            yield String.join("", servers);
+                                            yield String.join("     ", servers);
                                         }
                                         case "bind-http" ->
                                                 "bind %s".formatted(cluster.getLoadBalancer().getHttpAddr());
@@ -351,7 +351,7 @@ public class LocalClusterOperator implements ClusterOperator {
                                                         ));
                                             });
 
-                                            yield String.join("", servers);
+                                            yield String.join("    ", servers);
                                         }
                                         default -> placeholderName;
                                     });

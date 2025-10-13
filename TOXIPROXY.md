@@ -24,8 +24,23 @@ Start CRDB nodes:
         --join=localhost:25258,localhost:25259,localhost:25260 
         --store=.datafiles/n1  --cache=10% --max-sql-memory=10% --background --insecure
 
-    .binaries/cockroach start --locality=region=eu-north-1,zone=eu-north-1b --listen-addr=localhost:25259 --advertise-addr=localhost:35259 --sql-addr=localhost:26259 --http-addr=localhost:8082 --join=localhost:25258,localhost:25259,localhost:25260 --store=.datafiles/n2 --cache=10% --max-sql-memory=10% --background --insecure
-    .binaries/cockroach start --locality=region=eu-north-1,zone=eu-north-1c --listen-addr=localhost:25260 --advertise-addr=localhost:35260 --sql-addr=localhost:26260 --http-addr=localhost:8083 --join=localhost:25258,localhost:25259,localhost:25260 --store=.datafiles/n3 --cache=10% --max-sql-memory=10% --background --insecure
+    .binaries/cockroach start 
+        --locality=region=eu-north-1,zone=eu-north-1b 
+        --listen-addr=localhost:25259 
+        --advertise-addr=localhost:35259 
+        --sql-addr=localhost:26259 
+        --http-addr=localhost:8082 
+        --join=localhost:25258,localhost:25259,localhost:25260 
+        --store=.datafiles/n2 --cache=10% --max-sql-memory=10% --background --insecure
+
+    .binaries/cockroach start 
+        --locality=region=eu-north-1,zone=eu-north-1c 
+        --listen-addr=localhost:25260 
+        --advertise-addr=localhost:35260 
+        --sql-addr=localhost:26260 
+        --http-addr=localhost:8083 
+        --join=localhost:25258,localhost:25259,localhost:25260 
+        --store=.datafiles/n3 --cache=10% --max-sql-memory=10% --background --insecure
 
 Add upstream and downstream toxics to each proxy:
 

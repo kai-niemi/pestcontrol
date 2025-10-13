@@ -49,8 +49,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         logger.warn("Server error processing request (%s)".formatted(httpStatus.getReasonPhrase()), ex);
 
         return wrap(Problem.create()
-                .withType(URI.create("https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/"
-                                     + responseStatus.code()))
                 .withTitle(ex.getLocalizedMessage())
                 .withDetail(NestedExceptionUtils.getMostSpecificCause(ex).toString())
                 .withStatus(httpStatus)

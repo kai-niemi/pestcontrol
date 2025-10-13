@@ -14,17 +14,13 @@
 * [Building](#building)
   * [Clone the project](#clone-the-project)
   * [Build the artifacts](#build-the-artifacts)
-* [Installing](#installing)
 * [Configuration](#configuration)
-  * [Application](#application)
-  * [Clusters](#clusters)
-  * [DataSource Properties](#datasource-properties)
 * [Running](#running)
 * [Tutorials](#tutorials)
   * [Local 3-node self-hosted cluster (insecure)](#local-3-node-self-hosted-cluster-insecure)
   * [Local 3-node self-hosted cluster (secure)](#local-3-node-self-hosted-cluster-secure)
   * [Remote 3-node self-hosted cluster (insecure)](#remote-3-node-self-hosted-cluster-insecure)
-  * [Remarks](#remarks)
+* [Remarks](#remarks)
 <!-- TOC -->
 
 # About
@@ -34,41 +30,36 @@
 [Pest Control](https://github.com/kai-niemi/pestcontrol) is a tool for managing 
 and chaos testing CockroachDB clusters. It provides a command-line interface for 
 controlling cluster deployments and a web interface for visualizing CockroachDB 
-node failure and recovery modes including impact on synthetic application workloads. 
-It supports CockroachDB Cloud and local or remote self-hosted clusters.
+node failure and recovery, including impact on synthetic application workloads. 
 
 ## Main features
 
-- Simple self-hosted cluster deployments with haproxy load balancer.
-- Visualize cluster topology and node health.
-- Run synthetic client workloads and visualize impact during steady state and adverse events.
-- Disruption API controls for chaos testing (cloud only).
-- [Toxiproxy](https://github.com/Shopify/toxiproxy) integration for network level chaos testing (self-hosted only).
-
-The main dashboard showing cluster layout and node health:
+- Simple self-hosted cluster management.
+- Synthetic workloads to visualize impact during adverse events.
+- Disruption API controls for chaos testing of Cockroach Cloud clusters.
+- [Toxiproxy](https://github.com/Shopify/toxiproxy) integration for network level chaos testing of self-hosted clusters.
 
 ![ui1](.github/ui-1.png)
-
-The synthetic workload page with some activity:
 
 ![ui2](.github/ui-2.png)
 
 ## Compatibility
 
-This tool supports the following platforms and versions:
+Supported platforms and versions:
 
-- CockroachDB Cloud v22.2+
-  - Requires a feature flag enabled for the organization (submit a support request) 
 - CockroachDB Local Self-Hosted v22.2+
   - Secure or insecure mode
+- CockroachDB Cloud v22.2+
+  - Disruption API requires a feature flag enabled for the organization (submit a support request)
 - MacOS (main platform)
 - Linux
 
 ## How it works
 
-Pest Control is a single spring boot app that use local shell scripts to install 
-and control CockroachDB nodes. In a network environment, it uses itself as an
-agent to invoke local commands on behalf of a controlling instance.
+Pest Control is a single spring boot app with shell scripts for installing and controlling 
+CockroachDB nodes. In a network environment, it uses itself as an agent to invoke local 
+commands on behalf of a controlling instance. For Cockroach Cloud clusters, it only provides 
+disruption API controls and no visualization.
 
 # Terms of Use
 
@@ -216,7 +207,7 @@ This will download and install the CockroachDB binaries, start a 3-node cluster 
      start 1-3
      init 1
 
-## Remarks
+# Remarks
 
 - If you switch between the `secure` and `insecure` modes, re-run the `init` command to 
 set proper SQL user roles and secrets.
