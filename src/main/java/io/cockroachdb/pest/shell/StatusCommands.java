@@ -32,7 +32,7 @@ public class StatusCommands extends AbstractCommand {
     private Integer serverPort;
 
     @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Print cluster IP addresses and admin URLs", key = {"ip"})
+    @ShellMethod(value = "Print local IP addresses", key = {"ip"})
     public void ip() {
         logger.info("""
                 
@@ -40,8 +40,8 @@ public class StatusCommands extends AbstractCommand {
                          External IP: %s
                             Hostname: %s
                 Hostname (canonical): %s
-                     Local admin URL: %s
-                  External admin URL: %s""".formatted(
+                      Local API root: %s
+                   External API root: %s""".formatted(
                 Networking.getLocalIP(),
                 Networking.getExternalIP(),
                 Networking.getHostname(),

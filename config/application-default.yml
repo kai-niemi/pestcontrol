@@ -18,10 +18,10 @@ application:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
-      version: "v25.3.1.darwin-11.0-arm64"
-      #      version: "v25.3.1.darwin-11.0-amd64"
-      #      version: "v25.3.1.linux-amd64"
-      #      version: "v25.3.1.linux-arm64"
+      version: "v25.3.3.darwin-11.0-arm64"
+      #      version: "v25.3.3.darwin-11.0-amd64"
+      #      version: "v25.3.3.linux-amd64"
+      #      version: "v25.3.3.linux-arm64"
       load-balancer:
         rpc-addr: :26250
         http-addr: :8070
@@ -31,7 +31,7 @@ application:
         listen-addr: :+25257
         advertise-addr: :+25257
         advertise-proxy-addr: :+35257
-        sql-addr: :+26257
+        sql-addr: localhost:+26257
         http-addr: :+8080
       nodes:
         - locality: "region=eu-central-1,zone=eu-central-1a"
@@ -55,7 +55,7 @@ application:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"
-      version: "v25.3.1.darwin-11.0-arm64"
+      version: "v25.3.3.darwin-11.0-arm64"
       load-balancer:
         rpc-addr: :26250
         http-addr: :8070
@@ -65,7 +65,7 @@ application:
         listen-addr: :+25257
         advertise-addr: :+25257
         advertise-proxy-addr: :+35257
-        sql-addr: :+26257
+        sql-addr: localhost:+26257
         http-addr: :+8080
         cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
       nodes:

@@ -4,7 +4,7 @@
 
 title="CockroachDB multi region deployment (AWS)"
 # CRDB release version
-releaseversion="v25.3.1"
+releaseversion="v25.3.3"
 # Number of node instances in total including clients
 nodes="12"
 # Node id range hosting CRDB

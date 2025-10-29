@@ -230,7 +230,7 @@ public class ConfigCommands extends AbstractCommand {
             cluster.setClusterName("Generated");
             cluster.setClusterType(secure ? ClusterType.hosted_insecure : ClusterType.hosted_secure);
             cluster.setAdminUrl(addressCallback.serviceAddr(1));
-            cluster.setVersion("v25.3.1.linux-amd64");
+            cluster.setVersion("v25.3.3.linux-amd64");
         }
 
         final String firstNodeIP = addressCallback.firstNodeIP();
