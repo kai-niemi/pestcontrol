@@ -5,6 +5,8 @@
 # See https://docs.spring.io/spring-boot/appendix/application-properties/index.html for all spring boot
 # properties and src/main/resources/application.yml for application defaults.
 ###############################################################################################################
+server:
+  port: 9091
 application:
   # Preset cluster ID
   defaultClusterId: "local-insecure"
@@ -27,7 +29,7 @@ application:
         http-addr: :8070
         stats-addr: :7070
       baseline:
-        service-addr: localhost:9090
+        service-addr: localhost:9091
         listen-addr: :+25257
         advertise-addr: :+25257
         advertise-proxy-addr: :+35257

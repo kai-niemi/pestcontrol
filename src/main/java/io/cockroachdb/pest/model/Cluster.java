@@ -350,7 +350,7 @@ public class Cluster {
             if (Objects.isNull(addr)) {
                 addr = this.advertiseAddr;
             }
-            return Networking.assertHostName(addr);
+            return addr;
         }
 
         public List<String> getCertHosts() {
