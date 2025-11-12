@@ -38,19 +38,16 @@ import io.cockroachdb.pest.shell.support.AnsiConsole;
 public class Application {
     private static void printHelpAndExit(Consumer<AnsiConsole> message) {
         try (Terminal terminal = TerminalBuilder.terminal()) {
-            AnsiConsole console = new AnsiConsole(terminal);
-            console.green("Usage: java -jar pestcontrol.jar [options] [arg...]").nl().nl();
-            console.yellow("Options include:").nl();
-            {
-                console.cyan("--cluster [id]            set default cluster id to use in shell commands").nl();
-                console.cyan("--profiles [profile,..]   override spring profiles to activate").nl();
-                console.cyan("--secure | --ssl          enable the 'secure' profile for HTTPS traffuc").nl();
-                console.cyan("--verbose                 enable the 'verbose' profile for extensive logging").nl();
-                console.cyan("--verbose-http            enable the 'verbose-http' profile for HTTP trace logging").nl();
-                console.cyan("--verbose-sql             enable the 'verbose-sql' profile for SQL trace logging").nl();
-                console.cyan("--help                    this help").nl();
-            }
-            console.nl();
+            AnsiConsole console = new AnsiConsole(terminal)
+                    .green("Usage: java -jar pestcontrol.jar [options] [arg...]").nl(2)
+                    .yellow("Options include:").nl()
+                    .cyan("--secure | --ssl          enable the 'secure' profile for HTTPS traffuc").nl()
+                    .cyan("--verbose                 enable the 'verbose' profile for extensive logging").nl()
+                    .cyan("--verbose-http            enable the 'verbose-http' profile for HTTP trace logging").nl()
+                    .cyan("--verbose-sql             enable the 'verbose-sql' profile for SQL trace logging").nl()
+                    .cyan("--profiles [profile,..]   override spring profiles to activate").nl()
+                    .cyan("--cluster [id]            set default cluster id to use in shell commands").nl()
+                    .cyan("--help                    this help").nl(2);
             message.accept(console);
         } catch (IOException e) {
             throw new RuntimeIOException(e);
@@ -59,10 +56,10 @@ public class Application {
     }
 
     public static void main(String[] args) {
-        LinkedList<String> argsList = new LinkedList<>(Arrays.asList(args));
         LinkedList<String> passThroughArgs = new LinkedList<>();
         Set<String> profiles = new HashSet<>();
 
+        LinkedList<String> argsList = new LinkedList<>(Arrays.asList(args));
         while (!argsList.isEmpty()) {
             String arg = argsList.pop();
             if (arg.equals("--help")) {
@@ -87,11 +84,7 @@ public class Application {
                 }
                 System.setProperty("application.defaultClusterId", argsList.pop());
             } else {
-                if (arg.startsWith("--") || arg.startsWith("@")) {
-                    passThroughArgs.add(arg);
-                } else {
-                    profiles.add(arg);
-                }
+                passThroughArgs.add(arg);
             }
         }
 

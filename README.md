@@ -154,11 +154,11 @@ Start the interactive shell with:
 The commands will download and install the CockroachDB binaries, start a local insecure 
 3-node cluster with haproxy and initialize the cluster.
 
-     install
-     start 1-3
-     init 
-     gen-haproxy
-     start-haproxy
+    install
+    start 1-3
+    init 
+    gen-haproxy
+    start-haproxy
 
 ## Local 3-node self-hosted cluster (secure)
 
@@ -169,13 +169,13 @@ Start the interactive shell with:
 The commands will download and install the CockroachDB binaries, start a local secure 
 3-node cluster with haproxy and initialize the cluster.
 
-     use --clusterId local-secure
-     install
-     certs
-     start 1-3
-     init
-     gen-haproxy
-     start-haproxy
+    use --clusterId local-secure
+    install
+    certs
+    start 1-3
+    init
+    gen-haproxy
+    start-haproxy
 
 The secure mode will use self-signed CA certificates and keys in `.certs` including
 the PKCS12 truststore used by the web app. To login to the cluster, you need to restart 
@@ -202,10 +202,10 @@ On the control host, start the interactive shell with:
 
 This will download and install the CockroachDB binaries, start a 3-node cluster and initialize it.
 
-     use-cluster --clusterId remote-insecure     
-     install 1-3
-     start 1-3
-     init 1
+    use-cluster --clusterId remote-insecure     
+    install 1-3
+    start 1-3
+    init 1
 
 # Remarks
 

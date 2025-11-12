@@ -27,7 +27,7 @@ import io.cockroachdb.pest.model.ApplicationProperties;
 @Configuration
 @EnableAsync
 @EnableScheduling
-public class AsyncConfiguration implements AsyncConfigurer {
+    public class AsyncConfiguration implements AsyncConfigurer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired

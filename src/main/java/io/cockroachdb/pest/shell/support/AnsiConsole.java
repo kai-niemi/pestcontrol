@@ -1,5 +1,7 @@
 package io.cockroachdb.pest.shell.support;
 
+import java.util.stream.IntStream;
+
 import org.jline.terminal.Terminal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ansi.AnsiColor;
@@ -48,7 +50,11 @@ public class AnsiConsole {
     }
 
     public AnsiConsole nl() {
-        terminal.writer().println();
+        return nl(1);
+    }
+
+    public AnsiConsole nl(int c) {
+        IntStream.rangeClosed(1,c).forEach(value -> terminal.writer().println());
         terminal.writer().flush();
         return this;
     }

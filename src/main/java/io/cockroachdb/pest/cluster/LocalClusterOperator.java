@@ -62,7 +62,7 @@ public class LocalClusterOperator implements ClusterOperator {
                     break;
                 }
                 if (process.waitFor(5, TimeUnit.SECONDS)) {
-                    logger.info("Waiting for process %s (%s)..."
+                    logger.info("Waiting for process %s (cpu time %s)..."
                             .formatted(process.pid(),
                                     process.info().totalCpuDuration().orElse(Duration.ofSeconds(0))));
                     break;

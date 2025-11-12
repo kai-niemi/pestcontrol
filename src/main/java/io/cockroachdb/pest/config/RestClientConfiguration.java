@@ -93,7 +93,7 @@ public class RestClientConfiguration implements RestTemplateCustomizer {
         try {
             sslBundle = sslBundles.getBundle("pestcontrol");
         } catch (NoSuchSslBundleException e) {
-            logger.warn("Fallback to default RestClient (insecure mode): " + e);
+            logger.info("Fallback to default RestClient (insecure mode): " + e);
             return defaultRestClient();
         }
 
