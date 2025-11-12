@@ -23,7 +23,7 @@ if [ -z "${CLUSTER}" ]; then
   exit 1
 fi
 
-assembly_path=${basedir}/target/pestcontrol.tar.gz
+assembly_path=${basedir}/target/pestcontrol-2.0.0-SNAPSHOT-bin.tar.gz
 
 if [ ! -f ${assembly_path} ]; then
   fn_echo_warn_nl "Not found: ${assembly_path}"

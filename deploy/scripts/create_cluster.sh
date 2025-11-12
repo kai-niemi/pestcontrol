@@ -44,10 +44,10 @@ fn_deploy_agents() {
     security_mode="--insecure"
   fi
 
-  fn_failcheck roachprod put $security_mode ${CLUSTER}:$clientnodes $basedir/target/pestcontrol.tar.gz pestcontrol.tar.gz
+  fn_failcheck roachprod put $security_mode ${CLUSTER}:$clientnodes $assembly_path pestcontrol.tar.gz
   fn_failcheck roachprod run $security_mode ${CLUSTER}:$clientnodes "tar xvf pestcontrol.tar.gz"
 
-  fn_failcheck roachprod put $security_mode ${CLUSTER}:$crdbnodes $basedir/target/pestcontrol.tar.gz pestcontrol.tar.gz
+  fn_failcheck roachprod put $security_mode ${CLUSTER}:$crdbnodes $assembly_path pestcontrol.tar.gz
   fn_failcheck roachprod run $security_mode ${CLUSTER}:$crdbnodes "tar xvf pestcontrol.tar.gz"
 }
 

@@ -133,15 +133,24 @@ The active profile(s) will be listed in the startup banner.
 
 # Running
 
-Start the app in the foreground:
+To start the app in the foreground with an interactive shell:
 
-    ./pop run <args>
+    ./pop run
 
-(Alt) Start the app in the background:
+To start the app in the foreground with a non-interactive shell to run a command 
+(like `status 1`) and then quit:
+
+    ./pop run status 1
+
+To start the app in the background without shell:
 
     ./pop start-service
 
 Now you can access the application via http://localhost:9090.
+
+To stop the app in the background:
+
+    ./pop stop-service
 
 # Tutorials
 
@@ -152,21 +161,28 @@ Start the interactive shell with:
     ./pop run
 
 The commands will download and install the CockroachDB binaries, start a local insecure 
-3-node cluster with haproxy and initialize the cluster.
+3-node cluster, initialize the cluster and also start haproxy.
 
     install
     start 1-3
     init 
     gen-haproxy
     start-haproxy
+    quit
+
+You can also run all of the above using a single command file:
+
+    echo "install" > cmd.txt
+    echo "start 1-3" >> cmd.txt
+    echo "init" >> cmd.txt
+    echo "gen-haproxy" >> cmd.txt
+    echo "start-haproxy" >> cmd.txt
+    echo "quit" >> cmd.txt
+    ./pop run @cmd.txt
 
 ## Local 3-node self-hosted cluster (secure)
 
-Start the interactive shell with:
-
-    ./pop run
-
-The commands will download and install the CockroachDB binaries, start a local secure 
+These commands will download and install the CockroachDB binaries, start a local secure 
 3-node cluster with haproxy and initialize the cluster.
 
     use --clusterId local-secure
@@ -177,9 +193,9 @@ The commands will download and install the CockroachDB binaries, start a local s
     gen-haproxy
     start-haproxy
 
-The secure mode will use self-signed CA certificates and keys in `.certs` including
-the PKCS12 truststore used by the web app. To login to the cluster, you need to restart 
-the interactive shell for it to pick up the self-signed certificate.
+The secure mode uses self-signed CA certificates and keys stored in the `.certs` directory, 
+including a PKCS12 truststore used by the web app. To login to a secure cluster, you may 
+need to restart the shell in order to pick up the self-signed certificate.
 
 ## Remote 3-node self-hosted cluster (insecure)
 
@@ -190,18 +206,15 @@ send HTTP requests to the other instances when running shell commands like `star
 
 A quick method is to scp the tar.gz assembly to each host:
 
-    scp target/pestcontrol.tar.gz user@host:/~
-    ssh -t user@host 'tar xvf pestcontrol.tar.gz && cd pestcontrol && ./pop start-service'
+    scp target/pestcontrol-2.0.0-SNAPSHOT-bin.tar.gz user@host:/~
+    ssh -t user@host 'tar xvf pestcontrol-2.0.0-SNAPSHOT-bin.tar.gz && cd pestcontrol-2.0.0-SNAPSHOT && ./pop start-service'
 
-Now, assuming you have 3 pest control instances running on 3 separate machines and a 
+Assuming you have 3 pest control instances running on 3 separate machines and a 
 cluster configuration named `remote-insecure` with the IP/host names setup accordingly.
 
 On the control host, start the interactive shell with:
 
     ./pop run
-
-This will download and install the CockroachDB binaries, start a 3-node cluster and initialize it.
-
     use-cluster --clusterId remote-insecure     
     install 1-3
     start 1-3
