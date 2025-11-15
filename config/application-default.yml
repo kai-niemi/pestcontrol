@@ -55,7 +55,6 @@ application:
       # Use haproxy port
       admin-url: "https://localhost:8070"
       data-source-properties:
-        # Use haproxy port
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"

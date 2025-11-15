@@ -25,12 +25,12 @@
 
 # About
 
-<img  align="left" src=".github/logo.png" alt="" width="64"/> 
+<img  align="left" src="docs/logo.png" alt="" width="64"/> 
 
 [Pest Control](https://github.com/kai-niemi/pestcontrol) is a tool for managing 
-and chaos testing CockroachDB clusters. It provides a command-line interface for 
-controlling cluster deployments and a web interface for visualizing CockroachDB 
-node failure and recovery, including impact on synthetic application workloads. 
+and chaos testing CockroachDB clusters. It provides a command-line shell for 
+controlling and disrupting cluster deployments and a web interface for visualizing 
+node failure and recovery, including the impact on synthetic application workloads. 
 
 ## Main features
 
@@ -38,10 +38,6 @@ node failure and recovery, including impact on synthetic application workloads.
 - Synthetic workloads to visualize impact during adverse events.
 - Disruption API controls for chaos testing of Cockroach Cloud clusters.
 - [Toxiproxy](https://github.com/Shopify/toxiproxy) integration for network level chaos testing of self-hosted clusters.
-
-![ui1](.github/ui-1.png)
-
-![ui2](.github/ui-2.png)
 
 ## Compatibility
 

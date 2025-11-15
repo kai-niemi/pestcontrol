@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -308,8 +307,8 @@ public class LocalClusterOperator implements ClusterOperator {
             Path templateFile = applicationProperties.getDirectories().getBaseDirPath()
                     .resolve("config")
                     .resolve(cluster.isSecure()
-                            ? "haproxy-secure-template.cfg"
-                            : "haproxy-insecure-template.cfg");
+                            ? "haproxy-secure.cfg"
+                            : "haproxy-insecure.cfg");
 
             String templateContents =
                     new PropertyPlaceholderHelper("${", "}")
@@ -320,7 +319,6 @@ public class LocalClusterOperator implements ClusterOperator {
                                         case "bind-rpc" -> "bind %s".formatted(cluster.getLoadBalancer().getRpcAddr());
                                         case "servers-rpc" -> {
                                             List<String> servers = new ArrayList<>();
-
                                             cluster.getNodes().forEach(np -> {
                                                 servers.add("server cockroach%d %s check port %s\n"
                                                         .formatted(np.getId(),
@@ -328,14 +326,12 @@ public class LocalClusterOperator implements ClusterOperator {
                                                                 Networking.getPort(np.getHttpAddr())
                                                         ));
                                             });
-
                                             yield String.join("    ", servers);
                                         }
                                         case "bind-http" ->
                                                 "bind %s".formatted(cluster.getLoadBalancer().getHttpAddr());
                                         case "servers-http" -> {
                                             List<String> servers = new ArrayList<>();
-
                                             cluster.getNodes().forEach(np -> {
                                                 servers.add("server cockroach%d %s check port %s\n"
                                                         .formatted(np.getId(),
@@ -343,8 +339,7 @@ public class LocalClusterOperator implements ClusterOperator {
                                                                 Networking.getPort(np.getHttpAddr())
                                                         ));
                                             });
-
-                                            yield String.join("   ", servers);
+                                            yield String.join("    ", servers);
                                         }
                                         default -> placeholderName;
                                     });
