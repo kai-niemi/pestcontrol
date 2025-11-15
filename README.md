@@ -197,21 +197,21 @@ application:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
-      # The CockroachDB version to download and install
-      # See https://www.cockroachlabs.com/docs/releases/#downloads
-      version: "v25.3.4.darwin-11.0-arm64"
-      #      version: "v25.3.4.darwin-11.0-amd64"
-      #      version: "v25.3.4.linux-amd64"
-      #      version: "v25.3.4.linux-arm64"
       # Port numbers when generating haproxy config
       load-balancer:
         rpc-addr: :26257
         http-addr: :8070
         stats-addr: :7070
-      # Baseline address and port tuples. The + sign denotes incremental port assignments.
+      # Baseline DB version and address and port tuples. The + sign denotes incremental port assignments.
       # If internal-ips is defined, each node will the prefixed with the address, thus
       # the internal-ips and nodes must be equal in size.
       baseline:
+        # The CockroachDB version to download and install
+        # See https://www.cockroachlabs.com/docs/releases/#downloads
+        version: "v25.3.4.darwin-11.0-arm64"
+        # version: "v25.3.4.darwin-11.0-amd64"
+        # version: "v25.3.4.linux-amd64"
+        # version: "v25.3.4.linux-arm64"
         # Pest Control base URL
         service-addr: localhost:9091
         # CockroachDB listen addr

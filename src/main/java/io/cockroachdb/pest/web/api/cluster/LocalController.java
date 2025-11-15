@@ -144,8 +144,7 @@ public class LocalController {
             @RequestBody @Valid Cluster cluster) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Install cluster '%s' node %d version %s"
-                .formatted(cluster.getClusterId(), nodeId, cluster.getVersion()));
+        logger.info("Install cluster '%s' node %d".formatted(cluster.getClusterId(), nodeId));
 
         String responseString = clusterOperator.install(cluster, nodeId);
 
@@ -160,8 +159,7 @@ public class LocalController {
             @RequestBody @Valid Cluster cluster) {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Wipe cluster '%s' node %d version %s"
-                .formatted(cluster.getClusterId(), nodeId, cluster.getVersion()));
+        logger.info("Wipe cluster '%s' node %d".formatted(cluster.getClusterId(), nodeId));
 
         String responseString = clusterOperator.wipe(cluster, nodeId);
 

@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.shell;
+package io.cockroachdb.pest.shell.support;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.shell.Shell;
@@ -8,7 +8,7 @@ import org.springframework.shell.jline.InteractiveShellRunner;
 import org.springframework.shell.jline.NonInteractiveShellRunner;
 import org.springframework.util.ObjectUtils;
 
-import static io.cockroachdb.pest.shell.OneOffShellRunner.PRECEDENCE;
+import static io.cockroachdb.pest.shell.support.OneOffShellRunner.PRECEDENCE;
 
 /**
  * A {@link ShellRunner} that looks for any arguments, which are then interpreted as

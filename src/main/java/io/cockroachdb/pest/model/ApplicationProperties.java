@@ -14,6 +14,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -21,6 +22,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Validated
 @ConfigurationProperties(prefix = "application", ignoreUnknownFields = false)
+@JsonIgnoreProperties({"directories", "pool", "toxiproxy"})
 public class ApplicationProperties implements InitializingBean {
     @Valid
     private Directories directories = new Directories();

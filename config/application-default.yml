@@ -20,16 +20,16 @@ application:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
-      # https://www.cockroachlabs.com/docs/releases/#downloads
-      version: "v25.3.4.darwin-11.0-arm64"
-      #      version: "v25.3.4.darwin-11.0-amd64"
-      #      version: "v25.3.4.linux-amd64"
-      #      version: "v25.3.4.linux-arm64"
       load-balancer:
         rpc-addr: :26257
         http-addr: :8070
         stats-addr: :7070
       baseline:
+        # https://www.cockroachlabs.com/docs/releases/#downloads
+        version: "v25.3.4.darwin-11.0-arm64"
+          #      version: "v25.3.4.darwin-11.0-amd64"
+          #      version: "v25.3.4.linux-amd64"
+          #      version: "v25.3.4.linux-arm64"
         service-addr: localhost:9091
         listen-addr: :+25257
         advertise-addr: :+25257
@@ -59,12 +59,12 @@ application:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"
-      version: "v25.3.4.darwin-11.0-arm64"
       load-balancer:
         rpc-addr: :26257
         http-addr: :8070
         stats-addr: :7070
       baseline:
+        version: "v25.3.4.darwin-11.0-arm64"
         service-addr: localhost:9091
         listen-addr: :+25257
         advertise-addr: :+25257
@@ -96,16 +96,12 @@ application:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
-      # https://www.cockroachlabs.com/docs/releases/#downloads
-      version: "v25.3.4.darwin-11.0-arm64"
-      #      version: "v25.3.4.darwin-11.0-amd64"
-      #      version: "v25.3.4.linux-amd64"
-      #      version: "v25.3.4.linux-arm64"
       load-balancer:
         rpc-addr: :26257
         http-addr: :8070
         stats-addr: :7070
       baseline:
+        version: "v25.3.4.darwin-11.0-arm64"
         service-addr: localhost:9091
         listen-addr: :+25257
         advertise-addr: :+25257

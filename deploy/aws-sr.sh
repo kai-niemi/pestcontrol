@@ -6,7 +6,7 @@ cluster_id="cloud-insecure"
 
 title="CockroachDB single region deployment (AWS)"
 # CRDB release version
-releaseversion="v25.3.3"
+releaseversion="v25.3.4"
 # Number of node instances in total including clients
 nodes="4"
 # Node id range hosting CRDB

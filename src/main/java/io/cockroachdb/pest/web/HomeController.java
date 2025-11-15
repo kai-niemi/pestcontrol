@@ -21,8 +21,7 @@ public class HomeController {
             model.addAttribute("clusterProperties", properties);
 
             try {
-                model.addAttribute("clusterVersion",
-                        clusterManager.getClusterVersion(properties.getClusterId()));
+                model.addAttribute("clusterVersion", clusterManager.getClusterVersion(properties.getClusterId()));
             } catch (Exception e) {
                 model.addAttribute("clusterVersion", "Unable to get version");
             }

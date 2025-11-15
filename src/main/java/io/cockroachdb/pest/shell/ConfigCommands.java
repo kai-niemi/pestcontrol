@@ -36,7 +36,7 @@ import io.cockroachdb.pest.shell.support.ClusterProvider;
 @ShellComponent
 @ShellCommandGroup(Constants.CONFIG_COMMANDS)
 public class ConfigCommands extends AbstractCommand {
-    private static final char[] ALPHA = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+    private static final char[] ALPHA = "abcdef".toCharArray();
 
     @Autowired
     @Qualifier("yamlObjectMapper")
@@ -57,20 +57,18 @@ public class ConfigCommands extends AbstractCommand {
         selectCluster(clusterId);
     }
 
-    @ShellMethod(value = "Generate application YAML for localhost", key = {"gen-local-cfg"})
+    @ShellMethod(value = "Generate application YAML for localhost", key = {"gen-cfg-local"})
     public void generateLocalConfig(
             @ShellOption(help = "Name prefix", defaultValue = "cloud") String name,
-            @ShellOption(help = "Output file path", defaultValue = "application-gen.yml") String output,
-            @ShellOption(help = "Regions without number suffix (like 'eu-central,eu-west,..')", defaultValue = "eu-central")
-            List<String> regions,
+            @ShellOption(help = "Output file path", defaultValue = ShellOption.NULL) String outputFile,
+            @ShellOption(help = "Regions without number suffix (like 'eu-central,eu-west,..')", defaultValue = "eu-central") List<String> regions,
             @ShellOption(help = "Number of zones per region (min 1)", defaultValue = "3") int numZones,
-            @ShellOption(help = "Number of nodes per zone (min 1)", defaultValue = "1") int numNodes
-
+            @ShellOption(help = "Number of nodes per zone (min 1)", defaultValue = "1") int numNodes,
+            @ShellOption(help = "Secure cluster", defaultValue = "false") Boolean secure
     ) {
         List<String> tiers = new ArrayList<>();
         List<String> zones = new ArrayList<>();
         List<String> internalIPs = new ArrayList<>();
-
         AtomicInteger regionNo = new AtomicInteger();
 
         regions.forEach(region -> {
@@ -84,25 +82,22 @@ public class ConfigCommands extends AbstractCommand {
             });
         });
 
-        generateConfig(name, output, tiers, zones, internalIPs, internalIPs);
+        generateConfig(name, outputFile, tiers, zones, internalIPs, secure);
     }
 
     @ShellMethod(value = "Generate application YAML", key = {"gen-cfg"})
     public void generateConfig(
             @ShellOption(help = "Name prefix", defaultValue = "cloud") String name,
-            @ShellOption(help = "Output file path", defaultValue = "application-gen.yml") String output,
+            @ShellOption(help = "Output file path", defaultValue = ShellOption.NULL) String outputFile,
             @ShellOption(help = "Region list") List<String> regions,
             @ShellOption(help = "Zone list") List<String> zones,
             @ShellOption(help = "Internal IP list") List<String> internalIPs,
-            @ShellOption(help = "External IP list") List<String> externalIPs
+            @ShellOption(help = "Secure cluster", defaultValue = "false") Boolean secure
     ) {
         Assert.isTrue(!regions.isEmpty(), "regions is empty");
         Assert.isTrue(!zones.isEmpty(), "zones is empty");
         Assert.state(regions.size() == zones.size(), "size of regions != size of zones");
-        Assert.state(internalIPs.size() == externalIPs.size(), "size of internal ips != size of external ips");
         Assert.state(regions.size() == internalIPs.size(), "size of regions != size of ips");
-
-        ApplicationProperties applicationProperties = new ApplicationProperties();
 
         AddressCallback callback = new AddressCallback() {
             @Override
@@ -163,40 +158,22 @@ public class ConfigCommands extends AbstractCommand {
             }
         };
 
-        Cluster insecureCluster
-                = generateClusterProperties(name, regions, zones, false, callback);
-        Cluster secureCluster
-                = generateClusterProperties(name, regions, zones, true, callback);
-        applicationProperties.setDefaultClusterId(insecureCluster.getClusterId());
-        applicationProperties.getClusters().add(insecureCluster);
-        applicationProperties.getClusters().add(secureCluster);
+        Cluster cluster = generateCluster(name, regions, zones, secure, callback);
 
-        writeApplicationProperties(applicationProperties, yaml -> {
-            System.out.println();
-            System.out.println(yaml);
+        ApplicationProperties applicationProperties = new ApplicationProperties();
+        applicationProperties.getClusters().add(cluster);
+        applicationProperties.setDefaultClusterId(cluster.getClusterId());
 
-            try {
-                logger.info("Writing generated YAML to '%s'".formatted(output));
-                Files.writeString(Path.of(output), yaml,
-                        StandardOpenOption.CREATE,
-                        StandardOpenOption.TRUNCATE_EXISTING,
-                        StandardOpenOption.WRITE);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
-    }
-
-    @ShellMethod(value = "Print application YAML", key = {"print-cfg"})
-    public void printConfig(@ShellOption(help = "Output file path", defaultValue = ShellOption.NULL) String output) {
-        writeApplicationProperties(getApplicationProperties(), yaml -> {
-            System.out.println(yaml);
-
-            if (output != null) {
+        writeYaml(applicationProperties, yaml -> {
+            if (Objects.isNull(outputFile)) {
+                System.out.println(yaml);
+            } else {
                 try {
-                    logger.info("Writing YAML to '%s'".formatted(output));
-                    Files.writeString(Path.of(output), yaml, StandardOpenOption.CREATE,
-                            StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+                    Files.writeString(Path.of(outputFile), yaml,
+                            StandardOpenOption.CREATE,
+                            StandardOpenOption.TRUNCATE_EXISTING,
+                            StandardOpenOption.WRITE);
+                    logger.info("Write generated YAML to '%s'".formatted(outputFile));
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
@@ -204,20 +181,35 @@ public class ConfigCommands extends AbstractCommand {
         });
     }
 
-    private void writeApplicationProperties(ApplicationProperties applicationProperties,
-                                            Consumer<String> yaml) {
+    @ShellMethod(value = "Print application YAML", key = {"print-cfg"})
+    public void printConfig(
+            @ShellOption(help = "Output file path", defaultValue = ShellOption.NULL) String outputFile) {
+        writeYaml(getApplicationProperties(), yaml -> {
+            if (outputFile != null) {
+                try {
+                    logger.info("Writing YAML to '%s'".formatted(outputFile));
+                    Files.writeString(Path.of(outputFile), yaml, StandardOpenOption.CREATE,
+                            StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            } else {
+                System.out.println(yaml);
+            }
+        });
+    }
+
+    private void writeYaml(ApplicationProperties applicationProperties, Consumer<String> yaml) {
         try {
             StringWriter sw = new StringWriter();
-            yamlObjectMapper
-                    .writerFor(Root.class)
-                    .writeValue(sw, new Root(applicationProperties));
+            yamlObjectMapper.writerFor(Root.class).writeValue(sw, new Root(applicationProperties));
             yaml.accept(sw.toString());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    private Cluster generateClusterProperties(
+    private Cluster generateCluster(
             String name,
             List<String> regions,
             List<String> zones,
@@ -230,8 +222,23 @@ public class ConfigCommands extends AbstractCommand {
             cluster.setClusterName("Generated");
             cluster.setClusterType(secure ? ClusterType.hosted_insecure : ClusterType.hosted_secure);
             cluster.setAdminUrl(addressCallback.serviceAddr(1));
-            cluster.setVersion("v25.3.3.linux-amd64");
         }
+
+        Cluster.BaseLine baseline = new Cluster.BaseLine();
+        baseline.setVersion("v25.3.4.linux-amd64");
+        baseline.setServiceAddr("localhost:9091");
+        baseline.setListenAddr(":+25257");
+        baseline.setAdvertiseAddr(":+25257");
+        baseline.setAdvertiseProxyAddr(":+35257");
+        baseline.setSqlAddr("localhost:+26257");
+        baseline.setHttpAddr(":+8080");
+        cluster.setBaseLine(baseline);
+
+        Cluster.LoadBalancer loadBalancer = new Cluster.LoadBalancer();
+        loadBalancer.setHttpAddr(":8070");
+        loadBalancer.setRpcAddr(":26257");
+        loadBalancer.setStatsAddr(":7070");
+        cluster.setLoadBalancer(loadBalancer);
 
         final String firstNodeIP = addressCallback.firstNodeIP();
 

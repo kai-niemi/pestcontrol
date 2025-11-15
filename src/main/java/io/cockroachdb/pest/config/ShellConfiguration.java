@@ -7,7 +7,7 @@ import org.springframework.shell.Shell;
 import org.springframework.shell.boot.NonInteractiveShellRunnerCustomizer;
 import org.springframework.shell.context.ShellContext;
 
-import io.cockroachdb.pest.shell.OneOffShellRunner;
+import io.cockroachdb.pest.shell.support.OneOffShellRunner;
 import io.cockroachdb.pest.shell.support.ClusterProvider;
 import io.cockroachdb.pest.shell.support.NodeProvider;
 

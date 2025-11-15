@@ -102,8 +102,7 @@ public class ClusterDashboardController extends AbstractSessionController {
             logger.warn("Cluster update failed (clusterId: %s)".formatted(clusterModel.getClusterId()));
 
             messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
-                    MessageModel.from("Cluster update failed!")
-                            .setMessageType(MessageType.error));
+                    MessageModel.from("Cluster status refresh failed!").setMessageType(MessageType.warning));
             messagePublisher.convertAndSendNow(TopicName.DASHBOARD_REFRESH_PAGE);
 
             clusterModel.setAvailable(false);

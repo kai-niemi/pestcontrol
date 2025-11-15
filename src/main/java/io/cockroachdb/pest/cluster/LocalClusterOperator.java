@@ -165,7 +165,7 @@ public class LocalClusterOperator implements ClusterOperator {
     @Override
     public String install(Cluster cluster, Integer nodeId) {
         List<String> args = List.of(OPERATOR_SCRIPT, "install",
-                "--version=" + cluster.getVersion()
+                "--version=" + cluster.getNodeById(nodeId).getVersion()
         );
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
@@ -174,7 +174,6 @@ public class LocalClusterOperator implements ClusterOperator {
     public String init(Cluster cluster, Integer nodeId) {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "init"));
         addClientNetworkingFlags(cluster, cluster.getNodeById(nodeId), args);
-
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
 
@@ -199,11 +198,10 @@ public class LocalClusterOperator implements ClusterOperator {
 
         Map<Locality, List<String>> joinHosts = new TreeMap<>();
 
-        cluster.getNodes()
-                .forEach(np -> {
-                    joinHosts.computeIfAbsent(Locality.fromTiers(np.getLocality()),
-                            x -> new ArrayList<>()).add(np.getRpcAddr());
-                });
+        cluster.getNodes().forEach(np -> {
+            joinHosts.computeIfAbsent(Locality.fromTiers(np.getLocality()),
+                    x -> new ArrayList<>()).add(np.getRpcAddr());
+        });
 
         Cluster.Node node = cluster.getNodeById(nodeId);
 
@@ -246,7 +244,6 @@ public class LocalClusterOperator implements ClusterOperator {
     public String sqlNode(Cluster cluster, Integer nodeId) {
         List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "sql"));
         addClientNetworkingFlags(cluster, cluster.getNodeById(nodeId), args);
-
         return executeCommand(applicationProperties.getDirectories().getBaseDirPath(), args);
     }
 

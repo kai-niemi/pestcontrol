@@ -23,8 +23,9 @@ import static io.cockroachdb.pest.util.Networking.buildAddress;
 
 @Validated
 @JsonPropertyOrder({
-        "clusterId", "clusterName", "clusterType", "version",
-        "adminUrl", "apiKey", "secure", "dataSourceProperties", "nodes"})
+        "clusterId", "clusterName", "clusterType",
+        "adminUrl", "apiKey", "secure", "dataSourceProperties",
+        "version", "loadBalancer", "baseline", "nodes"})
 public class Cluster {
     @NotNull
     @NotBlank
@@ -42,27 +43,25 @@ public class Cluster {
     @JsonIgnoreProperties({"xa", "generateUniqueName"})
     private DataSourceProperties dataSourceProperties;
 
-    private Baseline baseline = new Baseline();
+    private BaseLine baseLine = new BaseLine();
 
     private LoadBalancer loadBalancer = new LoadBalancer();
 
     private List<@Valid Node> nodes = new ArrayList<>();
-
-    private String version;
 
     private String adminUrl;
 
     private String apiKey;
 
     public void postConstruct() {
-        if (!baseline.getInternalIps().isEmpty()) {
-            Assert.state(baseline.getInternalIps().size() == nodes.size(),
+        if (!baseLine.getInternalIps().isEmpty()) {
+            Assert.state(baseLine.getInternalIps().size() == nodes.size(),
                     "internal-ip count differs from node count");
         }
 
         this.nodes.forEach(x -> {
-            x.postConstruct(baseline);
-            baseline.incrementId();
+            x.postConstruct(baseLine);
+            baseLine.incrementId();
         });
 
         this.adminUrl = Networking.resolve(adminUrl);
@@ -90,20 +89,12 @@ public class Cluster {
         this.loadBalancer = loadBalancer;
     }
 
-    public Baseline getBaseline() {
-        return baseline;
+    public BaseLine getBaseLine() {
+        return baseLine;
     }
 
-    public void setBaseline(Baseline baseline) {
-        this.baseline = baseline;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
+    public void setBaseLine(BaseLine baseLine) {
+        this.baseLine = baseLine;
     }
 
     public List<Node> getNodes() {
@@ -163,7 +154,7 @@ public class Cluster {
     }
 
     @Validated
-    public static class Baseline {
+    public static class BaseLine {
         @NotNull
         private String serviceAddr;
 
@@ -183,13 +174,23 @@ public class Cluster {
 
         private List<String> internalIps = new ArrayList<>();
 
-        public Baseline incrementId() {
+        private String version;
+
+        public BaseLine incrementId() {
             id.incrementAndGet();
             return this;
         }
 
         public Integer currentId() {
             return id.get();
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        public void setVersion(String version) {
+            this.version = version;
         }
 
         public List<String> getInternalIps() {
@@ -287,7 +288,9 @@ public class Cluster {
 
         private List<String> certHosts = List.of();
 
-        public void postConstruct(Baseline baseline) {
+        private String version;
+
+        public void postConstruct(BaseLine baseline) {
             if (certHosts.isEmpty()) {
                 setCertHosts(baseline.getCertHosts());
             }
@@ -315,6 +318,9 @@ public class Cluster {
             if (Objects.isNull(advertiseProxyAddr)) {
                 advertiseProxyAddr = buildAddress(baseline.getAdvertiseProxyAddr(),
                         baseline.currentId(), baseline.getInternalIps());
+            }
+            if (Objects.isNull(version)) {
+                version = baseline.getVersion();
             }
 
             if (Objects.isNull(id)) {
@@ -351,6 +357,14 @@ public class Cluster {
                 addr = this.advertiseAddr;
             }
             return addr;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        public void setVersion(String version) {
+            this.version = version;
         }
 
         public List<String> getCertHosts() {
