@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
-import io.cockroachdb.pest.web.LinkRelations;
-import io.cockroachdb.pest.web.api.MessageModel;
 import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.web.LinkRelations;
+import io.cockroachdb.pest.web.api.MessageModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 

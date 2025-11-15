@@ -18,7 +18,7 @@ public class ChaosCommands extends AbstractCommand {
     public void disruptNode(
             @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
         Cluster cluster = getSelectedCluster();
-        ClusterOperator clusterOperator = getSelectedClusterOperator();
+        ClusterOperator clusterOperator = getClusterOperator(cluster);
         PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.disruptNode(cluster, id));
     }
 
@@ -27,7 +27,7 @@ public class ChaosCommands extends AbstractCommand {
     public void recoverNode(
             @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
         Cluster cluster = getSelectedCluster();
-        ClusterOperator clusterOperator = getSelectedClusterOperator();
+        ClusterOperator clusterOperator = getClusterOperator(cluster);
         PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.recoverNode(cluster, id));
     }
 
@@ -36,7 +36,7 @@ public class ChaosCommands extends AbstractCommand {
     public void disruptLocality(
             @ShellOption(help = "The locality tier(s) to disrupt") String locality) {
         Cluster cluster = getSelectedCluster();
-        getSelectedClusterOperator().disruptLocality(cluster, locality);
+        getClusterOperator(cluster).disruptLocality(cluster, locality);
     }
 
     @ShellMethodAvailability("ifCockroachCloudCluster")
@@ -44,7 +44,7 @@ public class ChaosCommands extends AbstractCommand {
     public void recoverLocality(
             @ShellOption(help = "The locality tier(s) to disrupt") String locality) {
         Cluster cluster = getSelectedCluster();
-        getSelectedClusterOperator().recoverLocality(cluster, locality);
+        getClusterOperator(cluster).recoverLocality(cluster, locality);
     }
 
 }

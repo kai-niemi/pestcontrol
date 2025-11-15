@@ -3,6 +3,7 @@ package io.cockroachdb.pest.web;
 import java.util.Optional;
 
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +18,7 @@ import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.web.security.ClusterAuthenticationDetails;
 
 @Component
+@Profile("!offline")
 public class WebUtils {
     public static final String MSG_INFO = "MSG_INFO";
 

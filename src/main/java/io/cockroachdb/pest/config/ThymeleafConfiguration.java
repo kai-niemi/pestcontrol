@@ -9,7 +9,7 @@ import org.thymeleaf.templateresolver.FileTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 @Configuration
-@Profile(value = {"dev"})
+@Profile(value = {"dev", "!offline"})
 public class ThymeleafConfiguration {
     @Autowired
     private ThymeleafProperties properties;

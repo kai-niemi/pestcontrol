@@ -14,8 +14,8 @@ import org.springframework.hateoas.server.core.Relation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import io.cockroachdb.pest.web.LinkRelations;
 import io.cockroachdb.pest.util.TimeUtils;
+import io.cockroachdb.pest.web.LinkRelations;
 
 @Relation(itemRelation = LinkRelations.WORKLOAD_REL)
 //        collectionRelation = LinkRelations.WORKLOAD_INDEX_REL)

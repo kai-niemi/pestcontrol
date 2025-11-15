@@ -8,6 +8,7 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.UriTemplate;
@@ -34,8 +35,8 @@ import eu.rekawek.toxiproxy.model.ToxicDirection;
 import eu.rekawek.toxiproxy.model.ToxicType;
 
 import io.cockroachdb.pest.web.LinkRelations;
-import io.cockroachdb.pest.web.api.toxiproxy.ToxicForm;
 import io.cockroachdb.pest.web.api.cluster.WorkloadForm;
+import io.cockroachdb.pest.web.api.toxiproxy.ToxicForm;
 import io.cockroachdb.pest.workload.repository.WorkloadType;
 
 @EnableWebMvc
@@ -44,6 +45,7 @@ import io.cockroachdb.pest.workload.repository.WorkloadType;
         EnableHypermediaSupport.HypermediaType.HAL
 })
 @Configuration
+@Profile("!offline")
 public class WebConfiguration implements WebMvcConfigurer {
     @Autowired
     @Qualifier("simpleAsyncTaskExecutor")

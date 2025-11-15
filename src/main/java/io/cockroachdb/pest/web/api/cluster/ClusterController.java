@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.cockroachdb.pest.web.LinkRelations;
-import io.cockroachdb.pest.web.api.MessageModel;
 import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterTypes;
+import io.cockroachdb.pest.web.LinkRelations;
+import io.cockroachdb.pest.web.api.MessageModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 

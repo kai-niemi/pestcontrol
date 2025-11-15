@@ -46,6 +46,7 @@ public class Application {
                     .cyan("--verbose-http            enable the 'verbose-http' profile for HTTP trace logging").nl()
                     .cyan("--verbose-sql             enable the 'verbose-sql' profile for SQL trace logging").nl()
                     .cyan("--profiles [profile,..]   override spring profiles to activate").nl()
+                    .cyan("--offline                 disable the REST API and web ui").nl()
                     .cyan("--cluster [id]            set default cluster id to use in shell commands").nl()
                     .cyan("--help                    this help").nl(2);
             message.accept(console);
@@ -57,7 +58,9 @@ public class Application {
 
     public static void main(String[] args) {
         LinkedList<String> passThroughArgs = new LinkedList<>();
+
         Set<String> profiles = new HashSet<>();
+        profiles.add("default");
 
         LinkedList<String> argsList = new LinkedList<>(Arrays.asList(args));
         while (!argsList.isEmpty()) {
@@ -66,17 +69,20 @@ public class Application {
                 printHelpAndExit(ansiConsole -> {
                 });
             } else if (arg.equals("--secure") | arg.equals("--ssl")) {
-                profiles.add(ApplicationProfiles.secure.name());
+                profiles.add(ProfileNames.secure.name());
             } else if (arg.equals("--verbose")) {
-                profiles.add(ApplicationProfiles.verbose.name());
+                profiles.add(ProfileNames.verbose.name());
             } else if (arg.equals("--verbose-http")) {
-                profiles.add(ApplicationProfiles.verbose_http.name());
+                profiles.add(ProfileNames.verbose_http.name());
             } else if (arg.equals("--verbose-sql")) {
-                profiles.add(ApplicationProfiles.verbose_ssl.name());
+                profiles.add(ProfileNames.verbose_ssl.name());
+            } else if (arg.equals("--offline")) {
+                profiles.add(ProfileNames.offline.name());
             } else if (arg.equals("--profiles")) {
                 if (argsList.isEmpty()) {
                     printHelpAndExit(ansiConsole -> ansiConsole.red("Expected comma-separated list of profile names"));
                 }
+                profiles.clear();
                 profiles.addAll(StringUtils.commaDelimitedListToSet(argsList.pop()));
             } else if (arg.equals("--cluster")) {
                 if (argsList.isEmpty()) {
@@ -88,10 +94,6 @@ public class Application {
             }
         }
 
-        if (profiles.isEmpty()) {
-            profiles.add("default");
-        }
-
         if (Files.exists(Path.of(".certs", "pestcontrol.p12"))) {
             System.out.println("Found certificate truststore - adding ssl profile");
             profiles.add("ssl");
@@ -100,7 +102,8 @@ public class Application {
         System.setProperty("spring.profiles.active", String.join(",", profiles));
 
         new SpringApplicationBuilder(Application.class)
-                .web(WebApplicationType.SERVLET)
+                .web(profiles.contains(ProfileNames.offline.name())
+                        ? WebApplicationType.NONE : WebApplicationType.SERVLET)
                 .logStartupInfo(true)
                 .profiles(profiles.toArray(new String[0]))
                 .run(passThroughArgs.toArray(new String[] {}));

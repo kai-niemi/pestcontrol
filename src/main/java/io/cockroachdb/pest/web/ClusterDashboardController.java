@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
-import io.cockroachdb.pest.web.api.MessageModel;
-import io.cockroachdb.pest.web.api.MessageType;
-import io.cockroachdb.pest.web.api.cluster.NodeController;
 import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.web.api.ClusterModel;
+import io.cockroachdb.pest.web.api.MessageModel;
+import io.cockroachdb.pest.web.api.MessageType;
+import io.cockroachdb.pest.web.api.cluster.NodeController;
 import io.cockroachdb.pest.web.simp.SimpMessagePublisher;
 import io.cockroachdb.pest.web.simp.TopicName;
 
@@ -89,7 +89,7 @@ public class ClusterDashboardController extends AbstractSessionController {
                 logger.warn("Node count differs - forcing refresh");
 
                 messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
-                        MessageModel.from("Cluster topology updated").setMessageType(MessageType.information));
+                        MessageModel.from("Cluster topology changed!").setMessageType(MessageType.information));
                 messagePublisher.convertAndSendNow(TopicName.DASHBOARD_REFRESH_PAGE);
             } else {
                 x.forEach(nodeModel ->
@@ -102,7 +102,7 @@ public class ClusterDashboardController extends AbstractSessionController {
             logger.warn("Cluster update failed (clusterId: %s)".formatted(clusterModel.getClusterId()));
 
             messagePublisher.convertAndSendLater(TopicName.DASHBOARD_TOAST_MESSAGE,
-                    MessageModel.from("Cluster update failed - check log")
+                    MessageModel.from("Cluster update failed!")
                             .setMessageType(MessageType.error));
             messagePublisher.convertAndSendNow(TopicName.DASHBOARD_REFRESH_PAGE);
 

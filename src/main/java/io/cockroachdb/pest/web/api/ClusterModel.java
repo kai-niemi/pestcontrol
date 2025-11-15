@@ -9,10 +9,10 @@ import java.util.Set;
 
 import org.springframework.hateoas.Link;
 
+import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.cluster.model.NodeStatus;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.Locality;
-import io.cockroachdb.pest.cluster.model.NodeModel;
 
 public class ClusterModel {
     private final Cluster cluster;

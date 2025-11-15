@@ -6,4 +6,6 @@ public enum ClusterType {
     cloud_dedicated,
     hosted_insecure,
     hosted_secure,
+    local_insecure,
+    local_secure
 }

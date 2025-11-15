@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.cluster.model.NodeDetail;
-import io.cockroachdb.pest.cluster.model.NodeStatus;
 import io.cockroachdb.pest.cluster.model.NodeModel;
+import io.cockroachdb.pest.cluster.model.NodeStatus;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 

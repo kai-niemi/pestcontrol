@@ -21,12 +21,17 @@ public abstract class ClusterTypes {
                 .contains(clusterType);
     }
 
+    public static boolean isLocal(ClusterType clusterType) {
+        return EnumSet.of(
+                        ClusterType.local_insecure,
+                        ClusterType.local_secure)
+                .contains(clusterType);
+    }
+
     public static boolean isSecure(ClusterType clusterType) {
         return EnumSet.of(
                         ClusterType.hosted_secure,
-                        ClusterType.cloud_dedicated,
-                        ClusterType.cloud_serverless,
-                        ClusterType.cloud_standard)
+                        ClusterType.local_secure)
                 .contains(clusterType);
     }
 }

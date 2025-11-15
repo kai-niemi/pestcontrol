@@ -9,11 +9,4 @@ if [ ! -f "$APP_JARFILE" ]; then
     ln -sf target/pestcontrol.jar ${APP_JARFILE}
 fi
 
-pid=$(ps -ef | grep "java" | grep "pestcontrol.jar" | awk '{print $2}')
-
-if [ ! -x ${pid} ]; then
-   fn_print_error "Existing process ${pid} found - is it running?"
-   exit 1
-fi
-
-java -jar ${APP_JARFILE} ${app_params} $*
+java -jar ${APP_JARFILE} $*

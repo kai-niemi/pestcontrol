@@ -1,7 +1,6 @@
 package io.cockroachdb.pest.web.api;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.URI;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

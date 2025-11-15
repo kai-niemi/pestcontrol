@@ -8,6 +8,7 @@ import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -56,20 +57,7 @@ public class LocalClusterOperator implements ClusterOperator {
                     .formatted(process.pid(),
                             process.info().commandLine().orElse("")));
 
-            while (process.isAlive()) {
-                if (Thread.interrupted()) {
-                    process.destroyForcibly();
-                    break;
-                }
-                if (process.waitFor(5, TimeUnit.SECONDS)) {
-                    logger.info("Waiting for process %s (cpu time %s)..."
-                            .formatted(process.pid(),
-                                    process.info().totalCpuDuration().orElse(Duration.ofSeconds(0))));
-                    break;
-                }
-            }
-
-            int code = process.exitValue();
+            int code = process.waitFor();
 
             logger.info("Process pid %s finished with exit code %d (%s)"
                     .formatted(process.pid(),
@@ -129,11 +117,17 @@ public class LocalClusterOperator implements ClusterOperator {
 
     @Override
     public boolean supports(ClusterType clusterType) {
-        return false;
+        return EnumSet.of(ClusterType.local_insecure, ClusterType.local_secure)
+                .contains(clusterType);
     }
 
     @Override
     public String certs(Cluster cluster, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
+        if (!EnumSet.of(ClusterType.hosted_secure, ClusterType.local_secure).contains(cluster.getClusterType())) {
+            throw new UnsupportedOperationException("Cluster '%s' is not of secure type: %s"
+                    .formatted(cluster.getClusterId(), cluster.getClusterType()));
+        }
+
         // First create CA cert and key pairs
         executeCommand(applicationProperties.getDirectories().getBaseDirPath(), List.of(OPERATOR_SCRIPT, "cert"));
 
@@ -147,7 +141,7 @@ public class LocalClusterOperator implements ClusterOperator {
 
             List<String> certHosts = node.getCertHosts();
             if (certHosts.isEmpty()) {
-                throw new RuntimeException("Missing cert hosts for node: " + node.getId());
+                throw new InvalidConfigurationException("Missing cert hosts for node: " + node.getId());
             }
 
             List<String> command = new ArrayList<>(List.of(OPERATOR_SCRIPT, "node-cert"));
@@ -323,8 +317,7 @@ public class LocalClusterOperator implements ClusterOperator {
                                     placeholderName -> switch (placeholderName.toLowerCase()) {
                                         case "bind-stats" ->
                                                 "bind %s".formatted(cluster.getLoadBalancer().getStatsAddr());
-                                        case "bind-rpc" ->
-                                                "bind %s".formatted(cluster.getLoadBalancer().getRpcAddr());
+                                        case "bind-rpc" -> "bind %s".formatted(cluster.getLoadBalancer().getRpcAddr());
                                         case "servers-rpc" -> {
                                             List<String> servers = new ArrayList<>();
 

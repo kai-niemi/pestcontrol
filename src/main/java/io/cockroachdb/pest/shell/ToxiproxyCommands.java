@@ -46,13 +46,13 @@ public class ToxiproxyCommands extends AbstractCommand {
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Start toxiproxy server on local host", key = {"start-toxiproxy", "sto"})
     public void startToxiproxyServer() {
-        getSelectedClusterOperator().startToxiproxyServer();
+        getClusterOperator(getSelectedCluster()).startToxiproxyServer();
     }
 
     @ShellMethodAvailability("ifClusterSelected")
     @ShellMethod(value = "Stop toxiproxy server on local host", key = {"stop-toxiproxy", "pto"})
     public void stopToxiproxyServer() {
-        getSelectedClusterOperator().stopToxiproxyServer();
+        getClusterOperator(getSelectedCluster()).stopToxiproxyServer();
     }
 
     @ShellMethodAvailability("ifToxiproxy")

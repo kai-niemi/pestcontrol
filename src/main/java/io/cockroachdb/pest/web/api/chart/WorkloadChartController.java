@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
-import io.cockroachdb.pest.web.LinkRelations;
-import io.cockroachdb.pest.web.api.MessageModel;
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.web.AbstractSessionController;
+import io.cockroachdb.pest.web.LinkRelations;
 import io.cockroachdb.pest.web.api.ClusterModel;
+import io.cockroachdb.pest.web.api.MessageModel;
 import io.cockroachdb.pest.workload.WorkloadManager;
 import io.cockroachdb.pest.workload.model.Metrics;
 import io.cockroachdb.pest.workload.model.Workload;

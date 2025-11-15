@@ -8,14 +8,17 @@ import java.util.stream.IntStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.util.Assert;
 
+import io.cockroachdb.pest.ProfileNames;
 import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.cluster.ClusterOperators;
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.model.ClusterTypes;
 import io.cockroachdb.pest.util.PatternUtils;
 
@@ -31,13 +34,8 @@ public abstract class AbstractCommand {
     @Autowired
     private ClusterOperators clusterOperators;
 
-    protected void selectCluster(String clusterId) {
-        if (!Objects.equals("none", clusterId)) {
-            SELECTED_CLUSTER = applicationProperties.getClusterById(clusterId);
-        } else {
-            SELECTED_CLUSTER = null;
-        }
-    }
+    @Autowired
+    private Environment environment;
 
     public Availability ifClusterSelected() {
         return Objects.isNull(SELECTED_CLUSTER)
@@ -59,18 +57,35 @@ public abstract class AbstractCommand {
                 : Availability.unavailable("cluster type is not hosted!");
     }
 
-    public ApplicationProperties getApplicationProperties() {
-        return applicationProperties;
+    public Availability ifSecureCluster() {
+        return ifClusterSelected().isAvailable()
+               && ClusterTypes.isSecure(SELECTED_CLUSTER.getClusterType())
+                ? Availability.available()
+                : Availability.unavailable("cluster type is not secure!");
     }
 
-    public ClusterOperator getSelectedClusterOperator() {
-        return clusterOperators.getClusterOperator(
-                getSelectedCluster().getClusterType());
+    public ApplicationProperties getApplicationProperties() {
+        return applicationProperties;
     }
 
     public Cluster getSelectedCluster() {
         Objects.requireNonNull(SELECTED_CLUSTER, "Cluster not selected");
         return SELECTED_CLUSTER;
+    }
+
+    public ClusterOperator getClusterOperator(Cluster cluster) {
+        if (List.of(environment.getActiveProfiles()).contains(ProfileNames.offline.name())) {
+            return clusterOperators.getClusterOperator(ClusterType.local_insecure);
+        }
+        return clusterOperators.getClusterOperator(cluster.getClusterType());
+    }
+
+    protected void selectCluster(String clusterId) {
+        if (!Objects.equals("none", clusterId)) {
+            SELECTED_CLUSTER = applicationProperties.getClusterById(clusterId);
+        } else {
+            SELECTED_CLUSTER = null;
+        }
     }
 
     protected Integer nodeId(String node) {
