@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}.log/pestcontrol.log}"/>
+    <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
+
+    <logger name="org.eclipse.jetty" level="WARN"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="com.zaxxer.hikari" level="WARN"/>
+
+    <springProfile name="verbose">
+        <logger name="io.cockroachdb.pest" level="DEBUG"/>
+    </springProfile>
+
+    <springProfile name="!verbose">
+        <logger name="io.cockroachdb.pest" level="INFO"/>
+    </springProfile>
+
+    <springProfile name="verbose_sql">
+        <logger name="io.cockroachdb.pest.SQL_TRACE" level="TRACE" additivity="false">
+            <appender-ref ref="FILE"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="verbose_http">
+        <logger name="org.springframework.web.client.RestTemplate" level="DEBUG" additivity="false">
+            <appender-ref ref="FILE"/>
+        </logger>
+        <logger name="org.apache.hc.client5.http" level="DEBUG" additivity="false">
+            <appender-ref ref="FILE"/>
+        </logger>
+        <logger name="org.apache.hc.client5.http.wire" level="DEBUG" additivity="false">
+            <appender-ref ref="FILE"/>
+        </logger>
+        <logger name="org.apache.hc.client5.http.header" level="DEBUG" additivity="false">
+            <appender-ref ref="FILE"/>
+        </logger>
+    </springProfile>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

@@ -1,0 +1,12 @@
+## Profile with a truststore for SSL/TLS access to secure clusters.
+# Activate this profile if you intend to sign in to a secure, self-hosted CockroachDB cluster.
+# The truststore is created with the 'certs' command.
+spring:
+  ssl:
+    bundle:
+      jks:
+        pestcontrol:
+          truststore:
+            location: "file:.certs/pestcontrol.p12"
+            password: "cockroach"
+            type: "PKCS12"

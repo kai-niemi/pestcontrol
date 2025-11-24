@@ -1,0 +1,131 @@
+###############################################################################################################
+# Pest Control Application Configuration
+#
+# This file overrides the default application configuration properties (src/main/resources/application.yml).
+# See https://docs.spring.io/spring-boot/appendix/application-properties/index.html for all spring boot
+# properties and src/main/resources/application.yml for application defaults.
+###############################################################################################################
+server:
+  port: 9091
+application:
+  default-cluster-id: "local-insecure"
+
+  # List of pre-configured CockroachDB clusters
+  clusters:
+    - cluster-id: "local-insecure"
+      cluster-name: "Local Cluster (insecure)"
+      cluster-type: hosted_insecure
+      admin-url: "http://localhost:8080"
+      data-source-properties:
+        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
+        username: "craig"
+        password: ""
+      load-balancer:
+        rpc-addr: :26250
+        http-addr: :8070
+        stats-addr: :7070
+      baseline:
+        # https://www.cockroachlabs.com/docs/releases/#downloads
+        #  version: "v25.3.4.darwin-11.0-amd64"
+        #  version: "v25.3.4.linux-amd64"
+        #  version: "v25.3.4.linux-arm64"
+        version: "v25.3.4.darwin-11.0-arm64"
+        service-addr: localhost:9091
+        listen-addr: :+25257
+        advertise-addr: localhost
+        advertise-proxy-addr: localhost:+35257
+        sql-addr: :+26257
+        http-addr: :+8080
+      nodes:
+        - locality: "region=eu-central-1,zone=eu-central-1a"
+        - locality: "region=eu-central-1,zone=eu-central-1b"
+        - locality: "region=eu-central-1,zone=eu-central-1c"
+#        - locality: "region=eu-west-1,zone=eu-west-1a"
+#        - locality: "region=eu-west-1,zone=eu-west-1b"
+#        - locality: "region=eu-west-1,zone=eu-west-1c"
+#        - locality: "region=eu-west-2,zone=eu-west-2a"
+#        - locality: "region=eu-west-2,zone=eu-west-2b"
+#        - locality: "region=eu-west-2,zone=eu-west-2c"
+#        - locality: "region=eu-north-1,zone=eu-north-1a"
+#        - locality: "region=eu-north-1,zone=eu-north-1b"
+#        - locality: "region=eu-north-1,zone=eu-north-1c"
+
+    - cluster-id: "local-secure"
+      cluster-name: "Local Cluster (secure) with LB"
+      cluster-type: hosted_secure
+      # Use haproxy port
+      admin-url: "https://localhost:8070"
+      data-source-properties:
+        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
+        username: "craig"
+        password: "cockroach"
+      load-balancer:
+        rpc-addr: :26250
+        http-addr: :8070
+        stats-addr: :7070
+      baseline:
+        version: "v25.3.4.darwin-11.0-arm64"
+        service-addr: localhost:9091
+        listen-addr: :+25257
+        advertise-addr: localhost
+        advertise-proxy-addr: localhost:+35257
+        sql-addr: :+26257
+        http-addr: :+8080
+        cert-hosts: ${local-ip},${external-ip},${hostname},localhost,127.0.0.1
+      nodes:
+        - locality: "region=eu-central-1,zone=eu-central-1a"
+        - locality: "region=eu-central-1,zone=eu-central-1b"
+        - locality: "region=eu-central-1,zone=eu-central-1c"
+#        - locality: "region=eu-west-1,zone=eu-west-1a"
+#        - locality: "region=eu-west-1,zone=eu-west-1b"
+#        - locality: "region=eu-west-1,zone=eu-west-1c"
+#        - locality: "region=eu-west-2,zone=eu-west-2a"
+#        - locality: "region=eu-west-2,zone=eu-west-2b"
+#        - locality: "region=eu-west-2,zone=eu-west-2c"
+#        - locality: "region=eu-north-1,zone=eu-north-1a"
+#        - locality: "region=eu-north-1,zone=eu-north-1b"
+#        - locality: "region=eu-north-1,zone=eu-north-1c"
+
+
+    # Example remote insecure cluster
+    - cluster-id: "remote-insecure"
+      cluster-name: "Remote Cluster (insecure)"
+      cluster-type: hosted_insecure
+      admin-url: "http://localhost:8080"
+      data-source-properties:
+        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
+        username: "craig"
+        password: ""
+      load-balancer:
+        rpc-addr: :26257
+        http-addr: :8070
+        stats-addr: :7070
+      baseline:
+        version: "v25.3.4.darwin-11.0-arm64"
+        service-addr: localhost:9091
+        listen-addr: :+25257
+        advertise-addr: :+26257
+        advertise-proxy-addr: :+35257
+        sql-addr: :+26257
+        http-addr: :+8080
+        internal-ips:
+          - 10.1.2.3
+          - 10.1.2.4
+          - 10.1.2.5
+      nodes:
+        - locality: "region=eu-central-1,zone=eu-central-1a"
+        - locality: "region=eu-central-1,zone=eu-central-1b"
+        - locality: "region=eu-central-1,zone=eu-central-1c"
+
+    # Example cockroach cloud dedicated cluster
+    - cluster-id: "00000000-0000-0000-0000-000000000000"
+      cluster-name: "CockroachDB Cloud (odin)"
+      cluster-type: cloud_dedicated
+      # API key only needed for disruption API, see:
+      # https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys
+      api-key: "<private-key>"
+      admin-url: "https://admin-odin-qzx.cockroachlabs.cloud:8080"
+      data-source-properties:
+        url: "jdbc:postgresql://odin-qzx.aws-eu-north-1.cockroachlabs.cloud:26257/defaultdb?sslmode=require"
+        username: "craig"
+        password: "cockroach"

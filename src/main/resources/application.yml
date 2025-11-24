@@ -1,0 +1,137 @@
+########################
+# Application properties
+########################
+application:
+  # Base directories for binaries and shell scripts
+  directories:
+    base-dir: .
+    config-dir: config
+    data-dir: .datafiles
+    certs-dir: .certs
+    bin-dir: .binaries
+  # Host settings for toxiproxy
+  toxiproxy:
+    host: localhost
+    port: 8474
+  # Various resource pool settings
+  pool:
+    threadPoolMaxSize: -1
+    maxConnPerRoute: 0
+    maxTotal: 0
+########################
+# Spring boot properties
+# https://docs.spring.io/spring-boot/appendix/application-properties/index.html
+########################
+management:
+  endpoints:
+    access:
+      default: unrestricted
+    web:
+      exposure:
+        include: health,info,shutdown,env,threaddump,metrics
+      base-path: /api/actuator
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+    db:
+      enabled: false
+  metrics:
+    tags:
+      application: ${spring.application.name}
+logging:
+  pattern:
+    console: "%clr(%d{${LOG_DATEFORMAT_PATTERN:HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) [%t] %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"
+    file: "%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:%5p} [%t] %logger{49} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"
+  file:
+    name: .log/pestcontrol.log
+  logback:
+    rolling-policy:
+      max-history: 3
+server:
+  port: 9090
+spring:
+  config:
+    import: optional:file:./config/
+  output:
+    ansi:
+      enabled: always
+  profiles:
+    active: default
+  shell:
+    command:
+      stacktrace:
+        enabled: true
+      version:
+        enabled: true
+        showBuildName: true
+        showGitBranch: true
+    script:
+      enabled: true
+    interactive:
+      enabled: true
+    noninteractive:
+      enabled: true
+    history:
+      name: .log/pestcontrol.history
+
+  ## Common hikari connection pool settings for all cluster data sources
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      # The property controls the maximum size that the pool is allowed to reach,
+      # including both idle and in-use connections.
+      maximum-pool-size: 32
+      # The property controls the minimum number of idle connections that HikariCP
+      # tries to maintain in the pool, including both idle and in-use connections.
+      minimum-idle: 0
+      # The number of milliseconds before the pool initialization fails, or 0 to
+      # validate connection setup but continue with pool start, or less than zero to
+      # skip all initialization checks and start the pool without delay.
+      initialization-fail-timeout: -1
+      # Set the maximum number of milliseconds that a client will wait for a connection from the pool.
+      connection-timeout: 3000
+      # Sets the maximum number of milliseconds that the pool will wait for a connection to be validated as alive.
+      validation-timeout: 5000
+      # Controls the maximum amount of time that a connection is allowed to sit idle in the pool.
+      # Must be lower than max-lifetime, lowest is 10s
+      idle-timeout: 10000
+      # Controls the maximum lifetime of a connection in the pool. When a connection reaches this timeout,
+      # even if recently used, it will be retired from the pool. An in-use connection will never be retired,
+      # only when it is idle will it be removed.
+      # Lowest possible value is 30s.
+      max-lifetime: 30000
+      # Controls the keepalive interval for a connection in the pool.
+      keepalive-time: 0
+
+  jackson:
+    serialization:
+      indent_output: true
+    deserialization:
+      fail_on_unknown_properties: false
+      fail_on_ignored_properties: false
+    default-property-inclusion: non_null
+    locale: en_US
+
+  mvc:
+    problem-details:
+      enabled: true
+
+  http:
+    clients:
+      connect-timeout: 10s
+      read-timeout: 10s
+      redirects: dont-follow
+
+  web:
+    error:
+      whitelabel:
+        enabled: false
+      path: /error
+      include-exception: true
+      include-message: always
+      include-stacktrace: always
+      include-binding-errors: always
+
