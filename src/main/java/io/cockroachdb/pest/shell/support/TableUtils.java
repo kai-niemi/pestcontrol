@@ -1,8 +1,9 @@
 package io.cockroachdb.pest.shell.support;
 
-import org.springframework.shell.table.BorderStyle;
-import org.springframework.shell.table.TableBuilder;
-import org.springframework.shell.table.TableModel;
+
+import org.springframework.shell.jline.tui.table.BorderStyle;
+import org.springframework.shell.jline.tui.table.TableBuilder;
+import org.springframework.shell.jline.tui.table.TableModel;
 
 public abstract class TableUtils {
     private TableUtils() {

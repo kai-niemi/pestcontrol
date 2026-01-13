@@ -9,8 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.shell.Availability;
-import org.springframework.shell.standard.ShellComponent;
+import org.springframework.shell.core.command.availability.Availability;
 import org.springframework.util.Assert;
 
 import io.cockroachdb.pest.ProfileNames;
@@ -22,7 +21,6 @@ import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.model.ClusterTypes;
 import io.cockroachdb.pest.util.PatternUtils;
 
-@ShellComponent
 public abstract class AbstractCommand {
     private static Cluster SELECTED_CLUSTER;
 

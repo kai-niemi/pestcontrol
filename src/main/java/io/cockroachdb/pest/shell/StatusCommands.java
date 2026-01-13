@@ -7,10 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.mediatype.hal.HalLinkRelation;
-import org.springframework.shell.standard.ShellCommandGroup;
-import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellMethodAvailability;
+import org.springframework.shell.core.command.annotation.Command;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
 
 import io.cockroachdb.pest.model.Cluster;
@@ -22,8 +20,7 @@ import static io.cockroachdb.pest.web.LinkRelations.ACTUATORS_REL;
 import static io.cockroachdb.pest.web.LinkRelations.CURIE_NAMESPACE;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
-@ShellComponent
-@ShellCommandGroup(Constants.STATUS_COMMANDS)
+@Component
 public class StatusCommands extends AbstractCommand {
     @Autowired
     private HypermediaClient hypermediaClient;
@@ -31,8 +28,9 @@ public class StatusCommands extends AbstractCommand {
     @Value("${server.port:8080}")
     private Integer serverPort;
 
-    @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Print local IP addresses", key = {"ip"})
+    @Command(description = "Print local IP addresses", name = {"ip"},
+            group = Constants.STATUS_COMMANDS,
+            availabilityProvider = "ifClusterSelected")
     public void ip() {
         logger.info("""
                 
@@ -51,8 +49,9 @@ public class StatusCommands extends AbstractCommand {
         ));
     }
 
-    @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Print pest control agents", key = {"agents", "a"})
+    @Command(description = "Print pest control agents", name = {"agents", "a"},
+            group = Constants.STATUS_COMMANDS,
+            availabilityProvider = "ifClusterSelected")
     public void printAgents() {
         List<List<?>> tuples = new ArrayList<>();
 

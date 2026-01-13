@@ -8,13 +8,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.shell.Availability;
-import org.springframework.shell.standard.EnumValueProvider;
-import org.springframework.shell.standard.ShellCommandGroup;
-import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellMethodAvailability;
-import org.springframework.shell.standard.ShellOption;
+import org.springframework.context.annotation.Bean;
+import org.springframework.shell.core.command.annotation.Command;
+import org.springframework.shell.core.command.annotation.Option;
+import org.springframework.shell.core.command.availability.Availability;
+import org.springframework.shell.core.command.completion.CompletionProvider;
+import org.springframework.shell.core.command.completion.CompositeCompletionProvider;
+import org.springframework.shell.core.command.completion.EnumCompletionProvider;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import eu.rekawek.toxiproxy.Proxy;
@@ -28,8 +29,7 @@ import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
 
-@ShellComponent
-@ShellCommandGroup(Constants.TOXIPROXY_COMMANDS)
+@Component
 public class ToxiproxyCommands extends AbstractCommand {
     @Autowired
     private ToxiproxyClient toxiproxyClient;
@@ -43,20 +43,23 @@ public class ToxiproxyCommands extends AbstractCommand {
         }
     }
 
-    @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Start toxiproxy server on local host", key = {"start-toxiproxy", "sto"})
+    @Command(description = "Start toxiproxy server on local host", name = {"start-toxiproxy", "sto"},
+            group = Constants.TOXIPROXY_COMMANDS,
+            availabilityProvider = "ifClusterSelected")
     public void startToxiproxyServer() {
         getClusterOperator(getSelectedCluster()).startToxiproxyServer();
     }
 
-    @ShellMethodAvailability("ifClusterSelected")
-    @ShellMethod(value = "Stop toxiproxy server on local host", key = {"stop-toxiproxy", "pto"})
+    @Command(description = "Stop toxiproxy server on local host", name = {"stop-toxiproxy", "pto"},
+            group = Constants.TOXIPROXY_COMMANDS,
+            availabilityProvider = "ifClusterSelected")
     public void stopToxiproxyServer() {
         getClusterOperator(getSelectedCluster()).stopToxiproxyServer();
     }
 
-    @ShellMethodAvailability("ifToxiproxy")
-    @ShellMethod(value = "Print toxiproxy server version", key = {"proxy-version"})
+    @Command(description = "Print toxiproxy server version", name = {"proxy-version"},
+            group = Constants.TOXIPROXY_COMMANDS,
+            availabilityProvider = "ifToxiproxy")
     public void proxyVersion() {
         try {
             logger.info(toxiproxyClient.version());
@@ -65,8 +68,9 @@ public class ToxiproxyCommands extends AbstractCommand {
         }
     }
 
-    @ShellMethodAvailability("ifToxiproxy")
-    @ShellMethod(value = "Reset toxiproxy server on this host", key = {"reset-proxy"})
+    @Command(description = "Reset toxiproxy server on this host", name = {"reset-proxy"},
+            group = Constants.TOXIPROXY_COMMANDS,
+            availabilityProvider = "ifToxiproxy")
     public void resetProxy() {
         try {
             toxiproxyClient.reset();
@@ -75,8 +79,9 @@ public class ToxiproxyCommands extends AbstractCommand {
         }
     }
 
-    @ShellMethodAvailability("ifToxiproxy")
-    @ShellMethod(value = "List all toxiproxy proxies", key = {"list-proxy"})
+    @Command(description = "List all toxiproxy proxies", name = {"list-proxy"},
+            group = Constants.TOXIPROXY_COMMANDS,
+            availabilityProvider = "ifToxiproxy")
     public void listProxies() {
         try {
             List<List<?>> tuples = new ArrayList<>();
@@ -105,9 +110,10 @@ public class ToxiproxyCommands extends AbstractCommand {
         }
     }
 
-    @ShellMethodAvailability("ifToxiproxy")
-    @ShellMethod(value = "Create toxiproxy proxy for specified nodes(s)", key = {"create-proxy"})
-    public void createProxy(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
+    @Command(description = "Create toxiproxy proxy for specified nodes(s)", name = {"create-proxy"},
+            group = Constants.TOXIPROXY_COMMANDS,
+            availabilityProvider = "ifToxiproxy")
+    public void createProxy(@Option(description = "Node IDs range or 'all'",shortName = 'n', longName = "nodes") String nodes) {
         Cluster cluster = getSelectedCluster();
 
         nodeIdRange(nodes).forEach(nodeId -> {
@@ -125,9 +131,10 @@ public class ToxiproxyCommands extends AbstractCommand {
         });
     }
 
-    @ShellMethodAvailability("ifToxiproxy")
-    @ShellMethod(value = "Delete toxiproxy proxy for specified nodes(s)", key = {"delete-proxy"})
-    public void deleteProxy(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
+    @Command(description = "Delete toxiproxy proxy for specified nodes(s)", name = {"delete-proxy"},
+            group = Constants.TOXIPROXY_COMMANDS,
+            availabilityProvider = "ifToxiproxy")
+    public void deleteProxy(@Option(description = "Node IDs range or 'all'",shortName = 'n', longName = "nodes") String nodes) {
         Cluster cluster = getSelectedCluster();
 
         nodeIdRange(nodes).forEach(nodeId -> {
@@ -145,9 +152,10 @@ public class ToxiproxyCommands extends AbstractCommand {
         });
     }
 
-    @ShellMethodAvailability("ifToxiproxy")
-    @ShellMethod(value = "Enable proxy for specified nodes(s)", key = {"enable-proxy"})
-    public void enableProxy(@ShellOption(help = "Node IDs range or 'all'") String nodes) {
+    @Command(description = "Enable proxy for specified nodes(s)", name = {"enable-proxy"},
+            group = Constants.TOXIPROXY_COMMANDS,
+            availabilityProvider = "ifToxiproxy")
+    public void enableProxy(@Option(description = "Node IDs range or 'all'",shortName = 'n', longName = "nodes") String nodes) {
         Cluster cluster = getSelectedCluster();
 
         nodeIdRange(nodes).forEach(nodeId -> {
@@ -165,8 +173,9 @@ public class ToxiproxyCommands extends AbstractCommand {
         });
     }
 
-    @ShellMethodAvailability("ifToxiproxy")
-    @ShellMethod(value = "List all toxiproxy proxy toxics", key = {"list-toxics"})
+    @Command(description = "List all toxiproxy proxy toxics", name = {"list-toxics"},
+            group = Constants.TOXIPROXY_COMMANDS,
+            availabilityProvider = "ifToxiproxy")
     public void listProxyToxics() {
         try {
             List<List<?>> tuples = new ArrayList<>();
@@ -199,29 +208,36 @@ public class ToxiproxyCommands extends AbstractCommand {
         }
     }
 
-    @ShellMethodAvailability("ifToxiproxy")
-    @ShellMethod(value = "Add proxy toxic", key = {"add-toxic"})
+    @Bean
+    public CompletionProvider addToxicCompletionProvider() {
+        EnumCompletionProvider a = new EnumCompletionProvider(ToxicType.class, "--toxicType");
+        EnumCompletionProvider b = new EnumCompletionProvider(ToxicDirection.class, "--toxicDirection");
+        return new CompositeCompletionProvider(a, b);
+    }
+
+    @Command(description = "Add proxy toxic", name = {"add-toxic"},
+            group = Constants.TOXIPROXY_COMMANDS,
+            availabilityProvider = "ifToxiproxy",
+            completionProvider = "addToxicCompletionProvider")
     public void addToxic(
-            @ShellOption(help = "Node ID (1-based int)") String nodeId,
-            @ShellOption(help = "Toxic type", defaultValue = "LATENCY", valueProvider = EnumValueProvider.class)
-            ToxicType toxicType,
-            @ShellOption(help = "Toxic name", defaultValue = "latency-toxic") String name,
-            @ShellOption(help = "Link direction to affect", defaultValue = "DOWNSTREAM", valueProvider = EnumValueProvider.class)
-            ToxicDirection direction,
-            @ShellOption(help = "Probability of the toxic being applied to a link (defaults to 1.0)", defaultValue = "1.0")
+            @Option(description = "Node ID (1-based int)",shortName = 'n', longName = "nodes") String nodeId,
+            @Option(description = "Toxic type", defaultValue = "LATENCY", longName = "toxicType") ToxicType toxicType,
+            @Option(description = "Toxic name", defaultValue = "latency-toxic", longName = "name") String name,
+            @Option(description = "Link direction to affect", defaultValue = "DOWNSTREAM", longName = "direction") ToxicDirection direction,
+            @Option(description = "Probability of the toxic being applied to a link (defaults to 1.0)", defaultValue = "1.0", longName = "toxicity")
             float toxicity,
-            @ShellOption(help = "Time in milliseconds (latency toxic)", defaultValue = "150") long latency,
-            @ShellOption(help = "Time in milliseconds (latency toxic)", defaultValue = "150") long jitter,
-            @ShellOption(help = "Rate in KB/s (bandwidth toxic)", defaultValue = "33") long rate,
-            @ShellOption(help = "time in microseconds to delay each packet by (slow_close and slicer toxics)", defaultValue = "100")
+            @Option(description = "Time in milliseconds (latency toxic)", defaultValue = "150",longName = "latency") long latency,
+            @Option(description = "Time in milliseconds (latency toxic)", defaultValue = "150",longName = "jitter") long jitter,
+            @Option(description = "Rate in KB/s (bandwidth toxic)", defaultValue = "33",longName = "rate") long rate,
+            @Option(description = "time in microseconds to delay each packet by (slow_close and slicer toxics)", defaultValue = "100", longName = "delay")
             long delay,
-            @ShellOption(help = "Time in milliseconds (timeout and reset_peer toxics)", defaultValue = "1000")
+            @Option(description = "Time in milliseconds (timeout and reset_peer toxics)", defaultValue = "1000", longName = "timeout")
             long timeout,
-            @ShellOption(help = "Size in bytes of an average packet (slicer toxic)", defaultValue = "1024")
+            @Option(description = "Size in bytes of an average packet (slicer toxic)", defaultValue = "1024", longName = "avgSize")
             long averageSize,
-            @ShellOption(help = "Variation in bytes of an average packet that should be smaller than average_size (slicer toxic)", defaultValue = "256")
+            @Option(description = "Variation in bytes of an average packet that should be smaller than average_size (slicer toxic)", defaultValue = "256", longName = "sizeVar")
             long sizeVariation,
-            @ShellOption(help = "Number of bytes it should transmit before connection is closed (limit_data toxic)", defaultValue = "8192")
+            @Option(description = "Number of bytes it should transmit before connection is closed (limit_data toxic)", defaultValue = "8192", longName = "bytes")
             long bytes
     ) {
         Cluster cluster = getSelectedCluster();

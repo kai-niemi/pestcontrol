@@ -3,7 +3,8 @@ package io.cockroachdb.pest.shell.support;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.shell.table.TableModel;
+import org.springframework.shell.jline.tui.table.TableModel;
+
 
 public class ListTableModel<T> extends TableModel {
     private final List<T> data;

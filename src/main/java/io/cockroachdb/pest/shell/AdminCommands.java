@@ -12,19 +12,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.shell.standard.ShellCommandGroup;
-import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.commands.Quit;
+import org.springframework.shell.core.command.annotation.Command;
+import org.springframework.stereotype.Component;
 
 import ch.qos.logback.classic.Level;
 
 import io.cockroachdb.pest.config.DataSourceConfiguration;
 import io.cockroachdb.pest.model.ApplicationProperties;
 
-@ShellComponent
-@ShellCommandGroup(Constants.ADMIN_COMMANDS)
-public class AdminCommands implements Quit.Command {
+@Component
+public class AdminCommands {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -33,21 +30,24 @@ public class AdminCommands implements Quit.Command {
     @Autowired
     private ApplicationProperties applicationProperties;
 
-    @ShellMethod(value = "Exit the shell", key = {"quit", "exit", "q"})
+    @Command(description = "Exit the shell", name = {"quit", "exit", "q"},
+            group = Constants.ADMIN_COMMANDS)
     public void quit() {
         logger.info("Quitting");
         SpringApplication.exit(applicationContext, () -> 0);
         System.exit(0);
     }
 
-    @ShellMethod(value = "Toggle dry run for local commands", key = {"dry-run", "dr"})
+    @Command(description = "Toggle dry run for local commands", name = {
+            "dry-run", "dr"}, group = Constants.ADMIN_COMMANDS)
     public void toggleDryRun() {
         applicationProperties.setDryRunLocalCommands(!applicationProperties.isDryRunLocalCommands());
         boolean enabled = applicationProperties.isDryRunLocalCommands();
         logger.info("Dry run mode is {}", enabled ? "ENABLED" : "DISABLED");
     }
 
-    @ShellMethod(value = "Toggle SQL trace logging (verbose)", key = {"sql-trace", "t"})
+    @Command(description = "Toggle SQL trace logging (verbose)", name = {
+            "sql-trace", "t"}, group = Constants.ADMIN_COMMANDS)
     public void toggleSqlTraceLogging() {
         boolean enabled = toggleLogLevel(DataSourceConfiguration.SQL_TRACE_LOGGER);
         logger.info("SQL Trace Logging {}", enabled ? "ENABLED" : "DISABLED");
@@ -66,7 +66,7 @@ public class AdminCommands implements Quit.Command {
         }
     }
 
-    @ShellMethod(value = "Print system information", key = {"system-info", "si"})
+    @Command(description = "Print system information", name = {"system-info", "si"}, group = Constants.ADMIN_COMMANDS)
     public void systemInfo() {
         OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
         logger.info(">> OS");

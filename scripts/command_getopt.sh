@@ -33,7 +33,7 @@ fn_print_help() {
     } | column -s $'\t' -t
 
     echo -e ""
-    echo -e "Execute './pop run help' for an overview of the system."
+    echo -e "Execute './pest run help' for an overview of the system."
 }
 
 case "${getopt}" in

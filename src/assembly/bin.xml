@@ -48,8 +48,8 @@
             <directory>${project.basedir}</directory>
             <outputDirectory>.</outputDirectory>
             <includes>
-                <include>pop</include>
-                <include>popr</include>
+                <include>pest</include>
+                <include>pestr</include>
             </includes>
             <fileMode>0755</fileMode>
             <lineEnding>unix</lineEnding>

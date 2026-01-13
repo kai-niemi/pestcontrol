@@ -29,7 +29,7 @@ application:
         #  version: "v25.3.4.darwin-11.0-amd64"
         #  version: "v25.3.4.linux-amd64"
         #  version: "v25.3.4.linux-arm64"
-        version: "v25.3.4.darwin-11.0-arm64"
+        version: "v25.4.2.darwin-11.0-arm64"
         service-addr: localhost:9091
         listen-addr: :+25257
         advertise-addr: localhost

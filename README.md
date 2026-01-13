@@ -134,26 +134,26 @@ to another location.
 
 To start the app in the foreground with an interactive shell:
 
-    ./pop run
+    ./pest run
 
 To start the app in offline mode with an interactive shell (no API/web UI):
 
-    ./pop run --offline
+    ./pest run --offline
 
 To start the app in the foreground with a non-interactive shell to run a command 
 (like `status 1`) and then quit:
 
-    ./pop run status 1
+    ./pest run status 1
 
 To start the app in the background without shell:
 
-    ./pop start-service
+    ./pest start-service
 
 Now you can access the application via http://localhost:9090.
 
 To stop the app in the background:
 
-    ./pop stop-service
+    ./pest stop-service
 
 # Configuration
 
@@ -244,7 +244,7 @@ application:
 
 Start the interactive shell with:
 
-    ./pop run
+    ./pest run
 
 The commands will download and install the CockroachDB binaries, start a local insecure 
 3-node cluster, initialize the cluster and also start haproxy.
@@ -291,9 +291,9 @@ Assuming you have 3 pest control machines, host1, host2 and host3:
 scp target/pestcontrol-2.0.0-bin.tar.gz user@host1:/~
 scp target/pestcontrol-2.0.0-bin.tar.gz user@host2:/~
 scp target/pestcontrol-2.0.0-bin.tar.gz user@host3:/~
-ssh -t user@host1 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pop start-service'
-ssh -t user@host2 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pop start-service'
-ssh -t user@host3 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pop start-service'
+ssh -t user@host1 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pest start-service'
+ssh -t user@host2 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pest start-service'
+ssh -t user@host3 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pest start-service'
 ```
 
 On the control host, your local laptop/desktop for example, a cluster configuration named `remote-insecure` 
@@ -332,7 +332,7 @@ with the IP/host names setup accordingly (no need to sync it across machines):
 
 On the control host, start the interactive shell with:
 
-    ./pop run --cluster remote-insecure
+    ./pest run --cluster remote-insecure
     
 Then execute:
 

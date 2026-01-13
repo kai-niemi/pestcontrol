@@ -12,4 +12,4 @@ case "$OSTYPE" in
         ;;
 esac
 
-${rootdir}/pop run $*
+${rootdir}/pest run $*

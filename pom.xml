@@ -28,7 +28,7 @@
         <groups>unit-test</groups>
 
         <!-- Dependency versions -->
-        <spring-shell.version>3.4.1</spring-shell.version>
+        <spring-shell.version>4.0.0</spring-shell.version>
     </properties>
 
     <inceptionYear>2025</inceptionYear>
@@ -102,6 +102,11 @@
             <artifactId>spring-shell-starter</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.shell</groupId>
+            <artifactId>spring-shell-jline</artifactId>
+            <version>${spring-shell.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
@@ -143,11 +148,12 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.jline</groupId>
-            <artifactId>jline-terminal</artifactId>
-            <version>3.30.5</version>
-        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>org.jline</groupId>-->
+<!--            <artifactId>jline-terminal</artifactId>-->
+<!--            <version>3.30.5</version>-->
+<!--        </dependency>-->
 
         <!-- Support -->
         <dependency>

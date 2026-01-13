@@ -16,10 +16,11 @@ import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
-import org.springframework.shell.standard.ShellCommandGroup;
-import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellOption;
+import org.springframework.context.annotation.Bean;
+import org.springframework.shell.core.command.annotation.Command;
+import org.springframework.shell.core.command.annotation.Option;
+import org.springframework.shell.core.command.completion.CompletionProvider;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -31,10 +32,9 @@ import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.model.Root;
-import io.cockroachdb.pest.shell.support.ClusterProvider;
+import io.cockroachdb.pest.shell.support.ClusterCompletionProvider;
 
-@ShellComponent
-@ShellCommandGroup(Constants.CONFIG_COMMANDS)
+@Component
 public class ConfigCommands extends AbstractCommand {
     private static final char[] ALPHA = "abcdef".toCharArray();
 
@@ -51,20 +51,29 @@ public class ConfigCommands extends AbstractCommand {
         }
     }
 
-    @ShellMethod(value = "Select default cluster ID to use in commands", key = {"use-cluster", "use"})
-    public void useCluster(@ShellOption(help = "Cluster ID to use (must be of hosted cluster type)",
-            valueProvider = ClusterProvider.class) String clusterId) {
+    @Bean
+    public CompletionProvider addClusterCompletionProvider() {
+        return new ClusterCompletionProvider();
+    }
+
+    @Command(description = "Select default cluster ID to use in commands", name = {"use-cluster", "use"},
+            group = Constants.CONFIG_COMMANDS,
+            completionProvider = "addClusterCompletionProvider")
+    public void useCluster(
+            @Option(description = "Cluster ID to use (must be of hosted cluster type)", longName = "clusterId") String clusterId) {
         selectCluster(clusterId);
     }
 
-    @ShellMethod(value = "Generate application YAML for localhost", key = {"gen-cfg-local"})
+    @Command(description = "Generate application YAML for localhost", name = {"gen-cfg-local"},
+            group = Constants.CONFIG_COMMANDS)
     public void generateLocalConfig(
-            @ShellOption(help = "Name prefix", defaultValue = "cloud") String name,
-            @ShellOption(help = "Output file path", defaultValue = ShellOption.NULL) String outputFile,
-            @ShellOption(help = "Regions without number suffix (like 'eu-central,eu-west,..')", defaultValue = "eu-central") List<String> regions,
-            @ShellOption(help = "Number of zones per region (min 1)", defaultValue = "3") int numZones,
-            @ShellOption(help = "Number of nodes per zone (min 1)", defaultValue = "1") int numNodes,
-            @ShellOption(help = "Secure cluster", defaultValue = "false") Boolean secure
+            @Option(description = "Name prefix", defaultValue = "cloud", longName = "name") String name,
+            @Option(description = "Output file path", defaultValue = "", longName = "outputFile") String outputFile,
+            @Option(description = "Regions without number suffix (like 'eu-central,eu-west,..')", defaultValue = "eu-central", longName = "regions")
+            List<String> regions,
+            @Option(description = "Number of zones per region (min 1)", defaultValue = "3", longName = "zones") int numZones,
+            @Option(description = "Number of nodes per zone (min 1)", defaultValue = "1", longName = "nodes") int numNodes,
+            @Option(description = "Secure cluster", defaultValue = "false", longName = "secure") Boolean secure
     ) {
         List<String> tiers = new ArrayList<>();
         List<String> zones = new ArrayList<>();
@@ -85,14 +94,15 @@ public class ConfigCommands extends AbstractCommand {
         generateConfig(name, outputFile, tiers, zones, internalIPs, secure);
     }
 
-    @ShellMethod(value = "Generate application YAML", key = {"gen-cfg"})
+    @Command(description = "Generate application YAML", name = {"gen-cfg"},
+            group = Constants.CONFIG_COMMANDS)
     public void generateConfig(
-            @ShellOption(help = "Name prefix", defaultValue = "cloud") String name,
-            @ShellOption(help = "Output file path", defaultValue = ShellOption.NULL) String outputFile,
-            @ShellOption(help = "Region list") List<String> regions,
-            @ShellOption(help = "Zone list") List<String> zones,
-            @ShellOption(help = "Internal IP list") List<String> internalIPs,
-            @ShellOption(help = "Secure cluster", defaultValue = "false") Boolean secure
+            @Option(description = "Name prefix", defaultValue = "cloud", longName = "name") String name,
+            @Option(description = "Output file path", defaultValue = "", longName = "outputFile") String outputFile,
+            @Option(description = "Region list", longName = "regions") List<String> regions,
+            @Option(description = "Zone list", longName = "zones") List<String> zones,
+            @Option(description = "Internal IP list", longName = "internalIPs") List<String> internalIPs,
+            @Option(description = "Secure cluster", defaultValue = "false", longName = "secure") Boolean secure
     ) {
         Assert.isTrue(!regions.isEmpty(), "regions is empty");
         Assert.isTrue(!zones.isEmpty(), "zones is empty");
@@ -181,9 +191,10 @@ public class ConfigCommands extends AbstractCommand {
         });
     }
 
-    @ShellMethod(value = "Print application YAML", key = {"print-cfg"})
+    @Command(description = "Print application YAML", name = {"print-cfg"},
+            group = Constants.CONFIG_COMMANDS)
     public void printConfig(
-            @ShellOption(help = "Output file path", defaultValue = ShellOption.NULL) String outputFile) {
+            @Option(description = "Output file path", defaultValue = "", longName = "outputFile") String outputFile) {
         writeYaml(getApplicationProperties(), yaml -> {
             if (outputFile != null) {
                 try {

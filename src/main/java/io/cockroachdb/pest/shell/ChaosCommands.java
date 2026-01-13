@@ -1,48 +1,49 @@
 package io.cockroachdb.pest.shell;
 
-import org.springframework.shell.standard.ShellCommandGroup;
-import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellMethodAvailability;
-import org.springframework.shell.standard.ShellOption;
+import org.springframework.shell.core.command.annotation.Command;
+import org.springframework.shell.core.command.annotation.Option;
+import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.util.PatternUtils;
 
-@ShellComponent
-@ShellCommandGroup(Constants.CHAOS_COMMANDS)
+@Component
 public class ChaosCommands extends AbstractCommand {
-    @ShellMethodAvailability("ifCockroachCloudCluster")
-    @ShellMethod(value = "Disrupt specified node(s)", key = {"disrupt"})
+    @Command(description = "Disrupt specified node(s)", name = {"disrupt"}, group = Constants.CHAOS_COMMANDS,
+            availabilityProvider = "ifCockroachCloudCluster")
     public void disruptNode(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
+            @Option(description = "Node IDs as comma separated list of 1-based ints and/or range", shortName = 'n', longName = "nodes")
+            String nodes) {
         Cluster cluster = getSelectedCluster();
         ClusterOperator clusterOperator = getClusterOperator(cluster);
         PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.disruptNode(cluster, id));
     }
 
-    @ShellMethodAvailability("ifCockroachCloudCluster")
-    @ShellMethod(value = "Recover specified node(s)", key = {"recover"})
+    @Command(description = "Recover specified node(s)", name = {"recover"}, group = Constants.CHAOS_COMMANDS,
+            availabilityProvider = "ifCockroachCloudCluster")
     public void recoverNode(
-            @ShellOption(help = "Node IDs as comma separated list of 1-based ints and/or range") String nodes) {
+            @Option(description = "Node IDs as comma separated list of 1-based ints and/or range", shortName = 'n', longName = "nodes")
+            String nodes) {
         Cluster cluster = getSelectedCluster();
         ClusterOperator clusterOperator = getClusterOperator(cluster);
         PatternUtils.parseIntRange(nodes).forEach(id -> clusterOperator.recoverNode(cluster, id));
     }
 
-    @ShellMethodAvailability("ifCockroachCloudCluster")
-    @ShellMethod(value = "Disrupt nodes in a specified locality", key = {"disrupt-locality"})
+    @Command(description = "Disrupt nodes in a specified locality", name = {
+            "disrupt-locality"}, group = Constants.CHAOS_COMMANDS,
+            availabilityProvider = "ifCockroachCloudCluster")
     public void disruptLocality(
-            @ShellOption(help = "The locality tier(s) to disrupt") String locality) {
+            @Option(description = "The locality tier(s) to disrupt", longName = "locality") String locality) {
         Cluster cluster = getSelectedCluster();
         getClusterOperator(cluster).disruptLocality(cluster, locality);
     }
 
-    @ShellMethodAvailability("ifCockroachCloudCluster")
-    @ShellMethod(value = "Recover nodes in a specified locality", key = {"recover-locality"})
+    @Command(description = "Recover nodes in a specified locality", name = {
+            "recover-locality"}, group = Constants.CHAOS_COMMANDS,
+            availabilityProvider = "ifCockroachCloudCluster")
     public void recoverLocality(
-            @ShellOption(help = "The locality tier(s) to disrupt") String locality) {
+            @Option(description = "The locality tier(s) to disrupt", longName = "locality") String locality) {
         Cluster cluster = getSelectedCluster();
         getClusterOperator(cluster).recoverLocality(cluster, locality);
     }
