@@ -59,10 +59,6 @@ public class LinkRelations {
 
     public static final String LOCALITY_RECOVER_REL = "locality-recover";
 
-    public static final String WORKLOADS_REL = "workloads";
-
-    public static final String WORKLOAD_REL = "workload";
-
     public static final String CHARTS_REL = "charts";
 
     public static final String TOXIPROXY_REL = "toxiproxy";

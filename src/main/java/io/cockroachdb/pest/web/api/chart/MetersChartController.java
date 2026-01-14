@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.cockroachdb.pest.web.LinkRelations;
 import io.cockroachdb.pest.web.api.MessageModel;
-import io.cockroachdb.pest.workload.model.TimeSeries;
+import io.cockroachdb.pest.util.TimeSeries;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 

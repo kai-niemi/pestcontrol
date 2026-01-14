@@ -7,11 +7,9 @@ import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadMXBean;
 import java.util.Arrays;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.shell.core.command.CommandContext;
 import org.springframework.shell.core.command.annotation.Command;
 import org.springframework.stereotype.Component;
 
@@ -19,38 +17,30 @@ import ch.qos.logback.classic.Level;
 
 import io.cockroachdb.pest.config.DataSourceConfiguration;
 import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.shell.support.AnsiConsole;
 
 @Component
 public class AdminCommands {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Autowired
-    private ConfigurableApplicationContext applicationContext;
-
     @Autowired
     private ApplicationProperties applicationProperties;
 
-    @Command(description = "Exit the shell", name = {"quit", "exit", "q"},
-            group = Constants.ADMIN_COMMANDS)
-    public void quit() {
-        logger.info("Quitting");
-        SpringApplication.exit(applicationContext, () -> 0);
-        System.exit(0);
-    }
-
-    @Command(description = "Toggle dry run for local commands", name = {
-            "dry-run", "dr"}, group = Constants.ADMIN_COMMANDS)
-    public void toggleDryRun() {
+    @Command(description = "Toggle dry run for local commands",
+            name = {"admin", "toggle", "dry-run"},
+            group = CommandGroups.ADMIN_COMMANDS)
+    public void toggleDryRun(CommandContext commandContext) {
+        AnsiConsole console = new AnsiConsole(commandContext.outputWriter());
         applicationProperties.setDryRunLocalCommands(!applicationProperties.isDryRunLocalCommands());
         boolean enabled = applicationProperties.isDryRunLocalCommands();
-        logger.info("Dry run mode is {}", enabled ? "ENABLED" : "DISABLED");
+        console.green("Dry run mode is {}", enabled ? "ENABLED" : "DISABLED");
     }
 
-    @Command(description = "Toggle SQL trace logging (verbose)", name = {
-            "sql-trace", "t"}, group = Constants.ADMIN_COMMANDS)
-    public void toggleSqlTraceLogging() {
+    @Command(description = "Toggle SQL trace logging (verbose)",
+            name = {"admin", "toggle", "sql-trace"},
+            group = CommandGroups.ADMIN_COMMANDS)
+    public void toggleSqlTraceLogging(CommandContext commandContext) {
+        AnsiConsole console = new AnsiConsole(commandContext.outputWriter());
         boolean enabled = toggleLogLevel(DataSourceConfiguration.SQL_TRACE_LOGGER);
-        logger.info("SQL Trace Logging {}", enabled ? "ENABLED" : "DISABLED");
+        console.green("SQL Trace Logging {}", enabled ? "ENABLED" : "DISABLED");
     }
 
     private boolean toggleLogLevel(String name) {
@@ -66,38 +56,42 @@ public class AdminCommands {
         }
     }
 
-    @Command(description = "Print system information", name = {"system-info", "si"}, group = Constants.ADMIN_COMMANDS)
-    public void systemInfo() {
+    @Command(description = "Print system information",
+            name = {"admin", "info"},
+            group = CommandGroups.ADMIN_COMMANDS)
+    public void systemInfo(CommandContext commandContext) {
+        AnsiConsole console = new AnsiConsole(commandContext.outputWriter());
+
         OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
-        logger.info(">> OS");
-        logger.info(" Arch: %s | OS: %s | Version: %s".formatted(os.getArch(), os.getName(), os.getVersion()));
-        logger.info(" Available processors: %d".formatted(os.getAvailableProcessors()));
-        logger.info(" Load avg: %f".formatted(os.getSystemLoadAverage()));
+        console.green(">> OS");
+        console.yellow(" Arch: %s | OS: %s | Version: %s".formatted(os.getArch(), os.getName(), os.getVersion()));
+        console.yellow(" Available processors: %d".formatted(os.getAvailableProcessors()));
+        console.yellow(" Load avg: %f".formatted(os.getSystemLoadAverage()));
 
         RuntimeMXBean r = ManagementFactory.getRuntimeMXBean();
-        logger.info(">> Runtime");
-        logger.info(" Uptime: %s".formatted(r.getUptime()));
-        logger.info(
+        console.green(">> Runtime");
+        console.yellow(" Uptime: %s".formatted(r.getUptime()));
+        console.yellow(
                 " VM name: %s | Vendor: %s | Version: %s".formatted(r.getVmName(), r.getVmVendor(), r.getVmVersion()));
 
         ThreadMXBean t = ManagementFactory.getThreadMXBean();
-        logger.info(">> Runtime");
-        logger.info(" CPU time: %d".formatted(t.getCurrentThreadCpuTime()));
-        logger.info(" User time: %d".formatted(t.getCurrentThreadUserTime()));
-        logger.info(" Peak threads: %d".formatted(t.getPeakThreadCount()));
-        logger.info(" Thread #: %d".formatted(t.getThreadCount()));
-        logger.info(" Total started threads: %d".formatted(t.getTotalStartedThreadCount()));
+        console.green(">> Runtime");
+        console.yellow(" CPU time: %d".formatted(t.getCurrentThreadCpuTime()));
+        console.yellow(" User time: %d".formatted(t.getCurrentThreadUserTime()));
+        console.yellow(" Peak threads: %d".formatted(t.getPeakThreadCount()));
+        console.yellow(" Thread #: %d".formatted(t.getThreadCount()));
+        console.yellow(" Total started threads: %d".formatted(t.getTotalStartedThreadCount()));
 
         Arrays.stream(t.getAllThreadIds()).sequential().forEach(value -> {
-            logger.info(" Thread (%d): %s %s".formatted(value,
+            console.yellow(" Thread (%d): %s %s".formatted(value,
                     t.getThreadInfo(value).getThreadName(),
                     t.getThreadInfo(value).getThreadState().toString()
             ));
         });
 
         MemoryMXBean m = ManagementFactory.getMemoryMXBean();
-        logger.info(">> Memory");
-        logger.info(" Heap: %s".formatted(m.getHeapMemoryUsage().toString()));
-        logger.info(" Non-heap: %s".formatted(m.getNonHeapMemoryUsage().toString()));
+        console.green(">> Memory");
+        console.yellow(" Heap: %s".formatted(m.getHeapMemoryUsage().toString()));
+        console.yellow(" Non-heap: %s".formatted(m.getNonHeapMemoryUsage().toString()));
     }
 }

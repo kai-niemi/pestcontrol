@@ -7,9 +7,11 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import io.cockroachdb.pest.ProfileNames;
+
 @Configuration
 @EnableWebSocketMessageBroker
-@Profile("!offline")
+@Profile(ProfileNames.WEB)
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {

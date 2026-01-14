@@ -3,7 +3,6 @@ package io.cockroachdb.pest.shell.support;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.core.command.completion.CompletionContext;
 import org.springframework.shell.core.command.completion.CompletionProposal;
 import org.springframework.shell.core.command.completion.CompletionProvider;
@@ -12,8 +11,11 @@ import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.Cluster;
 
 public class ClusterCompletionProvider implements CompletionProvider {
-    @Autowired
-    private ApplicationProperties applicationProperties;
+    private final ApplicationProperties applicationProperties;
+
+    public ClusterCompletionProvider(ApplicationProperties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
 
     @Override
     public List<CompletionProposal> apply(CompletionContext completionContext) {

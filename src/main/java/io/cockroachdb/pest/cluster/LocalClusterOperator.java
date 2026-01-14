@@ -35,7 +35,7 @@ import io.cockroachdb.pest.util.NetworkAddress;
 public class LocalClusterOperator implements ClusterOperator {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private static final String OPERATOR_SCRIPT = "./pop";
+    private static final String OPERATOR_SCRIPT = "./pest-op";
 
     @Autowired
     private ApplicationProperties applicationProperties;

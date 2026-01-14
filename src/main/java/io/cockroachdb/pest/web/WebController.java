@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 
+import io.cockroachdb.pest.ProfileNames;
+
 /**
  * Meta-annotation for a web controller (non-api).
  */
@@ -16,6 +18,6 @@ import org.springframework.stereotype.Controller;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Controller
-@Profile("!offline")
+@Profile(ProfileNames.WEB)
 public @interface WebController {
 }

@@ -12,27 +12,4 @@ case "$OSTYPE" in
         ;;
 esac
 
-if [ ! "$(command -v curl 2> /dev/null)" ]; then
-	echo -e "[ FAIL ] Curl is not installed"
-	exit 1
-fi
-
-if [ "$(whoami)" == "root" ]; then
-    echo -e "[ FAIL ] Do NOT run as root!"
-    exit 1
-fi
-
-scriptsdir="${rootdir}/scripts"
-configdir="${rootdir}/config"
-installdir="${rootdir}/.binaries"
-certsdir="${rootdir}/.certs"
-datadir="${rootdir}/.datafiles"
-logdir="${rootdir}/.log"
-
-## Enable shell ansi colors
-ansi="on"
-
-source "${scriptsdir}/core_commands.sh"
-source "${scriptsdir}/core_functions.sh"
-
-command_getopt.sh $*
+${rootdir}/pest-op run $*

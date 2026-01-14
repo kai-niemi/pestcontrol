@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.cluster.ClusterOperator;
-import io.cockroachdb.pest.cluster.ClusterOperators;
+import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.web.LinkRelations;
 import io.cockroachdb.pest.web.api.MessageModel;
@@ -25,7 +25,7 @@ public class CloudOperatorController {
     private ClusterManager clusterManager;
 
     @Autowired
-    private ClusterOperators clusterOperators;
+    private ClusterOperatorProvider clusterOperatorProvider;
 
     @GetMapping
     public HttpEntity<MessageModel> index() {
@@ -57,7 +57,7 @@ public class CloudOperatorController {
     public ResponseEntity<Void> disruptLocality(@PathVariable("clusterId") String clusterId,
                                                 @PathVariable("tiers") String tiers) {
         Cluster cluster = clusterManager.getCluster(clusterId);
-        ClusterOperator clusterOperator = clusterOperators.getClusterOperator(cluster.getClusterType());
+        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterType());
         clusterOperator.disruptLocality(cluster, tiers);
         return ResponseEntity.ok().build();
     }
@@ -66,7 +66,7 @@ public class CloudOperatorController {
     public ResponseEntity<Void> recoverLocality(@PathVariable("clusterId") String clusterId,
                                                 @PathVariable("tiers") String tiers) {
         Cluster cluster = clusterManager.getCluster(clusterId);
-        ClusterOperator clusterOperator = clusterOperators.getClusterOperator(cluster.getClusterType());
+        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterType());
         clusterOperator.recoverLocality(cluster, tiers);
         return ResponseEntity.ok().build();
     }
@@ -75,7 +75,7 @@ public class CloudOperatorController {
     public ResponseEntity<Void> disruptNode(@PathVariable("clusterId") String clusterId,
                                             @PathVariable("nodeId") Integer id) {
         Cluster cluster = clusterManager.getCluster(clusterId);
-        ClusterOperator clusterOperator = clusterOperators.getClusterOperator(cluster.getClusterType());
+        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterType());
         clusterOperator.disruptNode(cluster, id);
         return ResponseEntity.ok().build();
     }
@@ -84,7 +84,7 @@ public class CloudOperatorController {
     public ResponseEntity<Void> recoverNode(@PathVariable("clusterId") String clusterId,
                                             @PathVariable("nodeId") Integer id) {
         Cluster cluster = clusterManager.getCluster(clusterId);
-        ClusterOperator clusterOperator = clusterOperators.getClusterOperator(cluster.getClusterType());
+        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterType());
         clusterOperator.recoverNode(cluster, id);
         return ResponseEntity.ok().build();
     }

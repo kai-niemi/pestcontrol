@@ -27,13 +27,13 @@ fn_print_help() {
     echo -e ""
     echo -e "${cyan}Operator commands to start, stop and run pestcontrol${default}"
     {
-        echo -e "${lightyellow}  start-service|s\t${default}      Start pestcontrol in non-interactive mode in the background"
-        echo -e "${lightyellow}  stop-service|p\t${default}      Stop running pestcontrol server"
-        echo -e "${lightyellow}  run-service|r\t${default}      Run pestcontrol in interactive or non-interactive mode"
+        echo -e "${lightyellow}  start-service\t${default}        Start server in non-interactive mode in the background"
+        echo -e "${lightyellow}  stop-service\t${default}        Stop server"
+        echo -e "${lightyellow}  run\t${default}        Run in interactive or non-interactive mode"
     } | column -s $'\t' -t
 
     echo -e ""
-    echo -e "Execute './pest run help' for an overview of the system."
+    echo -e "Execute './pest' and type 'help' for an overview of the system."
 }
 
 case "${getopt}" in
@@ -79,13 +79,13 @@ case "${getopt}" in
     stop-haproxy)
         command_stop_haproxy.sh $*
         ;;
-    start-service|s)
+    start-service)
         command_start_service.sh $*
         ;;
-    stop-service|p)
+    stop-service)
         command_stop_service.sh $*
         ;;
-    run-service|run|r)
+    run-service|run)
         command_run_service.sh $*
         ;;
     help|--help)

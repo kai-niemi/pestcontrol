@@ -14,8 +14,10 @@ import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
 
+import io.cockroachdb.pest.ProfileNames;
+
 @Component
-@Profile("!offline")
+@Profile(ProfileNames.WEB)
 public class SimpMessagePublisher {
     private static final int SEND_DELAY_MS = 1500;
 

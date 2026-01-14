@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.mediatype.hal.HalLinkRelation;
+import org.springframework.shell.core.command.CommandContext;
 import org.springframework.shell.core.command.annotation.Command;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
@@ -21,41 +22,44 @@ import static io.cockroachdb.pest.web.LinkRelations.CURIE_NAMESPACE;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @Component
-public class StatusCommands extends AbstractCommand {
+public class StatusCommands extends AbstractShellCommand {
     @Autowired
     private HypermediaClient hypermediaClient;
 
     @Value("${server.port:8080}")
     private Integer serverPort;
 
-    @Command(description = "Print local IP addresses", name = {"ip"},
-            group = Constants.STATUS_COMMANDS,
+    @Command(description = "Print local IP addresses",
+            name = {"status", "ip"},
+            group = CommandGroups.STATUS_COMMANDS,
             availabilityProvider = "ifClusterSelected")
-    public void ip() {
-        logger.info("""
-                
-                            Local IP: %s
-                         External IP: %s
-                            Hostname: %s
-                Hostname (canonical): %s
-                      Local API root: %s
-                   External API root: %s""".formatted(
-                NetworkAddress.getLocalIP(),
-                NetworkAddress.getExternalIP(),
-                NetworkAddress.getHostname(),
-                NetworkAddress.getCanonicalHostName(),
-                "http://%s:%d".formatted(NetworkAddress.getLocalIP(), serverPort),
-                "http://%s:%d".formatted(NetworkAddress.getExternalIP(), serverPort)
-        ));
+    public void printIP(CommandContext commandContext) {
+        System.out.println(
+                """
+                        
+                                    Local IP: %s
+                                 External IP: %s
+                                    Hostname: %s
+                        Hostname (canonical): %s
+                              Local API root: %s
+                           External API root: %s""".formatted(
+                        NetworkAddress.getLocalIP(),
+                        NetworkAddress.getExternalIP(),
+                        NetworkAddress.getHostname(),
+                        NetworkAddress.getCanonicalHostName(),
+                        "http://%s:%d".formatted(NetworkAddress.getLocalIP(), serverPort),
+                        "http://%s:%d".formatted(NetworkAddress.getExternalIP(), serverPort)
+                ));
     }
 
-    @Command(description = "Print pest control agents", name = {"agents", "a"},
-            group = Constants.STATUS_COMMANDS,
+    @Command(description = "Print pest control agents",
+            name = {"status", "agents"},
+            group = CommandGroups.STATUS_COMMANDS,
             availabilityProvider = "ifClusterSelected")
-    public void printAgents() {
+    public void printAgents(CommandContext commandContext) {
         List<List<?>> tuples = new ArrayList<>();
 
-        Cluster cluster = getSelectedCluster();
+        Cluster cluster = selectedCluster();
 
         cluster.getNodes().forEach(node -> {
             try {
@@ -90,6 +94,6 @@ public class StatusCommands extends AbstractCommand {
                             case 3 -> object.get(3);
                             default -> "??";
                         }));
-        logger.info("%n%s".formatted(table));
+        System.out.println("%n%s".formatted(table));
     }
 }

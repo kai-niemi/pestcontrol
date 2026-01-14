@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -28,25 +29,27 @@ import io.cockroachdb.pest.shell.support.AnsiConsole;
 
 @EnableConfigurationProperties
 @ConfigurationPropertiesScan
-@EnableAspectJAutoProxy(proxyTargetClass = true)
+@EnableAspectJAutoProxy
 @SpringBootApplication(exclude = {
         DataJdbcRepositoriesAutoConfiguration.class,
         DataSourceAutoConfiguration.class,
         SecurityAutoConfiguration.class,
         ManagementWebSecurityAutoConfiguration.class
 })
-public class Application {
+public class Application implements DisposableBean {
     private static void printHelpAndExit(Consumer<AnsiConsole> message) {
         try (Terminal terminal = TerminalBuilder.terminal()) {
-            AnsiConsole console = new AnsiConsole(terminal)
+            AnsiConsole console = new AnsiConsole(terminal.writer())
                     .green("Usage: java -jar pestcontrol.jar [options] [arg...]").nl(2)
-                    .yellow("Options include:").nl()
-                    .cyan("--verbose                 enable the 'verbose' profile for detailed logging").nl()
-                    .cyan("--verbose-http            enable the 'verbose-http' profile for HTTP trace logging").nl()
-                    .cyan("--verbose-sql             enable the 'verbose-sql' profile for SQL trace logging").nl()
-                    .cyan("--profiles [profile,..]   override spring profiles to activate").nl()
-                    .cyan("--offline                 disable the REST API and web ui").nl()
-                    .cyan("--cluster [id]            set default cluster id to use in shell commands").nl()
+                    .yellow("Profile Options:")
+                    .cyan("--verbose                 enable 'verbose' profile for detailed logging")
+                    .cyan("--verbose-http            enable 'verbose-http' profile for HTTP trace logging")
+                    .cyan("--verbose-sql             enable 'verbose-sql' profile for SQL trace logging")
+                    .cyan("--secure                  enable 'secure' profile")
+                    .cyan("--web                     enable 'web' profile for HTML+js front-end")
+                    .cyan("--profiles [profile,..]   override spring profiles to activate")
+                    .yellow("Other Options:")
+                    .cyan("--cluster [id]            set default cluster id to use in shell commands")
                     .cyan("--help                    this help").nl(2);
             message.accept(console);
         } catch (IOException e) {
@@ -68,13 +71,13 @@ public class Application {
                 printHelpAndExit(ansiConsole -> {
                 });
             } else if (arg.equals("--verbose")) {
-                profiles.add(ProfileNames.verbose.name());
+                profiles.add(ProfileNames.VERBOSE);
             } else if (arg.equals("--verbose-http")) {
-                profiles.add(ProfileNames.verbose_http.name());
+                profiles.add(ProfileNames.VERBOSE_HTTP);
             } else if (arg.equals("--verbose-sql")) {
-                profiles.add(ProfileNames.verbose_ssl.name());
-            } else if (arg.equals("--offline")) {
-                profiles.add(ProfileNames.offline.name());
+                profiles.add(ProfileNames.VERBOSE_SSL);
+            } else if (arg.equals("--web")) {
+                profiles.add(ProfileNames.WEB);
             } else if (arg.equals("--profiles")) {
                 if (argsList.isEmpty()) {
                     printHelpAndExit(ansiConsole -> ansiConsole.red("Expected comma-separated list of profile names"));
@@ -93,16 +96,29 @@ public class Application {
 
         if (Files.exists(Path.of(".certs", "pestcontrol.p12"))) {
             System.out.println("Found certificate truststore - adding 'secure' profile");
-            profiles.add(ProfileNames.secure.name());
+            profiles.add(ProfileNames.SECURE);
         }
 
         System.setProperty("spring.profiles.active", String.join(",", profiles));
+        if (!passThroughArgs.isEmpty()) {
+            System.setProperty("spring.shell.interactive.enabled", "false");
+        }
+
+        if (profiles.contains(ProfileNames.VERBOSE)) {
+            System.setProperty("spring.shell.debug.enabled", "true");
+            System.out.printf("Spring profiles: %s%n", String.join(",", profiles));
+            System.out.printf("Passthrough args: %s%n", String.join(",", passThroughArgs));
+        }
 
         new SpringApplicationBuilder(Application.class)
-                .web(profiles.contains(ProfileNames.offline.name())
-                        ? WebApplicationType.NONE : WebApplicationType.SERVLET)
+                .web(WebApplicationType.SERVLET)
                 .logStartupInfo(true)
                 .profiles(profiles.toArray(new String[0]))
                 .run(passThroughArgs.toArray(new String[]{}));
+    }
+
+    @Override
+    public void destroy() {
+        System.exit(0);
     }
 }

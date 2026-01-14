@@ -5,19 +5,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Component;
 
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterType;
 
 @Component
-public class ClusterOperators {
+public class ClusterOperatorProvider {
     @Autowired
     private ObjectProvider<ClusterOperator> clusterOperators;
 
-    public ClusterOperator getClusterOperator(ClusterType clusterType) {
+    public ClusterOperator clusterOperator(Cluster cluster) {
+        return clusterOperator(cluster.getClusterType());
+    }
+
+    public ClusterOperator clusterOperator(ClusterType clusterType) {
         return clusterOperators
                 .stream()
                 .filter(x -> x.supports(clusterType))
                 .min(new AnnotationAwareOrderComparator())
                 .orElseThrow(() -> new UnsupportedOperationException(
-                        "No operator found for cluster type: " + clusterType));
+                        "No cluster operator found for cluster type: " + clusterType));
     }
 }

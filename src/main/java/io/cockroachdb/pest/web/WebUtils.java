@@ -14,11 +14,12 @@ import org.springframework.web.servlet.LocaleResolver;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import io.cockroachdb.pest.ProfileNames;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.web.security.ClusterAuthenticationDetails;
 
 @Component
-@Profile("!offline")
+@Profile(ProfileNames.WEB)
 public class WebUtils {
     public static final String MSG_INFO = "MSG_INFO";
 

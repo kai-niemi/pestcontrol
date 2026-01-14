@@ -24,15 +24,21 @@ import eu.rekawek.toxiproxy.model.Toxic;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import eu.rekawek.toxiproxy.model.ToxicType;
 
+import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
 import io.cockroachdb.pest.cluster.ResourceNotFoundException;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
 
 @Component
-public class ToxiproxyCommands extends AbstractCommand {
+public class ToxiproxyCommands extends AbstractShellCommand {
+    private static final String NODE_ID_OPTION = "The node ID, ID range (1-N) or 'all' to include all nodes";
+
     @Autowired
     private ToxiproxyClient toxiproxyClient;
+
+    @Autowired
+    private ClusterOperatorProvider clusterOperatorProvider;
 
     public Availability ifToxiproxy() {
         try {
@@ -43,33 +49,37 @@ public class ToxiproxyCommands extends AbstractCommand {
         }
     }
 
-    @Command(description = "Start toxiproxy server on local host", name = {"start-toxiproxy", "sto"},
-            group = Constants.TOXIPROXY_COMMANDS,
+    @Command(description = "Start toxiproxy server on local host",
+            name = {"toxiproxy", "server", "start"},
+            group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifClusterSelected")
     public void startToxiproxyServer() {
-        getClusterOperator(getSelectedCluster()).startToxiproxyServer();
+        clusterOperatorProvider.clusterOperator(selectedCluster()).startToxiproxyServer();
     }
 
-    @Command(description = "Stop toxiproxy server on local host", name = {"stop-toxiproxy", "pto"},
-            group = Constants.TOXIPROXY_COMMANDS,
+    @Command(description = "Stop toxiproxy server on local host",
+            name = {"toxiproxy", "stop"},
+            group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifClusterSelected")
     public void stopToxiproxyServer() {
-        getClusterOperator(getSelectedCluster()).stopToxiproxyServer();
+        clusterOperatorProvider.clusterOperator(selectedCluster()).stopToxiproxyServer();
     }
 
-    @Command(description = "Print toxiproxy server version", name = {"proxy-version"},
-            group = Constants.TOXIPROXY_COMMANDS,
+    @Command(description = "Print toxiproxy server version",
+            name = {"toxiproxy", "server", "version"},
+            group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifToxiproxy")
     public void proxyVersion() {
         try {
-            logger.info(toxiproxyClient.version());
+            System.out.println(toxiproxyClient.version());
         } catch (IOException e) {
             throw new UncheckedIOException("I/O exception in toxiproxy client", e);
         }
     }
 
-    @Command(description = "Reset toxiproxy server on this host", name = {"reset-proxy"},
-            group = Constants.TOXIPROXY_COMMANDS,
+    @Command(description = "Reset toxiproxy server on this host",
+            name = {"toxiproxy", "server", "reset"},
+            group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifToxiproxy")
     public void resetProxy() {
         try {
@@ -79,8 +89,9 @@ public class ToxiproxyCommands extends AbstractCommand {
         }
     }
 
-    @Command(description = "List all toxiproxy proxies", name = {"list-proxy"},
-            group = Constants.TOXIPROXY_COMMANDS,
+    @Command(description = "List all toxiproxy proxies",
+            name = {"toxiproxy", "proxy", "list"},
+            group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifToxiproxy")
     public void listProxies() {
         try {
@@ -104,26 +115,29 @@ public class ToxiproxyCommands extends AbstractCommand {
                                 default -> "??";
                             }));
 
-            logger.info("Proxies:\n%s".formatted(table));
+            System.out.println("Proxies:\n%s".formatted(table));
         } catch (IOException e) {
             throw new UncheckedIOException("I/O exception in toxiproxy client", e);
         }
     }
 
-    @Command(description = "Create toxiproxy proxy for specified nodes(s)", name = {"create-proxy"},
-            group = Constants.TOXIPROXY_COMMANDS,
+    @Command(description = "Create toxiproxy proxy on specified nodes(s)",
+            name = {"toxiproxy", "proxy", "create"},
+            group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifToxiproxy")
-    public void createProxy(@Option(description = "Node IDs range or 'all'",shortName = 'n', longName = "nodes") String nodes) {
-        Cluster cluster = getSelectedCluster();
+    public void createProxy(
+            @Option(description = NODE_ID_OPTION, defaultValue = "1",
+                    shortName = 'n', longName = "nodeId") String id) {
+        Cluster cluster = selectedCluster();
 
-        nodeIdRange(nodes).forEach(nodeId -> {
+        nodeIdRange(id).forEach(nodeId -> {
             Cluster.Node node = cluster.getNodeById(nodeId);
 
             try {
                 Proxy proxy = toxiproxyClient.createProxy(node.getName(),
                         Objects.requireNonNull(node.getAdvertiseProxyAddr()),
                         Objects.requireNonNull(node.getListenAddr()));
-                logger.info("Added %s with listen addr %s upstream addr %s"
+                System.out.println("Added %s with listen addr %s upstream addr %s"
                         .formatted(proxy.getName(), proxy.getListen(), proxy.getUpstream()));
             } catch (IOException e) {
                 throw new UncheckedIOException("I/O exception in toxiproxy client", e);
@@ -131,20 +145,23 @@ public class ToxiproxyCommands extends AbstractCommand {
         });
     }
 
-    @Command(description = "Delete toxiproxy proxy for specified nodes(s)", name = {"delete-proxy"},
-            group = Constants.TOXIPROXY_COMMANDS,
+    @Command(description = "Delete toxiproxy proxy for specified nodes(s)",
+            name = {"toxiproxy", "proxy", "delete"},
+            group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifToxiproxy")
-    public void deleteProxy(@Option(description = "Node IDs range or 'all'",shortName = 'n', longName = "nodes") String nodes) {
-        Cluster cluster = getSelectedCluster();
+    public void deleteProxy(
+            @Option(description = NODE_ID_OPTION, defaultValue = "1",
+                    shortName = 'n', longName = "nodeId") String id) {
+        Cluster cluster = selectedCluster();
 
-        nodeIdRange(nodes).forEach(nodeId -> {
+        nodeIdRange(id).forEach(nodeId -> {
             Cluster.Node node = cluster.getNodeById(nodeId);
 
             proxyByName(node.getName())
                     .ifPresent(proxy -> {
                         try {
                             proxy.delete();
-                            logger.info("Deleted %s".formatted(proxy.getName()));
+                            System.out.println("Deleted %s".formatted(proxy.getName()));
                         } catch (IOException e) {
                             throw new UncheckedIOException("I/O exception in toxiproxy client", e);
                         }
@@ -152,20 +169,23 @@ public class ToxiproxyCommands extends AbstractCommand {
         });
     }
 
-    @Command(description = "Enable proxy for specified nodes(s)", name = {"enable-proxy"},
-            group = Constants.TOXIPROXY_COMMANDS,
+    @Command(description = "Enable proxy for specified nodes(s)",
+            name = {"toxiproxy", "proxy", "enable"},
+            group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifToxiproxy")
-    public void enableProxy(@Option(description = "Node IDs range or 'all'",shortName = 'n', longName = "nodes") String nodes) {
-        Cluster cluster = getSelectedCluster();
+    public void enableProxy(
+            @Option(description = NODE_ID_OPTION, defaultValue = "1",
+                    shortName = 'n', longName = "nodeId") String id) {
+        Cluster cluster = selectedCluster();
 
-        nodeIdRange(nodes).forEach(nodeId -> {
+        nodeIdRange(id).forEach(nodeId -> {
             Cluster.Node node = cluster.getNodeById(nodeId);
 
             proxyByName(node.getName())
                     .ifPresent(proxy -> {
                         try {
                             proxy.enable();
-                            logger.info("Enabled %s".formatted(proxy.getName()));
+                            System.out.println("Enabled %s".formatted(proxy.getName()));
                         } catch (IOException e) {
                             throw new UncheckedIOException("I/O exception in toxiproxy client", e);
                         }
@@ -173,8 +193,9 @@ public class ToxiproxyCommands extends AbstractCommand {
         });
     }
 
-    @Command(description = "List all toxiproxy proxy toxics", name = {"list-toxics"},
-            group = Constants.TOXIPROXY_COMMANDS,
+    @Command(description = "List all toxiproxy proxy toxics",
+            name = {"toxiproxy", "toxic", "list"},
+            group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifToxiproxy")
     public void listProxyToxics() {
         try {
@@ -202,7 +223,7 @@ public class ToxiproxyCommands extends AbstractCommand {
                                 default -> "??";
                             }));
 
-            logger.info("Proxy toxics:\n%s".formatted(table));
+            System.out.println("Proxy toxics:\n%s".formatted(table));
         } catch (IOException e) {
             throw new UncheckedIOException("I/O exception in toxiproxy client", e);
         }
@@ -215,20 +236,22 @@ public class ToxiproxyCommands extends AbstractCommand {
         return new CompositeCompletionProvider(a, b);
     }
 
-    @Command(description = "Add proxy toxic", name = {"add-toxic"},
-            group = Constants.TOXIPROXY_COMMANDS,
+    @Command(description = "Add proxy toxic",
+            name = {"toxiproxy", "toxic", "add"},
+            group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifToxiproxy",
             completionProvider = "addToxicCompletionProvider")
     public void addToxic(
-            @Option(description = "Node ID (1-based int)",shortName = 'n', longName = "nodes") String nodeId,
+            @Option(description = NODE_ID_OPTION, defaultValue = "1",
+                    shortName = 'n', longName = "nodeId") String id,
             @Option(description = "Toxic type", defaultValue = "LATENCY", longName = "toxicType") ToxicType toxicType,
             @Option(description = "Toxic name", defaultValue = "latency-toxic", longName = "name") String name,
             @Option(description = "Link direction to affect", defaultValue = "DOWNSTREAM", longName = "direction") ToxicDirection direction,
             @Option(description = "Probability of the toxic being applied to a link (defaults to 1.0)", defaultValue = "1.0", longName = "toxicity")
             float toxicity,
-            @Option(description = "Time in milliseconds (latency toxic)", defaultValue = "150",longName = "latency") long latency,
-            @Option(description = "Time in milliseconds (latency toxic)", defaultValue = "150",longName = "jitter") long jitter,
-            @Option(description = "Rate in KB/s (bandwidth toxic)", defaultValue = "33",longName = "rate") long rate,
+            @Option(description = "Time in milliseconds (latency toxic)", defaultValue = "150", longName = "latency") long latency,
+            @Option(description = "Time in milliseconds (latency toxic)", defaultValue = "150", longName = "jitter") long jitter,
+            @Option(description = "Rate in KB/s (bandwidth toxic)", defaultValue = "33", longName = "rate") long rate,
             @Option(description = "time in microseconds to delay each packet by (slow_close and slicer toxics)", defaultValue = "100", longName = "delay")
             long delay,
             @Option(description = "Time in milliseconds (timeout and reset_peer toxics)", defaultValue = "1000", longName = "timeout")
@@ -240,8 +263,8 @@ public class ToxiproxyCommands extends AbstractCommand {
             @Option(description = "Number of bytes it should transmit before connection is closed (limit_data toxic)", defaultValue = "8192", longName = "bytes")
             long bytes
     ) {
-        Cluster cluster = getSelectedCluster();
-        Cluster.Node node = cluster.getNodeById(Integer.parseInt(nodeId));
+        Cluster cluster = selectedCluster();
+        Cluster.Node node = cluster.getNodeById(Integer.parseInt(id));
 
         try {
             Proxy proxy = proxyByName(node.getName())
@@ -259,7 +282,7 @@ public class ToxiproxyCommands extends AbstractCommand {
             };
             toxic.setToxicity(toxicity / 100.0f);
 
-            logger.info("Added %s".formatted(toxic.getName()));
+            System.out.println("Added %s".formatted(toxic.getName()));
         } catch (IOException e) {
             throw new UncheckedIOException("I/O exception in toxiproxy client", e);
         }

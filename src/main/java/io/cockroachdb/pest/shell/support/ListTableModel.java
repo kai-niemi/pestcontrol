@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.shell.jline.tui.table.TableModel;
 
-
 public class ListTableModel<T> extends TableModel {
     private final List<T> data;
 

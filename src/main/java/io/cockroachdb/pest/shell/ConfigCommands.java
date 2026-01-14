@@ -35,67 +35,46 @@ import io.cockroachdb.pest.model.Root;
 import io.cockroachdb.pest.shell.support.ClusterCompletionProvider;
 
 @Component
-public class ConfigCommands extends AbstractCommand {
+public class ConfigCommands extends AbstractShellCommand {
     private static final char[] ALPHA = "abcdef".toCharArray();
 
     @Autowired
     @Qualifier("yamlObjectMapper")
     private ObjectMapper yamlObjectMapper;
 
+    @Autowired
+    private ApplicationProperties applicationProperties;
+
     @PostConstruct
     public void init() {
-        if (StringUtils.hasLength(getApplicationProperties().getDefaultClusterId())) {
-            useCluster(getApplicationProperties().getDefaultClusterId());
+        if (StringUtils.hasLength(applicationProperties.getDefaultClusterId())) {
+            useCluster(applicationProperties.getDefaultClusterId());
         } else {
-            useCluster(getApplicationProperties().getClusterIds().stream().findFirst().orElseThrow());
+            useCluster(applicationProperties.getClusterIds().stream().findFirst().orElseThrow());
         }
     }
 
     @Bean
-    public CompletionProvider addClusterCompletionProvider() {
-        return new ClusterCompletionProvider();
+    public CompletionProvider clusterCompletionProvider() {
+        return new ClusterCompletionProvider(applicationProperties);
     }
 
-    @Command(description = "Select default cluster ID to use in commands", name = {"use-cluster", "use"},
-            group = Constants.CONFIG_COMMANDS,
-            completionProvider = "addClusterCompletionProvider")
+    @Command(description = "Select default cluster ID to use in commands",
+            name = {"config", "use"},
+            group = CommandGroups.CONFIG_COMMANDS,
+            completionProvider = "clusterCompletionProvider")
     public void useCluster(
             @Option(description = "Cluster ID to use (must be of hosted cluster type)", longName = "clusterId") String clusterId) {
-        selectCluster(clusterId);
+        if (!Objects.equals("none", clusterId)) {
+            SELECTED_CLUSTER = applicationProperties.getClusterById(clusterId);
+        } else {
+            SELECTED_CLUSTER = null;
+        }
     }
 
-    @Command(description = "Generate application YAML for localhost", name = {"gen-cfg-local"},
-            group = Constants.CONFIG_COMMANDS)
-    public void generateLocalConfig(
-            @Option(description = "Name prefix", defaultValue = "cloud", longName = "name") String name,
-            @Option(description = "Output file path", defaultValue = "", longName = "outputFile") String outputFile,
-            @Option(description = "Regions without number suffix (like 'eu-central,eu-west,..')", defaultValue = "eu-central", longName = "regions")
-            List<String> regions,
-            @Option(description = "Number of zones per region (min 1)", defaultValue = "3", longName = "zones") int numZones,
-            @Option(description = "Number of nodes per zone (min 1)", defaultValue = "1", longName = "nodes") int numNodes,
-            @Option(description = "Secure cluster", defaultValue = "false", longName = "secure") Boolean secure
-    ) {
-        List<String> tiers = new ArrayList<>();
-        List<String> zones = new ArrayList<>();
-        List<String> internalIPs = new ArrayList<>();
-        AtomicInteger regionNo = new AtomicInteger();
-
-        regions.forEach(region -> {
-            regionNo.incrementAndGet();
-            IntStream.rangeClosed(1, numZones).forEach(zone -> {
-                IntStream.rangeClosed(1, numNodes).forEach(node -> {
-                    tiers.add(region + "-" + regionNo.get());
-                    zones.add(region + "-" + regionNo.get() + ALPHA[zone - 1 % ALPHA.length]);
-                    internalIPs.add("localhost");
-                });
-            });
-        });
-
-        generateConfig(name, outputFile, tiers, zones, internalIPs, secure);
-    }
-
-    @Command(description = "Generate application YAML", name = {"gen-cfg"},
-            group = Constants.CONFIG_COMMANDS)
+    @Command(description = "Generate application YAML",
+            name = {"config", "yaml", "gen"},
+            group = CommandGroups.CONFIG_COMMANDS)
     public void generateConfig(
             @Option(description = "Name prefix", defaultValue = "cloud", longName = "name") String name,
             @Option(description = "Output file path", defaultValue = "", longName = "outputFile") String outputFile,
@@ -183,7 +162,7 @@ public class ConfigCommands extends AbstractCommand {
                             StandardOpenOption.CREATE,
                             StandardOpenOption.TRUNCATE_EXISTING,
                             StandardOpenOption.WRITE);
-                    logger.info("Write generated YAML to '%s'".formatted(outputFile));
+                    System.out.println("Wrote generated YAML to '%s'".formatted(outputFile));
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
@@ -191,16 +170,48 @@ public class ConfigCommands extends AbstractCommand {
         });
     }
 
-    @Command(description = "Print application YAML", name = {"print-cfg"},
-            group = Constants.CONFIG_COMMANDS)
+    @Command(description = "Generate application YAML for localhost",
+            name = {"config", "yaml", "gen", "local"},
+            group = CommandGroups.CONFIG_COMMANDS)
+    public void generateLocalConfig(
+            @Option(description = "Name prefix", defaultValue = "cloud", longName = "name") String name,
+            @Option(description = "Output file path", defaultValue = "", longName = "outputFile") String outputFile,
+            @Option(description = "Regions without number suffix (like 'eu-central,eu-west,..')", defaultValue = "eu-central", longName = "regions")
+            List<String> regions,
+            @Option(description = "Number of zones per region (min 1)", defaultValue = "3", longName = "zones") int numZones,
+            @Option(description = "Number of nodes per zone (min 1)", defaultValue = "1", longName = "nodes") int numNodes,
+            @Option(description = "Secure cluster", defaultValue = "false", longName = "secure") Boolean secure
+    ) {
+        List<String> tiers = new ArrayList<>();
+        List<String> zones = new ArrayList<>();
+        List<String> internalIPs = new ArrayList<>();
+        AtomicInteger regionNo = new AtomicInteger();
+
+        regions.forEach(region -> {
+            regionNo.incrementAndGet();
+            IntStream.rangeClosed(1, numZones).forEach(zone -> {
+                IntStream.rangeClosed(1, numNodes).forEach(node -> {
+                    tiers.add(region + "-" + regionNo.get());
+                    zones.add(region + "-" + regionNo.get() + ALPHA[zone - 1 % ALPHA.length]);
+                    internalIPs.add("localhost");
+                });
+            });
+        });
+
+        generateConfig(name, outputFile, tiers, zones, internalIPs, secure);
+    }
+
+    @Command(description = "Print application YAML",
+            name = {"config", "yaml", "print"},
+            group = CommandGroups.CONFIG_COMMANDS)
     public void printConfig(
             @Option(description = "Output file path", defaultValue = "", longName = "outputFile") String outputFile) {
-        writeYaml(getApplicationProperties(), yaml -> {
+        writeYaml(applicationProperties, yaml -> {
             if (outputFile != null) {
                 try {
-                    logger.info("Writing YAML to '%s'".formatted(outputFile));
                     Files.writeString(Path.of(outputFile), yaml, StandardOpenOption.CREATE,
                             StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+                    System.out.println("Wrote YAML to '%s'".formatted(outputFile));
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }

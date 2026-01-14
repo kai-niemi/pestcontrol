@@ -68,9 +68,6 @@ public class ClusterController {
         model.add(linkTo(methodOn(NodeController.class)
                 .index(clusterId))
                 .withRel(LinkRelations.NODES_REL));
-        model.add(linkTo(methodOn(WorkloadController.class)
-                .index(clusterId))
-                .withRel(LinkRelations.WORKLOADS_REL));
 
         if (ClusterTypes.isHosted(cluster.getClusterType())) {
             model.add(linkTo(methodOn(LocalOperatorController.class)

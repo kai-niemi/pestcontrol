@@ -25,7 +25,7 @@ public class ShellPromptProvider implements PromptProvider {
             sb.append(" $ ", AttributedStyle.DEFAULT
                     .foreground(AttributedStyle.BLUE | AttributedStyle.BRIGHT));
         } else {
-            Cluster cluster = configCommands.getSelectedCluster();
+            Cluster cluster = configCommands.selectedCluster();
             sb.append(" (", AttributedStyle.DEFAULT
                     .foreground(AttributedStyle.BLUE | AttributedStyle.BRIGHT));
             sb.append(cluster.getClusterId(), AttributedStyle.DEFAULT

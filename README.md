@@ -134,26 +134,26 @@ to another location.
 
 To start the app in the foreground with an interactive shell:
 
-    ./pest run
+    ./pest
 
-To start the app in offline mode with an interactive shell (no API/web UI):
+To start the app with the web UI enabled:
 
-    ./pest run --offline
+    ./pest --web
 
 To start the app in the foreground with a non-interactive shell to run a command 
 (like `status 1`) and then quit:
 
-    ./pest run status 1
+    ./pest node status -n 1
 
 To start the app in the background without shell:
 
-    ./pest start-service
+    ./pest-op start-service
 
 Now you can access the application via http://localhost:9090.
 
 To stop the app in the background:
 
-    ./pest stop-service
+    ./pest-op stop-service
 
 # Configuration
 
@@ -244,17 +244,17 @@ application:
 
 Start the interactive shell with:
 
-    ./pest run
+    ./pest
 
 The commands will download and install the CockroachDB binaries, start a local insecure 
 3-node cluster, initialize the cluster and also start haproxy.
     
 ````shell
-install
-start 1-3
-init 
-gen-haproxy
-start-haproxy
+node install
+node start -n 1-3
+node init 
+haproxy gen
+haproxy start
 quit
 ````
 
@@ -265,12 +265,13 @@ These commands will download and install the CockroachDB binaries, start a local
 
 ```shell
 use --clusterId local-secure
-install
-certs
-start 1-3
-init
-gen-haproxy
-start-haproxy
+node install
+node certs
+node start -n 1-3
+node init 
+haproxy gen
+haproxy start
+quit
 ```
 
 The secure mode uses self-signed CA certificates and keys stored in the `.certs` directory, 
@@ -291,9 +292,9 @@ Assuming you have 3 pest control machines, host1, host2 and host3:
 scp target/pestcontrol-2.0.0-bin.tar.gz user@host1:/~
 scp target/pestcontrol-2.0.0-bin.tar.gz user@host2:/~
 scp target/pestcontrol-2.0.0-bin.tar.gz user@host3:/~
-ssh -t user@host1 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pest start-service'
-ssh -t user@host2 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pest start-service'
-ssh -t user@host3 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pest start-service'
+ssh -t user@host1 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pest-op start-service'
+ssh -t user@host2 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pest-op start-service'
+ssh -t user@host3 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pest-op start-service'
 ```
 
 On the control host, your local laptop/desktop for example, a cluster configuration named `remote-insecure` 
@@ -332,14 +333,14 @@ with the IP/host names setup accordingly (no need to sync it across machines):
 
 On the control host, start the interactive shell with:
 
-    ./pest run --cluster remote-insecure
+    ./pest --cluster remote-insecure
     
 Then execute:
 
 ```shell
-install 1-3
-start 1-3
-init 1
+node install -n 1-3
+node start -n 1-3
+node init
 ```
 
 ## Remarks

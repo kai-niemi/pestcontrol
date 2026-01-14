@@ -6,12 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.cockroachdb.pest.workload.model.TimeSeries;
+import io.cockroachdb.pest.util.TimeSeries;
 import io.micrometer.core.instrument.MeterRegistry;
 
 @Configuration
 public class InstrumentationConfiguration {
-    @SuppressWarnings("DataFlowIssue")
     @Bean
     public TimeSeries storageTimeSeries(@Autowired MeterRegistry registry) {
         return new TimeSeries("storage", registry, () -> List.of(
@@ -20,7 +19,6 @@ public class InstrumentationConfiguration {
         ));
     }
 
-    @SuppressWarnings("DataFlowIssue")
     @Bean
     public TimeSeries heapTimeSeries(@Autowired MeterRegistry registry) {
         return new TimeSeries("heap", registry, () -> List.of(
@@ -30,7 +28,6 @@ public class InstrumentationConfiguration {
         ));
     }
 
-    @SuppressWarnings("DataFlowIssue")
     @Bean
     public TimeSeries threadPoolTimeSeries(@Autowired MeterRegistry registry) {
         return new TimeSeries("threads", registry, () -> List.of(
@@ -39,7 +36,6 @@ public class InstrumentationConfiguration {
         ));
     }
 
-    @SuppressWarnings("DataFlowIssue")
     @Bean
     public TimeSeries cpuTimeSeries(@Autowired MeterRegistry registry) {
         return new TimeSeries("system", registry, () -> List.of(

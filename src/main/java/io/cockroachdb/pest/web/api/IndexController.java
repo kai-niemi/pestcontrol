@@ -9,7 +9,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.cockroachdb.pest.web.LinkRelations;
 import io.cockroachdb.pest.web.api.chart.MetersChartController;
-import io.cockroachdb.pest.web.api.chart.WorkloadChartController;
 import io.cockroachdb.pest.web.api.cluster.ClusterController;
 import io.cockroachdb.pest.web.api.toxiproxy.ToxiproxyController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -34,10 +33,6 @@ public class IndexController {
                         .withTitle("Toxiproxy controls resource"))
                 .add(linkTo(methodOn(MetersChartController.class)
                         .index())
-                        .withRel(LinkRelations.CHARTS_REL)
-                        .withTitle("Chart time-series resource"))
-                .add(linkTo(methodOn(WorkloadChartController.class)
-                        .index(null))
                         .withRel(LinkRelations.CHARTS_REL)
                         .withTitle("Chart time-series resource"))
                 .add(Link.of(ServletUriComponentsBuilder.fromCurrentContextPath()

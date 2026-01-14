@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.workload.model;
+package io.cockroachdb.pest.util;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
