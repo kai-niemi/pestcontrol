@@ -18,9 +18,9 @@ import org.springframework.web.server.ServerErrorException;
 
 import io.cockroachdb.pest.cluster.model.DisruptorSpecifications;
 import io.cockroachdb.pest.cluster.model.RegionalDisruptorSpecification;
-import io.cockroachdb.pest.model.Cluster;
-import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.model.Locality;
+import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.domain.ClusterType;
+import io.cockroachdb.pest.domain.Locality;
 
 @Component
 public class CloudClusterOperator implements ClusterOperator {

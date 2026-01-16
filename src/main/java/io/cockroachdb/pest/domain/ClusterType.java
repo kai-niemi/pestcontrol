@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.model;
+package io.cockroachdb.pest.domain;
 
 public enum ClusterType {
     cloud_serverless,

@@ -15,7 +15,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import jakarta.servlet.http.HttpServletRequest;
 
 import io.cockroachdb.pest.ProfileNames;
-import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.domain.Cluster;
 import io.cockroachdb.pest.web.security.ClusterAuthenticationDetails;
 
 @Component

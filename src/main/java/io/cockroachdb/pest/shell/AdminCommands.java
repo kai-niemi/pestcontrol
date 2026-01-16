@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import ch.qos.logback.classic.Level;
 
 import io.cockroachdb.pest.config.DataSourceConfiguration;
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.domain.ApplicationProperties;
 import io.cockroachdb.pest.shell.support.AnsiConsole;
 
 @Component
@@ -31,7 +31,7 @@ public class AdminCommands {
         AnsiConsole console = new AnsiConsole(commandContext.outputWriter());
         applicationProperties.setDryRunLocalCommands(!applicationProperties.isDryRunLocalCommands());
         boolean enabled = applicationProperties.isDryRunLocalCommands();
-        console.green("Dry run mode is {}", enabled ? "ENABLED" : "DISABLED");
+        console.green("Dry run mode %s", enabled ? "ENABLED" : "DISABLED");
     }
 
     @Command(description = "Toggle SQL trace logging (verbose)",
@@ -40,7 +40,7 @@ public class AdminCommands {
     public void toggleSqlTraceLogging(CommandContext commandContext) {
         AnsiConsole console = new AnsiConsole(commandContext.outputWriter());
         boolean enabled = toggleLogLevel(DataSourceConfiguration.SQL_TRACE_LOGGER);
-        console.green("SQL Trace Logging {}", enabled ? "ENABLED" : "DISABLED");
+        console.green("SQL Trace Logging %s", enabled ? "ENABLED" : "DISABLED");
     }
 
     private boolean toggleLogLevel(String name) {

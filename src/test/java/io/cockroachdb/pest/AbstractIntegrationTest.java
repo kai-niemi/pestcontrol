@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.test.context.ActiveProfiles;
 
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.domain.ApplicationProperties;
 
 @SpringBootTest(classes = {Application.class}, useMainMethod = SpringBootTest.UseMainMethod.NEVER)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

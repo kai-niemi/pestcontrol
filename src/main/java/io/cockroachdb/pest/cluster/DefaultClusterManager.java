@@ -27,9 +27,9 @@ import io.cockroachdb.pest.cluster.model.NodeDetails;
 import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.cluster.model.NodeStatus;
 import io.cockroachdb.pest.config.RestClientProvider;
-import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.Cluster;
-import io.cockroachdb.pest.model.ClusterType;
+import io.cockroachdb.pest.domain.ApplicationProperties;
+import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.domain.ClusterType;
 
 @Component
 public class DefaultClusterManager implements ClusterManager {

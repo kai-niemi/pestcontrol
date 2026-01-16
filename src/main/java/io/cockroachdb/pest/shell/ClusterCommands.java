@@ -3,35 +3,75 @@ package io.cockroachdb.pest.shell;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.mediatype.hal.HalLinkRelation;
 import org.springframework.shell.core.command.CommandContext;
 import org.springframework.shell.core.command.annotation.Command;
+import org.springframework.shell.core.command.annotation.Option;
+import org.springframework.shell.core.command.completion.CompletionProvider;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResourceAccessException;
 
-import io.cockroachdb.pest.model.Cluster;
+import jakarta.annotation.PostConstruct;
+
+import io.cockroachdb.pest.domain.ApplicationProperties;
+import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.shell.support.ClusterCompletionProvider;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
 import io.cockroachdb.pest.util.HypermediaClient;
-import io.cockroachdb.pest.util.NetworkAddress;
+import io.cockroachdb.pest.domain.NetworkAddress;
 import static io.cockroachdb.pest.web.LinkRelations.ACTUATORS_REL;
 import static io.cockroachdb.pest.web.LinkRelations.CURIE_NAMESPACE;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @Component
-public class StatusCommands extends AbstractShellCommand {
+public class ClusterCommands extends AbstractShellCommand {
+    @Autowired
+    private ApplicationProperties applicationProperties;
+
     @Autowired
     private HypermediaClient hypermediaClient;
 
     @Value("${server.port:8080}")
     private Integer serverPort;
 
+    @PostConstruct
+    public void init() {
+        if (StringUtils.hasLength(applicationProperties.getDefaultClusterId())) {
+            useCluster(applicationProperties.getDefaultClusterId());
+        } else {
+            useCluster(applicationProperties.getClusterIds().stream().findFirst().orElseThrow());
+        }
+    }
+
+    @Bean
+    public CompletionProvider clusterCompletionProvider() {
+        return new ClusterCompletionProvider(applicationProperties);
+    }
+
+    @Command(description = "Select default cluster ID to use in commands",
+            name = {"cluster", "use"},
+            group = CommandGroups.CLUSTER_COMMANDS,
+            completionProvider = "clusterCompletionProvider")
+    public void useCluster(
+            @Option(description = "Cluster ID to use (must be of hosted cluster type)", longName = "clusterId")
+            String clusterId) {
+        if (!Objects.equals("none", clusterId)) {
+            SELECTED_CLUSTER = applicationProperties.getClusterById(clusterId);
+        } else {
+            SELECTED_CLUSTER = null;
+        }
+    }
+
     @Command(description = "Print local IP addresses",
-            name = {"status", "ip"},
-            group = CommandGroups.STATUS_COMMANDS,
+            name = {"cluster", "ip"},
+            group = CommandGroups.CLUSTER_COMMANDS,
             availabilityProvider = "ifClusterSelected")
     public void printIP(CommandContext commandContext) {
         System.out.println(
@@ -53,8 +93,8 @@ public class StatusCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Print pest control agents",
-            name = {"status", "agents"},
-            group = CommandGroups.STATUS_COMMANDS,
+            name = {"cluster", "agents"},
+            group = CommandGroups.CLUSTER_COMMANDS,
             availabilityProvider = "ifClusterSelected")
     public void printAgents(CommandContext commandContext) {
         List<List<?>> tuples = new ArrayList<>();
@@ -94,6 +134,6 @@ public class StatusCommands extends AbstractShellCommand {
                             case 3 -> object.get(3);
                             default -> "??";
                         }));
-        System.out.println("%n%s".formatted(table));
+        System.out.printf("%n%s%n", table);
     }
 }

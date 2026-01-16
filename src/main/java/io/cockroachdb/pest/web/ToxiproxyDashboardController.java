@@ -3,6 +3,7 @@ package io.cockroachdb.pest.web;
 import java.util.concurrent.Callable;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -14,12 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
 
+import io.cockroachdb.pest.ProfileNames;
 import io.cockroachdb.pest.web.api.toxiproxy.ProxyForm;
 import io.cockroachdb.pest.web.api.toxiproxy.ToxicForm;
 import io.cockroachdb.pest.web.api.toxiproxy.ToxiproxyAccessException;
 import io.cockroachdb.pest.web.api.toxiproxy.ToxiproxyController;
 
 @WebController
+@Profile(ProfileNames.WEB)
 @RequestMapping("/proxy")
 public class ToxiproxyDashboardController {
     @Autowired

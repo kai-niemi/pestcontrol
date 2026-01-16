@@ -24,7 +24,7 @@ import org.springframework.web.context.request.async.CallableProcessingIntercept
 import org.springframework.web.context.request.async.TimeoutCallableProcessingInterceptor;
 
 import io.cockroachdb.pest.ProfileNames;
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.domain.ApplicationProperties;
 
 @Configuration
 @EnableAsync

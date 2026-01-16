@@ -14,8 +14,8 @@ import org.springframework.hateoas.client.Hop;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import io.cockroachdb.pest.model.Cluster;
-import io.cockroachdb.pest.model.ClusterType;
+import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.domain.ClusterType;
 import io.cockroachdb.pest.util.HypermediaClient;
 import io.cockroachdb.pest.web.LinkRelations;
 import static io.cockroachdb.pest.web.LinkRelations.CERTS_REL;

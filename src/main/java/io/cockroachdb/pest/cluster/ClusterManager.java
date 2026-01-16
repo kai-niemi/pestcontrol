@@ -5,7 +5,7 @@ import java.util.List;
 import io.cockroachdb.pest.cluster.model.NodeDetail;
 import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.cluster.model.NodeStatus;
-import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.domain.Cluster;
 
 public interface ClusterManager {
     Cluster getCluster(String clusterId);

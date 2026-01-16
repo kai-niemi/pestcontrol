@@ -7,8 +7,8 @@ import org.springframework.shell.core.command.completion.CompletionContext;
 import org.springframework.shell.core.command.completion.CompletionProposal;
 import org.springframework.shell.core.command.completion.CompletionProvider;
 
-import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.domain.ApplicationProperties;
+import io.cockroachdb.pest.domain.Cluster;
 
 public class ClusterCompletionProvider implements CompletionProvider {
     private final ApplicationProperties applicationProperties;

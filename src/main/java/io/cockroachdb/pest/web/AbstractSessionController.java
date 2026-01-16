@@ -6,7 +6,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.domain.Cluster;
 import io.cockroachdb.pest.web.api.ClusterModel;
 
 @SessionAttributes("model")

@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.model;
+package io.cockroachdb.pest.domain;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

@@ -7,8 +7,8 @@ import java.util.stream.IntStream;
 
 import org.springframework.shell.core.command.availability.Availability;
 
-import io.cockroachdb.pest.model.Cluster;
-import io.cockroachdb.pest.model.ClusterTypes;
+import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.domain.ClusterTypes;
 import io.cockroachdb.pest.util.PatternUtils;
 
 public abstract class AbstractShellCommand {

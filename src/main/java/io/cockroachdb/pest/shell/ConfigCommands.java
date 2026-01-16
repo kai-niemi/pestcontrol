@@ -16,23 +16,17 @@ import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.shell.core.command.annotation.Command;
 import org.springframework.shell.core.command.annotation.Option;
-import org.springframework.shell.core.command.completion.CompletionProvider;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.annotation.PostConstruct;
-
-import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.Cluster;
-import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.model.Root;
-import io.cockroachdb.pest.shell.support.ClusterCompletionProvider;
+import io.cockroachdb.pest.domain.ApplicationProperties;
+import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.domain.ClusterType;
+import io.cockroachdb.pest.domain.Root;
 
 @Component
 public class ConfigCommands extends AbstractShellCommand {
@@ -45,35 +39,8 @@ public class ConfigCommands extends AbstractShellCommand {
     @Autowired
     private ApplicationProperties applicationProperties;
 
-    @PostConstruct
-    public void init() {
-        if (StringUtils.hasLength(applicationProperties.getDefaultClusterId())) {
-            useCluster(applicationProperties.getDefaultClusterId());
-        } else {
-            useCluster(applicationProperties.getClusterIds().stream().findFirst().orElseThrow());
-        }
-    }
-
-    @Bean
-    public CompletionProvider clusterCompletionProvider() {
-        return new ClusterCompletionProvider(applicationProperties);
-    }
-
-    @Command(description = "Select default cluster ID to use in commands",
-            name = {"config", "use"},
-            group = CommandGroups.CONFIG_COMMANDS,
-            completionProvider = "clusterCompletionProvider")
-    public void useCluster(
-            @Option(description = "Cluster ID to use (must be of hosted cluster type)", longName = "clusterId") String clusterId) {
-        if (!Objects.equals("none", clusterId)) {
-            SELECTED_CLUSTER = applicationProperties.getClusterById(clusterId);
-        } else {
-            SELECTED_CLUSTER = null;
-        }
-    }
-
     @Command(description = "Generate application YAML",
-            name = {"config", "yaml", "gen"},
+            name = {"config", "gen"},
             group = CommandGroups.CONFIG_COMMANDS)
     public void generateConfig(
             @Option(description = "Name prefix", defaultValue = "cloud", longName = "name") String name,
@@ -171,15 +138,17 @@ public class ConfigCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Generate application YAML for localhost",
-            name = {"config", "yaml", "gen", "local"},
+            name = {"config", "gen", "local"},
             group = CommandGroups.CONFIG_COMMANDS)
     public void generateLocalConfig(
             @Option(description = "Name prefix", defaultValue = "cloud", longName = "name") String name,
             @Option(description = "Output file path", defaultValue = "", longName = "outputFile") String outputFile,
             @Option(description = "Regions without number suffix (like 'eu-central,eu-west,..')", defaultValue = "eu-central", longName = "regions")
             List<String> regions,
-            @Option(description = "Number of zones per region (min 1)", defaultValue = "3", longName = "zones") int numZones,
-            @Option(description = "Number of nodes per zone (min 1)", defaultValue = "1", longName = "nodes") int numNodes,
+            @Option(description = "Number of zones per region (min 1)", defaultValue = "3", longName = "zones")
+            int numZones,
+            @Option(description = "Number of nodes per zone (min 1)", defaultValue = "1", longName = "nodes")
+            int numNodes,
             @Option(description = "Secure cluster", defaultValue = "false", longName = "secure") Boolean secure
     ) {
         List<String> tiers = new ArrayList<>();
@@ -202,7 +171,7 @@ public class ConfigCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Print application YAML",
-            name = {"config", "yaml", "print"},
+            name = {"config", "print"},
             group = CommandGroups.CONFIG_COMMANDS)
     public void printConfig(
             @Option(description = "Output file path", defaultValue = "", longName = "outputFile") String outputFile) {

@@ -8,7 +8,7 @@ import jakarta.annotation.PostConstruct;
 
 import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.cluster.CredentialsHandler;
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.domain.ApplicationProperties;
 
 @Configuration
 public class ClusterConfiguration {

@@ -63,6 +63,7 @@ public class Application implements DisposableBean {
 
         Set<String> profiles = new HashSet<>();
         profiles.add("default");
+        profiles.add("web");
 
         LinkedList<String> argsList = new LinkedList<>(Arrays.asList(args));
         while (!argsList.isEmpty()) {
@@ -114,7 +115,7 @@ public class Application implements DisposableBean {
                 .web(WebApplicationType.SERVLET)
                 .logStartupInfo(true)
                 .profiles(profiles.toArray(new String[0]))
-                .run(passThroughArgs.toArray(new String[]{}));
+                .run(passThroughArgs.toArray(new String[] {}));
     }
 
     @Override

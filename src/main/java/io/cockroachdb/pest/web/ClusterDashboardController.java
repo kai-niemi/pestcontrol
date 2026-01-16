@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,8 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
+import io.cockroachdb.pest.ProfileNames;
 import io.cockroachdb.pest.cluster.model.NodeModel;
-import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.domain.Cluster;
 import io.cockroachdb.pest.web.api.ClusterModel;
 import io.cockroachdb.pest.web.api.MessageModel;
 import io.cockroachdb.pest.web.api.MessageType;
@@ -28,6 +30,7 @@ import io.cockroachdb.pest.web.simp.SimpMessagePublisher;
 import io.cockroachdb.pest.web.simp.TopicName;
 
 @WebController
+@Profile(ProfileNames.WEB)
 @RequestMapping("/cluster")
 public class ClusterDashboardController extends AbstractSessionController {
     @Autowired

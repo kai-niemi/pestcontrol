@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.cockroachdb.pest.model.Cluster;
-import io.cockroachdb.pest.model.Locality;
+import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.domain.Locality;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeDetail {

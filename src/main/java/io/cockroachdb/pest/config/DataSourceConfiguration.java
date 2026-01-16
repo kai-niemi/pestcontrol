@@ -22,7 +22,7 @@ import net.ttddyy.dsproxy.listener.logging.SLF4JLogLevel;
 import net.ttddyy.dsproxy.listener.logging.SLF4JQueryLoggingListener;
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 
-import io.cockroachdb.pest.util.NetworkAddress;
+import io.cockroachdb.pest.domain.NetworkAddress;
 
 @Configuration
 public class DataSourceConfiguration {

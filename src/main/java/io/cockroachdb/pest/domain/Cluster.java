@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.model;
+package io.cockroachdb.pest.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +17,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
-import io.cockroachdb.pest.cluster.InvalidConfigurationException;
-import io.cockroachdb.pest.util.NetworkAddress;
 
 @Validated
 @JsonPropertyOrder({
@@ -355,8 +352,9 @@ public class Cluster {
             if (advertiseAddr.getAddress().isPresent()) {
                 if (advertiseAddr.getPort().isEmpty()) {
                     advertiseAddr = advertiseAddr.addPort(NetworkAddress.from(listenAddr).getPort().orElseThrow(
-                            () -> new InvalidConfigurationException("Both advertise-addr " +
-                                                                    "and listen-addr are missing port number for node " + getId())
+                            () -> new IllegalStateException("Both advertise-addr " +
+                                                                    "and listen-addr are missing port number for node "
+                                                                    + getId())
                     ));
                 }
                 return advertiseAddr.toAddressString();
@@ -365,7 +363,7 @@ public class Cluster {
             if (listenAddr.getAddress().isPresent()) {
                 return listenAddr.getAddress().get();
             }
-            throw new InvalidConfigurationException("Both advertise-addr " +
+            throw new IllegalStateException("Both advertise-addr " +
                                                     "and listen-addr are missing for node " + getId());
         }
 

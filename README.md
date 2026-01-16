@@ -238,7 +238,7 @@ application:
         - locality: "region=eu-central-1,zone=eu-central-1c"
 ```
 
-# Usage Tutorials
+# Tutorials
 
 ## Local 3-node self-hosted cluster (insecure)
 
@@ -255,8 +255,12 @@ node start -n 1-3
 node init 
 haproxy gen
 haproxy start
-quit
+exit
 ````
+
+You can also copy all of the above to a text file and use:
+
+    ./pest @cmd.txt
 
 ## Local 3-node self-hosted cluster (secure)
 
@@ -264,15 +268,19 @@ These commands will download and install the CockroachDB binaries, start a local
 3-node cluster with haproxy and initialize the cluster.
 
 ```shell
-use --clusterId local-secure
+cluster use --clusterId local-secure
 node install
 node certs
 node start -n 1-3
 node init 
 haproxy gen
 haproxy start
-quit
+exit
 ```
+
+You can also copy all of the above to a text file and use:
+
+    ./pest @cmd.txt
 
 The secure mode uses self-signed CA certificates and keys stored in the `.certs` directory, 
 including a PKCS12 truststore used by the web app. To login to a secure cluster, you may 

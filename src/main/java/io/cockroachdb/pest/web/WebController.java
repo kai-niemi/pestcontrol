@@ -6,10 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
-
-import io.cockroachdb.pest.ProfileNames;
 
 /**
  * Meta-annotation for a web controller (non-api).
@@ -18,6 +15,5 @@ import io.cockroachdb.pest.ProfileNames;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Controller
-@Profile(ProfileNames.WEB)
 public @interface WebController {
 }

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.cockroachdb.pest.web.LinkRelations;
-import io.cockroachdb.pest.web.api.chart.MetersChartController;
 import io.cockroachdb.pest.web.api.cluster.ClusterController;
 import io.cockroachdb.pest.web.api.toxiproxy.ToxiproxyController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;

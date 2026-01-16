@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
-import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.domain.Cluster;
 
 @Component
 public class HAProxyCommands extends AbstractShellCommand {

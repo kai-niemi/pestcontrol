@@ -4,7 +4,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.domain.Cluster;
 
 public class ClusterAuthenticationDetails extends WebAuthenticationDetails {
     private final String clusterId;

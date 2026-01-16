@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.util;
+package io.cockroachdb.pest.domain;
 
 import java.io.BufferedReader;
 import java.io.IOException;

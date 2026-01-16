@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 
-import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.domain.ApplicationProperties;
 
 @Configuration
 public class ToxiproxyConfiguration {

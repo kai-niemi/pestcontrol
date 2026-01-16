@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Relation(value = "node", collectionRelation = "nodes")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeModel extends RepresentationModel<NodeModel> {
-    private String clusterId;
+    private final String clusterId;
 
     @JsonProperty("detail")
     private NodeDetail nodeDetail;

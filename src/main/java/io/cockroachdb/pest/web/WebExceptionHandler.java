@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,9 +16,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 
+import io.cockroachdb.pest.ProfileNames;
 import io.cockroachdb.pest.web.api.toxiproxy.ToxiproxyAccessException;
 
 @ControllerAdvice(annotations = WebController.class)
+@Profile(ProfileNames.WEB)
 public class WebExceptionHandler extends ResponseEntityExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

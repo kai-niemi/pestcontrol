@@ -4,8 +4,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-import io.cockroachdb.pest.model.Cluster;
-import io.cockroachdb.pest.model.ClusterType;
+import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.domain.ClusterType;
 
 public interface ClusterOperator {
     boolean supports(ClusterType clusterType);

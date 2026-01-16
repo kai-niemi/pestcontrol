@@ -23,13 +23,13 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.StringUtils;
 
-import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.Cluster;
-import io.cockroachdb.pest.model.ClusterType;
-import io.cockroachdb.pest.model.Locality;
+import io.cockroachdb.pest.domain.ApplicationProperties;
+import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.domain.ClusterType;
+import io.cockroachdb.pest.domain.Locality;
 import io.cockroachdb.pest.shell.ToxiproxyCommands;
 import io.cockroachdb.pest.util.CommandException;
-import io.cockroachdb.pest.util.NetworkAddress;
+import io.cockroachdb.pest.domain.NetworkAddress;
 
 @Component
 public class LocalClusterOperator implements ClusterOperator {

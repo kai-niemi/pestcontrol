@@ -11,8 +11,8 @@ import org.springframework.hateoas.Link;
 
 import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.cluster.model.NodeStatus;
-import io.cockroachdb.pest.model.Cluster;
-import io.cockroachdb.pest.model.Locality;
+import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.domain.Locality;
 
 public class ClusterModel {
     private final Cluster cluster;

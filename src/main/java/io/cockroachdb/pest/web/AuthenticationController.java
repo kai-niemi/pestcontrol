@@ -3,6 +3,7 @@ package io.cockroachdb.pest.web;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -10,12 +11,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import io.cockroachdb.pest.model.ApplicationProperties;
-import io.cockroachdb.pest.model.Cluster;
-import io.cockroachdb.pest.model.ClusterTypes;
+import io.cockroachdb.pest.ProfileNames;
+import io.cockroachdb.pest.domain.ApplicationProperties;
+import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.domain.ClusterTypes;
 import io.cockroachdb.pest.web.security.AuthenticationRequest;
 
 @WebController
+@Profile(ProfileNames.WEB)
 public class AuthenticationController {
     @Autowired
     private ApplicationProperties applicationProperties;

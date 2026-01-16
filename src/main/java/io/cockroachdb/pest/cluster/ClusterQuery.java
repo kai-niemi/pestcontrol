@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.cockroachdb.pest.cluster.model.NodeStatus;
 import io.cockroachdb.pest.config.ClosableDataSource;
-import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.domain.Cluster;
 import io.cockroachdb.pest.repository.ClusterRepository;
 import io.cockroachdb.pest.repository.JdbcClusterRepository;
 

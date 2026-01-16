@@ -26,7 +26,7 @@ import eu.rekawek.toxiproxy.model.ToxicType;
 
 import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
 import io.cockroachdb.pest.cluster.ResourceNotFoundException;
-import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.domain.Cluster;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
 
@@ -246,11 +246,14 @@ public class ToxiproxyCommands extends AbstractShellCommand {
                     shortName = 'n', longName = "nodeId") String id,
             @Option(description = "Toxic type", defaultValue = "LATENCY", longName = "toxicType") ToxicType toxicType,
             @Option(description = "Toxic name", defaultValue = "latency-toxic", longName = "name") String name,
-            @Option(description = "Link direction to affect", defaultValue = "DOWNSTREAM", longName = "direction") ToxicDirection direction,
+            @Option(description = "Link direction to affect", defaultValue = "DOWNSTREAM", longName = "direction")
+            ToxicDirection direction,
             @Option(description = "Probability of the toxic being applied to a link (defaults to 1.0)", defaultValue = "1.0", longName = "toxicity")
             float toxicity,
-            @Option(description = "Time in milliseconds (latency toxic)", defaultValue = "150", longName = "latency") long latency,
-            @Option(description = "Time in milliseconds (latency toxic)", defaultValue = "150", longName = "jitter") long jitter,
+            @Option(description = "Time in milliseconds (latency toxic)", defaultValue = "150", longName = "latency")
+            long latency,
+            @Option(description = "Time in milliseconds (latency toxic)", defaultValue = "150", longName = "jitter")
+            long jitter,
             @Option(description = "Rate in KB/s (bandwidth toxic)", defaultValue = "33", longName = "rate") long rate,
             @Option(description = "time in microseconds to delay each packet by (slow_close and slicer toxics)", defaultValue = "100", longName = "delay")
             long delay,

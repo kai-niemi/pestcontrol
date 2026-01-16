@@ -5,6 +5,8 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.cockroachdb.pest.domain.NetworkAddress;
+
 public class NetworkAddressTest {
     @Test
     public void whenResolvingHostNames_expectSomething() {

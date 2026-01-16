@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.web.api.chart;
+package io.cockroachdb.pest.web.api;
 
 import java.util.List;
 import java.util.Map;
@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.cockroachdb.pest.web.LinkRelations;
-import io.cockroachdb.pest.web.api.MessageModel;
 import io.cockroachdb.pest.util.TimeSeries;
+import io.cockroachdb.pest.web.LinkRelations;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
