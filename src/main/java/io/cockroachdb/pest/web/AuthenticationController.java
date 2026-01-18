@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import io.cockroachdb.pest.ProfileNames;
 import io.cockroachdb.pest.domain.ApplicationProperties;
 import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.domain.ClusterTypes;
 import io.cockroachdb.pest.web.security.AuthenticationRequest;
 
 @WebController
@@ -38,7 +37,6 @@ public class AuthenticationController {
 
         List<String> ids = applicationProperties.getClusters()
                 .stream()
-                .filter(cluster -> ClusterTypes.isHosted(cluster.getClusterType()))
                 .map(Cluster::getClusterId)
                 .toList();
 

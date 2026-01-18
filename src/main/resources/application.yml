@@ -1,3 +1,7 @@
+########################
+# Spring boot properties
+# https://docs.spring.io/spring-boot/appendix/application-properties/index.html
+########################
 spring:
   config:
     import: optional:file:./config/
@@ -69,11 +73,6 @@ spring:
       include-message: always
       include-stacktrace: always
       include-binding-errors: always
-
-########################
-# Spring boot properties
-# https://docs.spring.io/spring-boot/appendix/application-properties/index.html
-########################
 management:
   endpoints:
     access:
@@ -103,11 +102,10 @@ logging:
     rolling-policy:
       max-history: 3
 server:
-  port: 9090
-
-########################
-# Application properties
-########################
+  port: 9091
+##################################
+# Application baseline properties
+##################################
 application:
   # Base directories for binaries and shell scripts
   directories:

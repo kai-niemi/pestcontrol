@@ -51,7 +51,7 @@ public class ClusterAuthenticationProvider implements AuthenticationProvider {
             ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(
                     authenticationDetails.getClusterId());
             try (StatusOperator statusOperator = clusterOperator.statusOperator(cluster)) {
-                statusOperator.queryClusterVersion();
+                statusOperator.clusterVersion();
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }

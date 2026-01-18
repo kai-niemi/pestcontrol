@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
+import io.cockroachdb.pest.cluster.ResourceNotFoundException;
 import io.cockroachdb.pest.cluster.StatusOperator;
 import io.cockroachdb.pest.cluster.model.NodeDetail;
 import io.cockroachdb.pest.cluster.model.NodeModel;
@@ -35,7 +36,7 @@ public class NodeController {
 
         try (StatusOperator clusterStatus = clusterOperator
                 .statusOperator(clusterOperatorProvider.clusterById(clusterId))) {
-            List<NodeModel> nodes = clusterStatus.queryAllNodes();
+            List<NodeModel> nodes = clusterStatus.listAllNodes();
             return ResponseEntity.ok(CollectionModel.of(new NodeModelAssembler().toCollectionModel(nodes))
                     .add(linkTo(methodOn(NodeController.class)
                             .index(clusterId))
@@ -54,7 +55,13 @@ public class NodeController {
         ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(clusterId);
         try (StatusOperator clusterStatus = clusterOperator
                 .statusOperator(clusterOperatorProvider.clusterById(clusterId))) {
-            NodeModel nodeModel = clusterStatus.queryNodeById(id);
+
+            NodeModel nodeModel = clusterStatus.listAllNodes()
+                    .stream()
+                    .filter(node -> node.getNodeDetail().getNodeId().equals(id))
+                    .findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException("No such node with ID: " + id));
+
             return ResponseEntity.ok(assembler.toModel(nodeModel));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -69,7 +76,7 @@ public class NodeController {
 
         try (StatusOperator clusterStatus = clusterOperator.statusOperator(
                 clusterOperatorProvider.clusterById(clusterId))) {
-            NodeDetail nodeDetail = clusterStatus.queryNodeDetailById(id);
+            NodeDetail nodeDetail = clusterStatus.nodeDetailById(id);
             return ResponseEntity.ok(EntityModel.of(nodeDetail)
                     .add(linkTo(methodOn(getClass())
                             .getNodeDetail(clusterId, id))
@@ -87,7 +94,7 @@ public class NodeController {
 
         try (StatusOperator clusterStatus = clusterOperator.statusOperator(
                 clusterOperatorProvider.clusterById(clusterId))) {
-            NodeStatus nodeStatus = clusterStatus.queryNodeStatusById(id);
+            NodeStatus nodeStatus = clusterStatus.nodeStatusById(id);
             return ResponseEntity.ok(EntityModel.of(nodeStatus)
                     .add(linkTo(methodOn(getClass())
                             .getNodeStatus(clusterId, id))

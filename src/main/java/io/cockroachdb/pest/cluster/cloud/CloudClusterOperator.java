@@ -2,21 +2,34 @@ package io.cockroachdb.pest.cluster.cloud;
 
 import java.util.EnumSet;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 
 import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.cluster.DisruptionOperator;
 import io.cockroachdb.pest.cluster.StatusOperator;
 import io.cockroachdb.pest.cluster.NodeOperator;
 import io.cockroachdb.pest.cluster.ProxyOperator;
+import io.cockroachdb.pest.cluster.local.LocalStatusOperator;
+import io.cockroachdb.pest.cluster.repository.MetaDataRepository;
+import io.cockroachdb.pest.config.RestClientProvider;
 import io.cockroachdb.pest.domain.Cluster;
 import io.cockroachdb.pest.domain.ClusterType;
 
 @Component
 public class CloudClusterOperator implements ClusterOperator {
+    @Autowired
+    private RestClientProvider restClientProvider;
+
+    @Autowired
+    private MetaDataRepository metaDataRepository;
+
     @Override
     public StatusOperator statusOperator(Cluster cluster) {
-        return new CloudStatusOperator();
+        RestClient restClient = restClientProvider.apply(cluster.getClusterType());
+        return new LocalStatusOperator(cluster, restClient, metaDataRepository);
     }
 
     @Override

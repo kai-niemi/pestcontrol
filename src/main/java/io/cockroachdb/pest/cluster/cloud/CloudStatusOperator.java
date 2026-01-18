@@ -14,27 +14,22 @@ public class CloudStatusOperator implements StatusOperator {
     }
 
     @Override
-    public String queryClusterVersion() {
+    public String clusterVersion() {
         return "";
     }
 
     @Override
-    public NodeModel queryNodeById(Integer id) {
-        return null;
-    }
-
-    @Override
-    public List<NodeModel> queryAllNodes() {
+    public List<NodeModel> listAllNodes() {
         return List.of();
     }
 
     @Override
-    public NodeDetail queryNodeDetailById(Integer id) {
+    public NodeDetail nodeDetailById(Integer id) {
         return null;
     }
 
     @Override
-    public NodeStatus queryNodeStatusById(Integer id) {
+    public NodeStatus nodeStatusById(Integer id) {
         return null;
     }
 }

@@ -73,7 +73,7 @@ public class LocalStatusOperator implements StatusOperator {
         JsonPath.parse(responseEntity.getBody()).read("$.logged_out", Boolean.class);
     }
 
-    private List<NodeDetail> queryNodeDetails() {
+    private List<NodeDetail> listNodeDetails() {
         Assert.notNull(sessionToken, "sessionToken is null");
 
         // There's no way to narrow this down other than by pagination
@@ -95,13 +95,13 @@ public class LocalStatusOperator implements StatusOperator {
     }
 
     @Override
-    public String queryClusterVersion() {
+    public String clusterVersion() {
         return metaDataRepository.queryClusterVersion(cluster);
     }
 
     @Override
-    public NodeDetail queryNodeDetailById(Integer id) {
-        return queryNodeDetails()
+    public NodeDetail nodeDetailById(Integer id) {
+        return listNodeDetails()
                 .stream()
                 .filter(nodeStatus -> nodeStatus.getNodeId().equals(id))
                 .findFirst()
@@ -109,27 +109,18 @@ public class LocalStatusOperator implements StatusOperator {
     }
 
     @Override
-    public NodeStatus queryNodeStatusById(Integer id) {
+    public NodeStatus nodeStatusById(Integer id) {
         return metaDataRepository.queryNodeStatusById(cluster, id)
                 .orElseThrow(() -> new ResourceNotFoundException("No such node with ID: " + id));
     }
 
     @Override
-    public NodeModel queryNodeById(Integer id) {
-        return queryAllNodes()
-                .stream()
-                .filter(node -> node.getNodeDetail().getNodeId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("No such node with ID: " + id));
-    }
-
-    @Override
-    public List<NodeModel> queryAllNodes() {
+    public List<NodeModel> listAllNodes() {
         List<NodeModel> nodeModels = new ArrayList<>();
 
         List<NodeStatus> nodeStatusList = metaDataRepository.queryNodeStatus(cluster);
 
-        queryNodeDetails().forEach(nodeDetail -> nodeStatusList.stream()
+        listNodeDetails().forEach(nodeDetail -> nodeStatusList.stream()
                 .filter(nodeStatus -> nodeStatus.getId().equals(nodeDetail.getNodeId()))
                 .findFirst()
                 .ifPresentOrElse(nodeStatus -> {

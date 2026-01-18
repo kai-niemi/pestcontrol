@@ -113,7 +113,7 @@ public class ClusterController {
         Cluster cluster = applicationProperties.getClusterById(clusterId);
         ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(clusterId);
         try (StatusOperator clusterStatus = clusterOperator.statusOperator(cluster)) {
-            return ResponseEntity.ok(MessageModel.from(clusterStatus.queryClusterVersion())
+            return ResponseEntity.ok(MessageModel.from(clusterStatus.clusterVersion())
                     .add(linkTo(methodOn(getClass())
                             .getVersion(clusterId))
                             .withSelfRel()));

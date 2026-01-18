@@ -8,13 +8,11 @@ import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.cluster.model.NodeStatus;
 
 public interface StatusOperator extends Closeable {
-    String queryClusterVersion();
+    String clusterVersion();
 
-    NodeModel queryNodeById(Integer id);
+    List<NodeModel> listAllNodes();
 
-    List<NodeModel> queryAllNodes();
+    NodeDetail nodeDetailById(Integer id);
 
-    NodeDetail queryNodeDetailById(Integer id);
-
-    NodeStatus queryNodeStatusById(Integer id);
+    NodeStatus nodeStatusById(Integer id);
 }
