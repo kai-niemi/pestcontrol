@@ -136,7 +136,7 @@ public class LocalNodeOperator implements NodeOperator {
 
         Cluster.Node node = cluster.getNodeById(nodeId);
 
-        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "start"));
+        List<String> args = new ArrayList<>();
         args.add("--join=" + String.join(",", Locality.distributeJoinHosts(joinHosts)));
         args.add("--name=n" + nodeId);
         args.add("--locality=" + node.getLocality());
@@ -181,7 +181,7 @@ public class LocalNodeOperator implements NodeOperator {
     public String statusNode(Integer nodeId) {
         Cluster.Node node = cluster.getNodeById(nodeId);
 
-        List<String> args = new ArrayList<>(List.of(OPERATOR_SCRIPT, "status"));
+        List<String> args = new ArrayList<>();
         args.add("--url=postgres://%s".formatted(node.getSqlAddr()));
         args.add("--format=records");
 

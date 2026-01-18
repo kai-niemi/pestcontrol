@@ -6,20 +6,19 @@ import java.util.Objects;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 import com.jayway.jsonpath.JsonPath;
 
-import io.cockroachdb.pest.cluster.StatusOperator;
 import io.cockroachdb.pest.cluster.ResourceNotFoundException;
-import io.cockroachdb.pest.cluster.repository.MetaDataRepository;
+import io.cockroachdb.pest.cluster.StatusOperator;
 import io.cockroachdb.pest.cluster.model.NodeDetail;
 import io.cockroachdb.pest.cluster.model.NodeDetails;
 import io.cockroachdb.pest.cluster.model.NodeModel;
 import io.cockroachdb.pest.cluster.model.NodeStatus;
+import io.cockroachdb.pest.cluster.repository.MetaDataRepository;
 import io.cockroachdb.pest.domain.Cluster;
 import io.cockroachdb.pest.domain.ClusterTypes;
 
@@ -41,8 +40,6 @@ public class LocalStatusOperator implements StatusOperator {
 
         if (ClusterTypes.isSecure(cluster.getClusterType())) {
             this.sessionToken = login();
-        } else {
-            this.sessionToken = "";
         }
     }
 
@@ -63,24 +60,24 @@ public class LocalStatusOperator implements StatusOperator {
     }
 
     private void logout() {
-        ResponseEntity<String> responseEntity = restClient
-                .post()
-                .uri(cluster.getAdminUrl() + "/api/v2/logout/")
-                .header("X-Cockroach-API-Session", sessionToken)
-                .retrieve()
-                .toEntity(String.class);
-
-        JsonPath.parse(responseEntity.getBody()).read("$.logged_out", Boolean.class);
+        if (sessionToken != null) {
+            ResponseEntity<String> responseEntity = restClient
+                    .post()
+                    .uri(cluster.getAdminUrl() + "/api/v2/logout/")
+                    .header("X-Cockroach-API-Session", sessionToken)
+                    .retrieve()
+                    .toEntity(String.class);
+            JsonPath.parse(responseEntity.getBody()).read("$.logged_out", Boolean.class);
+            sessionToken = null;
+        }
     }
 
     private List<NodeDetail> listNodeDetails() {
-        Assert.notNull(sessionToken, "sessionToken is null");
-
         // There's no way to narrow this down other than by pagination
         ResponseEntity<NodeDetails> responseEntity = restClient
                 .get()
                 .uri(cluster.getAdminUrl() + "/api/v2/nodes/")
-                .header("X-Cockroach-API-Session", sessionToken)
+                .header("X-Cockroach-API-Session", sessionToken != null ? sessionToken : "")
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .toEntity(NodeDetails.class);
@@ -90,7 +87,6 @@ public class LocalStatusOperator implements StatusOperator {
 
     @Override
     public void close() {
-        sessionToken = null;
         logout();
     }
 

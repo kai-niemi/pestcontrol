@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.mediatype.hal.HalLinkRelation;
 import org.springframework.shell.core.command.CommandContext;
+import org.springframework.shell.core.command.annotation.Argument;
 import org.springframework.shell.core.command.annotation.Command;
 import org.springframework.shell.core.command.annotation.Option;
 import org.springframework.shell.core.command.completion.CompletionProvider;
@@ -61,7 +62,7 @@ public class ClusterCommands extends AbstractShellCommand {
             completionProvider = "clusterCompletionProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void useCluster(
-            @Option(description = "Cluster ID to use (must be of hosted cluster type)", longName = "clusterId")
+            @Argument(description = "Cluster ID to use (must be of hosted cluster type)", index = 0)
             String clusterId) {
         if (!Objects.equals("none", clusterId)) {
             SELECTED_CLUSTER = applicationProperties.getClusterById(clusterId);

@@ -48,8 +48,8 @@ public class ClusterAuthenticationProvider implements AuthenticationProvider {
         try {
             // Test login
             Cluster cluster = applicationProperties.getClusterById(authenticationDetails.getClusterId());
-            ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(
-                    authenticationDetails.getClusterId());
+            ClusterOperator clusterOperator = clusterOperatorProvider
+                    .clusterOperator(authenticationDetails.getClusterId());
             try (StatusOperator statusOperator = clusterOperator.statusOperator(cluster)) {
                 statusOperator.clusterVersion();
             } catch (IOException e) {
