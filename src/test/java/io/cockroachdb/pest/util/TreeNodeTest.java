@@ -1,6 +1,5 @@
 package io.cockroachdb.pest.util;
 
-
 import org.junit.jupiter.api.Test;
 
 public class TreeNodeTest {

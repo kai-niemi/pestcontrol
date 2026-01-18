@@ -1,11 +1,9 @@
-package io.cockroachdb.pest.util;
+package io.cockroachdb.pest.domain;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import io.cockroachdb.pest.domain.NetworkAddress;
 
 public class NetworkAddressTest {
     @Test

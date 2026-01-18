@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 
-import io.cockroachdb.pest.util.CalendarVersion;
-
 @Tags(value = {
         @Tag("unit-test")
 })
