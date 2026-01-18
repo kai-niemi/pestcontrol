@@ -19,7 +19,6 @@ import io.cockroachdb.pest.domain.ApplicationProperties;
 import io.cockroachdb.pest.domain.Cluster;
 import io.cockroachdb.pest.domain.ClusterType;
 import io.cockroachdb.pest.domain.Locality;
-import static io.cockroachdb.pest.cluster.local.CommandBuilder.OPERATOR_SCRIPT;
 
 public class LocalNodeOperator implements NodeOperator {
     private final Cluster cluster;
@@ -35,7 +34,7 @@ public class LocalNodeOperator implements NodeOperator {
     }
 
     @Override
-    public String certs(List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
+    public String certs(List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) throws IOException {
         if (!EnumSet.of(ClusterType.hosted_secure, ClusterType.local_secure).contains(cluster.getClusterType())) {
             throw new UnsupportedOperationException("Cluster '%s' is not of secure type: %s"
                     .formatted(cluster.getClusterId(), cluster.getClusterType()));
@@ -48,7 +47,7 @@ public class LocalNodeOperator implements NodeOperator {
                 .execute();
 
         // Then create node cert and key pairs
-        cluster.getNodes().forEach(node -> {
+        for (Cluster.Node node : cluster.getNodes()) {
             List<Path> expectedFiles = new ArrayList<>();
             expectedFiles.add(applicationProperties.getDirectories().getCertsDirPath()
                     .resolve(node.getName()).resolve("node.crt"));
@@ -77,13 +76,13 @@ public class LocalNodeOperator implements NodeOperator {
             }
 
             keyFiles.put(node.getId(), expectedFiles);
-        });
+        }
 
         return "";
     }
 
     @Override
-    public String install(Integer nodeId) {
+    public String install(Integer nodeId) throws IOException {
         return CommandBuilder.builder()
                 .withBaseDir(baseDir)
                 .withCommand("install")
@@ -92,7 +91,7 @@ public class LocalNodeOperator implements NodeOperator {
     }
 
     @Override
-    public String init(Integer nodeId) {
+    public String init(Integer nodeId) throws IOException {
         return CommandBuilder.builder()
                 .withBaseDir(baseDir)
                 .withCommand("init")
@@ -101,17 +100,13 @@ public class LocalNodeOperator implements NodeOperator {
     }
 
     @Override
-    public String wipe(Integer nodeId, boolean all) {
-        try {
-            ApplicationProperties.Directories directories = applicationProperties.getDirectories();
+    public String wipe(Integer nodeId, boolean all) throws IOException {
+        ApplicationProperties.Directories directories = applicationProperties.getDirectories();
 
-            wipePath(directories.getCertsDirPath());
-            wipePath(directories.getDataDirPath());
-            if (all) {
-                wipePath(directories.getBinDirPath());
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        wipePath(directories.getCertsDirPath());
+        wipePath(directories.getDataDirPath());
+        if (all) {
+            wipePath(directories.getBinDirPath());
         }
         return "";
     }
@@ -124,7 +119,7 @@ public class LocalNodeOperator implements NodeOperator {
     }
 
     @Override
-    public String startNode(Integer nodeId) {
+    public String startNode(Integer nodeId) throws IOException {
         Map<Locality, List<String>> joinHosts = new TreeMap<>();
 
         cluster.getNodes().forEach(node -> {
@@ -145,12 +140,13 @@ public class LocalNodeOperator implements NodeOperator {
                 .withBaseDir(baseDir)
                 .withCommand("start")
                 .withFlags(args)
+                .withToxiProxy(cluster.isSecure())
                 .withServerNetworkingFlags(cluster, nodeId)
                 .execute();
     }
 
     @Override
-    public String stopNode(Integer nodeId) {
+    public String stopNode(Integer nodeId)throws IOException  {
         return CommandBuilder.builder()
                 .withBaseDir(baseDir)
                 .withCommand("stop")
@@ -160,7 +156,7 @@ public class LocalNodeOperator implements NodeOperator {
     }
 
     @Override
-    public String killNode(Integer nodeId) {
+    public String killNode(Integer nodeId) throws IOException {
         return CommandBuilder.builder()
                 .withBaseDir(baseDir)
                 .withCommand("kill")
@@ -169,7 +165,7 @@ public class LocalNodeOperator implements NodeOperator {
     }
 
     @Override
-    public String sqlNode(Integer nodeId) {
+    public String sqlNode(Integer nodeId) throws IOException {
         return CommandBuilder.builder()
                 .withBaseDir(baseDir)
                 .withCommand("sql")
@@ -178,7 +174,7 @@ public class LocalNodeOperator implements NodeOperator {
     }
 
     @Override
-    public String statusNode(Integer nodeId) {
+    public String statusNode(Integer nodeId) throws IOException {
         Cluster.Node node = cluster.getNodeById(nodeId);
 
         List<String> args = new ArrayList<>();

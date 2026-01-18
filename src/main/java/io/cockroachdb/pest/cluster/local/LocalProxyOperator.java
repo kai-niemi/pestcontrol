@@ -1,7 +1,6 @@
 package io.cockroachdb.pest.cluster.local;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -30,64 +29,60 @@ public class LocalProxyOperator implements ProxyOperator {
     }
 
     @Override
-    public String genHAProxyCfg(Integer nodeId) {
-        try {
-            Path templateFile = directories.getConfigDirPath()
-                    .resolve(cluster.isSecure() ? "haproxy-secure.cfg" : "haproxy-insecure.cfg");
+    public String genHAProxyCfg(Integer nodeId) throws IOException {
+        Path templateFile = directories.getConfigDirPath()
+                .resolve(cluster.isSecure() ? "haproxy-secure.cfg" : "haproxy-insecure.cfg");
 
-            String haproxyConfig =
-                    "# DO NOT EDIT - file is overwritten by gen-haproxy command\n\n"
-                    + Files.readString(templateFile);
+        String haproxyConfig =
+                "# DO NOT EDIT - file is overwritten by gen-haproxy command\n\n"
+                + Files.readString(templateFile);
 
-            haproxyConfig = new PropertyPlaceholderHelper("${", "}")
-                    .replacePlaceholders(haproxyConfig,
-                            placeholderName -> switch (placeholderName.toLowerCase()) {
-                                case "bind-stats" -> "bind %s".formatted(cluster.getHaProxy().getStatsAddr());
-                                case "bind-rpc" -> "bind %s".formatted(cluster.getHaProxy().getRpcAddr());
-                                case "servers-rpc" -> {
-                                    List<String> servers = new ArrayList<>();
-                                    cluster.getNodes().forEach(np -> {
-                                        servers.add("server cockroach%d %s check port %s\n"
-                                                .formatted(np.getId(),
-                                                        np.getJoinAddress(),
-                                                        NetworkAddress.from(np.getHttpAddr()).getPort().orElse(8080)
-                                                ));
-                                    });
-                                    yield String.join("    ", servers);
-                                }
-                                case "bind-http" -> "bind %s".formatted(cluster.getHaProxy().getHttpAddr());
-                                case "servers-http" -> {
-                                    List<String> servers = new ArrayList<>();
-                                    cluster.getNodes().forEach(np -> {
-                                        servers.add("server cockroach%d %s check port %s\n"
-                                                .formatted(np.getId(),
-                                                        np.getHttpAddr(),
-                                                        NetworkAddress.from(np.getHttpAddr()).getPort().orElse(8080)
-                                                ));
-                                    });
-                                    yield String.join("    ", servers);
-                                }
-                                default -> placeholderName;
-                            });
+        haproxyConfig = new PropertyPlaceholderHelper("${", "}")
+                .replacePlaceholders(haproxyConfig,
+                        placeholderName -> switch (placeholderName.toLowerCase()) {
+                            case "bind-stats" -> "bind %s".formatted(cluster.getHaProxy().getStatsAddr());
+                            case "bind-rpc" -> "bind %s".formatted(cluster.getHaProxy().getRpcAddr());
+                            case "servers-rpc" -> {
+                                List<String> servers = new ArrayList<>();
+                                cluster.getNodes().forEach(np -> {
+                                    servers.add("server cockroach%d %s check port %s\n"
+                                            .formatted(np.getId(),
+                                                    np.getJoinAddress(),
+                                                    NetworkAddress.from(np.getHttpAddr()).getPort().orElse(8080)
+                                            ));
+                                });
+                                yield String.join("    ", servers);
+                            }
+                            case "bind-http" -> "bind %s".formatted(cluster.getHaProxy().getHttpAddr());
+                            case "servers-http" -> {
+                                List<String> servers = new ArrayList<>();
+                                cluster.getNodes().forEach(np -> {
+                                    servers.add("server cockroach%d %s check port %s\n"
+                                            .formatted(np.getId(),
+                                                    np.getHttpAddr(),
+                                                    NetworkAddress.from(np.getHttpAddr()).getPort().orElse(8080)
+                                            ));
+                                });
+                                yield String.join("    ", servers);
+                            }
+                            default -> placeholderName;
+                        });
 
-            Path configFilePath = directories.getConfigDirPath()
-                    .resolve("haproxy.cfg");
+        Path configFilePath = directories.getConfigDirPath()
+                .resolve("haproxy.cfg");
 
-            Files.writeString(configFilePath, haproxyConfig,
-                    StandardOpenOption.CREATE,
-                    StandardOpenOption.TRUNCATE_EXISTING,
-                    StandardOpenOption.WRITE);
+        Files.writeString(configFilePath, haproxyConfig,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.WRITE);
 
-            logger.info("Created '" + configFilePath + "' from " + templateFile);
+        logger.info("Created '" + configFilePath + "' from " + templateFile);
 
-            return "";
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        return "";
     }
 
     @Override
-    public String startHAProxy(Integer nodeId) {
+    public String startHAProxy(Integer nodeId) throws IOException {
         return CommandBuilder.builder()
                 .withBaseDir(directories.getBaseDirPath())
                 .withCommand("start-haproxy")
@@ -95,7 +90,7 @@ public class LocalProxyOperator implements ProxyOperator {
     }
 
     @Override
-    public String stopHAProxy(Integer nodeId) {
+    public String stopHAProxy(Integer nodeId) throws IOException {
         return CommandBuilder.builder()
                 .withBaseDir(directories.getBaseDirPath())
                 .withCommand("stop-haproxy")

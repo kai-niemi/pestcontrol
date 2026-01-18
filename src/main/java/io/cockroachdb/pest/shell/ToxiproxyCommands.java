@@ -52,7 +52,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifClusterSelected",
             exitStatusExceptionMapper = "commandExceptionMapper")
-    public void startToxiproxyServer() {
+    public void startToxiproxyServer() throws IOException {
         CommandBuilder.builder()
                 .withBaseDir(applicationProperties.getDirectories().getBaseDirPath())
                 .withCommand("start-toxiproxy")
@@ -66,7 +66,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifClusterSelected",
             exitStatusExceptionMapper = "commandExceptionMapper")
-    public void stopToxiproxyServer() {
+    public void stopToxiproxyServer() throws IOException {
         CommandBuilder.builder()
                 .withBaseDir(applicationProperties.getDirectories().getBaseDirPath())
                 .withCommand("stop-toxiproxy")

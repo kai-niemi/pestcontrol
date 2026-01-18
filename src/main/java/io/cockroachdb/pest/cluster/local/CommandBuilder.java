@@ -14,7 +14,6 @@ import org.springframework.util.StringUtils;
 
 import io.cockroachdb.pest.domain.Cluster;
 import io.cockroachdb.pest.domain.NetworkAddress;
-import io.cockroachdb.pest.util.CommandException;
 
 public class CommandBuilder {
     public static CommandBuilder builder() {
@@ -28,6 +27,8 @@ public class CommandBuilder {
     private final List<String> commands = new ArrayList<>();
 
     private Path baseDir;
+
+    private boolean toxiProxy;
 
     private CommandBuilder() {
     }
@@ -47,6 +48,11 @@ public class CommandBuilder {
         return this;
     }
 
+    public CommandBuilder withToxiProxy(boolean toxiProxy) {
+        this.toxiProxy = toxiProxy;
+        return this;
+    }
+
     public CommandBuilder withFlags(List<String> args) {
         this.commands.addAll(args);
         return this;
@@ -55,7 +61,7 @@ public class CommandBuilder {
     public CommandBuilder withServerNetworkingFlags(Cluster cluster, int nodeId) {
         Cluster.Node node = cluster.getNodeById(nodeId);
 
-        if (StringUtils.hasLength(node.getAdvertiseProxyAddr())) {
+        if (StringUtils.hasLength(node.getAdvertiseProxyAddr()) && cluster.isToxiProxyEnabled()) {
             commands.add("--advertise-addr=" + node.getAdvertiseProxyAddr());
         } else if (StringUtils.hasLength(node.getAdvertiseAddr())) {
             commands.add("--advertise-addr=" + node.getAdvertiseAddr());
@@ -96,52 +102,40 @@ public class CommandBuilder {
         return this;
     }
 
-    public String execute() {
+    public String execute() throws IOException {
         Assert.notNull(baseDir, "baseDir is null");
 
+        logger.info("Starting process: %s".formatted(String.join("\n\t", commands)));
+
+        Instant start = Instant.now();
+
+        Process process = new ProcessBuilder()
+                .command(commands)
+                .directory(baseDir.toFile())
+                .inheritIO()
+                .start();
+
         try {
-            logger.info("Starting process: %s".formatted(String.join("\n\t", commands)));
+            logger.info("Process (pid %s) started - waiting for termination: %s"
+                    .formatted(process.pid(),
+                            process.info().commandLine().orElse("")));
 
-            Instant start = Instant.now();
+            int code = process.waitFor();
 
-            Process process = new ProcessBuilder()
-                    .command(commands)
-                    .directory(baseDir.toFile())
-                    .inheritIO()
-                    .start();
+            logger.info("Process (pid %s) terminated with exit code %d (%s)"
+                    .formatted(process.pid(), code,
+                            Duration.between(start, Instant.now())));
 
-            try {
-                logger.info("Process (pid %s) started - waiting for termination: %s"
-                        .formatted(process.pid(),
-                                process.info().commandLine().orElse("")));
+            return "" + code;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
 
-                int code = process.waitFor();
+            process.destroyForcibly();
+            process.onExit().join();
 
-                if (code != 0) {
-                    logger.warn("Process (pid %s) terminated with exit code %d (%s)"
-                            .formatted(process.pid(), code,
-                                    Duration.between(start, Instant.now())));
-                } else {
-                    logger.info("Process (pid %s) terminated with exit code %d (%s)"
-                            .formatted(process.pid(), code,
-                                    Duration.between(start, Instant.now())));
-                }
+            logger.warn("Process (pid %s) wait timeout  - forcibly closed".formatted(process.pid()));
 
-                return "" + code;
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-
-                logger.warn("Process (pid %s) wait timeout - forcibly closing..".formatted(process.pid()));
-
-                process.destroyForcibly();
-                process.onExit().join();
-
-                logger.warn("Process (pid %s) wait timeout  - forcibly closed".formatted(process.pid()));
-
-                throw new CommandException("Timeout waiting for process completion", e);
-            }
-        } catch (IOException e) {
-            throw new CommandException("Process I/O error", e);
+            throw new IOException("Timeout waiting for process completion", e);
         }
     }
 }

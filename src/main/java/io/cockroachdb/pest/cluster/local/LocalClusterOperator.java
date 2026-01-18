@@ -75,22 +75,23 @@ public class LocalClusterOperator implements ClusterOperator {
                 = new LocalNodeOperator(cluster, applicationProperties);
         return new NodeOperator() {
             @Override
-            public String certs(List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
+            public String certs(List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles)
+            throws IOException {
                 return localNodeOperator.certs(nodeIds, keyFiles);
             }
 
             @Override
-            public String install(Integer nodeId) {
+            public String install(Integer nodeId) throws IOException {
                 return localNodeOperator.install(nodeId);
             }
 
             @Override
-            public String init(Integer nodeId) {
+            public String init(Integer nodeId) throws IOException {
                 return localNodeOperator.init(nodeId);
             }
 
             @Override
-            public String wipe(Integer nodeId, boolean all) {
+            public String wipe(Integer nodeId, boolean all) throws IOException {
                 return localNodeOperator.wipe(nodeId, all);
             }
 
@@ -113,12 +114,12 @@ public class LocalClusterOperator implements ClusterOperator {
             }
 
             @Override
-            public String sqlNode(Integer nodeId) {
+            public String sqlNode(Integer nodeId) throws IOException {
                 return localNodeOperator.sqlNode(nodeId);
             }
 
             @Override
-            public String statusNode(Integer nodeId) {
+            public String statusNode(Integer nodeId)throws IOException  {
                 return localNodeOperator.statusNode(nodeId);
             }
 

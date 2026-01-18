@@ -1,10 +1,6 @@
-###############################################################################################################
+########################################
 # Pest Control Application Configuration
-#
-# This file overrides the default application configuration properties (src/main/resources/application.yml).
-# See https://docs.spring.io/spring-boot/appendix/application-properties/index.html for all spring boot
-# properties and src/main/resources/application.yml for application defaults.
-###############################################################################################################
+########################################
 server:
   port: 9091
 application:
@@ -20,6 +16,7 @@ application:
       cluster-name: "Local Cluster (insecure)"
       cluster-type: hosted_insecure
       admin-url: "http://localhost:8080"
+      toxi-proxy-enabled: false
       data-source-properties:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"
@@ -59,6 +56,7 @@ application:
       cluster-type: hosted_secure
       # Use haproxy port
       admin-url: "https://localhost:8070"
+      toxi-proxy-enabled: false
       data-source-properties:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
         username: "craig"
@@ -95,6 +93,7 @@ application:
       cluster-name: "Remote Cluster (insecure)"
       cluster-type: hosted_insecure
       admin-url: "http://localhost:8080"
+      toxi-proxy-enabled: false
       data-source-properties:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"

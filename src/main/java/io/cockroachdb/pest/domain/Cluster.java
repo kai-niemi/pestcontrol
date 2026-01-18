@@ -50,6 +50,8 @@ public class Cluster {
 
     private String apiKey;
 
+    private boolean toxiProxyEnabled;
+
     public void postConstruct() {
         if (!baseLine.getInternalIps().isEmpty()) {
             Assert.state(baseLine.getInternalIps().size() == nodes.size(),
@@ -69,6 +71,14 @@ public class Cluster {
                 .filter(x -> Objects.equals(nodeId, x.getId()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Node id not found: " + nodeId));
+    }
+
+    public boolean isToxiProxyEnabled() {
+        return toxiProxyEnabled;
+    }
+
+    public void setToxiProxyEnabled(boolean toxiProxyEnabled) {
+        this.toxiProxyEnabled = toxiProxyEnabled;
     }
 
     @JsonIgnore
