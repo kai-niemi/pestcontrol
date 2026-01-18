@@ -41,6 +41,10 @@ public class LinkRelations {
 
     public static final String NODE_START_HAPROXY_REL = "node-start-haproxy";
 
+    public static final String NODE_START_TOXIPROXY_REL = "node-start-toxiproxy";
+
+    public static final String NODE_STOP_TOXIPROXY_REL = "node-stop-toxiproxy";
+
     public static final String NODE_STOP_HAPROXY_REL = "node-stop-haproxy";
 
     public static final String NODE_KILL_REL = "node-kill";

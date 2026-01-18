@@ -20,7 +20,7 @@ import io.cockroachdb.pest.ProfileNames;
 import io.cockroachdb.pest.web.api.toxiproxy.ToxiproxyAccessException;
 
 @ControllerAdvice(annotations = WebController.class)
-@Profile(ProfileNames.WEB)
+@Profile(ProfileNames.ONLINE)
 public class WebExceptionHandler extends ResponseEntityExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

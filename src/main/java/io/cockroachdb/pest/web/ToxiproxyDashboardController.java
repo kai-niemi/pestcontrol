@@ -22,7 +22,7 @@ import io.cockroachdb.pest.web.api.toxiproxy.ToxiproxyAccessException;
 import io.cockroachdb.pest.web.api.toxiproxy.ToxiproxyController;
 
 @WebController
-@Profile(ProfileNames.WEB)
+@Profile(ProfileNames.ONLINE)
 @RequestMapping("/proxy")
 public class ToxiproxyDashboardController {
     @Autowired

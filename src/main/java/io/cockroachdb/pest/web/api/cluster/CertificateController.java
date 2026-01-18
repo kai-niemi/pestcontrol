@@ -56,13 +56,13 @@ public class CertificateController {
         if (idx > 0) {
             String ext = fileName.substring(idx + 1);
             if (!allowedExtensions.contains(ext)) {
-                throw new UploadException("Illegal file extension: " + ext);
+                throw new CertificateUploadException("Illegal file extension: " + ext);
             }
         }
 
         String contentType = file.getContentType();
         if (!allowedContentTypes.contains(contentType)) {
-            throw new UploadException("Illegal content type: " + contentType);
+            throw new CertificateUploadException("Illegal content type: " + contentType);
         }
     }
 

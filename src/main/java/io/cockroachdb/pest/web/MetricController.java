@@ -15,7 +15,7 @@ import io.cockroachdb.pest.web.simp.SimpMessagePublisher;
 import io.cockroachdb.pest.web.simp.TopicName;
 
 @WebController
-@Profile(ProfileNames.WEB)
+@Profile(ProfileNames.ONLINE)
 @RequestMapping("/metrics")
 public class MetricController {
     @Autowired

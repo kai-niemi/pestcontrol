@@ -7,6 +7,7 @@
 
     <logger name="org.eclipse.jetty" level="WARN"/>
     <logger name="org.springframework" level="INFO"/>
+    <logger name="org.springframework.web.socket.config" level="WARN"/>
     <logger name="com.zaxxer.hikari" level="WARN"/>
 
     <springProfile name="verbose">

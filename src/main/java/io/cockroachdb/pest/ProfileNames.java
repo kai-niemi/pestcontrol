@@ -3,7 +3,7 @@ package io.cockroachdb.pest;
 public abstract class ProfileNames {
     public static final String DEV = "dev";
 
-    public static final String WEB = "web";
+    public static final String ONLINE = "!offline";
 
     public static final String SECURE = "secure";
 

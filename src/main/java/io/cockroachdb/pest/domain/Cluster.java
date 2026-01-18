@@ -42,7 +42,7 @@ public class Cluster {
 
     private BaseLine baseLine = new BaseLine();
 
-    private LoadBalancer loadBalancer = new LoadBalancer();
+    private Cluster.HAProxy haProxy = new HAProxy();
 
     private List<@Valid Node> nodes = new ArrayList<>();
 
@@ -76,14 +76,27 @@ public class Cluster {
         return ClusterTypes.isSecure(clusterType);
     }
 
-    //--------------------------------------------------------
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
 
-    public LoadBalancer getLoadBalancer() {
-        return loadBalancer;
+        Cluster cluster = (Cluster) o;
+        return clusterId.equals(cluster.clusterId);
     }
 
-    public void setLoadBalancer(LoadBalancer loadBalancer) {
-        this.loadBalancer = loadBalancer;
+    @Override
+    public int hashCode() {
+        return clusterId.hashCode();
+    }
+
+    //--------------------------------------------------------
+
+    public HAProxy getHaProxy() {
+        return haProxy;
+    }
+
+    public void setHaProxy(HAProxy haProxy) {
+        this.haProxy = haProxy;
     }
 
     public BaseLine getBaseLine() {
@@ -353,8 +366,8 @@ public class Cluster {
                 if (advertiseAddr.getPort().isEmpty()) {
                     advertiseAddr = advertiseAddr.addPort(NetworkAddress.from(listenAddr).getPort().orElseThrow(
                             () -> new IllegalStateException("Both advertise-addr " +
-                                                                    "and listen-addr are missing port number for node "
-                                                                    + getId())
+                                                            "and listen-addr are missing port number for node "
+                                                            + getId())
                     ));
                 }
                 return advertiseAddr.toAddressString();
@@ -364,7 +377,7 @@ public class Cluster {
                 return listenAddr.getAddress().get();
             }
             throw new IllegalStateException("Both advertise-addr " +
-                                                    "and listen-addr are missing for node " + getId());
+                                            "and listen-addr are missing for node " + getId());
         }
 
         @JsonIgnore
@@ -463,7 +476,7 @@ public class Cluster {
     }
 
     @Validated
-    public static class LoadBalancer {
+    public static class HAProxy {
         @NotNull
         private String rpcAddr;
 

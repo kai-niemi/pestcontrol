@@ -58,7 +58,8 @@ public class ClusterCommands extends AbstractShellCommand {
     @Command(description = "Select default cluster ID to use in commands",
             name = {"cluster", "use"},
             group = CommandGroups.CLUSTER_COMMANDS,
-            completionProvider = "clusterCompletionProvider")
+            completionProvider = "clusterCompletionProvider",
+            exitStatusExceptionMapper = "commandExceptionMapper")
     public void useCluster(
             @Option(description = "Cluster ID to use (must be of hosted cluster type)", longName = "clusterId")
             String clusterId) {
@@ -72,7 +73,8 @@ public class ClusterCommands extends AbstractShellCommand {
     @Command(description = "Print local IP addresses",
             name = {"cluster", "ip"},
             group = CommandGroups.CLUSTER_COMMANDS,
-            availabilityProvider = "ifClusterSelected")
+            availabilityProvider = "ifClusterSelected",
+            exitStatusExceptionMapper = "commandExceptionMapper")
     public void printIP(CommandContext commandContext) {
         System.out.println(
                 """
@@ -95,7 +97,8 @@ public class ClusterCommands extends AbstractShellCommand {
     @Command(description = "Print pest control agents",
             name = {"cluster", "agents"},
             group = CommandGroups.CLUSTER_COMMANDS,
-            availabilityProvider = "ifClusterSelected")
+            availabilityProvider = "ifClusterSelected",
+            exitStatusExceptionMapper = "commandExceptionMapper")
     public void printAgents(CommandContext commandContext) {
         List<List<?>> tuples = new ArrayList<>();
 

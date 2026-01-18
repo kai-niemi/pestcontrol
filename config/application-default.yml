@@ -10,6 +10,10 @@ server:
 application:
   default-cluster-id: "local-insecure"
 
+  toxi-proxy:
+    host: localhost
+    port: 8474
+
   # List of pre-configured CockroachDB clusters
   clusters:
     - cluster-id: "local-insecure"
@@ -20,7 +24,7 @@ application:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
-      load-balancer:
+      ha-proxy:
         rpc-addr: :26250
         http-addr: :8070
         stats-addr: :7070
@@ -59,7 +63,7 @@ application:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
         username: "craig"
         password: "cockroach"
-      load-balancer:
+      ha-proxy:
         rpc-addr: :26250
         http-addr: :8070
         stats-addr: :7070
@@ -86,7 +90,6 @@ application:
 #        - locality: "region=eu-north-1,zone=eu-north-1b"
 #        - locality: "region=eu-north-1,zone=eu-north-1c"
 
-
     # Example remote insecure cluster
     - cluster-id: "remote-insecure"
       cluster-name: "Remote Cluster (insecure)"
@@ -96,7 +99,7 @@ application:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
-      load-balancer:
+      ha-proxy:
         rpc-addr: :26257
         http-addr: :8070
         stats-addr: :7070

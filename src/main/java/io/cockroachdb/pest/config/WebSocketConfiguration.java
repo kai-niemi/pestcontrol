@@ -11,7 +11,7 @@ import io.cockroachdb.pest.ProfileNames;
 
 @Configuration
 @EnableWebSocketMessageBroker
-@Profile(ProfileNames.WEB)
+@Profile(ProfileNames.ONLINE)
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {

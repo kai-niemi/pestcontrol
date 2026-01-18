@@ -5,7 +5,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.shell.core.command.ExitStatus;
 import org.springframework.shell.core.command.availability.Availability;
+import org.springframework.shell.core.command.exit.ExitStatusExceptionMapper;
 
 import io.cockroachdb.pest.domain.Cluster;
 import io.cockroachdb.pest.domain.ClusterTypes;
@@ -13,6 +16,14 @@ import io.cockroachdb.pest.util.PatternUtils;
 
 public abstract class AbstractShellCommand {
     protected static Cluster SELECTED_CLUSTER;
+
+    @Bean
+    public ExitStatusExceptionMapper commandExceptionMapper() {
+        return exception -> {
+            exception.printStackTrace(System.err);
+            return new ExitStatus(-2, "Command execution failed: " + exception.toString());
+        };
+    }
 
     public Availability ifClusterSelected() {
         return Objects.isNull(SELECTED_CLUSTER)

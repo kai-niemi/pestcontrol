@@ -16,10 +16,12 @@ import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
+import org.springframework.shell.core.command.CommandContext;
 import org.springframework.shell.core.command.annotation.Command;
 import org.springframework.shell.core.command.annotation.Option;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,15 +42,17 @@ public class ConfigCommands extends AbstractShellCommand {
     private ApplicationProperties applicationProperties;
 
     @Command(description = "Generate application YAML",
-            name = {"config", "gen"},
-            group = CommandGroups.CONFIG_COMMANDS)
+            name = {"admin", "config", "gen"},
+            group = CommandGroups.ADMIN_COMMANDS,
+            exitStatusExceptionMapper = "commandExceptionMapper")
     public void generateConfig(
             @Option(description = "Name prefix", defaultValue = "cloud", longName = "name") String name,
             @Option(description = "Output file path", defaultValue = "", longName = "outputFile") String outputFile,
             @Option(description = "Region list", longName = "regions") List<String> regions,
             @Option(description = "Zone list", longName = "zones") List<String> zones,
             @Option(description = "Internal IP list", longName = "internalIPs") List<String> internalIPs,
-            @Option(description = "Secure cluster", defaultValue = "false", longName = "secure") Boolean secure
+            @Option(description = "Secure cluster", defaultValue = "false", longName = "secure") Boolean secure,
+            CommandContext commandContext
     ) {
         Assert.isTrue(!regions.isEmpty(), "regions is empty");
         Assert.isTrue(!zones.isEmpty(), "zones is empty");
@@ -58,7 +62,7 @@ public class ConfigCommands extends AbstractShellCommand {
         AddressCallback callback = new AddressCallback() {
             @Override
             public String firstNodeIP() {
-                return internalIPs.get(0);
+                return internalIPs.getFirst();
             }
 
             private boolean isLocalIP(String ip) {
@@ -122,14 +126,14 @@ public class ConfigCommands extends AbstractShellCommand {
 
         writeYaml(applicationProperties, yaml -> {
             if (Objects.isNull(outputFile)) {
-                System.out.println(yaml);
+                commandContext.outputWriter().println(yaml);
             } else {
                 try {
                     Files.writeString(Path.of(outputFile), yaml,
                             StandardOpenOption.CREATE,
                             StandardOpenOption.TRUNCATE_EXISTING,
                             StandardOpenOption.WRITE);
-                    System.out.println("Wrote generated YAML to '%s'".formatted(outputFile));
+                    commandContext.outputWriter().println("Exported YAML to '%s'".formatted(outputFile));
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
@@ -138,8 +142,9 @@ public class ConfigCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Generate application YAML for localhost",
-            name = {"config", "gen", "local"},
-            group = CommandGroups.CONFIG_COMMANDS)
+            name = {"admin", "config", "gen", "local"},
+            group = CommandGroups.ADMIN_COMMANDS,
+            exitStatusExceptionMapper = "commandExceptionMapper")
     public void generateLocalConfig(
             @Option(description = "Name prefix", defaultValue = "cloud", longName = "name") String name,
             @Option(description = "Output file path", defaultValue = "", longName = "outputFile") String outputFile,
@@ -149,7 +154,8 @@ public class ConfigCommands extends AbstractShellCommand {
             int numZones,
             @Option(description = "Number of nodes per zone (min 1)", defaultValue = "1", longName = "nodes")
             int numNodes,
-            @Option(description = "Secure cluster", defaultValue = "false", longName = "secure") Boolean secure
+            @Option(description = "Secure cluster", defaultValue = "false", longName = "secure") Boolean secure,
+            CommandContext commandContext
     ) {
         List<String> tiers = new ArrayList<>();
         List<String> zones = new ArrayList<>();
@@ -167,25 +173,27 @@ public class ConfigCommands extends AbstractShellCommand {
             });
         });
 
-        generateConfig(name, outputFile, tiers, zones, internalIPs, secure);
+        generateConfig(name, outputFile, tiers, zones, internalIPs, secure, commandContext);
     }
 
     @Command(description = "Print application YAML",
-            name = {"config", "print"},
-            group = CommandGroups.CONFIG_COMMANDS)
+            name = {"admin", "config", "print"},
+            group = CommandGroups.ADMIN_COMMANDS,
+            exitStatusExceptionMapper = "commandExceptionMapper")
     public void printConfig(
-            @Option(description = "Output file path", defaultValue = "", longName = "outputFile") String outputFile) {
+            @Option(description = "Output file path", defaultValue = "", longName = "outputFile") String outputFile,
+            CommandContext commandContext) {
         writeYaml(applicationProperties, yaml -> {
-            if (outputFile != null) {
+            if (StringUtils.hasLength(outputFile)) {
                 try {
                     Files.writeString(Path.of(outputFile), yaml, StandardOpenOption.CREATE,
                             StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
-                    System.out.println("Wrote YAML to '%s'".formatted(outputFile));
+                    commandContext.outputWriter().println("Exported YAML to '%s'".formatted(outputFile));
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
             } else {
-                System.out.println(yaml);
+                commandContext.outputWriter().println(yaml);
             }
         });
     }
@@ -225,11 +233,11 @@ public class ConfigCommands extends AbstractShellCommand {
         baseline.setHttpAddr(":+8080");
         cluster.setBaseLine(baseline);
 
-        Cluster.LoadBalancer loadBalancer = new Cluster.LoadBalancer();
+        Cluster.HAProxy loadBalancer = new Cluster.HAProxy();
         loadBalancer.setHttpAddr(":8070");
         loadBalancer.setRpcAddr(":26257");
         loadBalancer.setStatsAddr(":7070");
-        cluster.setLoadBalancer(loadBalancer);
+        cluster.setHaProxy(loadBalancer);
 
         final String firstNodeIP = addressCallback.firstNodeIP();
 

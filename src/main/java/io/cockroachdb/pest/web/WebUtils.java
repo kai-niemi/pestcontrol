@@ -19,7 +19,7 @@ import io.cockroachdb.pest.domain.Cluster;
 import io.cockroachdb.pest.web.security.ClusterAuthenticationDetails;
 
 @Component
-@Profile(ProfileNames.WEB)
+@Profile(ProfileNames.ONLINE)
 public class WebUtils {
     public static final String MSG_INFO = "MSG_INFO";
 

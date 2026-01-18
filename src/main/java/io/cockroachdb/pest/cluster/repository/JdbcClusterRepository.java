@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.repository;
+package io.cockroachdb.pest.cluster.repository;
 
 import javax.sql.DataSource;
 

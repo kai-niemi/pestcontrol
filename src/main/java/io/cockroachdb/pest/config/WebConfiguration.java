@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import io.cockroachdb.pest.ProfileNames;
 
 @Configuration
-@Profile(ProfileNames.WEB)
+@Profile(ProfileNames.ONLINE)
 public class WebConfiguration implements WebMvcConfigurer {
     @Autowired
     @Qualifier("simpleAsyncTaskExecutor")

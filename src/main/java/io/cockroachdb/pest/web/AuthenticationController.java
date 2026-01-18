@@ -18,7 +18,7 @@ import io.cockroachdb.pest.domain.ClusterTypes;
 import io.cockroachdb.pest.web.security.AuthenticationRequest;
 
 @WebController
-@Profile(ProfileNames.WEB)
+@Profile(ProfileNames.ONLINE)
 public class AuthenticationController {
     @Autowired
     private ApplicationProperties applicationProperties;

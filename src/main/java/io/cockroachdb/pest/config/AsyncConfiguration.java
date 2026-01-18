@@ -29,7 +29,7 @@ import io.cockroachdb.pest.domain.ApplicationProperties;
 @Configuration
 @EnableAsync
 @EnableScheduling
-@Profile(ProfileNames.WEB)
+@Profile(ProfileNames.ONLINE)
 public class AsyncConfiguration implements AsyncConfigurer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

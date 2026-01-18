@@ -116,10 +116,6 @@ application:
     data-dir: .datafiles
     certs-dir: .certs
     bin-dir: .binaries
-  # Host settings for toxiproxy
-  toxiproxy:
-    host: localhost
-    port: 8474
   # Various resource pool settings
   pool:
     threadPoolMaxSize: -1

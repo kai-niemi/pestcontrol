@@ -17,7 +17,7 @@ import jakarta.annotation.PostConstruct;
 import io.cockroachdb.pest.ProfileNames;
 
 @Component
-@Profile(ProfileNames.WEB)
+@Profile(ProfileNames.ONLINE)
 public class SimpMessagePublisher {
     private static final int SEND_DELAY_MS = 1500;
 

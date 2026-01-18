@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.cluster;
+package io.cockroachdb.pest.cluster.repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -9,19 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.cockroachdb.pest.cluster.ClientErrorException;
+import io.cockroachdb.pest.cluster.ServerErrorException;
 import io.cockroachdb.pest.cluster.model.NodeStatus;
 import io.cockroachdb.pest.config.ClosableDataSource;
 import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.repository.ClusterRepository;
-import io.cockroachdb.pest.repository.JdbcClusterRepository;
 
-@Component
-public class ClusterQuery {
+@Repository
+public class MetaDataRepository {
     @Autowired
     private ObjectMapper objectMapper;
 

@@ -1,5 +1,7 @@
 package io.cockroachdb.pest.web.security;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,7 +20,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import io.cockroachdb.pest.cluster.ClusterManager;
+import io.cockroachdb.pest.cluster.ClusterOperator;
+import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
+import io.cockroachdb.pest.cluster.StatusOperator;
 import io.cockroachdb.pest.domain.ApplicationProperties;
 import io.cockroachdb.pest.domain.Cluster;
 
@@ -27,7 +31,7 @@ public class ClusterAuthenticationProvider implements AuthenticationProvider {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private ClusterManager clusterManager;
+    private ClusterOperatorProvider clusterOperatorProvider;
 
     @Autowired
     private ApplicationProperties applicationProperties;
@@ -41,30 +45,21 @@ public class ClusterAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Missing credentials");
         }
 
-        String username = authentication.getPrincipal().toString();
-        String password = authentication.getCredentials().toString();
-        String clusterId = authenticationDetails.getClusterId();
-        Boolean useFileCredentials = authenticationDetails.getUseFileCredentials();
-
-        final Cluster properties = applicationProperties.getClusterById(clusterId);
-        authenticationDetails.setClusterProperties(properties);
-
-        // Fallback to static config
-        if (useFileCredentials) {
-            username = properties.getDataSourceProperties().getUsername();
-            password = properties.getDataSourceProperties().getPassword();
-        }
-
         try {
-            // Login to obtain session token
-            clusterManager.login(clusterId, username, password);
+            // Test login
+            Cluster cluster = applicationProperties.getClusterById(authenticationDetails.getClusterId());
+            ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(
+                    authenticationDetails.getClusterId());
+            try (StatusOperator statusOperator = clusterOperator.statusOperator(cluster)) {
+                statusOperator.queryClusterVersion();
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
 
-            // Create user details
-            final UserDetails userDetails = createUserDetails(username, password);
+            authenticationDetails.setClusterProperties(cluster);
 
-            // For whatever reason, the principal needs to be of type 'User' or the thymeleaf taglib won't work
-            final UserDetails principal = User.withUserDetails(userDetails).build();
-
+            // The principal needs to be of type 'User' or the thymeleaf taglib won't work
+            final UserDetails principal = User.withUserDetails(createUserDetails("unascribed")).build();
             return new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
         } catch (Exception exception) {
             logger.warn("Authentication failed", exception);
@@ -72,7 +67,7 @@ public class ClusterAuthenticationProvider implements AuthenticationProvider {
         }
     }
 
-    private UserDetails createUserDetails(String username, String password) {
+    private UserDetails createUserDetails(String username) {
         return new UserDetails() {
             @Override
             public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -84,7 +79,7 @@ public class ClusterAuthenticationProvider implements AuthenticationProvider {
 
             @Override
             public String getPassword() {
-                return password;
+                return null;
             }
 
             @Override
@@ -99,4 +94,3 @@ public class ClusterAuthenticationProvider implements AuthenticationProvider {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 }
-

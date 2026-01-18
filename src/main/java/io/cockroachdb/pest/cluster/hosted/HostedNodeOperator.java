@@ -1,54 +1,55 @@
-package io.cockroachdb.pest.cluster;
+package io.cockroachdb.pest.cluster.hosted;
 
+import java.io.IOException;
 import java.nio.file.Path;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.client.Hop;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 
+import io.cockroachdb.pest.cluster.NodeOperator;
 import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.domain.ClusterType;
 import io.cockroachdb.pest.util.HypermediaClient;
 import io.cockroachdb.pest.web.LinkRelations;
 import static io.cockroachdb.pest.web.LinkRelations.CERTS_REL;
 import static io.cockroachdb.pest.web.LinkRelations.CLUSTERS_REL;
 import static io.cockroachdb.pest.web.LinkRelations.CURIE_NAMESPACE;
-import static io.cockroachdb.pest.web.LinkRelations.NODE_GEN_HAPROXY_REL;
 import static io.cockroachdb.pest.web.LinkRelations.NODE_INIT_REL;
 import static io.cockroachdb.pest.web.LinkRelations.NODE_INSTALL_REL;
 import static io.cockroachdb.pest.web.LinkRelations.NODE_KILL_REL;
-import static io.cockroachdb.pest.web.LinkRelations.NODE_START_HAPROXY_REL;
 import static io.cockroachdb.pest.web.LinkRelations.NODE_START_REL;
 import static io.cockroachdb.pest.web.LinkRelations.NODE_STATUS_REL;
-import static io.cockroachdb.pest.web.LinkRelations.NODE_STOP_HAPROXY_REL;
 import static io.cockroachdb.pest.web.LinkRelations.NODE_STOP_REL;
 import static io.cockroachdb.pest.web.LinkRelations.NODE_WIPE_REL;
 import static io.cockroachdb.pest.web.LinkRelations.OPERATOR_REL;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
-@Component
-public class HostedClusterOperator implements ClusterOperator {
+public class HostedNodeOperator implements NodeOperator {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private HypermediaClient hypermediaClient;
+    private final Cluster cluster;
 
-    @Autowired
-    @Qualifier("localClusterOperator")
-    private ClusterOperator localClusterOperator;
+    private final HypermediaClient hypermediaClient;
 
-    @Override
-    public boolean supports(ClusterType clusterType) {
-        return EnumSet.of(ClusterType.hosted_insecure, ClusterType.hosted_secure)
-                .contains(clusterType);
+    private final NodeOperator localNodeOperator;
+
+    public HostedNodeOperator(Cluster cluster, HypermediaClient hypermediaClient, NodeOperator localNodeOperator) {
+        this.cluster = cluster;
+        this.hypermediaClient = hypermediaClient;
+        this.localNodeOperator = localNodeOperator;
+    }
+
+    private Link operatorLink(int nodeId) {
+        return hypermediaClient.from(cluster.getNodeById(nodeId).getServiceLink())
+                .follow(curied(CURIE_NAMESPACE, CLUSTERS_REL).value())
+                .follow(Hop.rel(curied(CURIE_NAMESPACE, LinkRelations.OPERATOR_TEMPLATE_REL).value())
+                        .withParameter("clusterType", cluster.getClusterType()))
+                .follow(curied(CURIE_NAMESPACE, OPERATOR_REL).value())
+                .asTemplatedLink();
     }
 
     private Link clusterLink(Cluster cluster, int nodeId) {
@@ -58,18 +59,10 @@ public class HostedClusterOperator implements ClusterOperator {
                 .asTemplatedLink();
     }
 
-    private Link operatorLink(Cluster cluster, int nodeId) {
-        return hypermediaClient.from(cluster.getNodeById(nodeId).getServiceLink())
-                .follow(curied(CURIE_NAMESPACE, CLUSTERS_REL).value())
-                .follow(Hop.rel(curied(CURIE_NAMESPACE, LinkRelations.OPERATOR_TEMPLATE_REL).value())
-                        .withParameter("clusterType", cluster.getClusterType()))
-                .follow(curied(CURIE_NAMESPACE, OPERATOR_REL).value())
-                .asTemplatedLink();
-    }
 
     @Override
-    public String certs(Cluster cluster, List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) {
-        localClusterOperator.certs(cluster, nodeIds, keyFiles);
+    public String certs(List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) throws IOException {
+        localNodeOperator.certs(nodeIds, keyFiles);
 
         nodeIds.forEach(nodeId -> {
             Link clusterLink = clusterLink(cluster, nodeId);
@@ -89,10 +82,8 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String install(Cluster cluster, Integer nodeId) {
-        Link operatorLink = operatorLink(cluster, nodeId);
-
-        Link actionLink = hypermediaClient.from(operatorLink)
+    public String install(Integer nodeId) {
+        Link actionLink = hypermediaClient.from(operatorLink(nodeId))
                 .follow(curied(CURIE_NAMESPACE, NODE_INSTALL_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
@@ -108,10 +99,8 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String startNode(Cluster cluster, Integer nodeId) {
-        Link operatorLink = operatorLink(cluster, nodeId);
-
-        Link actionLink = hypermediaClient.from(operatorLink)
+    public String startNode(Integer nodeId) {
+        Link actionLink = hypermediaClient.from(operatorLink(nodeId))
                 .follow(curied(CURIE_NAMESPACE, NODE_START_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
@@ -127,10 +116,8 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String stopNode(Cluster cluster, Integer nodeId) {
-        Link operatorLink = operatorLink(cluster, nodeId);
-
-        Link actionLink = hypermediaClient.from(operatorLink)
+    public String stopNode(Integer nodeId) {
+        Link actionLink = hypermediaClient.from(operatorLink(nodeId))
                 .follow(curied(CURIE_NAMESPACE, NODE_STOP_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
@@ -146,10 +133,8 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String killNode(Cluster cluster, Integer nodeId) {
-        Link operatorLink = operatorLink(cluster, nodeId);
-
-        Link actionLink = hypermediaClient.from(operatorLink)
+    public String killNode(Integer nodeId) {
+        Link actionLink = hypermediaClient.from(operatorLink(nodeId))
                 .follow(curied(CURIE_NAMESPACE, NODE_KILL_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
@@ -165,10 +150,8 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String init(Cluster cluster, Integer nodeId) {
-        Link operatorLink = operatorLink(cluster, nodeId);
-
-        Link actionLink = hypermediaClient.from(operatorLink)
+    public String init(Integer nodeId) {
+        Link actionLink = hypermediaClient.from(operatorLink(nodeId))
                 .follow(curied(CURIE_NAMESPACE, NODE_INIT_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
@@ -184,10 +167,8 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String wipe(Cluster cluster, Integer nodeId, boolean all) {
-        Link operatorLink = operatorLink(cluster, nodeId);
-
-        Link actionLink = hypermediaClient.from(operatorLink)
+    public String wipe(Integer nodeId, boolean all) {
+        Link actionLink = hypermediaClient.from(operatorLink(nodeId))
                 .follow(curied(CURIE_NAMESPACE, NODE_WIPE_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
@@ -204,103 +185,14 @@ public class HostedClusterOperator implements ClusterOperator {
     }
 
     @Override
-    public String sqlNode(Cluster cluster, Integer nodeId) {
-        return localClusterOperator.sqlNode(cluster, nodeId);
+    public String sqlNode(Integer nodeId) throws IOException {
+        return localNodeOperator.sqlNode(nodeId);
     }
 
     @Override
-    public String statusNode(Cluster cluster, Integer nodeId) {
-        Link operatorLink = operatorLink(cluster, nodeId);
-
-        Link actionLink = hypermediaClient.from(operatorLink)
+    public String statusNode(Integer nodeId) {
+        Link actionLink = hypermediaClient.from(operatorLink(nodeId))
                 .follow(curied(CURIE_NAMESPACE, NODE_STATUS_REL).value())
-                .asTemplatedLink()
-                .expand(Map.of(
-                        "clusterId", cluster.getClusterId(),
-                        "nodeId", nodeId));
-
-        ResponseEntity<String> response = hypermediaClient.post(actionLink, cluster, String.class);
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.warn("Unexpected HTTP status: {}", response);
-        }
-
-        return response.getBody();
-    }
-
-    @Override
-    public String disruptNode(Cluster cluster, Integer nodeId) {
-        return killNode(cluster, nodeId);
-    }
-
-    @Override
-    public String recoverNode(Cluster cluster, Integer nodeId) {
-        return startNode(cluster, nodeId);
-    }
-
-    @Override
-    public String disruptLocality(Cluster cluster, String locality) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String recoverLocality(Cluster cluster, String locality) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String startToxiproxyServer() {
-        return localClusterOperator.startToxiproxyServer();
-    }
-
-    @Override
-    public String stopToxiproxyServer() {
-        return localClusterOperator.stopToxiproxyServer();
-    }
-
-    @Override
-    public String genHAProxyCfg(Cluster cluster, Integer nodeId) {
-        Link operatorLink = operatorLink(cluster, nodeId);
-
-        Link actionLink = hypermediaClient.from(operatorLink)
-                .follow(curied(CURIE_NAMESPACE, NODE_GEN_HAPROXY_REL).value())
-                .asTemplatedLink()
-                .expand(Map.of(
-                        "clusterId", cluster.getClusterId(),
-                        "nodeId", nodeId));
-
-        ResponseEntity<String> response = hypermediaClient.post(actionLink, cluster, String.class);
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.warn("Unexpected HTTP status: {}", response);
-        }
-
-        return response.getBody();
-    }
-
-    @Override
-    public String startHAProxy(Cluster cluster, Integer nodeId) {
-        Link operatorLink = operatorLink(cluster, nodeId);
-
-        Link actionLink = hypermediaClient.from(operatorLink)
-                .follow(curied(CURIE_NAMESPACE, NODE_START_HAPROXY_REL).value())
-                .asTemplatedLink()
-                .expand(Map.of(
-                        "clusterId", cluster.getClusterId(),
-                        "nodeId", nodeId));
-
-        ResponseEntity<String> response = hypermediaClient.post(actionLink, cluster, String.class);
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.warn("Unexpected HTTP status: {}", response);
-        }
-
-        return response.getBody();
-    }
-
-    @Override
-    public String stopHAProxy(Cluster cluster, Integer nodeId) {
-        Link operatorLink = operatorLink(cluster, nodeId);
-
-        Link actionLink = hypermediaClient.from(operatorLink)
-                .follow(curied(CURIE_NAMESPACE, NODE_STOP_HAPROXY_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", cluster.getClusterId(),

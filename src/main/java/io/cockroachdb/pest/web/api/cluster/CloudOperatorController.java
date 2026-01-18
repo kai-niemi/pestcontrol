@@ -1,5 +1,7 @@
 package io.cockroachdb.pest.web.api.cluster;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.cockroachdb.pest.cluster.ClusterManager;
 import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
-import io.cockroachdb.pest.domain.Cluster;
 import io.cockroachdb.pest.web.LinkRelations;
 import io.cockroachdb.pest.web.api.MessageModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -22,13 +22,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/api/cluster/cloud")
 public class CloudOperatorController {
     @Autowired
-    private ClusterManager clusterManager;
-
-    @Autowired
     private ClusterOperatorProvider clusterOperatorProvider;
 
     @GetMapping
-    public HttpEntity<MessageModel> index() {
+    public HttpEntity<MessageModel> index() throws IOException {
         return ResponseEntity.ok(MessageModel.from("Cloud cluster operator")
                 .add(linkTo(methodOn(getClass())
                         .index())
@@ -55,37 +52,37 @@ public class CloudOperatorController {
 
     @PostMapping("/{clusterId}/locality/{tiers}/disrupt")
     public ResponseEntity<Void> disruptLocality(@PathVariable("clusterId") String clusterId,
-                                                @PathVariable("tiers") String tiers) {
-        Cluster cluster = clusterManager.getCluster(clusterId);
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterType());
-        clusterOperator.disruptLocality(cluster, tiers);
+                                                @PathVariable("tiers") String tiers)  throws IOException {
+        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(clusterId);
+        clusterOperator.disruptionOperator(clusterOperatorProvider.clusterById(clusterId))
+                .disruptLocality(tiers);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{clusterId}/locality/{tiers}/recover")
     public ResponseEntity<Void> recoverLocality(@PathVariable("clusterId") String clusterId,
-                                                @PathVariable("tiers") String tiers) {
-        Cluster cluster = clusterManager.getCluster(clusterId);
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterType());
-        clusterOperator.recoverLocality(cluster, tiers);
+                                                @PathVariable("tiers") String tiers)  throws IOException{
+        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(clusterId);
+        clusterOperator.disruptionOperator(clusterOperatorProvider.clusterById(clusterId))
+                .recoverLocality(tiers);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{clusterId}/node/{nodeId}/disrupt")
     public ResponseEntity<Void> disruptNode(@PathVariable("clusterId") String clusterId,
-                                            @PathVariable("nodeId") Integer id) {
-        Cluster cluster = clusterManager.getCluster(clusterId);
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterType());
-        clusterOperator.disruptNode(cluster, id);
+                                            @PathVariable("nodeId") Integer id) throws IOException {
+        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(clusterId);
+        clusterOperator.disruptionOperator(clusterOperatorProvider.clusterById(clusterId))
+                .disruptNode(id);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{clusterId}/node/{nodeId}/recover")
     public ResponseEntity<Void> recoverNode(@PathVariable("clusterId") String clusterId,
-                                            @PathVariable("nodeId") Integer id) {
-        Cluster cluster = clusterManager.getCluster(clusterId);
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterType());
-        clusterOperator.recoverNode(cluster, id);
+                                            @PathVariable("nodeId") Integer id) throws IOException {
+        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(clusterId);
+        clusterOperator.disruptionOperator(clusterOperatorProvider.clusterById(clusterId))
+                .recoverNode(id);
         return ResponseEntity.ok().build();
     }
 }

@@ -10,12 +10,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -30,13 +30,12 @@ public class ApplicationProperties implements InitializingBean {
     @Valid
     private Pool pool = new Pool();
 
-    @Valid
-    private Toxiproxy toxiproxy = new Toxiproxy();
-
-    private String defaultClusterId;
-
     @NotEmpty
     private List<@Valid Cluster> clusters = new ArrayList<>();
+
+    private ToxiProxy toxiProxy = new ToxiProxy();
+
+    private String defaultClusterId;
 
     private boolean dryRunLocalCommands;
 
@@ -53,8 +52,8 @@ public class ApplicationProperties implements InitializingBean {
         }
     }
 
-    public DataSourceProperties getDataSourceProperties(String clusterId) {
-        return getClusterById(clusterId).getDataSourceProperties();
+    public ToxiproxyClient createToxiProxyClient() {
+        return new ToxiproxyClient(toxiProxy.getHost(), toxiProxy.getPort());
     }
 
     public Cluster getClusterById(String clusterId) {
@@ -62,8 +61,7 @@ public class ApplicationProperties implements InitializingBean {
                 .stream()
                 .filter(x -> x.getClusterId().equals(clusterId))
                 .findFirst()
-                .orElseThrow(() ->
-                        new IllegalArgumentException("No cluster configuration with id: " + clusterId));
+                .orElseThrow(() -> new IllegalArgumentException("No cluster configuration with id: " + clusterId));
     }
 
     @JsonIgnore
@@ -90,20 +88,20 @@ public class ApplicationProperties implements InitializingBean {
         this.clusters = clusters;
     }
 
-    public Toxiproxy getToxiproxy() {
-        return toxiproxy;
-    }
-
-    public void setToxiproxy(Toxiproxy toxiProxy) {
-        this.toxiproxy = toxiProxy;
-    }
-
     public Pool getPool() {
         return pool;
     }
 
     public void setPool(Pool pool) {
         this.pool = pool;
+    }
+
+    public ToxiProxy getToxiProxy() {
+        return toxiProxy;
+    }
+
+    public void setToxiProxy(ToxiProxy toxiProxy) {
+        this.toxiProxy = toxiProxy;
     }
 
     public String getDefaultClusterId() {
@@ -120,38 +118,6 @@ public class ApplicationProperties implements InitializingBean {
 
     public void setDirectories(@Valid Directories directories) {
         this.directories = directories;
-    }
-
-    public static class Toxiproxy {
-        private String host;
-
-        private int port;
-
-        private boolean enabled;
-
-        public String getHost() {
-            return host;
-        }
-
-        public void setHost(String host) {
-            this.host = host;
-        }
-
-        public int getPort() {
-            return port;
-        }
-
-        public void setPort(int port) {
-            this.port = port;
-        }
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
-        }
     }
 
     @Validated
@@ -270,6 +236,41 @@ public class ApplicationProperties implements InitializingBean {
 
         public void setConfigDir(String configDir) {
             this.configDir = configDir;
+        }
+    }
+
+    @Validated
+    public static class ToxiProxy {
+        @NotNull
+        private String host;
+
+        @NotNull
+        private Integer port;
+
+        private boolean enabled;
+
+        public String getHost() {
+            return host;
+        }
+
+        public void setHost(String host) {
+            this.host = host;
+        }
+
+        public Integer getPort() {
+            return port;
+        }
+
+        public void setPort(Integer port) {
+            this.port = port;
+        }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
         }
     }
 }

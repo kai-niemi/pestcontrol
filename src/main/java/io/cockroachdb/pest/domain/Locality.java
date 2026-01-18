@@ -2,6 +2,7 @@ package io.cockroachdb.pest.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,10 +72,10 @@ public class Locality implements Comparable<Locality> {
         return new Locality(tierList);
     }
 
-    private List<Tier> tiers;
+    private final List<Tier> tiers;
 
     @JsonIgnore
-    private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+    private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 
     public Locality(List<Tier> tiers) {
         this.tiers = tiers;
@@ -83,7 +84,7 @@ public class Locality implements Comparable<Locality> {
     public boolean matches(List<Tier> required) {
         return required
                        .stream()
-                       .filter(tier -> tiers.contains(tier))
+                       .filter(tiers::contains)
                        .count() == required.size();
     }
 
@@ -94,11 +95,7 @@ public class Locality implements Comparable<Locality> {
     }
 
     public List<Tier> getTiers() {
-        return tiers;
-    }
-
-    public void setTiers(List<Tier> tiers) {
-        this.tiers = tiers;
+        return Collections.unmodifiableList(tiers);
     }
 
     @JsonAnySetter
@@ -150,7 +147,7 @@ public class Locality implements Comparable<Locality> {
         private Integer level;
 
         @JsonIgnore
-        private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+        private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 
         public Tier() {
         }

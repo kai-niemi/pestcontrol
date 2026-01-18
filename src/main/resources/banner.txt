@@ -3,7 +3,7 @@ ${AnsiColor.BRIGHT_YELLOW}        \   /            ____           _      ____   
     /\ ()   ()          | |_) / _ \/ __| __| | |   / _ \| '_ \| __| '__/ _ \| |
    /  \/~---~\.-~^-.    |  __/  __/\__ \ |_  | |__| (_) | | | | |_| | | (_) | |
 .-~^-./   |   \---.     |_|   \___||___/\__|  \____\___/|_| |_|\__|_|  \___/|_|
-     {    |    }   \    ${AnsiColor.BRIGHT_MAGENTA}${application.title:Pest Control}${application.formatted-version: v2.0.0} powered by Spring Boot${spring-boot.formatted-version}${AnsiColor.BRIGHT_YELLOW}
-   .-~\   |   /~-.      ${AnsiColor.BRIGHT_GREEN}A cluster manager and chaos testing tool for CockroachDB${AnsiColor.BRIGHT_YELLOW}
-  /    \  A  /    \     ${AnsiColor.BRIGHT_GREEN}Active profiles: ${AnsiColor.BRIGHT_YELLOW}${spring.profiles.active}${AnsiColor.BRIGHT_YELLOW}
-        \/ \/           ${AnsiColor.BRIGHT_GREEN}Admin URL: ${AnsiColor.BRIGHT_YELLOW}http://${server.address:localhost}:${server.port:9090}${AnsiColor.DEFAULT}
+     {    |    }   \    ${AnsiColor.BRIGHT_MAGENTA}${application.title:Pest Control}${application.formatted-version: v0.0.0} powered by Spring Boot${spring-boot.formatted-version}${AnsiColor.BRIGHT_YELLOW}
+   .-~\   |   /~-.      ${AnsiColor.BRIGHT_GREEN}Active profiles: ${AnsiColor.BRIGHT_YELLOW}${spring.profiles.active}${AnsiColor.BRIGHT_YELLOW}
+  /    \  A  /    \     ${AnsiColor.BRIGHT_GREEN}      Admin URL: ${AnsiColor.BRIGHT_YELLOW}http://${server.address:localhost}:${server.port:9090}${AnsiColor.DEFAULT}
+        \/ \/           ${AnsiColor.BRIGHT_GREEN}        API URL: ${AnsiColor.BRIGHT_YELLOW}http://${server.address:localhost}:${server.port:9090}/api${AnsiColor.DEFAULT}

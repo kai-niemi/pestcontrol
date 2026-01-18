@@ -30,7 +30,7 @@ import io.cockroachdb.pest.web.simp.SimpMessagePublisher;
 import io.cockroachdb.pest.web.simp.TopicName;
 
 @WebController
-@Profile(ProfileNames.WEB)
+@Profile(ProfileNames.ONLINE)
 @RequestMapping("/cluster")
 public class ClusterDashboardController extends AbstractSessionController {
     @Autowired

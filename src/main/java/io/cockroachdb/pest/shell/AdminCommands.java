@@ -26,7 +26,8 @@ public class AdminCommands {
 
     @Command(description = "Toggle dry run for local commands",
             name = {"admin", "toggle", "dry-run"},
-            group = CommandGroups.ADMIN_COMMANDS)
+            group = CommandGroups.ADMIN_COMMANDS,
+            exitStatusExceptionMapper = "commandExceptionMapper")
     public void toggleDryRun(CommandContext commandContext) {
         AnsiConsole console = new AnsiConsole(commandContext.outputWriter());
         applicationProperties.setDryRunLocalCommands(!applicationProperties.isDryRunLocalCommands());
@@ -36,7 +37,8 @@ public class AdminCommands {
 
     @Command(description = "Toggle SQL trace logging (verbose)",
             name = {"admin", "toggle", "sql-trace"},
-            group = CommandGroups.ADMIN_COMMANDS)
+            group = CommandGroups.ADMIN_COMMANDS,
+            exitStatusExceptionMapper = "commandExceptionMapper")
     public void toggleSqlTraceLogging(CommandContext commandContext) {
         AnsiConsole console = new AnsiConsole(commandContext.outputWriter());
         boolean enabled = toggleLogLevel(DataSourceConfiguration.SQL_TRACE_LOGGER);
@@ -58,7 +60,8 @@ public class AdminCommands {
 
     @Command(description = "Print system information",
             name = {"admin", "info"},
-            group = CommandGroups.ADMIN_COMMANDS)
+            group = CommandGroups.ADMIN_COMMANDS,
+            exitStatusExceptionMapper = "commandExceptionMapper")
     public void systemInfo(CommandContext commandContext) {
         AnsiConsole console = new AnsiConsole(commandContext.outputWriter());
 

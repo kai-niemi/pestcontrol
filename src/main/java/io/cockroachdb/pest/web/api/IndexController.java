@@ -1,5 +1,7 @@
 package io.cockroachdb.pest.web.api;
 
+import java.io.IOException;
+
 import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +19,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/api")
 public class IndexController {
     @GetMapping
-    public ResponseEntity<MessageModel> index() {
+    public ResponseEntity<MessageModel> index() throws IOException {
         return ResponseEntity.ok(MessageModel.from("Welcome to PestControl API")
                 .add(linkTo(methodOn(getClass())
                         .index())

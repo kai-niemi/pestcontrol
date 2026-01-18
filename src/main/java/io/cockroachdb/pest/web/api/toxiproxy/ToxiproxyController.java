@@ -25,6 +25,7 @@ import eu.rekawek.toxiproxy.model.ToxicType;
 import jakarta.validation.Valid;
 
 import io.cockroachdb.pest.cluster.ResourceNotFoundException;
+import io.cockroachdb.pest.domain.ApplicationProperties;
 import io.cockroachdb.pest.web.LinkRelations;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -34,13 +35,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/api/toxiproxy")
 public class ToxiproxyController {
     @Autowired
-    private ToxiproxyClient toxiproxyClient;
+    private ProxyModelAssembler proxyModelAssembler;
 
     @Autowired
-    private ProxyModelAssembler proxyModelAssembler;
+    private ApplicationProperties applicationProperties;
 
     private Proxy findProxyByName(String name) {
         try {
+            ToxiproxyClient toxiproxyClient = applicationProperties.createToxiProxyClient();
             return toxiproxyClient
                     .getProxies()
                     .stream()
@@ -54,6 +56,8 @@ public class ToxiproxyController {
     @GetMapping
     public ResponseEntity<ClientModel> index() {
         try {
+            ToxiproxyClient toxiproxyClient = applicationProperties.createToxiProxyClient();
+
             ClientModel model = new ClientModel();
             model.setVersion(toxiproxyClient.version());
             model.add(linkTo(methodOn(ToxiproxyController.class)
@@ -67,6 +71,7 @@ public class ToxiproxyController {
                     .findProxies())
                     .withRel(LinkRelations.PROXIES_REL)
                     .withTitle("Collection of proxies"));
+
             return ResponseEntity.ok(model);
         } catch (IOException e) {
             throw new ToxiproxyAccessException("I/O exception retrieving client details", e);
@@ -76,6 +81,7 @@ public class ToxiproxyController {
     @PostMapping("/reset")
     public ResponseEntity<ClientModel> reset() {
         try {
+            ToxiproxyClient toxiproxyClient = applicationProperties.createToxiProxyClient();
             toxiproxyClient.reset();
         } catch (IOException e) {
             throw new ToxiproxyAccessException("I/O exception in toxiproxy client", e);
@@ -86,6 +92,8 @@ public class ToxiproxyController {
     @GetMapping("/proxy")
     public ResponseEntity<CollectionModel<ProxyModel>> findProxies() {
         try {
+            ToxiproxyClient toxiproxyClient = applicationProperties.createToxiProxyClient();
+
             CollectionModel<ProxyModel> collectionModel = proxyModelAssembler
                     .toCollectionModel(toxiproxyClient.getProxies());
 
@@ -103,10 +111,6 @@ public class ToxiproxyController {
     @GetMapping(value = "/proxy/form")
     public HttpEntity<ProxyForm> getProxyForm() {
         ProxyForm form = new ProxyForm();
-//        form.setName("crdb-1");
-//        form.setListen("localhost:35258");
-//        form.setUpstream("localhost:25258");
-
         return ResponseEntity.ok(form
                 .add(linkTo(methodOn(ToxiproxyController.class)
                         .getProxyForm())
@@ -120,6 +124,7 @@ public class ToxiproxyController {
     @PostMapping(value = "/proxy")
     public HttpEntity<ProxyModel> newProxy(@RequestBody @Valid ProxyForm form) {
         try {
+            ToxiproxyClient toxiproxyClient = applicationProperties.createToxiProxyClient();
             Proxy proxy = toxiproxyClient.createProxy(form.getName(), form.getListen(), form.getUpstream());
             return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -287,5 +292,4 @@ public class ToxiproxyController {
             throw new ToxiproxyAccessException("I/O exception adding toxic", e);
         }
     }
-
 }

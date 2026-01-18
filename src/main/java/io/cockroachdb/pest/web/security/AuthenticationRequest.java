@@ -9,19 +9,12 @@ public class AuthenticationRequest {
     private String clusterId;
 
     @NotNull
-    private final Boolean useFileCredentials = true;
-
-    @NotNull
     @Size(max = 255)
     private String username;
 
     @NotNull
     @Size(max = 255)
     private String password;
-
-    public @NotNull Boolean getUseFileCredentials() {
-        return useFileCredentials;
-    }
 
     public @NotNull @Size(max = 255) String getClusterId() {
         return clusterId;
