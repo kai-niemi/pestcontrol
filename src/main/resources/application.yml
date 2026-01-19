@@ -107,6 +107,10 @@ server:
 # Application baseline properties
 ##################################
 application:
+  toxi-proxy:
+    host: localhost
+    port: 8474
+    enabled: false
   # Base directories for binaries and shell scripts
   directories:
     base-dir: .

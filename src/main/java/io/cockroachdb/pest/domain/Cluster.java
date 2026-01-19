@@ -52,7 +52,9 @@ public class Cluster {
 
     private boolean toxiProxyEnabled;
 
-    public void postConstruct() {
+    public void postConstruct(ApplicationProperties applicationProperties) {
+        this.toxiProxyEnabled = applicationProperties.getToxiProxy().isEnabled();
+
         if (!baseLine.getInternalIps().isEmpty()) {
             Assert.state(baseLine.getInternalIps().size() == nodes.size(),
                     "internal-ip count differs from node count");
@@ -77,10 +79,6 @@ public class Cluster {
         return toxiProxyEnabled;
     }
 
-    public void setToxiProxyEnabled(boolean toxiProxyEnabled) {
-        this.toxiProxyEnabled = toxiProxyEnabled;
-    }
-
     @JsonIgnore
     public boolean isSecure() {
         return ClusterTypes.isSecure(clusterType);
@@ -88,7 +86,9 @@ public class Cluster {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Cluster cluster = (Cluster) o;
         return clusterId.equals(cluster.clusterId);

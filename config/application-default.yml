@@ -5,18 +5,16 @@ server:
   port: 9091
 application:
   default-cluster-id: "local-insecure"
-
   toxi-proxy:
     host: localhost
     port: 8474
-
+    enabled: false
   # List of pre-configured CockroachDB clusters
   clusters:
     - cluster-id: "local-insecure"
       cluster-name: "Local Cluster (insecure)"
       cluster-type: hosted_insecure
       admin-url: "http://localhost:8080"
-      toxi-proxy-enabled: false
       data-source-properties:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"
@@ -27,10 +25,10 @@ application:
         stats-addr: :7070
       baseline:
         # https://www.cockroachlabs.com/docs/releases/#downloads
-        #  version: "v25.3.4.darwin-11.0-amd64"
-        #  version: "v25.3.4.linux-amd64"
-        #  version: "v25.3.4.linux-arm64"
-        version: "v25.4.2.darwin-11.0-arm64"
+        #  version: "*.darwin-11.0-amd64"
+        #  version: "*.linux-amd64"
+        #  version: "*.linux-arm64"
+        version: "v25.4.3.darwin-11.0-arm64"
         service-addr: localhost:9091
         listen-addr: :+25257
         advertise-addr: localhost
@@ -56,7 +54,6 @@ application:
       cluster-type: hosted_secure
       # Use haproxy port
       admin-url: "https://localhost:8070"
-      toxi-proxy-enabled: false
       data-source-properties:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=require"
         username: "craig"
@@ -66,7 +63,7 @@ application:
         http-addr: :8070
         stats-addr: :7070
       baseline:
-        version: "v25.3.4.darwin-11.0-arm64"
+        version: "v25.4.3.darwin-11.0-arm64"
         service-addr: localhost:9091
         listen-addr: :+25257
         advertise-addr: localhost
@@ -93,7 +90,6 @@ application:
       cluster-name: "Remote Cluster (insecure)"
       cluster-type: hosted_insecure
       admin-url: "http://localhost:8080"
-      toxi-proxy-enabled: false
       data-source-properties:
         url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
         username: "craig"
@@ -103,7 +99,7 @@ application:
         http-addr: :8070
         stats-addr: :7070
       baseline:
-        version: "v25.3.4.darwin-11.0-arm64"
+        version: "v25.4.3.darwin-11.0-arm64"
         service-addr: localhost:9091
         listen-addr: :+25257
         advertise-addr: :+26257
@@ -118,16 +114,3 @@ application:
         - locality: "region=eu-central-1,zone=eu-central-1a"
         - locality: "region=eu-central-1,zone=eu-central-1b"
         - locality: "region=eu-central-1,zone=eu-central-1c"
-
-    # Example cockroach cloud dedicated cluster
-    - cluster-id: "00000000-0000-0000-0000-000000000000"
-      cluster-name: "CockroachDB Cloud (odin)"
-      cluster-type: cloud_dedicated
-      # API key only needed for disruption API, see:
-      # https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys
-      api-key: "<private-key>"
-      admin-url: "https://admin-odin-qzx.cockroachlabs.cloud:8080"
-      data-source-properties:
-        url: "jdbc:postgresql://odin-qzx.aws-eu-north-1.cockroachlabs.cloud:26257/defaultdb?sslmode=require"
-        username: "craig"
-        password: "cockroach"
