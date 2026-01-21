@@ -45,17 +45,9 @@
 
                     to <a type="btn" target="_blank" id="clusterId"
                           class="link-body-emphasis link-offset-2 link-underline link-underline-opacity-75"
-                          th:href="${clusterProperties.adminUrl}"
-                          th:text="${clusterProperties.clusterId}"></a>
-                    of type <span class="badge text-bg-info" th:text="${clusterProperties.getClusterType()}"> </span>
-
-                    <hr>
-                    <code th:text="${clusterVersion}"></code>
-                </div>
-
-                <div class="mb-5">
-                    <a class="btn btn-primary" target="_blank"
-                       th:href="${clusterProperties.adminUrl}">DB Console</a>
+                          th:href="${clusterModel.getRequiredLink('admin').href}"
+                          th:text="${clusterModel.getClusterId()}"></a>
+                    of type <span class="badge text-bg-info" th:text="${clusterModel.getContent().getClusterType()}"> </span>
                 </div>
             </div>
         </div>

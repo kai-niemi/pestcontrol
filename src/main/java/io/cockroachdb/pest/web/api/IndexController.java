@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import io.cockroachdb.pest.web.LinkRelations;
+import io.cockroachdb.pest.model.LinkRelations;
+import io.cockroachdb.pest.web.api.chart.ChartController;
 import io.cockroachdb.pest.web.api.cluster.ClusterController;
 import io.cockroachdb.pest.web.api.toxiproxy.ToxiproxyController;
+import io.cockroachdb.pest.web.model.MessageModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -20,7 +22,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class IndexController {
     @GetMapping
     public ResponseEntity<MessageModel> index() throws IOException {
-        return ResponseEntity.ok(MessageModel.from("Welcome to PestControl API")
+        return ResponseEntity.ok(MessageModel.from("Welcome to PestControl Hypermedia API")
                 .add(linkTo(methodOn(getClass())
                         .index())
                         .withSelfRel())
@@ -32,7 +34,7 @@ public class IndexController {
                         .index())
                         .withRel(LinkRelations.TOXIPROXY_REL)
                         .withTitle("Toxiproxy controls resource"))
-                .add(linkTo(methodOn(MetersChartController.class)
+                .add(linkTo(methodOn(ChartController.class)
                         .index())
                         .withRel(LinkRelations.CHARTS_REL)
                         .withTitle("Chart time-series resource"))

@@ -12,20 +12,20 @@ import org.springframework.hateoas.client.Hop;
 import org.springframework.http.ResponseEntity;
 
 import io.cockroachdb.pest.cluster.NodeOperator;
-import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.LinkRelations;
 import io.cockroachdb.pest.util.HypermediaClient;
-import io.cockroachdb.pest.web.LinkRelations;
-import static io.cockroachdb.pest.web.LinkRelations.CERTS_REL;
-import static io.cockroachdb.pest.web.LinkRelations.CLUSTERS_REL;
-import static io.cockroachdb.pest.web.LinkRelations.CURIE_NAMESPACE;
-import static io.cockroachdb.pest.web.LinkRelations.NODE_INIT_REL;
-import static io.cockroachdb.pest.web.LinkRelations.NODE_INSTALL_REL;
-import static io.cockroachdb.pest.web.LinkRelations.NODE_KILL_REL;
-import static io.cockroachdb.pest.web.LinkRelations.NODE_START_REL;
-import static io.cockroachdb.pest.web.LinkRelations.NODE_STATUS_REL;
-import static io.cockroachdb.pest.web.LinkRelations.NODE_STOP_REL;
-import static io.cockroachdb.pest.web.LinkRelations.NODE_WIPE_REL;
-import static io.cockroachdb.pest.web.LinkRelations.OPERATOR_REL;
+import static io.cockroachdb.pest.model.LinkRelations.CERTS_REL;
+import static io.cockroachdb.pest.model.LinkRelations.CLUSTERS_REL;
+import static io.cockroachdb.pest.model.LinkRelations.CURIE_NAMESPACE;
+import static io.cockroachdb.pest.model.LinkRelations.NODE_INIT_REL;
+import static io.cockroachdb.pest.model.LinkRelations.NODE_INSTALL_REL;
+import static io.cockroachdb.pest.model.LinkRelations.NODE_KILL_REL;
+import static io.cockroachdb.pest.model.LinkRelations.NODE_START_REL;
+import static io.cockroachdb.pest.model.LinkRelations.NODE_STATUS_REL;
+import static io.cockroachdb.pest.model.LinkRelations.NODE_STOP_REL;
+import static io.cockroachdb.pest.model.LinkRelations.NODE_WIPE_REL;
+import static io.cockroachdb.pest.model.LinkRelations.OPERATOR_REL;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 public class HostedNodeOperator implements NodeOperator {

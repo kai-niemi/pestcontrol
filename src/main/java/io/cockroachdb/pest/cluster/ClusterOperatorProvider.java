@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Component;
 
-import io.cockroachdb.pest.domain.ApplicationProperties;
-import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.domain.ClusterType;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.ClusterType;
 
 @Component
 public class ClusterOperatorProvider {

@@ -12,25 +12,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.domain.NetworkAddress;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.NetworkAddress;
+import io.cockroachdb.pest.model.Node;
 
 public class CommandBuilder {
-    public static CommandBuilder builder() {
-        return new CommandBuilder();
-    }
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     public static final String OPERATOR_SCRIPT = "./pest-op";
-
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final List<String> commands = new ArrayList<>();
-
     private Path baseDir;
-
     private boolean toxiProxy;
 
     private CommandBuilder() {
+    }
+
+    public static CommandBuilder builder() {
+        return new CommandBuilder();
     }
 
     public CommandBuilder withBaseDir(Path baseDir) {
@@ -59,7 +56,7 @@ public class CommandBuilder {
     }
 
     public CommandBuilder withServerNetworkingFlags(Cluster cluster, int nodeId) {
-        Cluster.Node node = cluster.getNodeById(nodeId);
+        Node node = cluster.getNodeById(nodeId);
 
         if (StringUtils.hasLength(node.getAdvertiseProxyAddr()) && cluster.isToxiProxyEnabled()) {
             commands.add("--advertise-addr=" + node.getAdvertiseProxyAddr());
@@ -86,7 +83,7 @@ public class CommandBuilder {
     }
 
     public CommandBuilder withClientNetworkingFlags(Cluster cluster, int nodeId) {
-        Cluster.Node node = cluster.getNodeById(nodeId);
+        Node node = cluster.getNodeById(nodeId);
 
         commands.add("--rpc-addr=" + node.getJoinAddress());
 

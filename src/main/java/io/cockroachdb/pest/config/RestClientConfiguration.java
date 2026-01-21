@@ -30,8 +30,8 @@ import org.springframework.web.client.RestTemplate;
 
 import io.cockroachdb.pest.cluster.ClientErrorException;
 import io.cockroachdb.pest.cluster.ServerErrorException;
-import io.cockroachdb.pest.domain.ApplicationProperties;
-import io.cockroachdb.pest.domain.ClusterType;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.util.HypermediaClient;
 
 @Configuration

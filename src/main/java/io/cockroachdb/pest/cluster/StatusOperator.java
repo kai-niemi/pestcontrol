@@ -1,18 +1,15 @@
 package io.cockroachdb.pest.cluster;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 
-import io.cockroachdb.pest.cluster.model.NodeDetail;
-import io.cockroachdb.pest.cluster.model.NodeModel;
-import io.cockroachdb.pest.cluster.model.NodeStatus;
+import io.cockroachdb.pest.model.status.NodeStatus;
 
 public interface StatusOperator extends Closeable {
-    String clusterVersion();
+    String clusterVersion() throws IOException;
 
-    List<NodeModel> listAllNodes();
+    List<NodeStatus> nodeStatus() throws IOException;
 
-    NodeDetail nodeDetailById(Integer id);
-
-    NodeStatus nodeStatusById(Integer id);
+    NodeStatus nodeStatusById(Integer id) throws IOException;
 }

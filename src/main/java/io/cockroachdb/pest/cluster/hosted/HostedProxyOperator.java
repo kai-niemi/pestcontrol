@@ -9,15 +9,15 @@ import org.springframework.hateoas.client.Hop;
 import org.springframework.http.ResponseEntity;
 
 import io.cockroachdb.pest.cluster.ProxyOperator;
-import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.LinkRelations;
 import io.cockroachdb.pest.util.HypermediaClient;
-import io.cockroachdb.pest.web.LinkRelations;
-import static io.cockroachdb.pest.web.LinkRelations.CLUSTERS_REL;
-import static io.cockroachdb.pest.web.LinkRelations.CURIE_NAMESPACE;
-import static io.cockroachdb.pest.web.LinkRelations.NODE_GEN_HAPROXY_REL;
-import static io.cockroachdb.pest.web.LinkRelations.NODE_START_HAPROXY_REL;
-import static io.cockroachdb.pest.web.LinkRelations.NODE_STOP_HAPROXY_REL;
-import static io.cockroachdb.pest.web.LinkRelations.OPERATOR_REL;
+import static io.cockroachdb.pest.model.LinkRelations.CLUSTERS_REL;
+import static io.cockroachdb.pest.model.LinkRelations.CURIE_NAMESPACE;
+import static io.cockroachdb.pest.model.LinkRelations.NODE_GEN_HAPROXY_REL;
+import static io.cockroachdb.pest.model.LinkRelations.NODE_START_HAPROXY_REL;
+import static io.cockroachdb.pest.model.LinkRelations.NODE_STOP_HAPROXY_REL;
+import static io.cockroachdb.pest.model.LinkRelations.OPERATOR_REL;
 import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 public class HostedProxyOperator implements ProxyOperator {
@@ -30,6 +30,15 @@ public class HostedProxyOperator implements ProxyOperator {
     public HostedProxyOperator(Cluster cluster, HypermediaClient hypermediaClient) {
         this.cluster = cluster;
         this.hypermediaClient = hypermediaClient;
+    }
+
+    private Link operatorLink(int nodeId) {
+        return hypermediaClient.from(cluster.getNodeById(nodeId).getServiceLink())
+                .follow(curied(CURIE_NAMESPACE, CLUSTERS_REL).value())
+                .follow(Hop.rel(curied(CURIE_NAMESPACE, LinkRelations.OPERATOR_TEMPLATE_REL).value())
+                        .withParameter("clusterType", cluster.getClusterType()))
+                .follow(curied(CURIE_NAMESPACE, OPERATOR_REL).value())
+                .asTemplatedLink();
     }
 
     @Override
@@ -87,14 +96,5 @@ public class HostedProxyOperator implements ProxyOperator {
         }
 
         return response.getBody();
-    }
-
-    private Link operatorLink(int nodeId) {
-        return hypermediaClient.from(cluster.getNodeById(nodeId).getServiceLink())
-                .follow(curied(CURIE_NAMESPACE, CLUSTERS_REL).value())
-                .follow(Hop.rel(curied(CURIE_NAMESPACE, LinkRelations.OPERATOR_TEMPLATE_REL).value())
-                        .withParameter("clusterType", cluster.getClusterType()))
-                .follow(curied(CURIE_NAMESPACE, OPERATOR_REL).value())
-                .asTemplatedLink();
     }
 }

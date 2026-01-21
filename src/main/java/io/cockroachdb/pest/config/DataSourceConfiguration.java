@@ -22,7 +22,7 @@ import net.ttddyy.dsproxy.listener.logging.SLF4JLogLevel;
 import net.ttddyy.dsproxy.listener.logging.SLF4JQueryLoggingListener;
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 
-import io.cockroachdb.pest.domain.NetworkAddress;
+import io.cockroachdb.pest.model.NetworkAddress;
 
 @Configuration
 public class DataSourceConfiguration {
@@ -62,13 +62,6 @@ public class DataSourceConfiguration {
         };
     }
 
-    private static class PrettyQueryEntryCreator extends DefaultQueryLogEntryCreator {
-        @Override
-        protected String formatQuery(String query) {
-            return query;
-        }
-    }
-
     private DataSource loggingProxy(DataSource dataSource) {
         if (!logger.isTraceEnabled()) {
             return dataSource;
@@ -95,6 +88,13 @@ public class DataSourceConfiguration {
     @ConfigurationProperties("spring.datasource.hikari")
     public HikariConfig hikariConfig() {
         return new HikariConfig();
+    }
+
+    private static class PrettyQueryEntryCreator extends DefaultQueryLogEntryCreator {
+        @Override
+        protected String formatQuery(String query) {
+            return query;
+        }
     }
 
 //    @Bean

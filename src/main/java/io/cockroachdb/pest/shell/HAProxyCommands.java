@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
-import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.model.Cluster;
 
 @Component
 public class HAProxyCommands extends AbstractShellCommand {
@@ -26,7 +26,7 @@ public class HAProxyCommands extends AbstractShellCommand {
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void genHAProxy(
             @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id)  throws IOException {
+                    shortName = 'n', longName = "nodeId") String id) throws IOException {
         Cluster cluster = selectedCluster();
         ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterId());
         for (Integer x : nodeIdRange(id)) {
@@ -42,7 +42,7 @@ public class HAProxyCommands extends AbstractShellCommand {
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void startHaProxy(
             @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id)  throws IOException {
+                    shortName = 'n', longName = "nodeId") String id) throws IOException {
         Cluster cluster = selectedCluster();
         ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterId());
         for (Integer x : nodeIdRange(id)) {

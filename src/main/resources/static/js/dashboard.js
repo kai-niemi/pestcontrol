@@ -13,7 +13,6 @@ AppDashboard.prototype = {
         stompClient.connect({}, function (frame) {
             stompClient.subscribe(_this.settings.topics.status, function (payload) {
                 var _event = JSON.parse(payload.body);
-                console.log("Status update");
                 _this.handleStatusUpdate(_event);
             });
 
@@ -23,12 +22,10 @@ AppDashboard.prototype = {
             });
 
             stompClient.subscribe(_this.settings.topics.refresh, function (payload) {
-                // console.log("Reload page");
                 location.reload();
             });
 
             stompClient.subscribe(_this.settings.topics.update, function (payload) {
-                // console.log("Cluster model update");
                 $.getJSON("cluster/update", function(json) {});
             });
         });
@@ -36,10 +33,6 @@ AppDashboard.prototype = {
 
     getElement: function (id) {
         return $('#' + id);
-    },
-
-    round: function (v) {
-        return v.toFixed(1);
     },
 
     handleStatusUpdate: function (node) {
@@ -50,8 +43,6 @@ AppDashboard.prototype = {
         // Flash spinner for a few sec
         var _spinnerElt = divElt.find(".pc-spinner");
         _spinnerElt.attr('style','display: block');
-
-        console.log("spinner: node-" + node.nodeId);
 
         setTimeout(function () {
             _spinnerElt.attr('style','display: none');
@@ -70,31 +61,21 @@ AppDashboard.prototype = {
         divElt.removeClass( "border-danger");
         divElt.removeClass( "border-warning");
 
-        if (node.status.is_live === "true") {
-            if (node.status.is_available === "true") {
-                divElt.addClass( "alert-success");
-                divElt.addClass( "border-success");
-                _growElt.addClass( "text-success");
-            } else {
-                divElt.addClass( "alert-warning");
-                divElt.addClass( "border-warning");
-                _growElt.addClass( "text-warning");
-            }
+        if (node.available === true) {
+            divElt.addClass( "alert-success");
+            divElt.addClass( "border-success");
+            _growElt.addClass( "text-success");
         } else {
-            if (node.status.is_available === "true") {
-                divElt.addClass( "alert-warning");
-                divElt.addClass( "border-warning");
-                _growElt.addClass( "text-warning");
-            } else {
-                divElt.addClass( "alert-danger");
-                divElt.addClass( "border-danger");
-                _growElt.addClass( "text-danger");
-            }
+            divElt.addClass( "alert-warning");
+            divElt.addClass( "border-warning");
+            _growElt.addClass( "text-warning");
+                // divElt.addClass( "alert-danger");
+                // divElt.addClass( "border-danger");
+                // _growElt.addClass( "text-danger");
         }
 
         // Update data elements
-        divElt.find(".pc-last-active").text(node.status.lastActive);
-        divElt.find(".pc-ranges").text(node.status.rangeDetails);
+        divElt.find(".pc-last-active").text(node.lastActive);
     },
 
     handleToastUpdate: function (event) {

@@ -16,6 +16,14 @@ import java.util.function.Predicate;
  * @author Kai Niemi
  */
 public class TreeNode<T> implements Iterable<TreeNode<T>> {
+    private final T value;
+    private final List<TreeNode<T>> children = new ArrayList<>();
+    private int depth;
+
+    public TreeNode(T value) {
+        this.value = value;
+    }
+
     public static <T> void breadthFirstTraversal(TreeNode<T> root,
                                                  Predicate<TreeNode<T>> filter) {
         Deque<TreeNode<T>> stack = new ArrayDeque<>();
@@ -77,16 +85,6 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
 
     public static <T> TreeNode<T> of(T value) {
         return new TreeNode<>(value);
-    }
-
-    private final T value;
-
-    private final List<TreeNode<T>> children = new ArrayList<>();
-
-    private int depth;
-
-    public TreeNode(T value) {
-        this.value = value;
     }
 
     public T getValue() {

@@ -1,7 +1,5 @@
 package io.cockroachdb.pest.web.security;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,46 +18,31 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import io.cockroachdb.pest.cluster.ClusterOperator;
-import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
-import io.cockroachdb.pest.cluster.StatusOperator;
-import io.cockroachdb.pest.domain.ApplicationProperties;
-import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.web.api.cluster.ClusterModelAssembler;
 
 @Component
 public class ClusterAuthenticationProvider implements AuthenticationProvider {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private ClusterOperatorProvider clusterOperatorProvider;
-
-    @Autowired
     private ApplicationProperties applicationProperties;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        final ClusterAuthenticationDetails authenticationDetails
-                = (ClusterAuthenticationDetails) authentication.getDetails();
-
         if (authentication.getCredentials() == null) {
             throw new BadCredentialsException("Missing credentials");
         }
 
         try {
-            // Test login
+            ClusterAuthenticationDetails authenticationDetails
+                    = (ClusterAuthenticationDetails) authentication.getDetails();
             Cluster cluster = applicationProperties.getClusterById(authenticationDetails.getClusterId());
-            ClusterOperator clusterOperator = clusterOperatorProvider
-                    .clusterOperator(authenticationDetails.getClusterId());
-            try (StatusOperator statusOperator = clusterOperator.statusOperator(cluster)) {
-                statusOperator.clusterVersion();
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-
-            authenticationDetails.setClusterProperties(cluster);
+            authenticationDetails.setClusterModel(new ClusterModelAssembler().toModel(cluster));
 
             // The principal needs to be of type 'User' or the thymeleaf taglib won't work
-            final UserDetails principal = User.withUserDetails(createUserDetails("unascribed")).build();
+            UserDetails principal = User.withUserDetails(createUserDetails(cluster.getClusterName())).build();
             return new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
         } catch (Exception exception) {
             logger.warn("Authentication failed", exception);

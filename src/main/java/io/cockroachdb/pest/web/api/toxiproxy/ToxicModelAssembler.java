@@ -13,8 +13,9 @@ import eu.rekawek.toxiproxy.model.toxic.SlowClose;
 import eu.rekawek.toxiproxy.model.toxic.Timeout;
 import jakarta.validation.constraints.NotNull;
 
-import io.cockroachdb.pest.web.LinkRelations;
-import io.cockroachdb.pest.web.ToxiproxyDashboardController;
+import io.cockroachdb.pest.model.LinkRelations;
+import io.cockroachdb.pest.web.model.ToxicModel;
+import io.cockroachdb.pest.web.spa.ToxiproxyDashboardController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

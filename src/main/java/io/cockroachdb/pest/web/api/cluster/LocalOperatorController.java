@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 
 import io.cockroachdb.pest.cluster.local.LocalClusterOperator;
-import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.web.LinkRelations;
-import io.cockroachdb.pest.web.api.MessageModel;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.LinkRelations;
+import io.cockroachdb.pest.web.model.MessageModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -35,7 +35,7 @@ public class LocalOperatorController {
     private LocalClusterOperator localClusterOperator;
 
     @GetMapping
-    public HttpEntity<MessageModel> index()  throws IOException {
+    public HttpEntity<MessageModel> index() throws IOException {
         return ResponseEntity.ok(MessageModel.from("Local cluster operator")
                 .add(linkTo(methodOn(getClass())
                         .index())
@@ -76,7 +76,7 @@ public class LocalOperatorController {
     @PostMapping("/{nodeId}/start")
     public HttpEntity<String> startNode(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid Cluster cluster)  throws IOException {
+            @RequestBody @Valid Cluster cluster) throws IOException {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         logger.info("Start cluster '%s' node %d".formatted(cluster.getClusterId(), nodeId));
@@ -93,7 +93,7 @@ public class LocalOperatorController {
     @PostMapping("/{nodeId}/stop")
     public HttpEntity<String> stopNode(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid Cluster cluster)  throws IOException{
+            @RequestBody @Valid Cluster cluster) throws IOException {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         logger.info("Stop cluster '%s' node %d".formatted(cluster.getClusterId(), nodeId));
@@ -127,7 +127,7 @@ public class LocalOperatorController {
     @PostMapping("/{nodeId}/kill")
     public HttpEntity<String> killNode(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid Cluster cluster)  throws IOException{
+            @RequestBody @Valid Cluster cluster) throws IOException {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         logger.info("Kill cluster '%s' node %d".formatted(cluster.getClusterId(), nodeId));
@@ -144,7 +144,7 @@ public class LocalOperatorController {
     @PostMapping("/{nodeId}/init")
     public HttpEntity<String> init(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid Cluster cluster)  throws IOException{
+            @RequestBody @Valid Cluster cluster) throws IOException {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         logger.info("Init cluster '%s' via node %d".formatted(cluster.getClusterId(), nodeId));
@@ -161,7 +161,7 @@ public class LocalOperatorController {
     @PostMapping("/{nodeId}/install")
     public HttpEntity<String> install(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid Cluster cluster)  throws IOException{
+            @RequestBody @Valid Cluster cluster) throws IOException {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         logger.info("Install cluster '%s' node %d".formatted(cluster.getClusterId(), nodeId));
@@ -196,7 +196,7 @@ public class LocalOperatorController {
     @PostMapping("/{nodeId}/gen-haproxy")
     public HttpEntity<String> genHAProxyCfg(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid Cluster cluster)  throws IOException{
+            @RequestBody @Valid Cluster cluster) throws IOException {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         logger.info("Generate HAProxy config for cluster '%s' node %d".formatted(cluster.getClusterId(), nodeId));
@@ -213,7 +213,7 @@ public class LocalOperatorController {
     @PostMapping("/{nodeId}/start-haproxy")
     public HttpEntity<String> startHAProxy(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid Cluster cluster)  throws IOException{
+            @RequestBody @Valid Cluster cluster) throws IOException {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         logger.info("Start HAProxy for cluster '%s' node %d".formatted(cluster.getClusterId(), nodeId));
@@ -230,7 +230,7 @@ public class LocalOperatorController {
     @PostMapping("/{nodeId}/stop-haproxy")
     public HttpEntity<String> stopHAProxy(
             @PathVariable("nodeId") Integer nodeId,
-            @RequestBody @Valid Cluster cluster)  throws IOException{
+            @RequestBody @Valid Cluster cluster) throws IOException {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
         logger.info("Stop HAProxy for cluster '%s' node %d".formatted(cluster.getClusterId(), nodeId));

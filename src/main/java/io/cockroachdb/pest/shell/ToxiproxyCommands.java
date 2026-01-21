@@ -26,8 +26,9 @@ import eu.rekawek.toxiproxy.model.ToxicType;
 
 import io.cockroachdb.pest.cluster.ResourceNotFoundException;
 import io.cockroachdb.pest.cluster.local.CommandBuilder;
-import io.cockroachdb.pest.domain.ApplicationProperties;
-import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.Node;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
 
@@ -135,7 +136,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
         Cluster cluster = selectedCluster();
 
         nodeIdRange(id).forEach(nodeId -> {
-            Cluster.Node node = cluster.getNodeById(nodeId);
+            Node node = cluster.getNodeById(nodeId);
 
             try {
                 Proxy proxy = applicationProperties.createToxiProxyClient()
@@ -162,7 +163,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
         Cluster cluster = selectedCluster();
 
         for (Integer nodeId : nodeIdRange(id)) {
-            Cluster.Node node = cluster.getNodeById(nodeId);
+            Node node = cluster.getNodeById(nodeId);
 
             proxyByName(node.getName())
                     .ifPresent(proxy -> {
@@ -188,7 +189,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
         Cluster cluster = selectedCluster();
 
         for (Integer nodeId : nodeIdRange(id)) {
-            Cluster.Node node = cluster.getNodeById(nodeId);
+            Node node = cluster.getNodeById(nodeId);
 
             proxyByName(node.getName())
                     .ifPresent(proxy -> {
@@ -276,7 +277,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
             CommandContext commandContext
     ) throws IOException {
         Cluster cluster = selectedCluster();
-        Cluster.Node node = cluster.getNodeById(Integer.parseInt(id));
+        Node node = cluster.getNodeById(Integer.parseInt(id));
 
         Proxy proxy = proxyByName(node.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("No such proxy: " + node.getName()));

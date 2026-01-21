@@ -19,19 +19,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.cockroachdb.pest.domain.ApplicationProperties;
+import io.cockroachdb.pest.model.ApplicationProperties;
 
 @RestController
 @RequestMapping("/api/cluster/certs")
 public class CertificateController {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private static final List<String> allowedExtensions = List.of("crt", "key");
-
     private static final List<String> allowedContentTypes = List.of(
             "application/x-x509-ca-cert",
             "application/octet-stream");
-
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private ApplicationProperties applicationProperties;
 

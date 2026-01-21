@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.jline.PromptProvider;
 import org.springframework.stereotype.Component;
 
-import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.shell.ConfigCommands;
 
 @Component

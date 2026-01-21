@@ -25,10 +25,11 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.cockroachdb.pest.domain.ApplicationProperties;
-import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.domain.ClusterType;
-import io.cockroachdb.pest.domain.Root;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.ClusterType;
+import io.cockroachdb.pest.model.Node;
+import io.cockroachdb.pest.model.Root;
 
 @Component
 public class ConfigCommands extends AbstractShellCommand {
@@ -258,7 +259,7 @@ public class ConfigCommands extends AbstractShellCommand {
         }
 
         IntStream.rangeClosed(1, regions.size()).forEach(nodeId -> {
-            Cluster.Node node = new Cluster.Node();
+            Node node = new Node();
             node.setLocality("region=%s,zone=%s".formatted(
                     regions.get(nodeId - 1),
                     zones.get(nodeId - 1))

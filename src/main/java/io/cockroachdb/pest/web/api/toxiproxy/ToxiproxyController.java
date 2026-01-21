@@ -25,8 +25,11 @@ import eu.rekawek.toxiproxy.model.ToxicType;
 import jakarta.validation.Valid;
 
 import io.cockroachdb.pest.cluster.ResourceNotFoundException;
-import io.cockroachdb.pest.domain.ApplicationProperties;
-import io.cockroachdb.pest.web.LinkRelations;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.LinkRelations;
+import io.cockroachdb.pest.web.model.ClientModel;
+import io.cockroachdb.pest.web.model.ProxyModel;
+import io.cockroachdb.pest.web.model.ToxicModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

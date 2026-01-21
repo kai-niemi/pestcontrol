@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.Range;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import eu.rekawek.toxiproxy.model.ToxicType;
@@ -11,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({"links", "embedded"})
 public class ToxicForm extends RepresentationModel<ToxicForm> {
     private String proxy;
 

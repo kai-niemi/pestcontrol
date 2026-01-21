@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.cockroachdb.pest.cluster.ClusterOperator;
 import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
-import io.cockroachdb.pest.web.LinkRelations;
-import io.cockroachdb.pest.web.api.MessageModel;
+import io.cockroachdb.pest.model.LinkRelations;
+import io.cockroachdb.pest.web.model.MessageModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -52,7 +52,7 @@ public class CloudOperatorController {
 
     @PostMapping("/{clusterId}/locality/{tiers}/disrupt")
     public ResponseEntity<Void> disruptLocality(@PathVariable("clusterId") String clusterId,
-                                                @PathVariable("tiers") String tiers)  throws IOException {
+                                                @PathVariable("tiers") String tiers) throws IOException {
         ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(clusterId);
         clusterOperator.disruptionOperator(clusterOperatorProvider.clusterById(clusterId))
                 .disruptLocality(tiers);
@@ -61,7 +61,7 @@ public class CloudOperatorController {
 
     @PostMapping("/{clusterId}/locality/{tiers}/recover")
     public ResponseEntity<Void> recoverLocality(@PathVariable("clusterId") String clusterId,
-                                                @PathVariable("tiers") String tiers)  throws IOException{
+                                                @PathVariable("tiers") String tiers) throws IOException {
         ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(clusterId);
         clusterOperator.disruptionOperator(clusterOperatorProvider.clusterById(clusterId))
                 .recoverLocality(tiers);

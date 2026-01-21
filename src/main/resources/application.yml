@@ -57,7 +57,7 @@ spring:
   mvc:
     problem-details:
       enabled: true
-
+      
   http:
     clients:
       connect-timeout: 10s
@@ -73,6 +73,7 @@ spring:
       include-message: always
       include-stacktrace: always
       include-binding-errors: always
+
 management:
   endpoints:
     access:
@@ -92,6 +93,7 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
 logging:
   pattern:
     console: "%clr(%d{${LOG_DATEFORMAT_PATTERN:HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) [%t] %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"
@@ -101,8 +103,10 @@ logging:
   logback:
     rolling-policy:
       max-history: 3
+
 server:
   port: 9091
+
 ##################################
 # Application baseline properties
 ##################################

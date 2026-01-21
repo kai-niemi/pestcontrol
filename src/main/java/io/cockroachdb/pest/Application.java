@@ -49,6 +49,7 @@ public class Application implements DisposableBean {
                     .cyan("--verbose-http            enable 'verbose-http' profile for HTTP trace logging")
                     .cyan("--verbose-sql             enable 'verbose-sql' profile for SQL trace logging")
                     .cyan("--secure                  enable 'secure' profile")
+                    .cyan("--dev                     enable 'dev' profile")
                     .cyan("--offline                 disable HTML front-end")
                     .cyan("--profiles [profile,..]   override spring profiles to activate")
                     .nl()
@@ -67,7 +68,6 @@ public class Application implements DisposableBean {
         LinkedList<String> passThroughArgs = new LinkedList<>();
 
         Set<String> profiles = new HashSet<>();
-        profiles.add("default");
 
         LinkedList<String> argsList = new LinkedList<>(Arrays.asList(args));
         while (!argsList.isEmpty()) {
@@ -83,6 +83,8 @@ public class Application implements DisposableBean {
                 profiles.add(ProfileNames.VERBOSE_SSL);
             } else if (arg.equals("--offline")) {
                 profiles.add(ProfileNames.ONLINE);
+            } else if (arg.equals("--dev")) {
+                profiles.add(ProfileNames.DEV);
             } else if (arg.equals("--profiles")) {
                 if (argsList.isEmpty()) {
                     printHelpAndExit(ansiConsole ->
@@ -106,16 +108,20 @@ public class Application implements DisposableBean {
             profiles.add(ProfileNames.SECURE);
         }
 
-        System.setProperty("spring.profiles.active", String.join(",", profiles));
         if (!passThroughArgs.isEmpty()) {
             System.setProperty("spring.shell.interactive.enabled", "false");
         }
 
         if (profiles.contains(ProfileNames.VERBOSE)) {
             System.setProperty("spring.shell.debug.enabled", "true");
-            System.out.printf("Spring profiles: %s%n", String.join(",", profiles));
-            System.out.printf("Passthrough args: %s%n", String.join(",", passThroughArgs));
         }
+
+        if (!profiles.isEmpty()) {
+            System.setProperty("spring.profiles.active", String.join(",", profiles));
+        }
+
+        System.out.printf("Spring profiles: %s%n", String.join(",", profiles));
+        System.out.printf("Passthrough args: %s%n", String.join(",", passThroughArgs));
 
         new SpringApplicationBuilder(Application.class)
                 .web(WebApplicationType.SERVLET)

@@ -10,8 +10,8 @@ import org.springframework.shell.core.command.ExitStatus;
 import org.springframework.shell.core.command.availability.Availability;
 import org.springframework.shell.core.command.exit.ExitStatusExceptionMapper;
 
-import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.domain.ClusterTypes;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.ClusterTypes;
 import io.cockroachdb.pest.util.PatternUtils;
 
 public abstract class AbstractShellCommand {

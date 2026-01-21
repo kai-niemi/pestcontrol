@@ -12,10 +12,11 @@ import org.springframework.web.client.RestClient;
 import io.cockroachdb.pest.cluster.ClientErrorException;
 import io.cockroachdb.pest.cluster.DisruptionOperator;
 import io.cockroachdb.pest.cluster.ServerErrorException;
-import io.cockroachdb.pest.cluster.model.DisruptorSpecifications;
-import io.cockroachdb.pest.cluster.model.RegionalDisruptorSpecification;
-import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.domain.Locality;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.Locality;
+import io.cockroachdb.pest.model.Node;
+import io.cockroachdb.pest.model.status.DisruptorSpecifications;
+import io.cockroachdb.pest.model.status.RegionalDisruptorSpecification;
 
 public class CloudDisruptionOperator implements DisruptionOperator {
     private static final String CLOUD_API_BASE = "https://cockroachlabs.cloud/api/v1";
@@ -30,7 +31,7 @@ public class CloudDisruptionOperator implements DisruptionOperator {
 
     @Override
     public String disruptNode(Integer nodeId) {
-        Cluster.Node node = cluster.getNodeById(nodeId);
+        Node node = cluster.getNodeById(nodeId);
 
         final Locality locality = Locality.fromTiers(node.getLocality());
 
@@ -51,14 +52,12 @@ public class CloudDisruptionOperator implements DisruptionOperator {
         final DisruptorSpecifications disruptorSpecifications = new DisruptorSpecifications();
         disruptorSpecifications.addRegionalDisruptorSpecification(regionalDisruptorSpecification);
 
-        final String bearerToken = cluster.getApiKey();
-
         try {
             ResponseEntity<String> responseEntity = RestClient.create()
                     .put()
                     .uri(CLOUD_API_BASE + "/clusters/%s/disrupt"
                             .formatted(cluster.getClusterId()))
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerToken)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + cluster.getApiKey())
                     .body(disruptorSpecifications)
                     .contentType(MediaType.APPLICATION_JSON)
                     .retrieve()
@@ -76,13 +75,11 @@ public class CloudDisruptionOperator implements DisruptionOperator {
 
     @Override
     public String recoverNode(Integer nodeId) {
-        String bearerToken = cluster.getApiKey();
-
         ResponseEntity<String> responseEntity = RestClient.create()
                 .put()
                 .uri(CLOUD_API_BASE + "/clusters/%s/disrupt"
                         .formatted(cluster.getClusterId()))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerToken)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + cluster.getApiKey())
                 .retrieve()
                 .toEntity(String.class);
 
@@ -106,14 +103,12 @@ public class CloudDisruptionOperator implements DisruptionOperator {
         final DisruptorSpecifications disruptorSpecifications = new DisruptorSpecifications();
         disruptorSpecifications.addRegionalDisruptorSpecification(regionalDisruptorSpecification);
 
-        final String bearerToken = cluster.getApiKey();
-
         try {
             ResponseEntity<String> responseEntity = RestClient.create()
                     .put()
                     .uri(CLOUD_API_BASE + "/clusters/%s/disrupt"
                             .formatted(cluster.getClusterId()))
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerToken)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + cluster.getApiKey())
                     .body(disruptorSpecifications)
                     .contentType(MediaType.APPLICATION_JSON)
                     .retrieve()
@@ -131,13 +126,11 @@ public class CloudDisruptionOperator implements DisruptionOperator {
 
     @Override
     public String recoverLocality(String locality) {
-        String bearerToken = cluster.getApiKey();
-
         ResponseEntity<String> responseEntity = RestClient.create()
                 .put()
                 .uri(CLOUD_API_BASE + "/clusters/%s/disrupt"
                         .formatted(cluster.getClusterId()))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerToken)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + cluster.getApiKey())
                 .retrieve()
                 .toEntity(String.class);
 

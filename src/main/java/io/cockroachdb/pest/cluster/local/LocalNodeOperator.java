@@ -15,10 +15,11 @@ import org.springframework.util.FileSystemUtils;
 
 import io.cockroachdb.pest.cluster.InvalidConfigurationException;
 import io.cockroachdb.pest.cluster.NodeOperator;
-import io.cockroachdb.pest.domain.ApplicationProperties;
-import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.domain.ClusterType;
-import io.cockroachdb.pest.domain.Locality;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.ClusterType;
+import io.cockroachdb.pest.model.Locality;
+import io.cockroachdb.pest.model.Node;
 
 public class LocalNodeOperator implements NodeOperator {
     private final Cluster cluster;
@@ -31,6 +32,13 @@ public class LocalNodeOperator implements NodeOperator {
         this.cluster = cluster;
         this.applicationProperties = applicationProperties;
         this.baseDir = applicationProperties.getDirectories().getBaseDirPath();
+    }
+
+    private static void wipePath(Path path) throws IOException {
+        if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
+            FileSystemUtils.deleteRecursively(path);
+            Files.deleteIfExists(path);
+        }
     }
 
     @Override
@@ -47,7 +55,7 @@ public class LocalNodeOperator implements NodeOperator {
                 .execute();
 
         // Then create node cert and key pairs
-        for (Cluster.Node node : cluster.getNodes()) {
+        for (Node node : cluster.getNodes()) {
             List<Path> expectedFiles = new ArrayList<>();
             expectedFiles.add(applicationProperties.getDirectories().getCertsDirPath()
                     .resolve(node.getName()).resolve("node.crt"));
@@ -111,13 +119,6 @@ public class LocalNodeOperator implements NodeOperator {
         return "";
     }
 
-    private static void wipePath(Path path) throws IOException {
-        if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
-            FileSystemUtils.deleteRecursively(path);
-            Files.deleteIfExists(path);
-        }
-    }
-
     @Override
     public String startNode(Integer nodeId) throws IOException {
         Map<Locality, List<String>> joinHosts = new TreeMap<>();
@@ -129,7 +130,7 @@ public class LocalNodeOperator implements NodeOperator {
                     .add(joinAddress);
         });
 
-        Cluster.Node node = cluster.getNodeById(nodeId);
+        Node node = cluster.getNodeById(nodeId);
 
         List<String> args = new ArrayList<>();
         args.add("--join=" + String.join(",", Locality.distributeJoinHosts(joinHosts)));
@@ -146,7 +147,7 @@ public class LocalNodeOperator implements NodeOperator {
     }
 
     @Override
-    public String stopNode(Integer nodeId)throws IOException  {
+    public String stopNode(Integer nodeId) throws IOException {
         return CommandBuilder.builder()
                 .withBaseDir(baseDir)
                 .withCommand("stop")
@@ -175,7 +176,7 @@ public class LocalNodeOperator implements NodeOperator {
 
     @Override
     public String statusNode(Integer nodeId) throws IOException {
-        Cluster.Node node = cluster.getNodeById(nodeId);
+        Node node = cluster.getNodeById(nodeId);
 
         List<String> args = new ArrayList<>();
         args.add("--url=postgres://%s".formatted(node.getSqlAddr()));

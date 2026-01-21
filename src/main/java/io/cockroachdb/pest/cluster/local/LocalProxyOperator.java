@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.PropertyPlaceholderHelper;
 
 import io.cockroachdb.pest.cluster.ProxyOperator;
-import io.cockroachdb.pest.domain.ApplicationProperties;
-import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.domain.NetworkAddress;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.NetworkAddress;
 
 public class LocalProxyOperator implements ProxyOperator {
     private final Logger logger = LoggerFactory.getLogger(getClass());

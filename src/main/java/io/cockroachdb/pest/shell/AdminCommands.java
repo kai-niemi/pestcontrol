@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import ch.qos.logback.classic.Level;
 
 import io.cockroachdb.pest.config.DataSourceConfiguration;
-import io.cockroachdb.pest.domain.ApplicationProperties;
+import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.shell.support.AnsiConsole;
 
 @Component

@@ -17,7 +17,7 @@
   * [Build the artifacts](#build-the-artifacts)
 * [Running](#running)
 * [Configuration](#configuration)
-* [Usage Tutorials](#usage-tutorials)
+* [Tutorials](#tutorials)
   * [Local 3-node self-hosted cluster (insecure)](#local-3-node-self-hosted-cluster-insecure)
   * [Local 3-node self-hosted cluster (secure)](#local-3-node-self-hosted-cluster-secure)
   * [Remote 3-node self-hosted cluster (insecure)](#remote-3-node-self-hosted-cluster-insecure)
@@ -60,8 +60,6 @@ Supported platforms and versions:
 Pest Control is a single spring boot application with a shell offering commands to 
 installing and control CockroachDB nodes via bash scripts. In a network environment, 
 it uses itself as an agent to invoke local commands on behalf of a control-plane instance.
-For Cockroach Cloud clusters, it only provides disruption API controls and no web UI 
-support for visualization.
 
 # Terms of Use
 

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
 import io.cockroachdb.pest.cluster.NodeOperator;
-import io.cockroachdb.pest.domain.Cluster;
+import io.cockroachdb.pest.model.Cluster;
 
 @Component
 public class NodeCommands extends AbstractShellCommand {

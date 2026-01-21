@@ -89,9 +89,9 @@ application:
     - cluster-id: "remote-insecure"
       cluster-name: "Remote Cluster (insecure)"
       cluster-type: hosted_insecure
-      admin-url: "http://localhost:8080"
+      admin-url: "http://192.168.1.99:8080"
       data-source-properties:
-        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
+        url: "jdbc:postgresql://192.168.1.99:26257/defaultdb?sslmode=disable"
         username: "craig"
         password: ""
       ha-proxy:
@@ -100,17 +100,25 @@ application:
         stats-addr: :7070
       baseline:
         version: "v25.4.3.darwin-11.0-arm64"
-        service-addr: localhost:9091
-        listen-addr: :+25257
-        advertise-addr: :+26257
-        advertise-proxy-addr: :+35257
-        sql-addr: :+26257
-        http-addr: :+8080
-        internal-ips:
-          - 10.1.2.3
-          - 10.1.2.4
-          - 10.1.2.5
       nodes:
         - locality: "region=eu-central-1,zone=eu-central-1a"
+          service-addr: 192.168.1.99:9091
+          listen-addr: :+25257
+          advertise-addr: :+26257
+          advertise-proxy-addr: :+35257
+          sql-addr: :+26257
+          http-addr: :+8080
         - locality: "region=eu-central-1,zone=eu-central-1b"
+          service-addr: 192.168.1.99:9091
+          listen-addr: :+25258
+          advertise-addr: :+26258
+          advertise-proxy-addr: :+35258
+          sql-addr: :+26258
+          http-addr: :+8081
         - locality: "region=eu-central-1,zone=eu-central-1c"
+          service-addr: 192.168.1.99:9091
+          listen-addr: :+25259
+          advertise-addr: :+26259
+          advertise-proxy-addr: :+35259
+          sql-addr: :+26259
+          http-addr: :+8082

@@ -18,11 +18,11 @@ import io.cockroachdb.pest.cluster.DisruptionOperator;
 import io.cockroachdb.pest.cluster.NodeOperator;
 import io.cockroachdb.pest.cluster.ProxyOperator;
 import io.cockroachdb.pest.cluster.StatusOperator;
-import io.cockroachdb.pest.cluster.repository.MetaDataRepository;
 import io.cockroachdb.pest.config.RestClientProvider;
-import io.cockroachdb.pest.domain.ApplicationProperties;
-import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.domain.ClusterType;
+import io.cockroachdb.pest.model.ApplicationProperties;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.ClusterType;
+import io.cockroachdb.pest.model.Node;
 
 @Component
 public class LocalClusterOperator implements ClusterOperator {
@@ -76,7 +76,7 @@ public class LocalClusterOperator implements ClusterOperator {
         return new NodeOperator() {
             @Override
             public String certs(List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles)
-            throws IOException {
+                    throws IOException {
                 return localNodeOperator.certs(nodeIds, keyFiles);
             }
 
@@ -119,13 +119,13 @@ public class LocalClusterOperator implements ClusterOperator {
             }
 
             @Override
-            public String statusNode(Integer nodeId)throws IOException  {
+            public String statusNode(Integer nodeId) throws IOException {
                 return localNodeOperator.statusNode(nodeId);
             }
 
             private void startProxy(Integer nodeId) throws IOException {
                 if (isToxiProxyAvailable()) {
-                    Cluster.Node node = cluster.getNodeById(nodeId);
+                    Node node = cluster.getNodeById(nodeId);
                     applicationProperties.createToxiProxyClient()
                             .createProxy(node.getName(),
                                     Objects.requireNonNull(node.getAdvertiseProxyAddr()),
@@ -135,7 +135,7 @@ public class LocalClusterOperator implements ClusterOperator {
 
             private void deleteProxy(Integer nodeId) throws IOException {
                 if (isToxiProxyAvailable()) {
-                    Cluster.Node node = cluster.getNodeById(nodeId);
+                    Node node = cluster.getNodeById(nodeId);
                     applicationProperties
                             .createToxiProxyClient()
                             .getProxies()

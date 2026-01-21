@@ -1,8 +1,6 @@
 package io.cockroachdb.pest.cluster.local;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,15 +10,11 @@ import org.springframework.web.client.RestClient;
 
 import com.jayway.jsonpath.JsonPath;
 
-import io.cockroachdb.pest.cluster.ResourceNotFoundException;
 import io.cockroachdb.pest.cluster.StatusOperator;
-import io.cockroachdb.pest.cluster.model.NodeDetail;
-import io.cockroachdb.pest.cluster.model.NodeDetails;
-import io.cockroachdb.pest.cluster.model.NodeModel;
-import io.cockroachdb.pest.cluster.model.NodeStatus;
-import io.cockroachdb.pest.cluster.repository.MetaDataRepository;
-import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.domain.ClusterTypes;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.ClusterTypes;
+import io.cockroachdb.pest.model.status.ClusterStatus;
+import io.cockroachdb.pest.model.status.NodeStatus;
 
 public class LocalStatusOperator implements StatusOperator {
     private final RestClient restClient;
@@ -72,19 +66,6 @@ public class LocalStatusOperator implements StatusOperator {
         }
     }
 
-    private List<NodeDetail> listNodeDetails() {
-        // There's no way to narrow this down other than by pagination
-        ResponseEntity<NodeDetails> responseEntity = restClient
-                .get()
-                .uri(cluster.getAdminUrl() + "/api/v2/nodes/")
-                .header("X-Cockroach-API-Session", sessionToken != null ? sessionToken : "")
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .toEntity(NodeDetails.class);
-
-        return Objects.requireNonNull(responseEntity.getBody()).getNodes();
-    }
-
     @Override
     public void close() {
         logout();
@@ -96,35 +77,35 @@ public class LocalStatusOperator implements StatusOperator {
     }
 
     @Override
-    public NodeDetail nodeDetailById(Integer id) {
-        return listNodeDetails()
-                .stream()
-                .filter(nodeStatus -> nodeStatus.getNodeId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("No such node with ID: " + id));
+    public List<NodeStatus> nodeStatus() {
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("username", cluster.getDataSourceProperties().getUsername());
+        map.add("password", cluster.getDataSourceProperties().getPassword());
+
+        return restClient
+                .post()
+                .uri(cluster.getAdminUrl() + "/_status/nodes")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(map)
+                .retrieve()
+                .toEntity(ClusterStatus.class)
+                .getBody()
+                .getNodes();
     }
 
     @Override
     public NodeStatus nodeStatusById(Integer id) {
-        return metaDataRepository.queryNodeStatusById(cluster, id)
-                .orElseThrow(() -> new ResourceNotFoundException("No such node with ID: " + id));
-    }
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("username", cluster.getDataSourceProperties().getUsername());
+        map.add("password", cluster.getDataSourceProperties().getPassword());
 
-    @Override
-    public List<NodeModel> listAllNodes() {
-        List<NodeModel> nodeModels = new ArrayList<>();
-
-        List<NodeStatus> nodeStatusList = metaDataRepository.queryNodeStatus(cluster);
-
-        listNodeDetails().forEach(nodeDetail -> nodeStatusList.stream()
-                .filter(nodeStatus -> nodeStatus.getId().equals(nodeDetail.getNodeId()))
-                .findFirst()
-                .ifPresentOrElse(nodeStatus -> {
-                    nodeModels.add(new NodeModel(cluster.getClusterId(), nodeDetail, nodeStatus));
-                }, () -> {
-                    nodeModels.add(new NodeModel(cluster.getClusterId(), nodeDetail, new NodeStatus()));
-                }));
-
-        return nodeModels;
+        return restClient
+                .post()
+                .uri(cluster.getAdminUrl() + "/_status/nodes/" + id)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(map)
+                .retrieve()
+                .toEntity(NodeStatus.class)
+                .getBody();
     }
 }

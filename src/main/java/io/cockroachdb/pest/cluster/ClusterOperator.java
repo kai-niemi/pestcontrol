@@ -1,7 +1,7 @@
 package io.cockroachdb.pest.cluster;
 
-import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.domain.ClusterType;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.ClusterType;
 
 public interface ClusterOperator {
     boolean supports(ClusterType clusterType);

@@ -10,16 +10,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import io.cockroachdb.pest.cluster.DisruptionOperator;
 import io.cockroachdb.pest.cluster.ClusterOperator;
-import io.cockroachdb.pest.cluster.StatusOperator;
+import io.cockroachdb.pest.cluster.DisruptionOperator;
 import io.cockroachdb.pest.cluster.NodeOperator;
 import io.cockroachdb.pest.cluster.ProxyOperator;
-import io.cockroachdb.pest.cluster.repository.MetaDataRepository;
+import io.cockroachdb.pest.cluster.StatusOperator;
 import io.cockroachdb.pest.cluster.local.LocalStatusOperator;
+import io.cockroachdb.pest.cluster.local.MetaDataRepository;
 import io.cockroachdb.pest.config.RestClientProvider;
-import io.cockroachdb.pest.domain.Cluster;
-import io.cockroachdb.pest.domain.ClusterType;
+import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.model.ClusterType;
 import io.cockroachdb.pest.util.HypermediaClient;
 
 @Component
@@ -64,7 +64,7 @@ public class HostedClusterOperator implements ClusterOperator {
             }
 
             @Override
-            public String recoverNode(Integer nodeId)  throws IOException {
+            public String recoverNode(Integer nodeId) throws IOException {
                 return nodeOperator(cluster).startNode(nodeId);
             }
         };
