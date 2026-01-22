@@ -38,6 +38,11 @@ command_cert.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
+command_login.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
 command_node_cert.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"

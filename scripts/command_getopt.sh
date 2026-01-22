@@ -16,6 +16,7 @@ fn_print_help() {
         echo -e "${darkgrey}  sql\t      Start SQL client"
         echo -e "${darkgrey}  status\t      Query node status"
         echo -e "${darkgrey}  cert\t      Generate CA cert and key pairs"
+        echo -e "${darkgrey}  login\t      Login to get Cluster API authentication token (cookie)"
         echo -e "${darkgrey}  node-cert\t      Generate node cert and key pairs"
         echo -e "${darkgrey}  install\t      Install cockroachdb binaries"
         echo -e "${darkgrey}  start-toxiproxy\t      Start Toxiproxy server"
@@ -57,6 +58,9 @@ case "${getopt}" in
         ;;
     cert)
         command_cert.sh $*
+        ;;
+    login)
+        command_login.sh $*
         ;;
     node-cert)
         command_node_cert.sh $*

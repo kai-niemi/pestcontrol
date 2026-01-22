@@ -70,7 +70,6 @@ public class LocalClusterOperator implements ClusterOperator {
 
     @Override
     public NodeOperator nodeOperator(Cluster cluster) {
-
         final LocalNodeOperator localNodeOperator
                 = new LocalNodeOperator(cluster, applicationProperties);
         return new NodeOperator() {

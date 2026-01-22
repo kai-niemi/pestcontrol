@@ -51,8 +51,8 @@ public class Cluster {
     // Cloud API key for bearer token for Cockroach Cloud only
     private String apiKey;
 
-    // Cluster API authentication key for Cockroach Cloud only
-    private String authToken;
+    // Login URL for auth-session login command
+    private String loginUrl;
 
     private boolean toxiProxyEnabled;
 
@@ -177,12 +177,12 @@ public class Cluster {
         this.apiKey = apiKey;
     }
 
-    public String getAuthToken() {
-        return authToken;
+    public String getLoginUrl() {
+        return loginUrl;
     }
 
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
+    public void setLoginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
     }
 
     @Validated

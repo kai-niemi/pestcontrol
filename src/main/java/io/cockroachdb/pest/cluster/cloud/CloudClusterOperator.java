@@ -13,6 +13,7 @@ import io.cockroachdb.pest.cluster.ProxyOperator;
 import io.cockroachdb.pest.cluster.StatusOperator;
 import io.cockroachdb.pest.cluster.local.MetaDataRepository;
 import io.cockroachdb.pest.config.RestClientProvider;
+import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterType;
 
@@ -24,10 +25,13 @@ public class CloudClusterOperator implements ClusterOperator {
     @Autowired
     private MetaDataRepository metaDataRepository;
 
+    @Autowired
+    private ApplicationProperties applicationProperties;
+
     @Override
     public StatusOperator statusOperator(Cluster cluster) {
         RestClient restClient = restClientProvider.apply(cluster.getClusterType());
-        return new CloudStatusOperator(cluster, restClient, metaDataRepository);
+        return new CloudStatusOperator(cluster, restClient, metaDataRepository, applicationProperties);
     }
 
     @Override
