@@ -120,8 +120,8 @@ public class Application implements DisposableBean {
             System.setProperty("spring.profiles.active", String.join(",", profiles));
         }
 
-        System.out.printf("Spring profiles: %s%n", String.join(",", profiles));
-        System.out.printf("Passthrough args: %s%n", String.join(",", passThroughArgs));
+//        System.out.printf("Spring profiles: %s%n", String.join(",", profiles));
+//        System.out.printf("Passthrough args: %s%n", String.join(",", passThroughArgs));
 
         new SpringApplicationBuilder(Application.class)
                 .web(WebApplicationType.SERVLET)

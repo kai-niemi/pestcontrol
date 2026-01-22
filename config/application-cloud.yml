@@ -1,0 +1,22 @@
+########################################
+# Pest Control Application Configuration
+########################################
+server:
+  port: 9091
+application:
+  clusters:
+    # Example cockroach cloud dedicated cluster
+    - cluster-id: "00000000-0000-0000-0000-000000000000"
+      cluster-name: "CockroachDB Cloud"
+      cluster-type: cloud_dedicated
+      admin-url: "https://xxxx-vgf.cockroachlabs.cloud:8080"
+      # API key for Cockroach Cloud disruption API only
+      # https://www.cockroachlabs.com/docs/cockroachcloud/managing-access#create-api-keys
+      api-key: "..."
+      # Login URL for auth-session login command
+      # https://www.cockroachlabs.com/docs/v25.4/cockroach-auth-session#auth-session-login
+      login-url: "postgresql://user:secret@xxxx.cockroachlabs.cloud:26257/defaultdb?sslmode=require"
+      data-source-properties:
+        url: "jdbc:postgresql://xxxx.cockroachlabs.cloud:26257/defaultdb?sslmode=require"
+        username: "craig"
+        password: "..."

@@ -1,5 +1,6 @@
 package io.cockroachdb.pest.cluster.local;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -18,9 +19,13 @@ import io.cockroachdb.pest.model.Node;
 
 public class CommandBuilder {
     public static final String OPERATOR_SCRIPT = "./pest-op";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final List<String> commands = new ArrayList<>();
+
     private Path baseDir;
+
     private boolean toxiProxy;
 
     private CommandBuilder() {
@@ -99,7 +104,7 @@ public class CommandBuilder {
         return this;
     }
 
-    public String execute() throws IOException {
+    public List<String> executeAndCollect() throws IOException {
         Assert.notNull(baseDir, "baseDir is null");
 
         logger.info("Starting process: %s".formatted(String.join("\n\t", commands)));
@@ -109,7 +114,11 @@ public class CommandBuilder {
         Process process = new ProcessBuilder()
                 .command(commands)
                 .directory(baseDir.toFile())
-                .inheritIO()
+//                .inheritIO()
+//                .redirectInput(ProcessBuilder.Redirect.PIPE)
+//                .redirectOutput(ProcessBuilder.Redirect.PIPE)
+//                .redirectError(ProcessBuilder.Redirect.PIPE)
+                .redirectErrorStream(true)
                 .start();
 
         try {
@@ -117,22 +126,33 @@ public class CommandBuilder {
                     .formatted(process.pid(),
                             process.info().commandLine().orElse("")));
 
+            List<String> output;
+            try (BufferedReader reader = process.inputReader()) {
+                output = reader.lines().toList();
+            }
+
             int code = process.waitFor();
+
+            output.forEach(logger::info);
 
             logger.info("Process (pid %s) terminated with exit code %d (%s)"
                     .formatted(process.pid(), code,
                             Duration.between(start, Instant.now())));
 
-            return "" + code;
+
+            return output;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
 
             process.destroyForcibly();
-            process.onExit().join();
 
             logger.warn("Process (pid %s) wait timeout  - forcibly closed".formatted(process.pid()));
 
             throw new IOException("Timeout waiting for process completion", e);
         }
+    }
+
+    public String execute() throws IOException {
+        return String.join("\n", executeAndCollect());
     }
 }

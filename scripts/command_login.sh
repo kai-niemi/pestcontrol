@@ -39,6 +39,6 @@ if [ -z "${url}" ]; then
   exit 1
 fi
 
-fn_fail_check ${installdir}/cockroach auth-session login ${user_name} --expire-after=${expire_after} --only-cookie -url ${url}
+fn_fail_check ${installdir}/cockroach auth-session login ${user_name} --expire-after=${expire_after} --only-cookie --url "${url}"
 
 exit 0

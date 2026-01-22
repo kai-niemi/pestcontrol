@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClient;
 
 import io.cockroachdb.pest.cluster.StatusOperator;
@@ -15,6 +17,8 @@ import io.cockroachdb.pest.model.status.ClusterStatus;
 import io.cockroachdb.pest.model.status.NodeStatus;
 
 public class CloudStatusOperator implements StatusOperator {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final Cluster cluster;
 
     private final RestClient restClient;
@@ -32,13 +36,13 @@ public class CloudStatusOperator implements StatusOperator {
         this.metaDataRepository = metaDataRepository;
 
         try {
-            // todo
-            this.authToken = CommandBuilder.builder()
+            List<String> lines = CommandBuilder.builder()
                     .withBaseDir(applicationProperties.getDirectories().getBaseDirPath())
                     .withCommand("login")
                     .withFlags("--user-name=%s".formatted(cluster.getDataSourceProperties().getUrl()))
                     .withFlags("--url=%s".formatted(cluster.getLoginUrl()))
-                    .execute();
+                    .executeAndCollect();
+            this.authToken = lines.isEmpty() ? "" : lines.getLast();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
