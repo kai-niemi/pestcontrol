@@ -114,26 +114,25 @@ public class CommandBuilder {
         Process process = new ProcessBuilder()
                 .command(commands)
                 .directory(baseDir.toFile())
-//                .inheritIO()
-//                .redirectInput(ProcessBuilder.Redirect.PIPE)
-//                .redirectOutput(ProcessBuilder.Redirect.PIPE)
-//                .redirectError(ProcessBuilder.Redirect.PIPE)
                 .redirectErrorStream(true)
                 .start();
 
         try {
-            logger.info("Process (pid %s) started - waiting for termination: %s"
-                    .formatted(process.pid(),
-                            process.info().commandLine().orElse("")));
+            logger.info("Process (pid %s) started: %s"
+                    .formatted(process.pid(), process.info().commandLine().orElse("")));
 
-            List<String> output;
+            List<String> output = new ArrayList<>();
             try (BufferedReader reader = process.inputReader()) {
-                output = reader.lines().toList();
+                reader.lines().forEach(s -> {
+                    logger.info(s);
+                    output.add(s);
+                });
             }
 
-            int code = process.waitFor();
+            logger.info("Process (pid %s) waiting for termination: %s"
+                    .formatted(process.pid(), process.info().commandLine().orElse("")));
 
-            output.forEach(logger::info);
+            int code = process.waitFor();
 
             logger.info("Process (pid %s) terminated with exit code %d (%s)"
                     .formatted(process.pid(), code,
@@ -143,16 +142,42 @@ public class CommandBuilder {
             return output;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-
             process.destroyForcibly();
-
             logger.warn("Process (pid %s) wait timeout  - forcibly closed".formatted(process.pid()));
-
             throw new IOException("Timeout waiting for process completion", e);
         }
     }
 
     public String execute() throws IOException {
-        return String.join("\n", executeAndCollect());
+        Assert.notNull(baseDir, "baseDir is null");
+
+        logger.info("Starting process: %s".formatted(String.join("\n\t", commands)));
+
+        Instant start = Instant.now();
+
+        Process process = new ProcessBuilder()
+                .command(commands)
+                .directory(baseDir.toFile())
+                .inheritIO()
+                .start();
+
+        try {
+            logger.info("Process (pid %s) waiting for termination: %s"
+                    .formatted(process.pid(), process.info().commandLine().orElse("")));
+
+            int code = process.waitFor();
+
+            logger.info("Process (pid %s) terminated with exit code %d (%s)"
+                    .formatted(process.pid(), code,
+                            Duration.between(start, Instant.now())));
+
+
+            return "";
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            process.destroyForcibly();
+            logger.warn("Process (pid %s) wait timeout  - forcibly closed".formatted(process.pid()));
+            throw new IOException("Timeout waiting for process completion", e);
+        }
     }
 }

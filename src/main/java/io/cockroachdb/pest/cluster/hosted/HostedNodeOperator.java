@@ -44,7 +44,8 @@ public class HostedNodeOperator implements NodeOperator {
     }
 
     private Link operatorLink(int nodeId) {
-        return hypermediaClient.from(cluster.getNodeById(nodeId).getServiceLink())
+        Link baseUrl = cluster.getNodeById(nodeId).getServiceLink();
+        return hypermediaClient.from(baseUrl)
                 .follow(curied(CURIE_NAMESPACE, CLUSTERS_REL).value())
                 .follow(Hop.rel(curied(CURIE_NAMESPACE, LinkRelations.OPERATOR_TEMPLATE_REL).value())
                         .withParameter("clusterType", cluster.getClusterType()))
@@ -100,7 +101,8 @@ public class HostedNodeOperator implements NodeOperator {
 
     @Override
     public String startNode(Integer nodeId) {
-        Link actionLink = hypermediaClient.from(operatorLink(nodeId))
+        Link base = operatorLink(nodeId);
+        Link actionLink = hypermediaClient.from(base)
                 .follow(curied(CURIE_NAMESPACE, NODE_START_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(

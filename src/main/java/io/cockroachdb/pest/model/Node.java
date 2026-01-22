@@ -104,7 +104,7 @@ public class Node {
     }
 
     public Link getServiceLink() {
-        return Link.of("http://%s".formatted(Objects.requireNonNull(getServiceAddr())))
+        return Link.of("http://%s/api".formatted(Objects.requireNonNull(getServiceAddr())))
                 .withRel(LinkRelations.SERVICE_REL);
     }
 

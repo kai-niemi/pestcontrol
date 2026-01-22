@@ -33,7 +33,8 @@ public class HostedProxyOperator implements ProxyOperator {
     }
 
     private Link operatorLink(int nodeId) {
-        return hypermediaClient.from(cluster.getNodeById(nodeId).getServiceLink())
+        Link baseUrl = cluster.getNodeById(nodeId).getServiceLink();
+        return hypermediaClient.from(baseUrl)
                 .follow(curied(CURIE_NAMESPACE, CLUSTERS_REL).value())
                 .follow(Hop.rel(curied(CURIE_NAMESPACE, LinkRelations.OPERATOR_TEMPLATE_REL).value())
                         .withParameter("clusterType", cluster.getClusterType()))
