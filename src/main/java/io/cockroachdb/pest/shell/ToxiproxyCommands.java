@@ -49,7 +49,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Start toxiproxy server on local host",
-            name = {"toxi", "server", "start"},
+            name = {"toxi", "start", "server"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifClusterSelected",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -63,7 +63,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Stop toxiproxy server on local host",
-            name = {"toxi", "server", "stop"},
+            name = {"toxi", "stop", "server"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifClusterSelected",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -86,7 +86,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Reset toxiproxy server on this host",
-            name = {"toxi", "server", "reset"},
+            name = {"toxi", "reset", "server"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -95,7 +95,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "List all toxiproxy proxies",
-            name = {"toxi", "proxy", "list"},
+            name = {"toxi", "list", "proxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -125,7 +125,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Create toxiproxy proxy on specified nodes(s)",
-            name = {"toxi", "proxy", "create"},
+            name = {"toxi", "create", "proxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -152,7 +152,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Delete toxiproxy proxy for specified nodes(s)",
-            name = {"toxi", "proxy", "delete"},
+            name = {"toxi", "delete", "proxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -178,7 +178,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Enable proxy for specified nodes(s)",
-            name = {"toxi", "proxy", "enable"},
+            name = {"toxi", "enable", "proxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -204,7 +204,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "List all toxiproxy proxy toxics",
-            name = {"toxi", "proxy", "toxic", "list"},
+            name = {"toxi", "proxy", "list", "toxic"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -245,7 +245,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Add proxy toxic",
-            name = {"toxi", "proxy", "toxic", "add"},
+            name = {"toxi", "proxy", "add", "toxic"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             completionProvider = "addToxicCompletionProvider",

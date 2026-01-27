@@ -9,6 +9,8 @@ import java.util.Arrays;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.shell.core.command.CommandContext;
 import org.springframework.shell.core.command.annotation.Command;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,19 @@ import io.cockroachdb.pest.shell.support.AnsiConsole;
 public class AdminCommands {
     @Autowired
     private ApplicationProperties applicationProperties;
+
+    @Autowired
+    private ConfigurableApplicationContext applicationContext;
+
+    @Command(exitStatusExceptionMapper = "commandExceptionMapper",
+            description = "Exit the shell",
+            name = {"admin", "quit"},
+            alias = "q",
+            group = CommandGroups.ADMIN_COMMANDS)
+    public void quit() {
+        SpringApplication.exit(applicationContext, () -> 0);
+        System.exit(0);
+    }
 
     @Command(description = "Toggle dry run for local commands",
             name = {"admin", "toggle", "dry-run"},

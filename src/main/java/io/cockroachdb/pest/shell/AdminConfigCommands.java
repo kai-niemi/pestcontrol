@@ -32,7 +32,7 @@ import io.cockroachdb.pest.model.Node;
 import io.cockroachdb.pest.model.Root;
 
 @Component
-public class ConfigCommands extends AbstractShellCommand {
+public class AdminConfigCommands extends AbstractShellCommand {
     private static final char[] ALPHA = "abcdef".toCharArray();
 
     @Autowired
@@ -43,7 +43,7 @@ public class ConfigCommands extends AbstractShellCommand {
     private ApplicationProperties applicationProperties;
 
     @Command(description = "Generate application YAML",
-            name = {"admin", "config", "gen"},
+            name = {"admin", "gen", "config"},
             group = CommandGroups.ADMIN_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void generateConfig(
@@ -143,7 +143,7 @@ public class ConfigCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Generate application YAML for localhost",
-            name = {"admin", "config", "gen", "local"},
+            name = {"admin", "gen", "config", "local"},
             group = CommandGroups.ADMIN_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void generateLocalConfig(
@@ -178,7 +178,7 @@ public class ConfigCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Print application YAML",
-            name = {"admin", "config", "print"},
+            name = {"admin", "show", "config"},
             group = CommandGroups.ADMIN_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void printConfig(

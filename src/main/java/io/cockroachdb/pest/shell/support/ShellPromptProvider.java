@@ -8,12 +8,12 @@ import org.springframework.shell.jline.PromptProvider;
 import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pest.model.Cluster;
-import io.cockroachdb.pest.shell.ConfigCommands;
+import io.cockroachdb.pest.shell.AdminConfigCommands;
 
 @Component
 public class ShellPromptProvider implements PromptProvider {
     @Autowired
-    private ConfigCommands configCommands;
+    private AdminConfigCommands adminConfigCommands;
 
     @Override
     public AttributedString getPrompt() {
@@ -21,11 +21,11 @@ public class ShellPromptProvider implements PromptProvider {
         sb.append("pestcontrol", AttributedStyle.DEFAULT
                 .foreground(AttributedStyle.GREEN | AttributedStyle.BRIGHT));
 
-        if (!configCommands.ifClusterSelected().isAvailable()) {
+        if (!adminConfigCommands.ifClusterSelected().isAvailable()) {
             sb.append(" $ ", AttributedStyle.DEFAULT
                     .foreground(AttributedStyle.BLUE | AttributedStyle.BRIGHT));
         } else {
-            Cluster cluster = configCommands.selectedCluster();
+            Cluster cluster = adminConfigCommands.selectedCluster();
             sb.append(" (", AttributedStyle.DEFAULT
                     .foreground(AttributedStyle.BLUE | AttributedStyle.BRIGHT));
             sb.append(cluster.getClusterId(), AttributedStyle.DEFAULT
