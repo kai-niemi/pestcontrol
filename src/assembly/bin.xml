@@ -26,6 +26,7 @@
                 <include>**/*</include>
             </includes>
             <excludes>
+                <exclude>haproxy.sql</exclude>
                 <exclude>init-dev.sql</exclude>
                 <exclude>application-dev.yml</exclude>
             </excludes>
@@ -49,7 +50,7 @@
             <outputDirectory>.</outputDirectory>
             <includes>
                 <include>pest</include>
-                <include>pestr</include>
+                <include>pest-op</include>
             </includes>
             <fileMode>0755</fileMode>
             <lineEnding>unix</lineEnding>
