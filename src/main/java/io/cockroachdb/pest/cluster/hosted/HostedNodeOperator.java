@@ -83,12 +83,13 @@ public class HostedNodeOperator implements NodeOperator {
     }
 
     @Override
-    public String install(Integer nodeId) {
+    public String install(Integer nodeId, String version) throws IOException {
         Link actionLink = hypermediaClient.from(operatorLink(nodeId))
                 .follow(curied(CURIE_NAMESPACE, NODE_INSTALL_REL).value())
                 .asTemplatedLink()
                 .expand(Map.of(
                         "clusterId", cluster.getClusterId(),
+                        "version", version,
                         "nodeId", nodeId));
 
         ResponseEntity<String> response = hypermediaClient.post(actionLink, cluster, String.class);

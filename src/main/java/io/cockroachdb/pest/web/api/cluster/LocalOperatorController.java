@@ -56,7 +56,7 @@ public class LocalOperatorController {
                         .init(null, null))
                         .withRel(LinkRelations.NODE_INIT_REL))
                 .add(linkTo(methodOn(getClass())
-                        .install(null, null))
+                        .install(null, null, null))
                         .withRel(LinkRelations.NODE_INSTALL_REL))
                 .add(linkTo(methodOn(getClass())
                         .wipe(null, null, null))
@@ -161,14 +161,16 @@ public class LocalOperatorController {
     @PostMapping("/{nodeId}/install")
     public HttpEntity<String> install(
             @PathVariable("nodeId") Integer nodeId,
+            @RequestParam(value = "version") String version,
             @RequestBody @Valid Cluster cluster) throws IOException {
         Assert.isTrue(nodeId > 0, "nodeId must be > 0");
 
-        logger.info("Install cluster '%s' node %d".formatted(cluster.getClusterId(), nodeId));
+        logger.info("Install cluster '%s' node %d version %s"
+                .formatted(cluster.getClusterId(), nodeId, version));
 
         String responseString = localClusterOperator
                 .nodeOperator(cluster)
-                .install(nodeId);
+                .install(nodeId, version);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

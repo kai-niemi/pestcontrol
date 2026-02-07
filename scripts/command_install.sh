@@ -17,6 +17,7 @@ for i in "$@"; do
 done
 
 fn_print_info "version = ${version}"
+fn_print_info "URL = https://binaries.cockroachdb.com/cockroach-${version}.tgz"
 
 #
 # Begin script

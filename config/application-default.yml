@@ -25,10 +25,7 @@ application:
         stats-addr: :7070
       baseline:
         # https://www.cockroachlabs.com/docs/releases/#downloads
-        #  version: "*.darwin-11.0-amd64"
-        #  version: "*.linux-amd64"
-        #  version: "*.linux-arm64"
-        version: "v25.4.3.darwin-11.0-arm64"
+        version: "v26.1.0"
         service-addr: localhost:9091
         listen-addr: :+25257
         advertise-addr: localhost

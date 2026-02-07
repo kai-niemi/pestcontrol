@@ -42,8 +42,6 @@ public class Node {
 
     private List<String> certHosts = List.of();
 
-    private String version;
-
     public void postConstruct(Cluster.BaseLine baseline) {
         if (Objects.isNull(serviceAddr)) {
             serviceAddr = NetworkAddress.from(baseline.getServiceAddr(),
@@ -74,9 +72,6 @@ public class Node {
             advertiseProxyAddr = NetworkAddress.from(baseline.getAdvertiseProxyAddr(),
                             baseline.getInternalIps(), baseline.currentId())
                     .toAddressString();
-        }
-        if (Objects.isNull(version)) {
-            version = baseline.getVersion();
         }
 
         if (certHosts.isEmpty()) {
@@ -127,14 +122,6 @@ public class Node {
         }
         throw new IllegalStateException("Both advertise-addr " +
                                         "and listen-addr are missing for node " + getId());
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
     }
 
     public List<String> getCertHosts() {

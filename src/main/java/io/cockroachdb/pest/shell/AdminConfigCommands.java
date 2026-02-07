@@ -225,7 +225,6 @@ public class AdminConfigCommands extends AbstractShellCommand {
         }
 
         Cluster.BaseLine baseline = new Cluster.BaseLine();
-        baseline.setVersion("v25.3.4.linux-amd64");
         baseline.setServiceAddr("localhost:9091");
         baseline.setListenAddr(":+25257");
         baseline.setAdvertiseAddr(":+25257");

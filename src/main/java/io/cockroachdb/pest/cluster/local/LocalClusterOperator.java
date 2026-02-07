@@ -80,8 +80,8 @@ public class LocalClusterOperator implements ClusterOperator {
             }
 
             @Override
-            public String install(Integer nodeId) throws IOException {
-                return localNodeOperator.install(nodeId);
+            public String install(Integer nodeId, String version) throws IOException {
+                return localNodeOperator.install(nodeId, version);
             }
 
             @Override

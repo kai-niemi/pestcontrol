@@ -90,11 +90,11 @@ public class LocalNodeOperator implements NodeOperator {
     }
 
     @Override
-    public String install(Integer nodeId) throws IOException {
+    public String install(Integer nodeId, String version) throws IOException {
         return CommandBuilder.builder()
                 .withBaseDir(baseDir)
                 .withCommand("install")
-                .withFlags("--version=" + cluster.getNodeById(nodeId).getVersion())
+                .withFlags("--version=" + version)
                 .execute();
     }
 

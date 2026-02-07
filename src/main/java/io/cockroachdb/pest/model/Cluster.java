@@ -21,7 +21,7 @@ import jakarta.validation.constraints.NotNull;
 @JsonPropertyOrder({
         "clusterId", "clusterName", "clusterType",
         "adminUrl", "apiKey", "secure", "dataSourceProperties",
-        "version", "loadBalancer", "baseline", "nodes"})
+        "loadBalancer", "baseline", "nodes"})
 public class Cluster {
     @NotNull
     @NotBlank
@@ -188,17 +188,23 @@ public class Cluster {
     @Validated
     public static class BaseLine {
         private final AtomicInteger id = new AtomicInteger();
+
         @NotNull
         private String serviceAddr;
-        private String listenAddr;
-        private String advertiseAddr;
-        private String advertiseProxyAddr;
-        private String sqlAddr;
-        private String httpAddr;
-        private List<String> certHosts = List.of();
-        private List<String> internalIps = new ArrayList<>();
 
-        private String version;
+        private String listenAddr;
+
+        private String advertiseAddr;
+
+        private String advertiseProxyAddr;
+
+        private String sqlAddr;
+
+        private String httpAddr;
+
+        private List<String> certHosts = List.of();
+
+        private List<String> internalIps = new ArrayList<>();
 
         public BaseLine incrementId() {
             id.incrementAndGet();
@@ -207,14 +213,6 @@ public class Cluster {
 
         public Integer currentId() {
             return id.get();
-        }
-
-        public String getVersion() {
-            return version;
-        }
-
-        public void setVersion(String version) {
-            this.version = version;
         }
 
         public List<String> getInternalIps() {

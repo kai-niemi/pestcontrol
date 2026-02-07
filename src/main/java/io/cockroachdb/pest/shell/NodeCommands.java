@@ -7,14 +7,19 @@ import java.util.HashMap;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.shell.core.command.annotation.Argument;
 import org.springframework.shell.core.command.annotation.Command;
 import org.springframework.shell.core.command.annotation.Option;
+import org.springframework.shell.core.command.completion.CompletionProvider;
+import org.springframework.shell.core.command.completion.CompositeCompletionProvider;
 import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
 import io.cockroachdb.pest.cluster.NodeOperator;
 import io.cockroachdb.pest.model.Cluster;
+import io.cockroachdb.pest.shell.support.NodeRangeProvider;
+import io.cockroachdb.pest.shell.support.VersionProvider;
 
 @Component
 public class NodeCommands extends AbstractShellCommand {
@@ -23,10 +28,25 @@ public class NodeCommands extends AbstractShellCommand {
     @Autowired
     private ClusterOperatorProvider clusterOperatorProvider;
 
+    @Bean
+    public CompletionProvider nodeRangeProvider() {
+        Cluster cluster = selectedCluster();
+        return new NodeRangeProvider(cluster.getNodes().size());
+    }
+
+    @Bean
+    public CompletionProvider versionProvider() {
+        Cluster cluster = selectedCluster();
+        return new CompositeCompletionProvider(
+                new NodeRangeProvider(cluster.getNodes().size()),
+                new VersionProvider("--version"));
+    }
+
     @Command(description = "Create node certificates and key pairs",
             help = "Create and distribute node certificates and key pairs across all nodes. Usage: node certs --nodeId=<id>",
             name = {"generate", "certs"},
             group = CommandGroups.NODE_COMMANDS,
+            completionProvider = "nodeRangeProvider",
             availabilityProvider = "ifHostedSecureCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void createCerts(@Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0)
@@ -42,21 +62,19 @@ public class NodeCommands extends AbstractShellCommand {
             name = {"install"},
             group = CommandGroups.NODE_COMMANDS,
             availabilityProvider = "ifHostedCluster",
+            completionProvider = "versionProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void installNode(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id,
-            @Option(description = "CockroachDB version in 'vXX.y.z' format", longName = "version") String version)
-            throws IOException {
-//        version: "v25.4.3.darwin-11.0-arm64"
-//        version: "v25.4.3.darwin-11.0-amd64"
-//        version: "v25.4.3.linux-amd64"
-//        version: "v25.4.3.linux-arm64"
+            @Option(description = "CockroachDB version in 'vXX.y.z' format", defaultValue = "v25.4.3",
+                    longName = "version") String version) throws IOException {
 
-        if (Objects.nonNull(version)) {
+        if (Objects.nonNull(version) && !version.endsWith(".tgz")) {
             OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
             boolean isMac = os.getName().toLowerCase().contains("mac");
             boolean isLinux = os.getName().toLowerCase().contains("linux");
-            boolean isArm = os.getArch().equals("aarch64") || os.getArch().equals("arm64");
+            boolean isArm = os.getArch().equalsIgnoreCase("aarch64")
+                            || os.getArch().equalsIgnoreCase("arm64");
             if (isMac) {
                 version = "%s.%s-%s".formatted(version, "darwin-11.0", isArm ? "arm64" : "amd64");
             } else if (isLinux) {
@@ -69,12 +87,6 @@ public class NodeCommands extends AbstractShellCommand {
                 .clusterOperator(cluster.getClusterId())
                 .nodeOperator(cluster);
         for (Integer i : nodeIdRange(id)) {
-            String v;
-            if (Objects.isNull(version)) {
-                v = cluster.getNodeById(i).getVersion();
-            } else {
-                v = version;
-            }
             nodeOperator.install(i, version);
         }
     }
@@ -82,6 +94,7 @@ public class NodeCommands extends AbstractShellCommand {
     @Command(description = "Run the init command",
             help = "Run the init command on specified node(s)",
             name = {"init"},
+            completionProvider = "nodeRangeProvider",
             group = CommandGroups.NODE_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void initNode(
@@ -97,6 +110,7 @@ public class NodeCommands extends AbstractShellCommand {
             help = "Delete local database files, logs and certs on specified node(s)",
             name = {"wipe"},
             group = CommandGroups.NODE_COMMANDS,
+            completionProvider = "nodeRangeProvider",
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void wipeNode(
@@ -116,6 +130,7 @@ public class NodeCommands extends AbstractShellCommand {
             help = "Start node and (re)join cluster on specified node(s)",
             name = {"start"},
             group = CommandGroups.NODE_COMMANDS,
+            completionProvider = "nodeRangeProvider",
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void startNode(
@@ -133,6 +148,7 @@ public class NodeCommands extends AbstractShellCommand {
             help = "Stop node on specified node(s)",
             name = {"stop"},
             group = CommandGroups.NODE_COMMANDS,
+            completionProvider = "nodeRangeProvider",
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void stopNode(
@@ -150,6 +166,7 @@ public class NodeCommands extends AbstractShellCommand {
             help = "Kill node forcefully on specified node(s)",
             name = {"kill"},
             group = CommandGroups.NODE_COMMANDS,
+            completionProvider = "nodeRangeProvider",
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void killNode(
@@ -167,6 +184,7 @@ public class NodeCommands extends AbstractShellCommand {
             help = "Run SQL shell on this host and connect to a specified node",
             name = {"sql"},
             group = CommandGroups.NODE_COMMANDS,
+            completionProvider = "nodeRangeProvider",
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void sqlNode(
@@ -182,6 +200,7 @@ public class NodeCommands extends AbstractShellCommand {
             help = "Run status command on a specified node",
             name = {"status"},
             group = CommandGroups.NODE_COMMANDS,
+            completionProvider = "nodeRangeProvider",
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void statusNode(
