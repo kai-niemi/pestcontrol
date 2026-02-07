@@ -79,13 +79,11 @@ See [MIT](LICENSE.txt) for terms and conditions.
   - https://www.haproxy.org/
 - You can use the following cluster types:
   - Local - one machine/instance for all nodes (laptop typically).
-  - Remote- A network environment with one machine/instance per node. For this type, Pest Control 
+  - Remote - A network environment with one machine/instance per node. For this type, Pest Control 
   must be running on each node acting as an agent for a control plane instance.
-  - Cloud - An existing CockroachDB Cloud cluster. For this type, you can only use the disruption 
-  API through shell commands.
+  - Cloud - An existing CockroachDB Cloud cluster.
     
-Notice that Pest Control does not interact with any public cloud APIs for cluster provisioning 
-and deployment. It's either local, your own pre-configured network or CockroachDB Cloud.
+Pest Control does not interact with any public cloud APIs for cluster VM provisioning.
 
 ## Install the JDK
 
@@ -134,155 +132,87 @@ To start the app in the foreground with an interactive shell:
 
     ./pest
 
-To start the app with the web UI enabled:
-
-    ./pest --web
-
-To start the app in the foreground with a non-interactive shell to run a command 
-(like `status 1`) and then quit:
-
-    ./pest node status -n 1
-
-To start the app in the background without shell:
-
-    ./pest-op start-service
-
-Now you can access the application via http://localhost:9090.
-
-To stop the app in the background:
-
-    ./pest-op stop-service
+Now you can access the application via http://localhost:9091.
 
 # Configuration
 
-Pest Control adopts convention over configuration, as far as it goes. After that, there's baseline
-configuration and after that there's per-node configuration. Everything is configured through a single
-YAML file like [config/application-default.yml](config/application-default.yml).
+Pest Control adopts convention over configuration using CockroachDB default port numbers and bindings. 
+After that, there's a baseline cluster configuration and lastly per-node configuration. Everything is 
+configured through a single YAML file like [config/application-default.yml](config/application-default.yml).
 
-You can either edit the default profile file above directly, or create a new one with a custom name
-suffix and then pass that name in the `--profiles` argument.
-
-The active profile(s) will be listed in the startup banner and the selected cluster in shell prompt.
+You can either edit the default profile file or create a new one with a custom name suffix and pass 
+it in the `--profiles` argument. The active profile(s) will be listed in the startup banner and the 
+selected cluster in shell prompt.
 
 Example of creating a new profile:
 
     cp config/application-default.yml config/application-craig.yml
     java -jar pestcontrol.jar --profiles craig
 
-For a configuration reference, see the comments added to each item below:
-
-```yaml
-application:
-  # Defines which cluster to pre-select
-  default-cluster-id: "local-insecure" 
-  # List of all available clusters
-  clusters: 
-      # Unique cluster ID, the UUID in case of cockroachdb cloud
-    - cluster-id: "remote-insecure"
-      # Cluster title
-      cluster-name: "Remote Cluster (insecure)" 
-      # Defines the range of commands available to this cluster.
-      # cloud_serverless
-      # cloud_standard
-      # cloud_dedicated
-      # hosted_insecure
-      # hosted_secure
-      cluster-type: hosted_insecure
-      # URL pointing either at the first node console or haproxy HTTP listener
-      admin-url: "http://localhost:8080"
-      # Database connection properties   
-      data-source-properties:
-        url: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
-        username: "craig"
-        password: ""
-      # Port numbers when generating haproxy config
-      load-balancer:
-        rpc-addr: :26250
-        http-addr: :8070
-        stats-addr: :7070
-      # Baseline DB version and address and port tuples. The + sign denotes incremental port assignments.
-      # If internal-ips is defined, each node will the prefixed with the address, thus
-      # the internal-ips and nodes must be equal in size.
-      baseline:
-        # The CockroachDB version to download and install
-        # See https://www.cockroachlabs.com/docs/releases/#downloads
-        version: "v25.3.4.darwin-11.0-arm64"
-        # version: "v25.3.4.darwin-11.0-amd64"
-        # version: "v25.3.4.linux-amd64"
-        # version: "v25.3.4.linux-arm64"
-        # Pest Control base URL
-        service-addr: localhost:9091
-        # CockroachDB listen addr
-        listen-addr: :+25257
-        # CockroachDB advertise addr
-        advertise-addr: localhost
-        # CockroachDB advertise proxy addr
-        advertise-proxy-addr: localhost:+35257
-        # CockroachDB SQL addr
-        sql-addr: :+26257
-        # CockroachDB HTTP addr
-        http-addr: :+8080
-        # Used for remote cluster types only to replace the canonical host names
-        internal-ips:
-          - 10.1.2.3
-          - 10.1.2.4
-          - 10.1.2.5
-      # List of nodes in the cluster
-      nodes:
-        # Required property denoting the locality flag. All the CockroachDB address:port properties
-        # in the baseline section above can be overridden here.
-        - locality: "region=eu-central-1,zone=eu-central-1a"
-        - locality: "region=eu-central-1,zone=eu-central-1b"
-        - locality: "region=eu-central-1,zone=eu-central-1c"
-```
-
 # Tutorials
 
-## Local 3-node self-hosted cluster (insecure)
-
-Start the interactive shell with:
+The interactive shell is started with:
 
     ./pest
 
-The commands will download and install the CockroachDB binaries, start a local insecure 
-3-node cluster, initialize the cluster and also start haproxy.
-    
-````shell
-node install
-node start -n 1-3
-node init 
-haproxy gen
-haproxy start
-exit
-````
+In this mode you can list all commands by typing `help` or pressing TAB. 
+It will also start the embedded HTTP server with a SPA application console
+available at http://localhost:9091 by default.
 
-You can also copy all of the above to a text file and use:
+To run in non-interactive mode, you can create a command text file and
+pass the name with a `@` prefix. For example:
 
     ./pest @cmd.txt
+
+## Local 3-node self-hosted cluster (insecure)
+
+Add the following commands to a text file that will:
+
+1) Download and install CockroachDB binaries.
+2) Start a local insecure 3-node cluster.
+3) Initialize the cluster.
+4) Generate a haproxy config and start it.
+5) Open the system browser pointing at the DB console
+    
+````shell
+echo "install" > cmd.txt
+echo "start 1-3" >> cmd.txt
+echo "init" >> cmd.txt
+echo "generate haproxy config" >> cmd.txt
+echo "start haproxy" >> cmd.txt
+echo "open dbconsole" >> cmd.txt
+````
+
+To execute all of the above, run:
+
+````shell
+./pest @cmd.txt
+````
 
 ## Local 3-node self-hosted cluster (secure)
 
-These commands will download and install the CockroachDB binaries, start a local secure 
-3-node cluster with haproxy and initialize the cluster.
+This is similar to the previous one only it starts a secure cluster.
 
 ```shell
-cluster use --clusterId local-secure
-node install
-node certs
-node start -n 1-3
-node init 
-haproxy gen
-haproxy start
-exit
+echo "install" > cmd.txt
+echo "certs" > cmd.txt
+echo "start 1-3" >> cmd.txt
+echo "init" >> cmd.txt
+echo "generate haproxy config" >> cmd.txt
+echo "start haproxy" >> cmd.txt
+echo "open dbconsole" >> cmd.txt
 ```
 
-You can also copy all of the above to a text file and use:
+To execute all of the above, run:
 
-    ./pest @cmd.txt
+````shell
+./pest @cmd.txt --cluster local-secure
+````
 
 The secure mode uses self-signed CA certificates and keys stored in the `.certs` directory, 
-including a PKCS12 truststore used by the web app. To login to a secure cluster, you may 
-need to restart the shell in order to pick up the self-signed certificate.
+including a PKCS12 truststore used by the SPA web app. To login to a secure cluster, you may 
+need to restart the shell in order for it to pick up the self-signed certificate for HTTP 
+TLS traffic.
 
 ## Remote 3-node self-hosted cluster (insecure)
 
@@ -291,8 +221,8 @@ pestcontrol agents on each host. These agents will act as gateways to run local 
 to start, stop, kill nodes and so on. Your local instance will act as the control plane and 
 send HTTP requests to the other instances when running shell commands like `start`.
 
-A quick method is to scp the tar.gz assembly to each host. 
-Assuming you have 3 pest control machines, host1, host2 and host3:
+A quick method is to scp the tar.gz assembly to each host. Assuming you have 3 pest control 
+machines - host1, host2 and host3:
 
 ```shell
 scp target/pestcontrol-2.0.0-bin.tar.gz user@host1:/~
@@ -303,8 +233,8 @@ ssh -t user@host2 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 
 ssh -t user@host3 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pest-op start-service'
 ```
 
-On the control host, your local laptop/desktop for example, a cluster configuration named `remote-insecure` 
-with the IP/host names setup accordingly (no need to sync it across machines):
+On the control host, your local laptop/desktop for example, create a cluster configuration 
+named `remote-insecure` (or anything) with the IP/host names setup accordingly. 
 
 ```yaml
     - cluster-id: "remote-insecure"
@@ -320,7 +250,6 @@ with the IP/host names setup accordingly (no need to sync it across machines):
         http-addr: :8070
         stats-addr: :7070
       baseline:
-        version: "v25.3.4.darwin-11.0-arm64"
         service-addr: :9091
         listen-addr: :+25257
         advertise-addr: :+25257
@@ -328,9 +257,9 @@ with the IP/host names setup accordingly (no need to sync it across machines):
         sql-addr: :+26257
         http-addr: :+8080
         internal-ips:
-          - 10.1.2.3
-          - 10.1.2.4
-          - 10.1.2.5
+          - host1
+          - host2
+          - host3
       nodes:
         - locality: "region=eu-central-1,zone=eu-central-1a"
         - locality: "region=eu-central-1,zone=eu-central-1b"
@@ -344,15 +273,15 @@ On the control host, start the interactive shell with:
 Then execute:
 
 ```shell
-node install -n 1-3
-node start -n 1-3
-node init
+install all
+start all
+init
 ```
 
 ## Remarks
 
-- If you switch between the `secure` and `insecure` modes, re-run the `init` command to
-  set proper SQL user roles and secrets.
+If you switch between the `secure` and `insecure` modes, re-run the `init` command to set proper
+SQL user roles and secrets.
 
 ---
 

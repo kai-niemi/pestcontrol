@@ -1,6 +1,8 @@
 package io.cockroachdb.pest;
 
 public abstract class ProfileNames {
+    public static final String DEFAULT = "default";
+
     public static final String DEV = "dev";
 
     public static final String ONLINE = "!offline";

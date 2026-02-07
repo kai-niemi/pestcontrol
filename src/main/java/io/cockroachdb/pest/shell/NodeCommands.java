@@ -26,7 +26,6 @@ public class NodeCommands extends AbstractShellCommand {
     @Autowired
     private ClusterOperatorProvider clusterOperatorProvider;
 
-
     @Bean
     public CompletionProvider versionProvider() {
         Cluster cluster = selectedCluster();

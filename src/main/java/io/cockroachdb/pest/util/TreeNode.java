@@ -17,7 +17,9 @@ import java.util.function.Predicate;
  */
 public class TreeNode<T> implements Iterable<TreeNode<T>> {
     private final T value;
+
     private final List<TreeNode<T>> children = new ArrayList<>();
+
     private int depth;
 
     public TreeNode(T value) {

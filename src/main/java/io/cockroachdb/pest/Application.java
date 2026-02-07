@@ -100,8 +100,12 @@ public class Application implements DisposableBean {
         }
 
         if (Files.exists(Path.of(".certs", "pestcontrol.p12"))) {
-            System.out.println("Found certificate truststore - adding 'secure' profile");
+            if (profiles.isEmpty()) {
+                profiles.add(ProfileNames.DEFAULT);
+                System.out.println("Adding '%s' profile".formatted(ProfileNames.DEFAULT));
+            }
             profiles.add(ProfileNames.SECURE);
+            System.out.println("Adding '%s' profile".formatted(ProfileNames.SECURE));
         }
 
         if (!passThroughArgs.isEmpty()) {

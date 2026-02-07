@@ -3,8 +3,6 @@ package io.cockroachdb.pest.cluster.hosted;
 import java.io.IOException;
 import java.util.EnumSet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -24,8 +22,6 @@ import io.cockroachdb.pest.util.HypermediaClient;
 
 @Component
 public class HostedClusterOperator implements ClusterOperator {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     private HypermediaClient hypermediaClient;
 

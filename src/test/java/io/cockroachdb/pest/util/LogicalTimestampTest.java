@@ -17,22 +17,22 @@ public class LogicalTimestampTest {
     @Test
     public void whenParsingHLC_thenSucceed() {
         LogicalTimestamp ts = LogicalTimestamp.parse("1546856630992375686.0000000000");
-        Assertions.assertEquals(1546856630992375686L, ts.getPhysicalWallClockTimeNanos());
-        Assertions.assertEquals(0, ts.getLogicalCounter());
+        Assertions.assertEquals(1546856630992375686L, ts.physicalWallClockTimeNanos());
+        Assertions.assertEquals(0, ts.logicalCounter());
     }
 
     @Test
     public void whenParsingHLC_thenSucceedAgain() {
         LogicalTimestamp ts = LogicalTimestamp.parse("1546856630992375686.0000000001");
-        Assertions.assertEquals(1546856630992375686L, ts.getPhysicalWallClockTimeNanos());
-        Assertions.assertEquals(1, ts.getLogicalCounter());
+        Assertions.assertEquals(1546856630992375686L, ts.physicalWallClockTimeNanos());
+        Assertions.assertEquals(1, ts.logicalCounter());
     }
 
     @Test
     public void whenParsingHLC_thenReturnLocalDateTime() {
         LogicalTimestamp ts = LogicalTimestamp.parse("1651906789519145742.0000000001");
-        Assertions.assertEquals(1651906789519145742L, ts.getPhysicalWallClockTimeNanos());
-        Assertions.assertEquals(1, ts.getLogicalCounter());
+        Assertions.assertEquals(1651906789519145742L, ts.physicalWallClockTimeNanos());
+        Assertions.assertEquals(1, ts.logicalCounter());
         Assertions.assertEquals(Instant.ofEpochMilli(TimeUnit.NANOSECONDS.toMillis(1651906789519145742L)),
                 ts.toInstant());
         Assertions.assertEquals(LocalDateTime.ofInstant(

@@ -1,5 +1,7 @@
 package io.cockroachdb.pest.shell;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import org.springframework.web.client.ResourceAccessException;
 
 import jakarta.annotation.PostConstruct;
 
+import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.NetworkAddress;
@@ -34,6 +37,9 @@ import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 public class ClusterCommands extends AbstractShellCommand {
     @Autowired
     private ApplicationProperties applicationProperties;
+
+    @Autowired
+    private ClusterOperatorProvider clusterOperatorProvider;
 
     @Autowired
     private HypermediaClient hypermediaClient;
@@ -70,13 +76,32 @@ public class ClusterCommands extends AbstractShellCommand {
         }
     }
 
+    @Command(description = "Display database version",
+            name = {"show", "database-version"},
+            alias = "dbv",
+            group = CommandGroups.CLUSTER_COMMANDS,
+            availabilityProvider = "ifClusterSelected",
+            exitStatusExceptionMapper = "commandExceptionMapper")
+    public void showDatabaseVersion(CommandContext commandContext) {
+        try {
+            Cluster cluster = selectedCluster();
+            String version = clusterOperatorProvider
+                    .clusterOperator(cluster.getClusterId())
+                    .statusOperator(cluster)
+                    .clusterVersion();
+            commandContext.outputWriter().println(version);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
     @Command(description = "Display local IP addresses",
             name = {"show", "ip"},
             group = CommandGroups.CLUSTER_COMMANDS,
             availabilityProvider = "ifClusterSelected",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void printIP(CommandContext commandContext) {
-        System.out.println(
+        commandContext.outputWriter().println(
                 """
                         
                                     Local IP: %s

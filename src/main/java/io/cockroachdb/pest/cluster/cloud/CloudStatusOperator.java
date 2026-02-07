@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClient;
 
 import io.cockroachdb.pest.cluster.StatusOperator;
@@ -17,8 +15,6 @@ import io.cockroachdb.pest.model.status.ClusterStatus;
 import io.cockroachdb.pest.model.status.NodeStatus;
 
 public class CloudStatusOperator implements StatusOperator {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private final Cluster cluster;
 
     private final RestClient restClient;

@@ -26,9 +26,13 @@ public class TimeSeries {
     private final List<DoubleDataPoint> dataPoints = Collections.synchronizedList(new ArrayList<>());
 
     private final List<Meter.Id> meterIds = new ArrayList<>();
+
     private final String name;
+
     private final MeterRegistry meterRegistry;
+
     private final Supplier<List<Search>> searchSupplier;
+
     private Duration samplePeriod = Duration.ofSeconds(300);
 
     public TimeSeries(String name,

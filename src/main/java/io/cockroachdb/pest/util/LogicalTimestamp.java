@@ -15,13 +15,13 @@ import org.springframework.util.StringUtils;
  *
  * @author Kai Niemi
  */
-public class LogicalTimestamp implements Comparable<LogicalTimestamp> {
+public final class LogicalTimestamp implements Comparable<LogicalTimestamp> {
     private final long physicalWallClockTimeNanos;
 
     private final int logicalCounter;
 
-    public LogicalTimestamp(long nanoTime, int logicalCounter) {
-        this.physicalWallClockTimeNanos = nanoTime;
+    public LogicalTimestamp(long physicalWallClockTimeNanos, int logicalCounter) {
+        this.physicalWallClockTimeNanos = physicalWallClockTimeNanos;
         this.logicalCounter = logicalCounter;
     }
 
@@ -51,14 +51,6 @@ public class LogicalTimestamp implements Comparable<LogicalTimestamp> {
             throw new IllegalArgumentException("Bad syntax: " + tuple);
         }
         return parts;
-    }
-
-    public long getPhysicalWallClockTimeNanos() {
-        return physicalWallClockTimeNanos;
-    }
-
-    public int getLogicalCounter() {
-        return logicalCounter;
     }
 
     /**
@@ -117,4 +109,20 @@ public class LogicalTimestamp implements Comparable<LogicalTimestamp> {
         result = 31 * result + logicalCounter;
         return result;
     }
+
+    public long physicalWallClockTimeNanos() {
+        return physicalWallClockTimeNanos;
+    }
+
+    public int logicalCounter() {
+        return logicalCounter;
+    }
+
+    @Override
+    public String toString() {
+        return "LogicalTimestamp[" +
+               "physicalWallClockTimeNanos=" + physicalWallClockTimeNanos + ", " +
+               "logicalCounter=" + logicalCounter + ']';
+    }
+
 }

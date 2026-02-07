@@ -141,7 +141,6 @@ public class LocalNodeOperator implements NodeOperator {
                 .withBaseDir(baseDir)
                 .withCommand("start")
                 .withFlags(args)
-                .withToxiProxy(cluster.isSecure())
                 .withServerNetworkingFlags(cluster, nodeId)
                 .execute();
     }

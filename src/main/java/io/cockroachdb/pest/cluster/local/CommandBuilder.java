@@ -26,8 +26,6 @@ public class CommandBuilder {
 
     private Path baseDir;
 
-    private boolean toxiProxy;
-
     private CommandBuilder() {
     }
 
@@ -47,11 +45,6 @@ public class CommandBuilder {
 
     public CommandBuilder withFlags(String... args) {
         withFlags(List.of(args));
-        return this;
-    }
-
-    public CommandBuilder withToxiProxy(boolean toxiProxy) {
-        this.toxiProxy = toxiProxy;
         return this;
     }
 
