@@ -15,8 +15,6 @@ import io.cockroachdb.pest.util.PatternUtils;
 
 @Component
 public class ChaosCommands extends AbstractShellCommand {
-    private static final String NODE_ID_OPTION = "The node ID, ID range (1-N) or 'all' to include all nodes";
-
     @Autowired
     private ClusterOperatorProvider clusterOperatorProvider;
 
@@ -24,6 +22,7 @@ public class ChaosCommands extends AbstractShellCommand {
             name = {"disrupt", "node"},
             group = CommandGroups.CHAOS_COMMANDS,
             availabilityProvider = "ifCockroachCloudCluster",
+            completionProvider = "nodeRangeProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void disruptNode(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
@@ -38,6 +37,7 @@ public class ChaosCommands extends AbstractShellCommand {
             name = {"recover", "node"},
             group = CommandGroups.CHAOS_COMMANDS,
             availabilityProvider = "ifCockroachCloudCluster",
+            completionProvider = "nodeRangeProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void recoverNode(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {

@@ -31,12 +31,11 @@ import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.Node;
 import io.cockroachdb.pest.shell.support.ListTableModel;
+import io.cockroachdb.pest.shell.support.NodeRangeProvider;
 import io.cockroachdb.pest.shell.support.TableUtils;
 
 @Component
 public class ToxiproxyCommands extends AbstractShellCommand {
-    private static final String NODE_ID_OPTION = "The node ID, ID range (1-N) or 'all' to include all nodes";
-
     @Autowired
     private ApplicationProperties applicationProperties;
 
@@ -126,9 +125,10 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Create toxiproxy proxy on specified nodes(s)",
-            name = { "create", "toxiproxy-proxy"},
+            name = {"create", "toxiproxy-proxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
+            completionProvider = "nodeRangeProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void createProxy(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id,
@@ -155,6 +155,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
             name = {"delete", "toxiproxy-proxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
+            completionProvider = "nodeRangeProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void deleteProxy(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id,
@@ -177,9 +178,10 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Enable proxy for specified nodes(s)",
-            name = { "enable", "toxiproxy-proxy"},
+            name = {"enable", "toxiproxy-proxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
+            completionProvider = "nodeRangeProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void enableProxy(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id,
@@ -237,9 +239,10 @@ public class ToxiproxyCommands extends AbstractShellCommand {
 
     @Bean
     public CompletionProvider addToxicCompletionProvider() {
-        EnumCompletionProvider a = new EnumCompletionProvider(ToxicType.class, "--toxicType");
-        EnumCompletionProvider b = new EnumCompletionProvider(ToxicDirection.class, "--toxicDirection");
-        return new CompositeCompletionProvider(a, b);
+        CompletionProvider a = new EnumCompletionProvider(ToxicType.class, "--toxicType");
+        CompletionProvider b = new EnumCompletionProvider(ToxicDirection.class, "--toxicDirection");
+        CompletionProvider c = new NodeRangeProvider(selectedCluster().getNodes().size());
+        return new CompositeCompletionProvider(a, b, c);
     }
 
     @Command(description = "Add proxy toxic",

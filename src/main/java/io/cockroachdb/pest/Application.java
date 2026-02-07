@@ -45,11 +45,9 @@ public class Application implements DisposableBean {
                     .nl()
                     .yellow("Profile Options:")
                     .nl()
-                    .cyan("--verbose                 enable 'verbose' profile for detailed logging")
                     .cyan("--verbose-http            enable 'verbose-http' profile for HTTP trace logging")
                     .cyan("--verbose-sql             enable 'verbose-sql' profile for SQL trace logging")
                     .cyan("--secure                  enable 'secure' profile")
-                    .cyan("--dev                     enable 'dev' profile")
                     .cyan("--offline                 disable HTML front-end")
                     .cyan("--profiles [profile,..]   override spring profiles to activate")
                     .nl()
@@ -75,12 +73,10 @@ public class Application implements DisposableBean {
             if (arg.equals("--help")) {
                 printHelpAndExit(ansiConsole -> {
                 });
-            } else if (arg.equals("--verbose")) {
-                profiles.add(ProfileNames.VERBOSE);
             } else if (arg.equals("--verbose-http")) {
                 profiles.add(ProfileNames.VERBOSE_HTTP);
             } else if (arg.equals("--verbose-sql")) {
-                profiles.add(ProfileNames.VERBOSE_SSL);
+                profiles.add(ProfileNames.VERBOSE_SQL);
             } else if (arg.equals("--offline")) {
                 profiles.add(ProfileNames.ONLINE);
             } else if (arg.equals("--dev")) {
@@ -112,14 +108,11 @@ public class Application implements DisposableBean {
             System.setProperty("spring.shell.interactive.enabled", "false");
         }
 
-        if (profiles.contains(ProfileNames.VERBOSE)) {
-            System.setProperty("spring.shell.debug.enabled", "true");
-        }
-
         if (!profiles.isEmpty()) {
             System.setProperty("spring.profiles.active", String.join(",", profiles));
         }
 
+//        System.setProperty("spring.shell.debug.enabled", "true");
 //        System.out.printf("Spring profiles: %s%n", String.join(",", profiles));
 //        System.out.printf("Passthrough args: %s%n", String.join(",", passThroughArgs));
 
@@ -127,7 +120,7 @@ public class Application implements DisposableBean {
                 .web(WebApplicationType.SERVLET)
                 .logStartupInfo(true)
                 .profiles(profiles.toArray(new String[0]))
-                .run(passThroughArgs.toArray(new String[]{}));
+                .run(passThroughArgs.toArray(new String[] {}));
     }
 
     @Override

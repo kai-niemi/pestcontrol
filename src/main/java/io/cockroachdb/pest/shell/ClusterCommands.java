@@ -2,17 +2,20 @@ package io.cockroachdb.pest.shell;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.hateoas.mediatype.hal.HalLinkRelation;
 import org.springframework.shell.core.command.CommandContext;
 import org.springframework.shell.core.command.annotation.Argument;
 import org.springframework.shell.core.command.annotation.Command;
 import org.springframework.shell.core.command.completion.CompletionProvider;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.ResourceAccessException;
 
 import jakarta.annotation.PostConstruct;
 
@@ -20,7 +23,12 @@ import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.NetworkAddress;
 import io.cockroachdb.pest.shell.support.ClusterCompletionProvider;
+import io.cockroachdb.pest.shell.support.ListTableModel;
+import io.cockroachdb.pest.shell.support.TableUtils;
 import io.cockroachdb.pest.util.HypermediaClient;
+import static io.cockroachdb.pest.model.LinkRelations.ACTUATORS_REL;
+import static io.cockroachdb.pest.model.LinkRelations.CURIE_NAMESPACE;
+import static org.springframework.hateoas.mediatype.hal.HalLinkRelation.curied;
 
 @Component
 public class ClusterCommands extends AbstractShellCommand {
@@ -96,39 +104,40 @@ public class ClusterCommands extends AbstractShellCommand {
 
         Cluster cluster = selectedCluster();
 
-//        cluster.getNodes().forEach(node -> {
-//            try {
-//                Map<String, Object> build = hypermediaClient.from(node
-//                                .getServiceLink())
-//                        .follow(curied(CURIE_NAMESPACE, ACTUATORS_REL).value())
-//                        .follow(HalLinkRelation.uncuried("info").value())
-//                        .toObject("$.build");
-//
-//                Object name = build.getOrDefault("name", "n/a");
-//                Object version = build.getOrDefault("version", "n/a");
-//
-//                tuples.add(List.of(
-//                        node.getId(),
-//                        node.getName(),
-//                        node.getServiceLink().getHref(),
-//                        name,
-//                        version
-//                ));
-//            } catch (ResourceAccessException e) {
-//                tuples.add(List.of(node.getServiceLink().getHref(), "??", "??", e.getMessage()));
-//            }
-//        });
-//
-//        String table = TableUtils.prettyPrint(
-//                new ListTableModel<>(tuples,
-//                        List.of("Id", "Name", "URL", "API Name", "API Version"),
-//                        (object, column) -> switch (column) {
-//                            case 0 -> object.get(0);
-//                            case 1 -> object.get(1);
-//                            case 2 -> object.get(2);
-//                            case 3 -> object.get(3);
-//                            default -> "??";
-//                        }));
-//        System.out.printf("%n%s%n", table);
+        cluster.getNodes().forEach(node -> {
+            try {
+                Map<String, Object> build = hypermediaClient.from(node
+                                .getServiceLink())
+                        .follow(curied(CURIE_NAMESPACE, ACTUATORS_REL).value())
+                        .follow(HalLinkRelation.uncuried("info").value())
+                        .toObject("$.build");
+
+                Object name = build.getOrDefault("name", "n/a");
+                Object version = build.getOrDefault("version", "n/a");
+
+                tuples.add(List.of(
+                        node.getId(),
+                        node.getName(),
+                        node.getServiceLink().getHref(),
+                        name,
+                        version
+                ));
+            } catch (ResourceAccessException e) {
+                tuples.add(List.of(node.getServiceLink().getHref(), "??", "??", e.getMessage()));
+            }
+        });
+
+        String table = TableUtils.prettyPrint(
+                new ListTableModel<>(tuples,
+                        List.of("Id", "Name", "URL", "API Name", "API Version"),
+                        (object, column) -> switch (column) {
+                            case 0 -> object.get(0);
+                            case 1 -> object.get(1);
+                            case 2 -> object.get(2);
+                            case 3 -> object.get(3);
+                            default -> "??";
+                        }));
+
+        commandContext.outputWriter().printf("%n%s%n", table);
     }
 }

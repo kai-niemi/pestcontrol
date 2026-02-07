@@ -13,16 +13,15 @@ import io.cockroachdb.pest.model.Cluster;
 
 @Component
 public class HAProxyCommands extends AbstractShellCommand {
-    private static final String NODE_ID_OPTION = "The node ID, ID range (1-N) or 'all' to include all nodes";
-
     @Autowired
     private ClusterOperatorProvider clusterOperatorProvider;
 
     @Command(description = "Generate haproxy.cfg",
             help = "Generate haproxy.cfg on specified host(s)",
-            name = {"generate", "haproxy-cfg"},
+            name = {"generate", "haproxy", "config"},
             group = CommandGroups.HAPROXY_COMMANDS,
             availabilityProvider = "ifHostedCluster",
+            completionProvider = "nodeRangeProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void genHAProxy(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
@@ -38,6 +37,7 @@ public class HAProxyCommands extends AbstractShellCommand {
             name = {"start","haproxy"},
             group = CommandGroups.HAPROXY_COMMANDS,
             availabilityProvider = "ifHostedCluster",
+            completionProvider = "nodeRangeProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void startHaProxy(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
@@ -53,6 +53,7 @@ public class HAProxyCommands extends AbstractShellCommand {
             name = {"stop","haproxy"},
             group = CommandGroups.HAPROXY_COMMANDS,
             availabilityProvider = "ifHostedCluster",
+            completionProvider = "nodeRangeProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void stopHAProxy(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {

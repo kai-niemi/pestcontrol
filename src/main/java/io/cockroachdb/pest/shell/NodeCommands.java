@@ -23,16 +23,9 @@ import io.cockroachdb.pest.shell.support.VersionProvider;
 
 @Component
 public class NodeCommands extends AbstractShellCommand {
-    private static final String NODE_ID_OPTION = "The node ID, ID range (1-N) or 'all' to include all nodes";
-
     @Autowired
     private ClusterOperatorProvider clusterOperatorProvider;
 
-    @Bean
-    public CompletionProvider nodeRangeProvider() {
-        Cluster cluster = selectedCluster();
-        return new NodeRangeProvider(cluster.getNodes().size());
-    }
 
     @Bean
     public CompletionProvider versionProvider() {
@@ -44,7 +37,7 @@ public class NodeCommands extends AbstractShellCommand {
 
     @Command(description = "Create node certificates and key pairs",
             help = "Create and distribute node certificates and key pairs across all nodes. Usage: node certs --nodeId=<id>",
-            name = {"generate", "certs"},
+            name = {"certs"},
             group = CommandGroups.NODE_COMMANDS,
             completionProvider = "nodeRangeProvider",
             availabilityProvider = "ifHostedSecureCluster",
@@ -106,7 +99,7 @@ public class NodeCommands extends AbstractShellCommand {
         nodeOperator.init(nodeIdRange(id).getFirst());
     }
 
-    @Command(description = "Wipe local files",
+    @Command(description = "Wipe node local files",
             help = "Delete local database files, logs and certs on specified node(s)",
             name = {"wipe"},
             group = CommandGroups.NODE_COMMANDS,

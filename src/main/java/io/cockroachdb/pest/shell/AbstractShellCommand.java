@@ -8,14 +8,24 @@ import java.util.stream.IntStream;
 import org.springframework.context.annotation.Bean;
 import org.springframework.shell.core.command.ExitStatus;
 import org.springframework.shell.core.command.availability.Availability;
+import org.springframework.shell.core.command.completion.CompletionProvider;
 import org.springframework.shell.core.command.exit.ExitStatusExceptionMapper;
 
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.ClusterTypes;
+import io.cockroachdb.pest.shell.support.NodeRangeProvider;
 import io.cockroachdb.pest.util.PatternUtils;
 
 public abstract class AbstractShellCommand {
+    protected static final String NODE_ID_OPTION = "The node ID, ID range (1-N) or 'all' to include all nodes";
+
     protected static Cluster SELECTED_CLUSTER;
+
+    @Bean
+    public CompletionProvider nodeRangeProvider() {
+        Cluster cluster = selectedCluster();
+        return new NodeRangeProvider(cluster.getNodes().size());
+    }
 
     @Bean
     public ExitStatusExceptionMapper commandExceptionMapper() {

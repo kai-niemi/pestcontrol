@@ -42,8 +42,8 @@ public class AdminConfigCommands extends AbstractShellCommand {
     @Autowired
     private ApplicationProperties applicationProperties;
 
-    @Command(description = "Generate application YAML",
-            name = {"generate", "config"},
+    @Command(description = "Generate application YAML template for a wider network",
+            name = {"generate", "config", "network"},
             group = CommandGroups.ADMIN_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void generateConfig(
@@ -142,8 +142,8 @@ public class AdminConfigCommands extends AbstractShellCommand {
         });
     }
 
-    @Command(description = "Generate application YAML for localhost",
-            name = {"generate", "localhost",  "config"},
+    @Command(description = "Generate application YAML template for localhost",
+            name = {"generate", "config", "localhost"},
             group = CommandGroups.ADMIN_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void generateLocalConfig(

@@ -7,9 +7,7 @@ public abstract class ProfileNames {
 
     public static final String SECURE = "secure";
 
-    public static final String VERBOSE = "verbose";
-
-    public static final String VERBOSE_SSL = "verbose_ssl";
+    public static final String VERBOSE_SQL = "verbose_sql";
 
     public static final String VERBOSE_HTTP = "verbose_http";
 
