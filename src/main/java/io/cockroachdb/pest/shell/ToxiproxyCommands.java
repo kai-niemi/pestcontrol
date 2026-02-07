@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.shell.core.command.CommandContext;
+import org.springframework.shell.core.command.annotation.Argument;
 import org.springframework.shell.core.command.annotation.Command;
 import org.springframework.shell.core.command.annotation.Option;
 import org.springframework.shell.core.command.availability.Availability;
@@ -49,7 +50,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Start toxiproxy server on local host",
-            name = {"toxi", "start", "server"},
+            name = {"start", "toxiproxy-server"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifClusterSelected",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -63,7 +64,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Stop toxiproxy server on local host",
-            name = {"toxi", "stop", "server"},
+            name = {"stop", "toxiproxy-server"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifClusterSelected",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -76,8 +77,8 @@ public class ToxiproxyCommands extends AbstractShellCommand {
                 .execute();
     }
 
-    @Command(description = "Print toxiproxy server version",
-            name = {"toxi", "server", "version"},
+    @Command(description = "Display toxiproxy server version",
+            name = {"show", "toxiproxy-server", "version"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -86,7 +87,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Reset toxiproxy server on this host",
-            name = {"toxi", "reset", "server"},
+            name = {"reset", "toxiproxy-server"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -95,7 +96,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "List all toxiproxy proxies",
-            name = {"toxi", "list", "proxy"},
+            name = {"list", "toxiproxy-proxies"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -125,13 +126,12 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Create toxiproxy proxy on specified nodes(s)",
-            name = {"toxi", "create", "proxy"},
+            name = { "create", "toxiproxy-proxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void createProxy(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id,
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id,
             CommandContext commandContext) {
         Cluster cluster = selectedCluster();
 
@@ -152,13 +152,12 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Delete toxiproxy proxy for specified nodes(s)",
-            name = {"toxi", "delete", "proxy"},
+            name = {"delete", "toxiproxy-proxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void deleteProxy(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id,
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id,
             CommandContext commandContext) throws IOException {
         Cluster cluster = selectedCluster();
 
@@ -178,13 +177,12 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Enable proxy for specified nodes(s)",
-            name = {"toxi", "enable", "proxy"},
+            name = { "enable", "toxiproxy-proxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void enableProxy(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id,
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id,
             CommandContext commandContext) throws IOException {
         Cluster cluster = selectedCluster();
 
@@ -204,7 +202,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "List all toxiproxy proxy toxics",
-            name = {"toxi", "proxy", "list", "toxic"},
+            name = {"list", "toxiproxy-toxics"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -245,14 +243,13 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Add proxy toxic",
-            name = {"toxi", "proxy", "add", "toxic"},
+            name = {"add", "toxiproxy-toxic"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             completionProvider = "addToxicCompletionProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void addToxic(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id,
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id,
             @Option(description = "Toxic type", defaultValue = "LATENCY", longName = "toxicType") ToxicType toxicType,
             @Option(description = "Toxic name", defaultValue = "latency-toxic", longName = "name") String name,
             @Option(description = "Link direction to affect", defaultValue = "DOWNSTREAM", longName = "direction")

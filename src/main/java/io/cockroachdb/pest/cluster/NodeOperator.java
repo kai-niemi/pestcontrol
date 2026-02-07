@@ -8,7 +8,7 @@ import java.util.Map;
 public interface NodeOperator {
     String certs(List<Integer> nodeIds, Map<Integer, List<Path>> keyFiles) throws IOException;
 
-    String install(Integer nodeId) throws IOException;
+    String install(Integer nodeId, String version) throws IOException;
 
     String init(Integer nodeId) throws IOException;
 

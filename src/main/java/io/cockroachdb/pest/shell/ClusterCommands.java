@@ -48,7 +48,7 @@ public class ClusterCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Select default cluster ID to use in commands",
-            name = {"cluster", "use"},
+            name = {"use", "cluster"},
             group = CommandGroups.CLUSTER_COMMANDS,
             completionProvider = "clusterCompletionProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -62,8 +62,8 @@ public class ClusterCommands extends AbstractShellCommand {
         }
     }
 
-    @Command(description = "Print local IP addresses",
-            name = {"cluster", "ip"},
+    @Command(description = "Display local IP addresses",
+            name = {"show", "ip"},
             group = CommandGroups.CLUSTER_COMMANDS,
             availabilityProvider = "ifClusterSelected",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -86,8 +86,8 @@ public class ClusterCommands extends AbstractShellCommand {
                 ));
     }
 
-    @Command(description = "Print pest control agents",
-            name = {"cluster", "agents"},
+    @Command(description = "Display pest control agents",
+            name = {"show", "agents"},
             group = CommandGroups.CLUSTER_COMMANDS,
             availabilityProvider = "ifClusterSelected",
             exitStatusExceptionMapper = "commandExceptionMapper")

@@ -31,7 +31,7 @@ public class AdminCommands {
 
     @Command(exitStatusExceptionMapper = "commandExceptionMapper",
             description = "Exit the shell",
-            name = {"admin", "quit"},
+            name = {"quit"},
             alias = "q",
             group = CommandGroups.ADMIN_COMMANDS)
     public void quit() {
@@ -40,7 +40,7 @@ public class AdminCommands {
     }
 
     @Command(description = "Toggle dry run for local commands",
-            name = {"admin", "toggle", "dry-run"},
+            name = { "toggle", "dry-run"},
             group = CommandGroups.ADMIN_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void toggleDryRun(CommandContext commandContext) {
@@ -51,7 +51,7 @@ public class AdminCommands {
     }
 
     @Command(description = "Toggle SQL trace logging (verbose)",
-            name = {"admin", "toggle", "sql-trace"},
+            name = { "toggle", "sql-trace"},
             group = CommandGroups.ADMIN_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void toggleSqlTraceLogging(CommandContext commandContext) {
@@ -73,8 +73,8 @@ public class AdminCommands {
         }
     }
 
-    @Command(description = "Print system information",
-            name = {"admin", "info"},
+    @Command(description = "Display system information",
+            name = {"show", "info"},
             group = CommandGroups.ADMIN_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void systemInfo(CommandContext commandContext) {

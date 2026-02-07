@@ -89,6 +89,6 @@ esac
 done
 
 mvn --batch-mode gitflow:release \
-    --activate-profiles dist \
+    --activate-profiles assembly \
     -DreleaseVersion=${releaseVersion} \
     -DdevelopmentVersion=${developmentVersion}

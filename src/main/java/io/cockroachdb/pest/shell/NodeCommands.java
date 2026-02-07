@@ -1,9 +1,13 @@
 package io.cockroachdb.pest.shell;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.util.HashMap;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.shell.core.command.annotation.Argument;
 import org.springframework.shell.core.command.annotation.Command;
 import org.springframework.shell.core.command.annotation.Option;
 import org.springframework.stereotype.Component;
@@ -21,13 +25,12 @@ public class NodeCommands extends AbstractShellCommand {
 
     @Command(description = "Create node certificates and key pairs",
             help = "Create and distribute node certificates and key pairs across all nodes. Usage: node certs --nodeId=<id>",
-            name = {"node", "certs"},
+            name = {"generate", "certs"},
             group = CommandGroups.NODE_COMMANDS,
             availabilityProvider = "ifHostedSecureCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
-    public void createCerts(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id) throws IOException {
+    public void createCerts(@Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0)
+                            String id) throws IOException {
         Cluster cluster = selectedCluster();
         clusterOperatorProvider.clusterOperator(cluster.getClusterId())
                 .nodeOperator(cluster)
@@ -36,30 +39,53 @@ public class NodeCommands extends AbstractShellCommand {
 
     @Command(description = "Download and unpack the CockroachDB binary",
             help = "Download the CockroachDB binary assembly and unpack it on specified node(s)",
-            name = {"node", "install"},
+            name = {"install"},
             group = CommandGroups.NODE_COMMANDS,
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void installNode(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id) throws IOException {
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id,
+            @Option(description = "CockroachDB version in 'vXX.y.z' format", longName = "version") String version)
+            throws IOException {
+//        version: "v25.4.3.darwin-11.0-arm64"
+//        version: "v25.4.3.darwin-11.0-amd64"
+//        version: "v25.4.3.linux-amd64"
+//        version: "v25.4.3.linux-arm64"
+
+        if (Objects.nonNull(version)) {
+            OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
+            boolean isMac = os.getName().toLowerCase().contains("mac");
+            boolean isLinux = os.getName().toLowerCase().contains("linux");
+            boolean isArm = os.getArch().equals("aarch64") || os.getArch().equals("arm64");
+            if (isMac) {
+                version = "%s.%s-%s".formatted(version, "darwin-11.0", isArm ? "arm64" : "amd64");
+            } else if (isLinux) {
+                version = "%s.%s-%s".formatted(version, "linux", isArm ? "arm64" : "amd64");
+            }
+        }
+
         Cluster cluster = selectedCluster();
         NodeOperator nodeOperator = clusterOperatorProvider
                 .clusterOperator(cluster.getClusterId())
                 .nodeOperator(cluster);
         for (Integer i : nodeIdRange(id)) {
-            nodeOperator.install(i);
+            String v;
+            if (Objects.isNull(version)) {
+                v = cluster.getNodeById(i).getVersion();
+            } else {
+                v = version;
+            }
+            nodeOperator.install(i, version);
         }
     }
 
     @Command(description = "Run the init command",
             help = "Run the init command on specified node(s)",
-            name = {"node", "init"},
+            name = {"init"},
             group = CommandGroups.NODE_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void initNode(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id) throws IOException {
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
         NodeOperator nodeOperator = clusterOperatorProvider
                 .clusterOperator(cluster.getClusterId())
@@ -69,15 +95,14 @@ public class NodeCommands extends AbstractShellCommand {
 
     @Command(description = "Wipe local files",
             help = "Delete local database files, logs and certs on specified node(s)",
-            name = {"node", "wipe"},
+            name = {"wipe"},
             group = CommandGroups.NODE_COMMANDS,
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void wipeNode(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id,
-            @Option(description = "Also wipe install files", defaultValue = "false",
-                    longName = "allfiles") boolean allFiles) throws IOException {
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id,
+            @Option(description = "Wipe install files", defaultValue = "false", longName = "all") boolean allFiles)
+            throws IOException {
         Cluster cluster = selectedCluster();
         NodeOperator nodeOperator = clusterOperatorProvider
                 .clusterOperator(cluster.getClusterId())
@@ -89,13 +114,12 @@ public class NodeCommands extends AbstractShellCommand {
 
     @Command(description = "Start node",
             help = "Start node and (re)join cluster on specified node(s)",
-            name = {"node", "start"},
+            name = {"start"},
             group = CommandGroups.NODE_COMMANDS,
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void startNode(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id) throws IOException {
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
         NodeOperator nodeOperator = clusterOperatorProvider
                 .clusterOperator(cluster.getClusterId())
@@ -107,13 +131,12 @@ public class NodeCommands extends AbstractShellCommand {
 
     @Command(description = "Stop node",
             help = "Stop node on specified node(s)",
-            name = {"node", "stop"},
+            name = {"stop"},
             group = CommandGroups.NODE_COMMANDS,
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void stopNode(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id) throws IOException {
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
         NodeOperator nodeOperator = clusterOperatorProvider
                 .clusterOperator(cluster.getClusterId())
@@ -125,13 +148,12 @@ public class NodeCommands extends AbstractShellCommand {
 
     @Command(description = "Kill node",
             help = "Kill node forcefully on specified node(s)",
-            name = {"node", "kill"},
+            name = {"kill"},
             group = CommandGroups.NODE_COMMANDS,
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void killNode(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id) throws IOException {
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
         NodeOperator nodeOperator = clusterOperatorProvider
                 .clusterOperator(cluster.getClusterId())
@@ -143,13 +165,12 @@ public class NodeCommands extends AbstractShellCommand {
 
     @Command(description = "Run sql shell",
             help = "Run SQL shell on this host and connect to a specified node",
-            name = {"node", "sql"},
+            name = {"sql"},
             group = CommandGroups.NODE_COMMANDS,
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void sqlNode(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id) throws IOException {
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
         NodeOperator nodeOperator = clusterOperatorProvider
                 .clusterOperator(cluster.getClusterId())
@@ -159,13 +180,12 @@ public class NodeCommands extends AbstractShellCommand {
 
     @Command(description = "Check node status",
             help = "Run status command on a specified node",
-            name = {"node", "status"},
+            name = {"status"},
             group = CommandGroups.NODE_COMMANDS,
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void statusNode(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id) throws IOException {
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
         NodeOperator nodeOperator = clusterOperatorProvider
                 .clusterOperator(cluster.getClusterId())

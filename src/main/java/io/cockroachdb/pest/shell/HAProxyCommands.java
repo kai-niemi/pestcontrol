@@ -3,8 +3,8 @@ package io.cockroachdb.pest.shell;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.shell.core.command.annotation.Argument;
 import org.springframework.shell.core.command.annotation.Command;
-import org.springframework.shell.core.command.annotation.Option;
 import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pest.cluster.ClusterOperator;
@@ -20,13 +20,12 @@ public class HAProxyCommands extends AbstractShellCommand {
 
     @Command(description = "Generate haproxy.cfg",
             help = "Generate haproxy.cfg on specified host(s)",
-            name = {"haproxy", "gen"},
+            name = {"generate", "haproxy-cfg"},
             group = CommandGroups.HAPROXY_COMMANDS,
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void genHAProxy(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id) throws IOException {
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
         ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterId());
         for (Integer x : nodeIdRange(id)) {
@@ -36,13 +35,12 @@ public class HAProxyCommands extends AbstractShellCommand {
 
     @Command(description = "Start HAProxy server",
             help = "Start HAProxy on specified host(s)",
-            name = {"haproxy", "start"},
+            name = {"start","haproxy"},
             group = CommandGroups.HAPROXY_COMMANDS,
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void startHaProxy(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id) throws IOException {
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
         ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterId());
         for (Integer x : nodeIdRange(id)) {
@@ -52,13 +50,12 @@ public class HAProxyCommands extends AbstractShellCommand {
 
     @Command(description = "Stop HAProxy server",
             help = "Stop HAProxy on specified host(s)",
-            name = {"haproxy", "stop"},
+            name = {"stop","haproxy"},
             group = CommandGroups.HAPROXY_COMMANDS,
             availabilityProvider = "ifHostedCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void stopHAProxy(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id) throws IOException {
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
         ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterId());
         for (Integer x : nodeIdRange(id)) {

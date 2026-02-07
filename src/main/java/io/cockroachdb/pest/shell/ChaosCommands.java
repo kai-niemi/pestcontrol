@@ -3,6 +3,7 @@ package io.cockroachdb.pest.shell;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.shell.core.command.annotation.Argument;
 import org.springframework.shell.core.command.annotation.Command;
 import org.springframework.shell.core.command.annotation.Option;
 import org.springframework.stereotype.Component;
@@ -20,13 +21,12 @@ public class ChaosCommands extends AbstractShellCommand {
     private ClusterOperatorProvider clusterOperatorProvider;
 
     @Command(description = "Disrupt specified node(s)",
-            name = {"chaos", "disrupt", "node"},
+            name = {"disrupt", "node"},
             group = CommandGroups.CHAOS_COMMANDS,
             availabilityProvider = "ifCockroachCloudCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void disruptNode(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id) throws IOException {
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
         ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterId());
         for (Integer x : PatternUtils.parseIntRange(id)) {
@@ -35,13 +35,12 @@ public class ChaosCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Recover specified node(s)",
-            name = {"chaos", "recover", "node"},
+            name = {"recover", "node"},
             group = CommandGroups.CHAOS_COMMANDS,
             availabilityProvider = "ifCockroachCloudCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void recoverNode(
-            @Option(description = NODE_ID_OPTION, defaultValue = "1",
-                    shortName = 'n', longName = "nodeId") String id) throws IOException {
+            @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
         ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterId());
         for (Integer x : PatternUtils.parseIntRange(id)) {
@@ -50,7 +49,7 @@ public class ChaosCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Disrupt nodes in a specified locality",
-            name = {"chaos", "disrupt", "locality"},
+            name = {"disrupt", "locality"},
             group = CommandGroups.CHAOS_COMMANDS,
             availabilityProvider = "ifCockroachCloudCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -64,7 +63,7 @@ public class ChaosCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Recover nodes in a specified locality",
-            name = {"chaos", "recover", "locality"},
+            name = {"recover", "locality"},
             group = CommandGroups.CHAOS_COMMANDS,
             availabilityProvider = "ifCockroachCloudCluster",
             exitStatusExceptionMapper = "commandExceptionMapper")
