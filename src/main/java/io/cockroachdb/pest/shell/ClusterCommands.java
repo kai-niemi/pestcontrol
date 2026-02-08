@@ -14,7 +14,9 @@ import org.springframework.hateoas.mediatype.hal.HalLinkRelation;
 import org.springframework.shell.core.command.CommandContext;
 import org.springframework.shell.core.command.annotation.Argument;
 import org.springframework.shell.core.command.annotation.Command;
+import org.springframework.shell.core.command.annotation.Option;
 import org.springframework.shell.core.command.completion.CompletionProvider;
+import org.springframework.shell.core.command.completion.EnumCompletionProvider;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResourceAccessException;
@@ -27,6 +29,7 @@ import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.NetworkAddress;
 import io.cockroachdb.pest.shell.support.ClusterCompletionProvider;
+import io.cockroachdb.pest.shell.support.EndpointType;
 import io.cockroachdb.pest.shell.support.ListTableModel;
 import io.cockroachdb.pest.shell.support.TableUtils;
 import io.cockroachdb.pest.util.HypermediaClient;
@@ -62,12 +65,28 @@ public class ClusterCommands extends AbstractShellCommand {
         return new ClusterCompletionProvider(applicationProperties);
     }
 
+    @Bean
+    public CompletionProvider endpointTypeCompletionProvider() {
+        return new EnumCompletionProvider(EndpointType.class, "--endpointType");
+    }
+
     @Command(description = "Open URL using system browser",
             name = {"open"},
             group = CommandGroups.CLUSTER_COMMANDS,
+            completionProvider = "endpointTypeCompletionProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void open(
-            @Argument(description = "The URL to open", index = 0) String url) throws IOException {
+            @Argument(description = "The URL to open", index = 0) String specified,
+            @Option(description = "The endpoint type to open", defaultValue = "app_root")
+            EndpointType endpointType) throws IOException {
+        String url;
+        switch (endpointType) {
+            case db_console -> url = "%s".formatted(selectedCluster().getAdminUrl());
+            case app_root -> url = "http://%s:%d".formatted(NetworkAddress.getLocalIP(), serverPort);
+            case api_root -> url = "http://%s:%d/api".formatted(NetworkAddress.getLocalIP(), serverPort);
+            case specified -> url = specified;
+            default -> throw new IllegalStateException("Unexpected value: " + endpointType);
+        }
         CommandBuilder.builder()
                 .withBaseDir(applicationProperties.getDirectories().getBaseDirPath())
                 .withCommand("open")

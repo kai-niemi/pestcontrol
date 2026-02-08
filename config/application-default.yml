@@ -24,8 +24,6 @@ application:
         http-addr: :8070
         stats-addr: :7070
       baseline:
-        # https://www.cockroachlabs.com/docs/releases/#downloads
-        version: "v26.1.0"
         service-addr: localhost:9091
         listen-addr: :+25257
         advertise-addr: localhost
@@ -60,7 +58,6 @@ application:
         http-addr: :8070
         stats-addr: :7070
       baseline:
-        version: "v25.4.3.darwin-11.0-arm64"
         service-addr: localhost:9091
         listen-addr: :+25257
         advertise-addr: localhost

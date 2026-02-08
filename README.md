@@ -55,11 +55,13 @@ Supported platforms and versions:
 
 ## How it works
 
-Pest Control is a single spring boot application with an embedded shell offering 
+Pest Control is a single spring boot application with an embedded shell providing 
 commands to install and control CockroachDB nodes via bash scripts. In a network 
 environment of multiple machines, it uses itself as an agent to invoke local commands 
 on behalf of a control-plane instance. There's no support for provisioning cloud
 hosting environments or VMs.
+
+<img alt="diagrams_remote.jpg" src="docs/diagrams_remote.jpg" width="256"/>
 
 # Terms of Use
 
@@ -80,10 +82,11 @@ See [MIT](LICENSE.txt) for terms and conditions.
 
 You can use the following CockroachDB cluster types:
 
-  - Local - one machine/instance for all nodes (single laptop/desktop).
-  - Remote - A network environment with one machine/instance per node. For this type, 
-    Pest Control must be running on each node acting as an agent for the control plane instance.
-  - Cloud - An existing CockroachDB Cloud cluster.
+| Type   | Description                                                                                                                                                           |
+|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Local  | One machine/instance for all nodes (single laptop/desktop).                                                                                                           |  
+| Remote | A network environment with one machine/instance per node. For this type, Pest Control must be running on each node acting as an agent for the control plane instance. |  
+| Cloud  | An existing CockroachDB Cloud cluster.                                                                                                                                |  
 
 ## Install the JDK
 
@@ -172,7 +175,7 @@ echo "start 1-3" >> cmd.txt
 echo "init" >> cmd.txt
 echo "generate haproxy config" >> cmd.txt
 echo "start haproxy" >> cmd.txt
-echo "open dbconsole" >> cmd.txt
+echo "open db_console" >> cmd.txt
 ````
 
 To execute all of the above, run:
@@ -192,7 +195,7 @@ echo "start 1-3" >> cmd.txt
 echo "init" >> cmd.txt
 echo "generate haproxy config" >> cmd.txt
 echo "start haproxy" >> cmd.txt
-echo "open dbconsole" >> cmd.txt
+echo "open db_console" >> cmd.txt
 ```
 
 To execute all of the above, run:
@@ -216,12 +219,12 @@ A quick method is to scp the tar.gz assembly to each host. Assuming you have 3 p
 machines - host1, host2 and host3:
 
 ```shell
-scp target/pestcontrol-2.0.0-bin.tar.gz user@host1:/~
-scp target/pestcontrol-2.0.0-bin.tar.gz user@host2:/~
-scp target/pestcontrol-2.0.0-bin.tar.gz user@host3:/~
-ssh -t user@host1 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pest-op start-service'
-ssh -t user@host2 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pest-op start-service'
-ssh -t user@host3 'tar xvf pestcontrol-2.0.0-bin.tar.gz && cd pestcontrol-2.0.0 && ./pest-op start-service'
+scp target/pestcontrol-3.1.0-bin.tar.gz user@host1:/~
+scp target/pestcontrol-3.1.0-bin.tar.gz user@host2:/~
+scp target/pestcontrol-3.1.0-bin.tar.gz user@host3:/~
+ssh -t user@host1 'tar xvf pestcontrol-3.1.0-bin.tar.gz && cd pestcontrol-3.1.0 && ./pest-op start-service'
+ssh -t user@host2 'tar xvf pestcontrol-3.1.0-bin.tar.gz && cd pestcontrol-3.1.0 && ./pest-op start-service'
+ssh -t user@host3 'tar xvf pestcontrol-3.1.0-bin.tar.gz && cd pestcontrol-3.1.0 && ./pest-op start-service'
 ```
 
 On the control host, your local laptop/desktop for example, create a cluster configuration 

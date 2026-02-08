@@ -11,3 +11,4 @@ Thumbs.db
 /config/haproxy.cfg
 /config/init-dev.sql
 /config/application-dev.yml
+cmd.txt

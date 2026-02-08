@@ -28,13 +28,13 @@ public class ClusterCompletionProvider implements CompletionProvider {
             }
             if ((cluster.getClusterName().startsWith(prefix)
                  || cluster.getClusterId().startsWith(prefix))) {
-                result.add(new CompletionProposal("-- " + cluster.getClusterId())
+                result.add(new CompletionProposal(cluster.getClusterId())
                         .displayText(cluster.getClusterId())
                         .description(cluster.getClusterName()));
             }
         }
 
-        result.add(new CompletionProposal("-- none")
+        result.add(new CompletionProposal("none")
                 .displayText("none")
                 .description("Clear selection"));
 
