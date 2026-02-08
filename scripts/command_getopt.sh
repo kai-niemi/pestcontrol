@@ -92,6 +92,9 @@ case "${getopt}" in
     run-service|run)
         command_run_service.sh $*
         ;;
+    open)
+        command_open.sh $*
+        ;;
     help|--help)
         fn_print_help
         ;;

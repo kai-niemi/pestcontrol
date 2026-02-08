@@ -11,11 +11,10 @@
 * [Prerequisites](#prerequisites)
   * [Install the JDK](#install-the-jdk)
   * [Install Toxiproxy (optional)](#install-toxiproxy-optional)
-  * [Install Haproxy (optional)](#install-haproxy-optional)
+  * [Install HAProxy (optional)](#install-haproxy-optional)
 * [Building](#building)
   * [Clone the project](#clone-the-project)
   * [Build the artifacts](#build-the-artifacts)
-* [Running](#running)
 * [Configuration](#configuration)
 * [Tutorials](#tutorials)
   * [Local 3-node self-hosted cluster (insecure)](#local-3-node-self-hosted-cluster-insecure)
@@ -29,13 +28,13 @@
 <img  align="left" src="docs/logo.png" alt="" width="64"/> 
 
 [Pest Control](https://github.com/kai-niemi/pestcontrol) is a tool for managing 
-and chaos testing CockroachDB clusters. It provides a command-line shell for 
-controlling and disrupting cluster deployments and a web interface for visualizing 
-node failure and recovery, including the impact on synthetic application workloads. 
+and chaos testing CockroachDB clusters. It provides an interactive shell for 
+controlling and manipulating clusters and a web interface for visualizing 
+node failure and recovery. 
 
 ## Main features
 
-- Simple local and remote self-hosted cluster management.
+- Local and remote self-hosted cluster management.
 - Network chaos testing via [Toxiproxy](https://github.com/Shopify/toxiproxy) for self-hosted clusters.
 - Disruption API controls for Cockroach Cloud clusters.
 - A web UI for self-hosted clusters to:
@@ -51,15 +50,16 @@ Supported platforms and versions:
   - Secure or insecure mode
   - Local or remote deployments 
 - CockroachDB Cloud v22.2+
-  - Disruption API requires a feature flag enabled for the organization
-- MacOS (main platform)
+- MacOS
 - Linux
 
 ## How it works
 
-Pest Control is a single spring boot application with a shell offering commands to 
-installing and control CockroachDB nodes via bash scripts. In a network environment, 
-it uses itself as an agent to invoke local commands on behalf of a control-plane instance.
+Pest Control is a single spring boot application with an embedded shell offering 
+commands to install and control CockroachDB nodes via bash scripts. In a network 
+environment of multiple machines, it uses itself as an agent to invoke local commands 
+on behalf of a control-plane instance. There's no support for provisioning cloud
+hosting environments or VMs.
 
 # Terms of Use
 
@@ -77,13 +77,13 @@ See [MIT](LICENSE.txt) for terms and conditions.
   - https://github.com/Shopify/toxiproxy
 - Haproxy (optional)
   - https://www.haproxy.org/
-- You can use the following cluster types:
-  - Local - one machine/instance for all nodes (laptop typically).
-  - Remote - A network environment with one machine/instance per node. For this type, Pest Control 
-  must be running on each node acting as an agent for a control plane instance.
+
+You can use the following CockroachDB cluster types:
+
+  - Local - one machine/instance for all nodes (single laptop/desktop).
+  - Remote - A network environment with one machine/instance per node. For this type, 
+    Pest Control must be running on each node acting as an agent for the control plane instance.
   - Cloud - An existing CockroachDB Cloud cluster.
-    
-Pest Control does not interact with any public cloud APIs for cluster VM provisioning.
 
 ## Install the JDK
 
@@ -105,7 +105,7 @@ slowing down responses, limiting bandwidth etc.
 
 See [Installing Toxiproxy](https://github.com/Shopify/toxiproxy?tab=readme-ov-file#1-installing-toxiproxy)
 
-## Install Haproxy (optional)
+## Install HAProxy (optional)
                              
 Usually bundled in most distributions.
 
@@ -125,14 +125,6 @@ packaged `TAR.GZ` assembly artifact.
 
 At this point you can run it from the base directory or explode the `TAR.gz` bundle (in `target/`)
 to another location.
-
-# Running
-
-To start the app in the foreground with an interactive shell:
-
-    ./pest
-
-Now you can access the application via http://localhost:9091.
 
 # Configuration
 
@@ -155,9 +147,9 @@ The interactive shell is started with:
 
     ./pest
 
-In this mode you can list all commands by typing `help` or pressing TAB. 
-It will also start the embedded HTTP server with a SPA application console
-available at http://localhost:9091 by default.
+In this mode, you can list all commands by typing `help` or pressing TAB. 
+It will also start the embedded HTTP server with web dashboard available 
+at http://localhost:9091.
 
 To run in non-interactive mode, you can create a command text file and
 pass the name with a `@` prefix. For example:
@@ -191,7 +183,7 @@ To execute all of the above, run:
 
 ## Local 3-node self-hosted cluster (secure)
 
-This is similar to the previous one only it starts a secure cluster.
+This is similar to the previous one, only it starts a secure cluster.
 
 ```shell
 echo "install" > cmd.txt
@@ -210,16 +202,15 @@ To execute all of the above, run:
 ````
 
 The secure mode uses self-signed CA certificates and keys stored in the `.certs` directory, 
-including a PKCS12 truststore used by the SPA web app. To login to a secure cluster, you may 
-need to restart the shell in order for it to pick up the self-signed certificate for HTTP 
-TLS traffic.
+including a PKCS12 truststore used by the web app. To login to a secure cluster, you may need 
+to restart the shell in order for it to pick up the self-signed certificate for HTTP TLS traffic.
 
 ## Remote 3-node self-hosted cluster (insecure)
 
-To deploy and manage a cluster on dedicated machines, you first need to deploy and run 
-pestcontrol agents on each host. These agents will act as gateways to run local bash scripts 
-to start, stop, kill nodes and so on. Your local instance will act as the control plane and 
-send HTTP requests to the other instances when running shell commands like `start`.
+To deploy and manage a cluster on dedicated machines, you first need to deploy and run Pest Control 
+agents on each host. These agents will act as gateways to run local bash scripts to start, stop, 
+kill nodes and so on. Your local instance will act as the control plane and send HTTP requests 
+to the other instances when running shell commands like `start`.
 
 A quick method is to scp the tar.gz assembly to each host. Assuming you have 3 pest control 
 machines - host1, host2 and host3:
@@ -282,7 +273,3 @@ init
 
 If you switch between the `secure` and `insecure` modes, re-run the `init` command to set proper
 SQL user roles and secrets.
-
----
-
-That is all, carry on!

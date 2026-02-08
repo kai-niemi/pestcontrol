@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.web.spa;
+package io.cockroachdb.pest.web.app;
 
 public enum TopicName {
     DASHBOARD_NODE_STATUS("/topic/dashboard/status"),

@@ -98,6 +98,11 @@ command_run_service.sh(){
 	source "${scriptsdir}/${modulefile}"
 }
 
+command_open.sh(){
+  modulefile="${FUNCNAME[0]}"
+	source "${scriptsdir}/${modulefile}"
+}
+
 command_start_service.sh(){
   modulefile="${FUNCNAME[0]}"
 	source "${scriptsdir}/${modulefile}"

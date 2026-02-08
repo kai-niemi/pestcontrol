@@ -1,4 +1,4 @@
-package io.cockroachdb.pest.web.spa;
+package io.cockroachdb.pest.web.app;
 
 import java.util.Optional;
 

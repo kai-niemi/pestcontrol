@@ -22,6 +22,7 @@ import org.springframework.web.client.ResourceAccessException;
 import jakarta.annotation.PostConstruct;
 
 import io.cockroachdb.pest.cluster.ClusterOperatorProvider;
+import io.cockroachdb.pest.cluster.local.CommandBuilder;
 import io.cockroachdb.pest.model.ApplicationProperties;
 import io.cockroachdb.pest.model.Cluster;
 import io.cockroachdb.pest.model.NetworkAddress;
@@ -61,6 +62,19 @@ public class ClusterCommands extends AbstractShellCommand {
         return new ClusterCompletionProvider(applicationProperties);
     }
 
+    @Command(description = "Open URL using system browser",
+            name = {"open"},
+            group = CommandGroups.CLUSTER_COMMANDS,
+            exitStatusExceptionMapper = "commandExceptionMapper")
+    public void open(
+            @Argument(description = "The URL to open", index = 0) String url) throws IOException {
+        CommandBuilder.builder()
+                .withBaseDir(applicationProperties.getDirectories().getBaseDirPath())
+                .withCommand("open")
+                .withFlags("--url=" + url)
+                .execute();
+    }
+
     @Command(description = "Select default cluster ID to use in commands",
             name = {"use", "cluster"},
             group = CommandGroups.CLUSTER_COMMANDS,
@@ -77,8 +91,8 @@ public class ClusterCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Display database version",
-            name = {"show", "database-version"},
-            alias = "dbv",
+            name = {"show", "version"},
+            alias = "v",
             group = CommandGroups.CLUSTER_COMMANDS,
             availabilityProvider = "ifClusterSelected",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -103,7 +117,6 @@ public class ClusterCommands extends AbstractShellCommand {
     public void printIP(CommandContext commandContext) {
         commandContext.outputWriter().println(
                 """
-                        
                                     Local IP: %s
                                  External IP: %s
                                     Hostname: %s

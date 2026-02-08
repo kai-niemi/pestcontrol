@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
 
 import io.cockroachdb.pest.model.LinkRelations;
 import io.cockroachdb.pest.web.model.ProxyModel;
-import io.cockroachdb.pest.web.spa.ToxiproxyDashboardController;
+import io.cockroachdb.pest.web.app.ToxiproxyDashboardController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
