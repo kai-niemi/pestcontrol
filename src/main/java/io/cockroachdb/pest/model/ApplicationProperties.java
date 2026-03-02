@@ -117,22 +117,11 @@ public class ApplicationProperties implements InitializingBean {
 
     @Validated
     public static class Pool {
-        @NotNull
-        private Integer threadPoolMaxSize;
-
-        @NotNull
+§§§        @NotNull
         private Integer maxTotal;
 
         @NotNull
         private Integer maxConnPerRoute;
-
-        public Integer getThreadPoolMaxSize() {
-            return threadPoolMaxSize;
-        }
-
-        public void setThreadPoolMaxSize(Integer threadPoolMaxSize) {
-            this.threadPoolMaxSize = threadPoolMaxSize;
-        }
 
         public Integer getMaxConnPerRoute() {
             return maxConnPerRoute;
