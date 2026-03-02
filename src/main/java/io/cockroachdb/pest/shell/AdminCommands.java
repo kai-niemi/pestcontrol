@@ -13,6 +13,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.shell.core.command.CommandContext;
 import org.springframework.shell.core.command.annotation.Command;
+import org.springframework.shell.core.command.annotation.Option;
 import org.springframework.stereotype.Component;
 
 import ch.qos.logback.classic.Level;
@@ -34,13 +35,14 @@ public class AdminCommands {
             name = {"quit"},
             alias = "q",
             group = CommandGroups.ADMIN_COMMANDS)
-    public void quit() {
-        SpringApplication.exit(applicationContext, () -> 0);
-        System.exit(0);
+    public void quit(@Option(description = "exit code", defaultValue = "0", longName = "code") int code) {
+        SpringApplication.exit(applicationContext, () -> code);
+        System.exit(code);
+
     }
 
     @Command(description = "Toggle dry run for local commands",
-            name = { "toggle", "dry-run"},
+            name = {"toggle", "dry-run"},
             group = CommandGroups.ADMIN_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void toggleDryRun(CommandContext commandContext) {
@@ -51,7 +53,7 @@ public class AdminCommands {
     }
 
     @Command(description = "Toggle SQL trace logging (verbose)",
-            name = { "toggle", "sql-trace"},
+            name = {"toggle", "sql-trace"},
             group = CommandGroups.ADMIN_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void toggleSqlTraceLogging(CommandContext commandContext) {

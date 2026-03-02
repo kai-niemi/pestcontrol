@@ -1,10 +1,15 @@
 package io.cockroachdb.pest.shell;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.shell.core.command.CommandContext;
 import org.springframework.shell.core.command.annotation.Argument;
 import org.springframework.shell.core.command.annotation.Command;
+import org.springframework.shell.core.command.annotation.Option;
 import org.springframework.stereotype.Component;
 
 import io.cockroachdb.pest.cluster.ClusterOperator;
@@ -15,6 +20,21 @@ import io.cockroachdb.pest.model.Cluster;
 public class HAProxyCommands extends AbstractShellCommand {
     @Autowired
     private ClusterOperatorProvider clusterOperatorProvider;
+
+    @Command(description = "Display local haproxy.cfg",
+            name = {"show", "haproxy", "config"},
+            group = CommandGroups.HAPROXY_COMMANDS,
+            exitStatusExceptionMapper = "commandExceptionMapper")
+    public void printConfig(
+            @Option(description = "haproxy config file path", defaultValue = "config/haproxy.cfg",
+                    longName = "cfgFile") String cfgFile,
+            CommandContext commandContext) {
+        try {
+            commandContext.outputWriter().println(Files.readString(Path.of(cfgFile)));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
 
     @Command(description = "Generate haproxy.cfg",
             help = "Generate haproxy.cfg on specified host(s)",
@@ -34,7 +54,7 @@ public class HAProxyCommands extends AbstractShellCommand {
 
     @Command(description = "Start HAProxy server",
             help = "Start HAProxy on specified host(s)",
-            name = {"start","haproxy"},
+            name = {"start", "haproxy"},
             group = CommandGroups.HAPROXY_COMMANDS,
             availabilityProvider = "ifHostedCluster",
             completionProvider = "nodeRangeProvider",
@@ -50,7 +70,7 @@ public class HAProxyCommands extends AbstractShellCommand {
 
     @Command(description = "Stop HAProxy server",
             help = "Stop HAProxy on specified host(s)",
-            name = {"stop","haproxy"},
+            name = {"stop", "haproxy"},
             group = CommandGroups.HAPROXY_COMMANDS,
             availabilityProvider = "ifHostedCluster",
             completionProvider = "nodeRangeProvider",

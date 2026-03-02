@@ -12,7 +12,6 @@ import java.util.function.Consumer;
 
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -36,7 +35,7 @@ import io.cockroachdb.pest.shell.support.AnsiConsole;
         SecurityAutoConfiguration.class,
         ManagementWebSecurityAutoConfiguration.class
 })
-public class Application implements DisposableBean {
+public class Application {
     private static void printHelpAndExit(Consumer<AnsiConsole> message) {
         try (Terminal terminal = TerminalBuilder.terminal()) {
             AnsiConsole console = new AnsiConsole(terminal.writer())
@@ -125,10 +124,5 @@ public class Application implements DisposableBean {
                 .logStartupInfo(true)
                 .profiles(profiles.toArray(new String[0]))
                 .run(passThroughArgs.toArray(new String[] {}));
-    }
-
-    @Override
-    public void destroy() {
-        System.exit(0);
     }
 }
