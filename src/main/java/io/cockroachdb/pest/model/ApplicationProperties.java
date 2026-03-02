@@ -117,7 +117,7 @@ public class ApplicationProperties implements InitializingBean {
 
     @Validated
     public static class Pool {
-§§§        @NotNull
+        @NotNull
         private Integer maxTotal;
 
         @NotNull
