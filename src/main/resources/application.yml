@@ -3,6 +3,9 @@
 # https://docs.spring.io/spring-boot/appendix/application-properties/index.html
 ########################
 spring:
+  threads:
+    virtual:
+      enabled: true
   config:
     import: optional:file:./config/
   output:
@@ -124,6 +127,5 @@ application:
     bin-dir: .binaries
   # Various resource pool settings
   pool:
-    threadPoolMaxSize: -1
     maxConnPerRoute: 0
     maxTotal: 0
