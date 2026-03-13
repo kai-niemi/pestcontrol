@@ -5,6 +5,9 @@ SET CLUSTER SETTING server.shutdown.initial_wait = '8s';
 SET CLUSTER SETTING server.remote_debugging.mode = 'any';
 SET CLUSTER SETTING server.time_until_store_dead = '2m';
 
+-- Needed since 26.1 to access system and crdb_internal tables
+SET allow_unsafe_internals = true;
+
 UPSERT into system.locations
 VALUES ('region', 'us-east-1', 37.478397, -76.453077),
        ('region', 'us-east-2', 40.417287, -76.453077),

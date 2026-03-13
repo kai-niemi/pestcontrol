@@ -2,6 +2,8 @@ package io.cockroachdb.pest;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -38,22 +40,17 @@ import io.cockroachdb.pest.shell.support.AnsiConsole;
 public class Application {
     private static void printHelpAndExit(Consumer<AnsiConsole> message) {
         try (Terminal terminal = TerminalBuilder.terminal()) {
-            AnsiConsole console = new AnsiConsole(terminal.writer())
+            AnsiConsole console = new AnsiConsole(terminal)
                     .green("Usage: java -jar pestcontrol.jar [options] [arg...]")
-                    .nl()
-                    .nl()
                     .yellow("Profile Options:")
-                    .nl()
                     .cyan("--verbose-http            enable 'verbose-http' profile for HTTP trace logging")
                     .cyan("--verbose-sql             enable 'verbose-sql' profile for SQL trace logging")
                     .cyan("--secure                  enable 'secure' profile")
                     .cyan("--offline                 disable HTML front-end")
                     .cyan("--profiles [profile,..]   override spring profiles to activate")
-                    .nl()
                     .yellow("Other Options:")
                     .cyan("--cluster [id]            set default cluster id to use in shell commands")
-                    .cyan("--help                    this help")
-                    .nl();
+                    .cyan("--help                    this help");
             message.accept(console);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -115,6 +112,13 @@ public class Application {
             System.setProperty("spring.profiles.active", String.join(",", profiles));
         }
 
+        OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
+        boolean isMac = os.getName().toLowerCase().contains("mac");
+        boolean isLinux = os.getName().toLowerCase().contains("linux");
+        if (!isMac && !isLinux) {
+            System.out.println("WARN: This app supports macOS and Linux, not " + os.getName());
+        }
+
 //        System.setProperty("spring.shell.debug.enabled", "true");
 //        System.out.printf("Spring profiles: %s%n", String.join(",", profiles));
 //        System.out.printf("Passthrough args: %s%n", String.join(",", passThroughArgs));
@@ -123,6 +127,6 @@ public class Application {
                 .web(WebApplicationType.SERVLET)
                 .logStartupInfo(true)
                 .profiles(profiles.toArray(new String[0]))
-                .run(passThroughArgs.toArray(new String[] {}));
+                .run(passThroughArgs.toArray(new String[]{}));
     }
 }

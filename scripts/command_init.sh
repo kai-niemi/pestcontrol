@@ -5,6 +5,7 @@ commandaction="Initialize cluster"
 # https://www.cockroachlabs.com/docs/stable/cockroach-init#flags
 
 security_mode="insecure"
+sql_file="init.sql"
 db_username=craig
 db_password=cockroach
 
@@ -20,6 +21,10 @@ for i in "$@"; do
       ;;
     --cluster-name=*)
       cluster_name="${i#*=}"
+      shift
+      ;;
+    --sqlfile=*)
+      sql_file="${i#*=}"
       shift
       ;;
     --secure)
@@ -44,6 +49,7 @@ if [ -z "${sql_addr}" ]; then
   exit 1
 fi
 
+fn_print_info "sql_file       = ${sql_file}"
 fn_print_info "rpc_addr       = ${rpc_addr}"
 fn_print_info "sql_addr       = ${sql_addr}"
 fn_print_info "security_mode  = ${security_mode}"
@@ -68,10 +74,8 @@ case "$security_mode" in
     ${installdir}/cockroach sql --certs-dir=${certsdir} --host=${sql_addr} \
     -e "ALTER ROLE ${db_username} WITH PASSWORD '${db_password}'; GRANT ADMIN to ${db_username};"
 
-    ${installdir}/cockroach sql --certs-dir=${certsdir} --host=${sql_addr} < ${configdir}/init.sql
-
-    if [ -f ${configdir}/init-dev.sql ]; then
-      ${installdir}/cockroach sql --certs-dir=${certsdir} --host=${sql_addr} < ${configdir}/init-dev.sql
+    if [ -f ${configdir}/${sql_file} ]; then
+      ${installdir}/cockroach sql --certs-dir=${certsdir} --host=${sql_addr} < ${configdir}/${sql_file}
     fi
 
     ;;
@@ -85,10 +89,8 @@ case "$security_mode" in
     ${installdir}/cockroach sql --insecure --host=${sql_addr} \
     -e "ALTER ROLE ${db_username} WITH PASSWORD NULL"
 
-    ${installdir}/cockroach sql --insecure --host=${sql_addr} < ${configdir}/init.sql
-
-    if [ -f ${configdir}/init-dev.sql ]; then
-      ${installdir}/cockroach sql --insecure --host=${sql_addr} < ${configdir}/init-dev.sql
+    if [ -f ${configdir}/${sql_file} ]; then
+      ${installdir}/cockroach sql --insecure --host=${sql_addr} < ${configdir}/${sql_file}
     fi
 
     ;;

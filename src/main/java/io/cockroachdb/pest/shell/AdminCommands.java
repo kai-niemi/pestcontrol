@@ -38,7 +38,6 @@ public class AdminCommands {
     public void quit(@Option(description = "exit code", defaultValue = "0", longName = "code") int code) {
         SpringApplication.exit(applicationContext, () -> code);
         System.exit(code);
-
     }
 
     @Command(description = "Toggle dry run for local commands",
@@ -46,18 +45,17 @@ public class AdminCommands {
             group = CommandGroups.ADMIN_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void toggleDryRun(CommandContext commandContext) {
-        AnsiConsole console = new AnsiConsole(commandContext.outputWriter());
         applicationProperties.setDryRunLocalCommands(!applicationProperties.isDryRunLocalCommands());
         boolean enabled = applicationProperties.isDryRunLocalCommands();
-        console.green("Dry run mode %s", enabled ? "ENABLED" : "DISABLED");
+        commandContext.outputWriter().printf("Dry run mode %s\n", enabled ? "ENABLED" : "DISABLED");
     }
 
     @Command(description = "Toggle SQL trace logging (verbose)",
             name = {"toggle", "sql-trace"},
             group = CommandGroups.ADMIN_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
-    public void toggleSqlTraceLogging(CommandContext commandContext) {
-        AnsiConsole console = new AnsiConsole(commandContext.outputWriter());
+    public void toggleSqlTraceLogging() {
+        AnsiConsole console = AnsiConsole.instance();
         boolean enabled = toggleLogLevel(DataSourceConfiguration.SQL_TRACE_LOGGER);
         console.green("SQL Trace Logging %s", enabled ? "ENABLED" : "DISABLED");
     }
@@ -79,8 +77,8 @@ public class AdminCommands {
             name = {"show", "info"},
             group = CommandGroups.ADMIN_COMMANDS,
             exitStatusExceptionMapper = "commandExceptionMapper")
-    public void systemInfo(CommandContext commandContext) {
-        AnsiConsole console = new AnsiConsole(commandContext.outputWriter());
+    public void systemInfo() {
+        AnsiConsole console = AnsiConsole.instance();
 
         OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
         console.green(">> OS");

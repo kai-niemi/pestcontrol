@@ -143,18 +143,10 @@
             <scope>test</scope>
         </dependency>
 
-
-<!--        <dependency>-->
-<!--            <groupId>org.jline</groupId>-->
-<!--            <artifactId>jline-terminal</artifactId>-->
-<!--            <version>3.30.5</version>-->
-<!--        </dependency>-->
-
         <!-- Support -->
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.19.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
@@ -175,7 +167,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.8</version>
+            <version>42.7.10</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -200,7 +192,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.4</version>
                 <configuration>
                     <groups>${groups}</groups>
                 </configuration>
@@ -253,7 +244,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.0</version>
                 <configuration>
                     <parameters>true</parameters>
                     <showDeprecation>false</showDeprecation>
@@ -278,7 +268,6 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
-                        <version>3.7.1</version>
                         <executions>
                             <execution>
                                 <id>distro-assembly</id>

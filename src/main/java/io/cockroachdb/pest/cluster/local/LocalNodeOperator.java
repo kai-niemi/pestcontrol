@@ -100,9 +100,12 @@ public class LocalNodeOperator implements NodeOperator {
 
     @Override
     public String init(Integer nodeId) throws IOException {
+        List<String> args = new ArrayList<>();
+        args.add("--sqlfile=init.sql");
         return CommandBuilder.builder()
                 .withBaseDir(baseDir)
                 .withCommand("init")
+                .withFlags(args)
                 .withClientNetworkingFlags(cluster, nodeId)
                 .execute();
     }
