@@ -17,6 +17,8 @@ import io.cockroachdb.pest.shell.support.NodeRangeProvider;
 import io.cockroachdb.pest.util.PatternUtils;
 
 public abstract class AbstractShellCommand {
+    protected static final String DEFAULT_VERSION = "v26.1.0";
+
     protected static final String NODE_ID_OPTION = "The node ID, ID range (1-N) or 'all' to include all nodes";
 
     protected static Cluster SELECTED_CLUSTER;

@@ -58,7 +58,8 @@ public class NodeCommands extends AbstractShellCommand {
             exitStatusExceptionMapper = "commandExceptionMapper")
     public void installNode(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id,
-            @Option(description = "CockroachDB version in 'vXX.y.z' format", defaultValue = "v26.1.0",
+            @Option(description = "CockroachDB version in 'vXX.y.z' format",
+                    defaultValue = DEFAULT_VERSION,
                     longName = "version") String version) throws IOException {
 
         if (Objects.nonNull(version) && !version.endsWith(".tgz")) {

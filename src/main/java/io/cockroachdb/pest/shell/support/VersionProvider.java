@@ -19,7 +19,7 @@ public class VersionProvider implements CompletionProvider {
     public List<CompletionProposal> apply(CompletionContext completionContext) {
         List<CompletionProposal> result = new ArrayList<>();
 
-        IntStream.range(0, 1).forEach(value -> {
+        IntStream.range(0, 2).forEach(value -> {
             result.add(new CompletionProposal(prefix + "=" + "v26.1." + value));
         });
         IntStream.range(0, 4).forEach(value -> {

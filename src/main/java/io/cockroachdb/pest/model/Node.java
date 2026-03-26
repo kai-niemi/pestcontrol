@@ -19,7 +19,7 @@ import jakarta.validation.constraints.NotNull;
 @JsonPropertyOrder({
         "locality", "id", "name", "url",
         "serviceUrl", "listenAddr", "advertiseAddr", "advertiseProxyAddr",
-        "sqlAddr", "httpAddr", "certHosts", "version"})
+        "sqlAddr", "httpAddr", "certHosts"})
 public class Node {
     @NotNull
     private String locality;
