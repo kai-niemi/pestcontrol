@@ -110,7 +110,7 @@ public class ClusterCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Display database version",
-            name = {"show", "version"},
+            name = {"show", "database", "version"},
             alias = "v",
             group = CommandGroups.CLUSTER_COMMANDS,
             availabilityProvider = "ifClusterSelected",

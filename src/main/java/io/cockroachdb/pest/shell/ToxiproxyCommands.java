@@ -49,7 +49,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Start toxiproxy server on local host",
-            name = {"start", "toxiproxy-server"},
+            name = {"start", "toxiproxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifClusterSelected",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -63,7 +63,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Stop toxiproxy server on local host",
-            name = {"stop", "toxiproxy-server"},
+            name = {"stop", "toxiproxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "ifClusterSelected",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -77,7 +77,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Display toxiproxy server version",
-            name = {"show", "toxiproxy-server", "version"},
+            name = {"show", "toxiproxy", "version"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -86,7 +86,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Reset toxiproxy server on this host",
-            name = {"reset", "toxiproxy-server"},
+            name = {"reset", "toxiproxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -95,7 +95,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "List all toxiproxy proxies",
-            name = {"list", "toxiproxy-proxies"},
+            name = {"list", "toxiproxy", "proxies"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -125,7 +125,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Create toxiproxy proxy on specified nodes(s)",
-            name = {"create", "toxiproxy-proxy"},
+            name = {"create", "toxiproxy", "proxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             completionProvider = "nodeRangeProvider",
@@ -152,7 +152,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Delete toxiproxy proxy for specified nodes(s)",
-            name = {"delete", "toxiproxy-proxy"},
+            name = {"delete", "toxiproxy", "proxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             completionProvider = "nodeRangeProvider",
@@ -178,7 +178,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Enable proxy for specified nodes(s)",
-            name = {"enable", "toxiproxy-proxy"},
+            name = {"enable", "toxiproxy", "proxy"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             completionProvider = "nodeRangeProvider",
@@ -204,7 +204,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "List all toxiproxy proxy toxics",
-            name = {"list", "toxiproxy-toxics"},
+            name = {"list", "toxiproxy", "toxics"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             exitStatusExceptionMapper = "commandExceptionMapper")
@@ -246,7 +246,7 @@ public class ToxiproxyCommands extends AbstractShellCommand {
     }
 
     @Command(description = "Add proxy toxic",
-            name = {"add", "toxiproxy-toxic"},
+            name = {"add", "toxiproxy", "toxic"},
             group = CommandGroups.TOXIPROXY_COMMANDS,
             availabilityProvider = "toxiProxyServerProvider",
             completionProvider = "addToxicCompletionProvider",
