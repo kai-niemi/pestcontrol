@@ -27,8 +27,8 @@ for i in "$@"; do
 done
 
 fn_print_info "user_name    = ${user_name}"
+fn_print_info "url = ${url}"
 fn_print_info "expire_after = ${expire_after}"
-fn_print_info "url          = ${url}"
 
 if [ -z "${user_name}" ]; then
   fn_print_error "Missing user-name parameter!"
@@ -39,6 +39,10 @@ if [ -z "${url}" ]; then
   exit 1
 fi
 
-fn_fail_check ${installdir}/cockroach auth-session login ${user_name} --expire-after=${expire_after} --only-cookie --url "${url}"
+fn_fail_check ${installdir}/cockroach \
+auth-session login ${user_name} \
+--expire-after=${expire_after} \
+--only-cookie \
+--url "${url}"
 
 exit 0

@@ -35,7 +35,7 @@ public class CloudStatusOperator implements StatusOperator {
             List<String> lines = CommandBuilder.builder()
                     .withBaseDir(applicationProperties.getDirectories().getBaseDirPath())
                     .withCommand("login")
-                    .withFlags("--user-name=%s".formatted(cluster.getDataSourceProperties().getUrl()))
+                    .withFlags("--user-name=%s".formatted(cluster.getDataSourceProperties().getUsername()))
                     .withFlags("--url=%s".formatted(cluster.getLoginUrl()))
                     .executeAndCollect();
             this.authToken = lines.isEmpty() ? "" : lines.getLast();
