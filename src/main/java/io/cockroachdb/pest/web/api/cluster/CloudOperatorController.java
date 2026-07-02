@@ -53,7 +53,8 @@ public class CloudOperatorController {
     @PostMapping("/{clusterId}/locality/{tiers}/disrupt")
     public ResponseEntity<Void> disruptLocality(@PathVariable("clusterId") String clusterId,
                                                 @PathVariable("tiers") String tiers) throws IOException {
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(clusterId);
+        ClusterOperator clusterOperator = clusterOperatorProvider
+                .clusterOperator(clusterId);
         clusterOperator.disruptionOperator(clusterOperatorProvider.clusterById(clusterId))
                 .disruptLocality(tiers);
         return ResponseEntity.ok().build();
@@ -62,7 +63,8 @@ public class CloudOperatorController {
     @PostMapping("/{clusterId}/locality/{tiers}/recover")
     public ResponseEntity<Void> recoverLocality(@PathVariable("clusterId") String clusterId,
                                                 @PathVariable("tiers") String tiers) throws IOException {
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(clusterId);
+        ClusterOperator clusterOperator = clusterOperatorProvider
+                .clusterOperator(clusterId);
         clusterOperator.disruptionOperator(clusterOperatorProvider.clusterById(clusterId))
                 .recoverLocality(tiers);
         return ResponseEntity.ok().build();
@@ -71,7 +73,8 @@ public class CloudOperatorController {
     @PostMapping("/{clusterId}/node/{nodeId}/disrupt")
     public ResponseEntity<Void> disruptNode(@PathVariable("clusterId") String clusterId,
                                             @PathVariable("nodeId") Integer id) throws IOException {
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(clusterId);
+        ClusterOperator clusterOperator = clusterOperatorProvider
+                .clusterOperator(clusterId);
         clusterOperator.disruptionOperator(clusterOperatorProvider.clusterById(clusterId))
                 .disruptNode(id);
         return ResponseEntity.ok().build();
@@ -80,7 +83,8 @@ public class CloudOperatorController {
     @PostMapping("/{clusterId}/node/{nodeId}/recover")
     public ResponseEntity<Void> recoverNode(@PathVariable("clusterId") String clusterId,
                                             @PathVariable("nodeId") Integer id) throws IOException {
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(clusterId);
+        ClusterOperator clusterOperator = clusterOperatorProvider
+                .clusterOperator(clusterId);
         clusterOperator.disruptionOperator(clusterOperatorProvider.clusterById(clusterId))
                 .recoverNode(id);
         return ResponseEntity.ok().build();

@@ -46,7 +46,8 @@ public class HAProxyCommands extends AbstractShellCommand {
     public void genHAProxy(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterId());
+        ClusterOperator clusterOperator = clusterOperatorProvider
+                .clusterOperator(cluster.getClusterId());
         for (Integer x : nodeIdRange(id)) {
             clusterOperator.proxyOperator(cluster).genHAProxyCfg(x);
         }
@@ -62,7 +63,8 @@ public class HAProxyCommands extends AbstractShellCommand {
     public void startHaProxy(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterId());
+        ClusterOperator clusterOperator = clusterOperatorProvider
+                .clusterOperator(cluster.getClusterId());
         for (Integer x : nodeIdRange(id)) {
             clusterOperator.proxyOperator(cluster).startHAProxy(x);
         }
@@ -78,7 +80,8 @@ public class HAProxyCommands extends AbstractShellCommand {
     public void stopHAProxy(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterId());
+        ClusterOperator clusterOperator = clusterOperatorProvider
+                .clusterOperator(cluster.getClusterId());
         for (Integer x : nodeIdRange(id)) {
             clusterOperator.proxyOperator(cluster).stopHAProxy(x);
         }

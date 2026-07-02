@@ -67,7 +67,7 @@ public class ClusterDashboardController {
                 = clusterController.getNodeStatus(clusterModel.getClusterId()).getBody();
         model.addAttribute("nodes", nodeStatusModels);
 
-        logger.info("Update nodes via STOMP");
+        logger.debug("Update nodes via STOMP");
 
         nodeStatusModels.forEach(nodeStatusModel ->
                 messagePublisher.convertAndSendNow(TopicName.DASHBOARD_NODE_STATUS, nodeStatusModel));

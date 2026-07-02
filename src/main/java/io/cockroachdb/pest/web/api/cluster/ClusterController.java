@@ -99,7 +99,8 @@ public class ClusterController {
     public ResponseEntity<MessageModel> getVersion(
             @PathVariable String clusterId) throws IOException {
         Cluster cluster = applicationProperties.getClusterById(clusterId);
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(clusterId);
+        ClusterOperator clusterOperator = clusterOperatorProvider
+                .clusterOperator(clusterId);
         try (StatusOperator clusterStatus = clusterOperator.statusOperator(cluster)) {
             return ResponseEntity.ok(MessageModel.from(clusterStatus.clusterVersion())
                     .add(linkTo(methodOn(getClass())
@@ -116,7 +117,6 @@ public class ClusterController {
         try (StatusOperator statusOperator = clusterOperatorProvider
                 .clusterOperator(clusterId)
                 .statusOperator(cluster)) {
-
             List<NodeStatusModel> nodeModels = new ArrayList<>();
             statusOperator.nodeStatus().forEach(nodeStatus -> {
                 nodeModels.add(new NodeStatusModelAssembler(cluster).toModel(nodeStatus));
@@ -139,7 +139,7 @@ public class ClusterController {
 
         try (StatusOperator statusOperator = clusterOperatorProvider
                 .clusterOperator(clusterId)
-                .statusOperator(clusterOperatorProvider.clusterById(clusterId))) {
+                .statusOperator(cluster)) {
             NodeStatus nodeStatus = statusOperator.nodeStatusById(id);
             return ResponseEntity.ok(new NodeStatusModelAssembler(cluster).toModel(nodeStatus));
         } catch (IOException e) {

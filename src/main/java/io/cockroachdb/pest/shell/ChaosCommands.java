@@ -27,7 +27,8 @@ public class ChaosCommands extends AbstractShellCommand {
     public void disruptNode(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterId());
+        ClusterOperator clusterOperator = clusterOperatorProvider
+                .clusterOperator(cluster.getClusterId());
         for (Integer x : PatternUtils.parseIntRange(id)) {
             clusterOperator.disruptionOperator(cluster).disruptNode(x);
         }
@@ -42,7 +43,8 @@ public class ChaosCommands extends AbstractShellCommand {
     public void recoverNode(
             @Argument(description = NODE_ID_OPTION, defaultValue = "1", index = 0) String id) throws IOException {
         Cluster cluster = selectedCluster();
-        ClusterOperator clusterOperator = clusterOperatorProvider.clusterOperator(cluster.getClusterId());
+        ClusterOperator clusterOperator = clusterOperatorProvider
+                .clusterOperator(cluster.getClusterId());
         for (Integer x : PatternUtils.parseIntRange(id)) {
             clusterOperator.disruptionOperator(cluster).recoverNode(x);
         }
@@ -57,7 +59,8 @@ public class ChaosCommands extends AbstractShellCommand {
             @Option(description = "The locality tier(s) to disrupt", longName = "locality") String locality)
             throws IOException {
         Cluster cluster = selectedCluster();
-        clusterOperatorProvider.clusterOperator(cluster.getClusterId())
+        clusterOperatorProvider
+                .clusterOperator(cluster.getClusterId())
                 .disruptionOperator(cluster)
                 .disruptLocality(locality);
     }
@@ -71,7 +74,8 @@ public class ChaosCommands extends AbstractShellCommand {
             @Option(description = "The locality tier(s) to disrupt", longName = "locality") String locality)
             throws IOException {
         Cluster cluster = selectedCluster();
-        clusterOperatorProvider.clusterOperator(cluster.getClusterId())
+        clusterOperatorProvider
+                .clusterOperator(cluster.getClusterId())
                 .disruptionOperator(cluster)
                 .recoverLocality(locality);
     }

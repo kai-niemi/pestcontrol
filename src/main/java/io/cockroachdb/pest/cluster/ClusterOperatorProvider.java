@@ -17,17 +17,18 @@ public class ClusterOperatorProvider {
     @Autowired
     private ApplicationProperties applicationProperties;
 
-    public Cluster clusterById(String clusterId) {
-        return applicationProperties.getClusterById(clusterId);
-    }
-
     public ClusterOperator clusterOperator(String clusterId) {
-        ClusterType clusterType = applicationProperties.getClusterById(clusterId).getClusterType();
+        ClusterType clusterType = clusterById(clusterId)
+                .getClusterType();
         return clusterOperators
                 .stream()
                 .filter(x -> x.supports(clusterType))
                 .min(new AnnotationAwareOrderComparator())
                 .orElseThrow(() -> new UnsupportedOperationException(
                         "No operator found for cluster type: " + clusterType));
+    }
+
+    public Cluster clusterById(String clusterId) {
+        return applicationProperties.getClusterById(clusterId);
     }
 }

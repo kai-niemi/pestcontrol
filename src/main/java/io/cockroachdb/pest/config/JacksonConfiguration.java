@@ -30,6 +30,7 @@ public class JacksonConfiguration {
     public ObjectMapper yamlObjectMapper() {
         YAMLFactory yamlFactory = new YAMLFactory()
                 .enable(YAMLGenerator.Feature.ALLOW_LONG_KEYS)
+                .enable(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE)
                 .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
                 .disable(YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS);
 
